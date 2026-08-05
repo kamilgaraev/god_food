@@ -172,6 +172,10 @@ h2 { margin:0; font-size:clamp(31px,4vw,54px); line-height:.94; font-weight:400;
 .footer-mail:nth-of-type(7)::before { top:11px; }.footer-mail:nth-of-type(7) strong { left:60px; }.footer-mail:nth-of-type(7) small { top:92px; left:69px; width:246px; }
 .footer-mail:nth-of-type(8)::before { top:10px; }.footer-mail:nth-of-type(8) strong { top:37px; left:53px; }.footer-mail:nth-of-type(8) small { top:90px; left:53px; width:276px; }
 .copyright { position:absolute; left:calc(50vw - 580px); top:651.640625px; width:1160px; display:grid; grid-template-columns:360px 360px 360px; gap:40px; color:#343434; font:11px/17px 'Montserrat',Arial,sans-serif; opacity:.7; }.copyright span:nth-child(3) { text-align:left; line-height:19px; }
+.cookie-notice { position:fixed; z-index:900; right:20px; bottom:20px; width:300px; padding:22px 24px; background:#f3ebe4; box-shadow:0 3px 18px rgba(0,0,0,.2); color:#6f655e; font:12px/17px 'Montserrat',Arial,sans-serif; }
+.cookie-notice[hidden] { display:none; }
+.cookie-notice p { margin:0; }.cookie-notice a { color:#b0903d; border-bottom:1px solid #b0903d; }
+.cookie-notice button { min-height:38px; margin-top:16px; padding:0 17px; border:0; border-radius:999px; color:#fff; background:#b0903d; font:600 11px/14px 'Montserrat',Arial,sans-serif; cursor:pointer; }
 .shop-page { min-height:600px; background:var(--paper); }.shop-shell { width:min(1180px,100%); margin:auto; padding:80px 28px; }.shop-shell .woocommerce-products-header__title,.shop-shell .entry-title { font:400 52px/.9 'Cormorant',Arial,sans-serif; text-transform:uppercase; }.shop-shell ul.products { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; padding:0; }.shop-shell ul.products li.product { width:auto; margin:0; float:none; }.shop-shell ul.products li.product img { background:#f1e8de; }.shop-shell .button { background:var(--gold); border-radius:999px; }.shop-shell .price { color:var(--gold); }.shop-shell .woocommerce-message { border-top-color:var(--gold); }.shop-shell .woocommerce-message::before { color:var(--gold); }
 .woocommerce-cart .shop-page { min-height:805px; }
 .woocommerce-cart .shop-shell { padding-top:145px; }
@@ -424,6 +428,8 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .mobile-menu-open .mobile-menu-close { transform:translateX(0); }
   .mobile-menu-close::before,.mobile-menu-close::after { content:''; position:absolute; top:15px; left:4px; width:25px; height:1px; background:#222; transform:rotate(45deg); }
   .mobile-menu-close::after { transform:rotate(-45deg); }
+  .cookie-notice { right:0; bottom:0; width:100%; padding:21px 10px 20px; font-size:11px; line-height:17px; }
+  .cookie-notice button { min-height:42px; margin-top:15px; }
 }
 @media (max-width:800px) { .nav { grid-template-columns:1fr auto; min-height:66px; padding:0 18px; } .nav-links { display:none; } .brand { font-size:31px; } .floating-actions { top:28px; }.floating-actions a { width:30px; height:30px; font-size:13px; }.floating-actions a span { display:none; }.floating-actions img { width:15px; height:15px; } .hero { min-height:590px; align-items:start; } .hero::before { width:85vw; height:210px; right:7%; top:auto; bottom:0; } .hero-inner { padding:58px 22px; top:auto; } .products { grid-template-columns:repeat(2,1fr); } .product-image { height:220px; } .feature { height:auto; } .about-stage { width:auto; height:auto; padding:45px 18px; } .about-award,.story,.values { position:static; width:auto; height:auto; } .about-award { width:190px; margin:0 auto 25px; } .story { padding:30px; } .values { margin-top:18px; grid-template-columns:1fr; gap:12px; } .value { height:auto; min-height:180px; } .reviews { height:auto; } .reviews-stage { width:auto; height:auto; padding:45px 18px; } .reviews .section-heading { height:auto; } .review-grid { height:auto; grid-template-columns:repeat(6,260px); overflow-x:auto; } .review { margin-top:25px; } .reviews-button { height:110px; } .site-footer { height:auto; padding:45px 18px; } .footer-shell { width:auto; height:auto; display:grid; grid-template-columns:1fr; gap:18px; } .footer-shell > * { position:static; width:auto; } .copyright { position:static; width:auto; transform:none; margin-top:30px; grid-template-columns:1fr; gap:18px; } }
 @media (min-width:461px) and (max-width:900px) {
@@ -540,6 +546,82 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-image { width:100%; height:auto; aspect-ratio:300/167; }
   .recipe-card p { margin-top:20px; }
   .recipes-page .contact::after { width:190px; height:240px; }
+
+  .marketplace-intro { height:auto; padding-bottom:100px; overflow:hidden; }
+  .marketplace-breadcrumb { padding-top:135px; }
+  .marketplace-intro > h1 { margin:20px auto; width:min(600px,calc(100vw - 80px)); font-size:48px; line-height:48px; }
+  .marketplace-lead { width:min(600px,calc(100vw - 80px)); margin:0 auto; }
+  .market-grid { width:min(600px,calc(100vw - 80px)); margin-top:45px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:38px 40px; }
+  .market-image { width:100%; height:auto; aspect-ratio:260/300; }
+  .market-buttons { margin-top:45px; }
+
+  .buy-intro { height:auto; min-height:850px; padding-bottom:100px; overflow:hidden; }
+  .buy-breadcrumb { padding-top:135px; }
+  .buy-intro > h1 { font-size:48px; line-height:48px; }
+  .buy-tabs { max-width:min(500px,calc(100vw - 80px)); }
+  .buy-location { width:min(600px,calc(100vw - 80px)); height:auto; min-height:350px; margin:50px auto 0; }
+  .buy-location img { width:100%; height:auto; aspect-ratio:520/240; transform:none; }
+
+  .cooperation-page { height:auto; min-height:0; padding:135px 0 100px; overflow:hidden; display:flex; flex-direction:column; }
+  .cooperation-breadcrumb,.cooperation-page > h1,.cooperation-lead,.cooperation-chocolate,.cooperation-form,.cooperation-benefits { position:relative; top:auto; left:auto; width:min(600px,calc(100vw - 80px)); margin-left:auto; margin-right:auto; }
+  .cooperation-breadcrumb { padding:0; }
+  .cooperation-breadcrumb { order:1; }.cooperation-page > h1 { order:2; }.cooperation-lead { order:3; }.cooperation-form { order:4; }.cooperation-chocolate { order:5; }.cooperation-benefits { order:6; }
+  .cooperation-page > h1 { margin:20px auto; font-size:48px; line-height:48px; }
+  .cooperation-lead { margin-bottom:45px; }
+  .cooperation-chocolate { width:240px; height:235px; margin-bottom:25px; }
+  .cooperation-form { height:475px; }
+  .cooperation-form form { left:40px; width:calc(100% - 80px); }
+  .cooperation-form .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .cooperation-benefits { margin-top:80px; }
+  .cooperation-benefits > h2 { width:100%; height:auto; margin-bottom:45px; font-size:48px; line-height:48px; white-space:normal; }
+  .cooperation-benefit-grid { grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:auto; gap:30px 40px; }
+  .cooperation-benefit-grid article { min-height:250px; }
+  .cooperation-benefit-grid ul { width:auto; }
+
+  .delivery-page { min-height:0; padding:340px 0 100px; }
+  .delivery-accordion { width:min(600px,calc(100vw - 80px)); }
+
+  .media-page { height:auto; min-height:0; padding:135px 0 100px; }
+  .media-breadcrumb,.media-page > h1,.media-lead,.media-grid { position:relative; top:auto; left:auto; width:min(600px,calc(100vw - 80px)); margin-left:auto; margin-right:auto; }
+  .media-page > h1 { margin:20px auto; font-size:48px; line-height:48px; }
+  .media-grid { margin-top:50px; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:auto; gap:40px; }
+  .media-card,.media-card-image,.media-card h2,.media-card p { width:100%; }
+  .media-card { height:auto; }
+  .media-card-image { height:auto; aspect-ratio:360/277; }
+  .media-card-image img { width:100%; height:100%; }
+
+  .legal-page,.legal-page-oferta { min-height:0; padding:330px 0 90px; }
+  .legal-page > h1 { left:0; width:100%; font-size:48px; line-height:48px; }
+  .legal-content { width:min(600px,calc(100vw - 80px)); font-size:14px; line-height:22px; }
+
+  .theobroma-product-view { min-width:0; }
+  .product-detail-page { min-height:0; padding:70px 0 90px; }
+  .product-detail-back { top:22px; left:calc((100vw - min(600px,calc(100vw - 80px)))/2); }
+  .product-detail-close { top:20px; right:calc((100vw - min(600px,calc(100vw - 80px)))/2); }
+  .product-detail-hero { position:relative; top:auto; left:auto; width:min(600px,calc(100vw - 80px)); height:auto; margin:0 auto; grid-template-columns:repeat(2,minmax(0,1fr)); gap:40px; }
+  .product-detail-image { width:100%; height:auto; aspect-ratio:560/745; }
+  .product-detail-image img { width:100%; height:100%; }
+  .product-detail-summary h1,.product-detail-copy { width:100%; }
+  .product-detail-copy { font-size:13px; line-height:19px; }
+  .product-detail-buy { flex-wrap:wrap; }
+  .product-detail-accordions { position:relative; top:auto; left:auto; width:min(600px,calc(100vw - 80px)); margin:65px auto 0; }
+  .product-related { position:relative; top:auto; left:auto; width:min(600px,calc(100vw - 80px)); margin:80px auto 0; }
+  .product-related-grid { display:flex; gap:30px; overflow-x:auto; scrollbar-width:none; }
+  .product-related-grid::-webkit-scrollbar { display:none; }
+  .product-related-grid article { flex:0 0 270px; }
+
+  .recipe-detail-intro,.recipe-detail-long .recipe-detail-intro,.recipe-detail-banana .recipe-detail-intro { height:auto; min-height:0; padding:135px 0 100px; }
+  .recipe-detail-breadcrumb,.recipe-detail-intro > h1,.recipe-detail-lead,.recipe-detail-columns,.recipe-product-promo,
+  .recipe-detail-long .recipe-product-promo,.recipe-detail-banana .recipe-product-promo { position:relative; top:auto; left:auto; width:min(600px,calc(100vw - 80px)); margin-left:auto; margin-right:auto; }
+  .recipe-detail-intro > h1 { margin:20px auto; font-size:48px; line-height:48px; }
+  .recipe-detail-lead { margin-bottom:45px; }
+  .recipe-detail-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:40px; }
+  .recipe-method,.recipe-detail-long .recipe-method,.recipe-detail-banana .recipe-method { width:auto; height:auto; min-height:640px; padding-bottom:330px; }
+  .recipe-method > img { left:30px; width:calc(100% - 60px); height:auto; aspect-ratio:500/278; }
+  .recipe-product-promo,.recipe-detail-long .recipe-product-promo,.recipe-detail-banana .recipe-product-promo { height:auto; margin-top:90px; }
+  .recipe-product-promo > h2 { height:auto; margin-bottom:50px; font-size:48px; line-height:48px; white-space:normal; }
+  .recipe-product-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:40px; }
+  .recipe-product-grid img { width:100%; height:auto; aspect-ratio:360/268; }
 }
 @media (max-width:460px) { .hero { min-height:270px; } .hero::before { height:135px; right:13%; } .hero-inner { padding:35px 10px; } }
 @media (max-width:460px) { .section { padding:52px 8px; } h1 { font-size:38px; } .section-heading { padding:0 8px; margin-bottom:20px; } .products { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } .product-image { height:205px; } .product h3 { margin:8px 0 4px; font-size:9px; } .product p { font-size:8px; } .price { margin-top:7px; font-size:11px; } .review-grid { grid-template-columns:repeat(4,170px); overflow-x:auto; padding:0 8px 10px; scroll-snap-type:x mandatory; } .review { min-height:230px; scroll-snap-align:start; } .form-grid { grid-template-columns:1fr; } .footer-shell { padding:0 8px; } }
@@ -668,4 +750,127 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-image { width:100%; height:auto; aspect-ratio:300/167; }
   .recipe-card p { margin-top:18px; font-size:14px; line-height:18px; }
   .recipes-page .contact::after { top:270px; width:170px; height:215px; }
+
+  .marketplace-intro { height:auto; padding-bottom:90px; overflow:hidden; }
+  .marketplace-intro::before { top:72px; width:175px; height:230px; }
+  .marketplace-intro::after { top:auto; bottom:0; width:150px; height:202px; }
+  .marketplace-breadcrumb { padding-top:105px; font-size:11px; line-height:18px; }
+  .marketplace-intro > h1 { width:350px; margin:20px auto 14px; font-size:36.562px; line-height:36.562px; }
+  .marketplace-lead { width:350px; margin:0 auto; font-size:14px; line-height:19px; }
+  .market-grid { width:368px; margin:34px auto 0; grid-template-columns:repeat(2,minmax(0,1fr)); gap:34px 12px; }
+  .market-image { width:100%; height:auto; aspect-ratio:260/300; }
+  .market-product h2 { margin-top:12px; font-size:13px; line-height:17px; }
+  .market-product p { font-size:12px; line-height:18px; }
+  .market-product strong { font-size:17px; line-height:23px; }
+  .market-buttons { margin-top:42px; flex-direction:column; align-items:center; gap:10px; }
+  .market-buttons a { width:270px; height:44px; }
+
+  .buy-intro { height:auto; min-height:0; padding-bottom:90px; overflow:hidden; }
+  .buy-breadcrumb { padding-top:105px; font-size:11px; line-height:18px; }
+  .buy-intro > h1 { width:350px; margin:20px auto 0; font-size:36.562px; line-height:36.562px; }
+  .buy-lead { width:350px; margin:14px auto 0; font-size:14px; line-height:19px; }
+  .buy-tabs { width:350px; height:auto; margin-top:25px; }
+  .buy-tabs a { height:50px; padding-top:16px; font-size:13px; }
+  .buy-location { width:368px; height:auto; min-height:360px; margin:35px auto 0; padding:14px; }
+  .buy-location img { width:100%; height:auto; aspect-ratio:520/240; transform:none; }
+  .buy-location h2 { font-size:23px; line-height:27px; }
+  .buy-location p { width:190px; font-size:12px; line-height:17px; }
+  .buy-location .button { right:14px; bottom:22px; width:150px; }
+
+  .cooperation-page { height:auto; min-height:0; padding:105px 0 90px; overflow:hidden; display:flex; flex-direction:column; }
+  .cooperation-breadcrumb,.cooperation-page > h1,.cooperation-lead,.cooperation-chocolate,.cooperation-form,.cooperation-benefits { position:relative; top:auto; left:auto; width:368px; margin-left:auto; margin-right:auto; }
+  .cooperation-breadcrumb { font-size:11px; line-height:18px; }
+  .cooperation-breadcrumb { order:1; }.cooperation-page > h1 { order:2; }.cooperation-lead { order:3; }.cooperation-form { order:4; }.cooperation-chocolate { order:5; }.cooperation-benefits { order:6; }
+  .cooperation-page > h1 { margin:20px auto 14px; font-size:36.562px; line-height:36.562px; }
+  .cooperation-lead { margin-bottom:32px; font-size:14px; line-height:19px; }
+  .cooperation-chocolate { width:180px; height:176px; margin-top:28px; margin-bottom:20px; }
+  .cooperation-form { height:530px; }
+  .cooperation-form h2 { padding:0 20px; font-size:24px; line-height:26px; }
+  .cooperation-form form { top:150px; left:18px; width:332px; }
+  .cooperation-form .form-grid { grid-template-columns:1fr; gap:18px; }
+  .cooperation-form .phone-field input { width:230px; }
+  .cooperation-form .form-submit { margin-top:28px; }
+  .cooperation-benefits { margin-top:60px; }
+  .cooperation-benefits > h2 { width:100%; height:auto; margin-bottom:32px; font-size:36.562px; line-height:36.562px; white-space:normal; }
+  .cooperation-benefit-grid { grid-template-columns:1fr; grid-template-rows:auto; gap:14px; }
+  .cooperation-benefit-grid article { min-height:220px; padding:24px; }
+  .cooperation-benefit-grid ul { width:auto; font-size:13px; line-height:18px; }
+
+  .delivery-page { min-height:0; padding:290px 0 80px; }
+  .delivery-breadcrumb { top:105px; font-size:11px; line-height:18px; }
+  .delivery-page > h1 { position:absolute; top:145px; padding:0 20px; font-size:36.562px; line-height:36.562px; }
+  .delivery-lead { top:215px; padding:0 20px; font-size:14px; line-height:19px; }
+  .delivery-accordion { width:368px; }
+  .delivery-accordion summary { height:auto; min-height:68px; padding:18px 20px; }
+  .delivery-accordion summary span { font-size:22px; line-height:28px; }
+  .delivery-answer { padding:0 20px 20px; font-size:13px; line-height:19px; }
+
+  .media-page { height:auto; min-height:0; padding:105px 0 80px; }
+  .media-page::before { top:75px; width:150px; height:202px; }
+  .media-breadcrumb,.media-page > h1,.media-lead,.media-grid { position:relative; top:auto; left:auto; width:368px; margin-left:auto; margin-right:auto; }
+  .media-breadcrumb { font-size:11px; line-height:18px; }
+  .media-page > h1 { margin:20px auto 14px; font-size:36.562px; line-height:36.562px; }
+  .media-lead { font-size:14px; line-height:19px; }
+  .media-grid { margin-top:38px; grid-template-columns:1fr; grid-auto-rows:auto; gap:34px; }
+  .media-card,.media-card-image,.media-card h2,.media-card p { width:100%; }
+  .media-card { height:auto; }
+  .media-card-image { height:auto; aspect-ratio:360/277; }
+  .media-card-image img { width:100%; height:100%; }
+
+  .legal-page,.legal-page-oferta { min-height:0; padding:285px 0 70px; }
+  .legal-breadcrumb { top:105px; font-size:11px; line-height:18px; }
+  .legal-page > h1 { position:absolute; top:145px; left:0; width:100%; padding:0 18px; font-size:36.562px; line-height:36.562px; }
+  .legal-content { width:368px; font-size:13px; line-height:20px; }
+
+  .theobroma-product-view { min-width:0; }
+  .product-detail-page { min-height:0; padding:50px 0 80px; background:#fcf9f7; }
+  .product-detail-page::before { content:''; position:absolute; top:0; left:0; width:100%; height:50px; background:#4b4b4b; }
+  .product-detail-back { z-index:2; top:14px; left:15px; font-size:0; }
+  .product-detail-back::before { content:'←'; color:#fff; font:400 30px/24px Arial,sans-serif; }
+  .product-detail-close { top:10px; right:14px; }
+  .product-detail-hero { position:relative; top:auto; left:auto; width:100%; height:auto; display:block; }
+  .product-detail-image { width:100%; height:auto; aspect-ratio:390/515; }
+  .product-detail-image img { width:100%; height:100%; object-fit:cover; }
+  .product-detail-summary { padding:28px 20px 0; }
+  .product-detail-summary h1,.product-detail-copy { width:100%; }
+  .product-detail-summary h1 { font-size:14px; line-height:19px; }
+  .product-detail-price { margin-top:20px; font-size:18px; line-height:24px; }
+  .product-detail-buy { height:auto; margin-top:20px; display:grid; grid-template-columns:1fr 45px; gap:10px; }
+  body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button { width:100% !important; }
+  .product-detail-favorite { grid-column:2; grid-row:1; }
+  .product-detail-marketplaces { grid-column:1/-1; margin:0; }
+  .product-detail-marketplaces a { width:calc(50% - 5px); }
+  .product-detail-copy { margin-top:28px; font-size:16px; line-height:24px; }
+  .product-detail-copy p { margin-bottom:24px; }
+  .product-detail-accordions { position:relative; top:auto; left:auto; width:350px; margin:28px auto 0; }
+  .product-detail-accordions summary { height:61px; }
+  .product-detail-accordions details div { font-size:11px; line-height:17px; }
+  .product-related { position:relative; top:auto; left:auto; width:350px; margin:70px auto 0; }
+  .product-related-grid { display:flex; gap:40px; overflow-x:auto; scrollbar-width:none; }
+  .product-related-grid::-webkit-scrollbar { display:none; }
+  .product-related-grid article { flex:0 0 218px; min-height:500px; }
+  .product-related-image,.product-related-image img { width:218px; height:273px; }
+  .product-related-button { top:410px; }
+
+  .recipe-detail-intro,.recipe-detail-long .recipe-detail-intro,.recipe-detail-banana .recipe-detail-intro { height:auto; min-height:0; padding:105px 0 80px; }
+  .recipe-detail-decor-left { top:72px; width:170px; height:210px; opacity:.7; }
+  .recipe-detail-decor-right,.recipe-detail-long .recipe-detail-decor-right,.recipe-detail-banana .recipe-detail-decor-right { top:1080px; width:150px; height:190px; }
+  .recipe-detail-breadcrumb,.recipe-detail-intro > h1,.recipe-detail-lead,.recipe-detail-columns,.recipe-product-promo,
+  .recipe-detail-long .recipe-product-promo,.recipe-detail-banana .recipe-product-promo { position:relative; top:auto; left:auto; width:368px; margin-left:auto; margin-right:auto; }
+  .recipe-detail-breadcrumb { font-size:11px; line-height:18px; }
+  .recipe-detail-intro > h1 { margin:20px auto 14px; font-size:36.562px; line-height:36.562px; }
+  .recipe-detail-lead { margin-bottom:34px; font-size:14px; line-height:19px; }
+  .recipe-detail-columns { display:grid; grid-template-columns:1fr; gap:14px; }
+  .recipe-ingredients,.recipe-method { padding:24px; }
+  .recipe-ingredients h2,.recipe-method h2 { font-size:24px; line-height:28px; }
+  .recipe-ingredients dl div { min-height:40px; font-size:12px; line-height:17px; }
+  .recipe-method,.recipe-detail-long .recipe-method,.recipe-detail-banana .recipe-method { height:auto; min-height:0; padding-bottom:24px; }
+  .recipe-method li p { font-size:12px; line-height:17px; }
+  .recipe-method > img { position:static; width:100%; height:auto; margin-top:24px; aspect-ratio:500/278; }
+  .recipe-product-promo,.recipe-detail-long .recipe-product-promo,.recipe-detail-banana .recipe-product-promo { height:auto; margin-top:75px; }
+  .recipe-product-promo > h2 { height:auto; margin-bottom:38px; font-size:36.562px; line-height:36.562px; white-space:normal; }
+  .recipe-product-grid { grid-template-columns:1fr; gap:20px; }
+  .recipe-product-grid article:nth-child(2) { transform:none; }
+  .recipe-product-grid img { width:100%; height:auto; aspect-ratio:360/268; }
+  .recipe-product-promo > .button { margin-top:40px; }
 }

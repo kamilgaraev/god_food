@@ -33,6 +33,17 @@
         }
     });
 
+    const cookieNotice = document.querySelector('.cookie-notice');
+    const cookieButton = cookieNotice?.querySelector('button');
+    const cookieKey = 'theobroma_cookie_notice_accepted';
+    if (cookieNotice && window.localStorage.getItem(cookieKey) !== '1') {
+        cookieNotice.hidden = false;
+    }
+    cookieButton?.addEventListener('click', () => {
+        window.localStorage.setItem(cookieKey, '1');
+        cookieNotice.hidden = true;
+    });
+
     const revealTargets = document.querySelectorAll([
         '#catalog .section-heading h2',
         '#catalog .product',
