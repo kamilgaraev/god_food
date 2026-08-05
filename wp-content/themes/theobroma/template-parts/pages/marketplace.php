@@ -2,7 +2,7 @@
     <section class="marketplace-intro">
         <nav class="marketplace-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Маркетплейсы</strong></nav>
         <h1>Маркетплейсы</h1>
-        <p class="marketplace-lead">Для вашего удобства продукция Theobroma «Пища Богов» представлена<br>не только в розничных магазинах, но и на крупнейших маркетплейсах.</p>
+        <p class="marketplace-lead">Для вашего удобства продукция Theobroma «Пища Богов» представлена<br class="marketplace-lead-break">не только в розничных магазинах, но и на крупнейших маркетплейсах.</p>
         <div class="market-grid">
             <article class="market-product"><span class="market-image market-cacao"></span><h2>Какао порошок натуральный</h2><p>Пища Богов 100 г</p><strong>243р</strong></article>
             <article class="market-product"><span class="market-image market-dark"></span><h2>59% горький шоколад (30г)</h2><p>С вишней и зеленой гречкой</p><strong>300р</strong></article>

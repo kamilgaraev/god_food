@@ -57,7 +57,7 @@ $shop_url = wc_get_page_permalink('shop');
     <section class="product-detail-hero">
         <figure class="product-detail-image"><img src="<?php echo esc_url(wp_get_attachment_image_url($product->get_image_id(), 'full') ?: wc_placeholder_img_src('full')); ?>" width="624" height="780" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>"></figure>
         <div class="product-detail-summary">
-            <h1><?php echo esc_html($product->get_name()); ?></h1>
+            <h1><?php echo esc_html(theobroma_frontend_product_title($product->get_name(), $product->get_id())); ?></h1>
             <div class="product-detail-price"><?php echo esc_html(number_format((float) $product->get_price(), 0, '', ' ') . ' р.'); ?></div>
             <div class="product-detail-buy"><?php woocommerce_template_single_add_to_cart(); ?><button class="product-detail-favorite" type="button" aria-label="Добавить в избранное">♡</button></div>
             <div class="product-detail-marketplaces"><a href="<?php echo esc_url($marketplaces['wb'] ?? 'https://www.wildberries.ru/'); ?>" rel="noopener">WB</a><a href="<?php echo esc_url($marketplaces['ozon'] ?? 'https://www.ozon.ru/'); ?>" rel="noopener">Ozon</a></div>
