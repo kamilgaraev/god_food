@@ -395,7 +395,7 @@ h2 { margin:0; font-size:clamp(31px,4vw,54px); line-height:.94; font-weight:400;
 .product-detail-image { width:560px; height:745px; margin:0; overflow:hidden; background:#f3ebe4; }
 .product-detail-image img { width:560px; height:745px; object-fit:cover; }
 .product-detail-summary { padding:0; position:relative; }
-.product-detail-summary h1 { position:static; width:560px; height:auto; margin:0; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.product-detail-summary h1 { position:static; width:560px; height:auto; margin:0; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:none; }
 .product-detail-price { margin-top:20.359375px; color:#b0903d; font:500 18px/24.3px 'Cormorant',Arial,sans-serif; }.product-detail-price .amount { color:inherit; }
 .product-detail-buy { height:45px; margin-top:20px; display:flex; align-items:center; gap:8px; }
 .product-detail-buy form.cart { margin:0; display:block; }.product-detail-buy .quantity { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }.product-detail-buy .single_add_to_cart_button { width:206.421875px; height:45px; min-height:45px; margin:0; padding:0; border:0; border-radius:999px; color:#fff; background:#b0903d; font:500 14px/21px 'Montserrat',Arial,sans-serif; }
@@ -875,4 +875,196 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-product-grid article:nth-child(2) { transform:none; }
   .recipe-product-grid img { width:100%; height:auto; aspect-ratio:360/268; }
   .recipe-product-promo > .button { margin-top:40px; }
+}
+
+/* Mobile inner-page calibration against the original 390px layout. */
+@media (max-width:460px) {
+  .floating-actions { right:62px; gap:5px; }
+  .floating-actions a { padding:0; gap:5px; }
+  .floating-actions a:nth-child(1) { width:58px; }
+  .floating-actions a:nth-child(2) { width:61px; margin-left:0; }
+  .floating-actions a:nth-child(3) { width:37px; }
+  .floating-actions a span { display:inline; font-size:12px; line-height:1; }
+  .floating-actions a:nth-child(3) span { display:none; }
+
+  .catalog-breadcrumb { padding-top:121px; }
+  .catalog-title { margin-bottom:36px; }
+  .catalog-filters { margin-bottom:55.4375px; }
+  .catalog-filters a { height:45px; }
+  .catalog-page .shop-shell { padding-inline:20px; }
+  .catalog-page ul.products,
+  .catalog-page.catalog-group-chocolate-30g ul.products { grid-auto-rows:405px; gap:67px 20px; }
+  .catalog-page ul.products li.product,
+  .catalog-page.catalog-group-chocolate-30g ul.products li.product { height:405px; }
+  .catalog-page ul.products li.product a img { margin-bottom:10px; }
+  .catalog-page ul.products li.product .button { height:58.15625px; }
+  .catalog-page ul.products li.product .woocommerce-loop-product__title { font-size:14px; line-height:18.9px; text-transform:none; }
+  .catalog-page ul.products li.product .catalog-product-description { margin-top:8px; font-size:14px; line-height:21.6875px; }
+  .catalog-page ul.products li.product .price { margin-top:0; font-size:18px; line-height:24.3px; }
+  .catalog-page ul.products li.product .woocommerce-Price-currencySymbol { margin-left:4px; }
+
+  .recipes-intro::before { display:none; }
+  .recipe-grid { width:354px; margin-top:35px; gap:10px; }
+  .recipe-card { height:326px; padding:24px 25px; display:flex; flex-direction:column; }
+  .recipe-card h2 { order:1; height:27px; font-size:20px; line-height:27px; white-space:nowrap; }
+  .recipe-card h2 br { display:none; }
+  .recipe-card p { order:2; width:304px; margin:17px 0 0; font-size:14px; line-height:18px; }
+  .recipe-card .recipe-image { order:3; width:304px; margin-top:27px; aspect-ratio:304/171; }
+
+  .cooperation-page { padding-top:121px; }
+  .cooperation-breadcrumb,
+  .cooperation-page > h1,
+  .cooperation-lead,
+  .cooperation-form,
+  .cooperation-benefits { width:354px; }
+  .cooperation-decor-left { top:55px; width:115px; height:155px; }
+  .cooperation-decor-right { display:none; }
+  .cooperation-lead { margin-bottom:40px; }
+  .cooperation-form { height:478px; }
+  .cooperation-form::before { background-position:center; background-size:cover; }
+  .cooperation-form h2 { margin-top:24px; }
+  .cooperation-form form { top:127px; left:25px; width:304px; }
+  .cooperation-form .phone-field input { width:202px; }
+  .cooperation-form .form-submit { margin-top:34px; }
+  .cooperation-chocolate { margin-top:50px; }
+
+  .delivery-page { padding:360px 0 53px; }
+  .delivery-breadcrumb { top:121px; }
+  .delivery-page > h1 { top:161px; }
+  .delivery-lead { top:250px; }
+  .delivery-decor { top:55px; width:125px; height:168px; }
+  .delivery-accordion { width:350px; }
+
+  .marketplace-breadcrumb { padding-top:121px; }
+  .marketplace-intro::before { top:28px; width:125px; height:164px; }
+  .market-grid { width:354px; grid-template-columns:repeat(2,171px); gap:34px 12px; }
+  .market-grid { margin-top:39px; }
+  .market-image { aspect-ratio:171/208; }
+  .market-product h2 { font-size:14px; line-height:18.9px; }
+  .market-product strong { font-size:18px; line-height:24.3px; }
+
+  .buy-breadcrumb { padding-top:121px; }
+  .buy-decor-left { top:217px; width:90px; height:121px; }
+  .buy-intro { padding-bottom:72px; }
+  .buy-location { width:354px; height:350px; min-height:350px; padding:25px; }
+  .buy-location img { width:304px; aspect-ratio:304/171; }
+  .buy-location .button { right:auto; left:25px; bottom:24px; width:213px; height:44px; }
+
+  .media-page { padding-top:121px; }
+  .media-page::before { top:69px; width:115px; height:155px; }
+  .media-breadcrumb,.media-page > h1,.media-lead,.media-grid { width:350px; }
+  .media-card-image { aspect-ratio:350/270; }
+  .media-card h2 { margin-top:20px; }
+  .media-grid { gap:60px; }
+
+  .legal-page,.legal-page-oferta { padding-top:257px; }
+  .legal-page::before { top:54px; width:115px; height:155px; }
+  .legal-breadcrumb { top:121px; }
+  .legal-page > h1 { top:161px; left:20px; width:350px; padding:0; font-size:27px; line-height:30px; }
+  .legal-content { width:350px; font-size:14px; line-height:20px; }
+
+  .product-detail-image { aspect-ratio:390/519; }
+  .product-detail-close { display:none; }
+  .product-detail-summary { position:static; }
+  .product-detail-buy { display:block; }
+  .product-detail-buy form.cart { width:100%; }
+  .product-detail-favorite { position:absolute; z-index:3; top:34px; right:20px; width:50px; height:50px; }
+  .product-detail-buy { margin-top:23px; }
+  .product-detail-marketplaces { display:grid; grid-template-columns:repeat(2,1fr); gap:4px; margin-top:10px; }
+  .product-detail-marketplaces a { width:100%; }
+}
+
+/* Tablet inner-page calibration against the original 768px composition. */
+@media (min-width:461px) and (max-width:900px) {
+  .floating-actions,.nav-sticky .floating-actions {
+    right:calc((100vw - min(600px,calc(100vw - 80px)))/2 + 65px);
+    gap:16px;
+  }
+  .floating-actions a { width:87px; height:50px; font-size:14px; }
+  .floating-actions a:nth-child(3) { order:-1; }
+
+  .catalog-breadcrumb { padding-top:148px; }
+  .catalog-title { font-size:44px; line-height:44px; }
+  .catalog-page ul.products { grid-auto-rows:529px; }
+  .catalog-page ul.products li.product,
+  .catalog-page.catalog-group-chocolate-30g ul.products li.product { height:529px; }
+  .catalog-page ul.products li.product .woocommerce-loop-product__title { font-size:14px; line-height:18.9px; text-transform:none; }
+  .catalog-page ul.products li.product .catalog-product-description { font-size:14px; line-height:21.7px; }
+  .catalog-page ul.products li.product .price { font-size:18px; line-height:24.3px; }
+  .catalog-page ul.products li.product .woocommerce-Price-currencySymbol { margin-left:4px; }
+  .catalog-page ul.products li.product .button { top:471.78125px; bottom:auto; width:165px; height:35px; }
+
+  .recipes-breadcrumb { padding-top:148px; }
+  .recipes-intro > h1 { font-size:44px; line-height:44px; }
+  .recipes-lead { width:400px; margin-inline:auto; }
+  .recipes-intro::before { top:243px; width:150px; height:202px; }
+  .recipe-grid { grid-template-columns:1fr; gap:20px; }
+  .recipe-card { width:600px; height:190px; padding:0; position:relative; display:block; }
+  .recipe-card h2 { position:absolute; top:30px; left:30px; width:277px; height:auto; text-align:left; font-size:24px; line-height:30px; }
+  .recipe-card p { position:absolute; top:105px; left:30px; width:277px; margin:0; text-align:left; font-size:14px; line-height:18px; }
+  .recipe-card .recipe-image { position:absolute; top:30px; right:30px; width:232px; height:130px; aspect-ratio:auto; }
+
+  .cooperation-page { padding-top:148px; }
+  .cooperation-page > h1 { font-size:44px; line-height:44px; }
+  .cooperation-lead { width:400px; font-size:16px; line-height:21px; }
+  .cooperation-lead { margin-bottom:37px; }
+  .cooperation-form { height:397px; }
+  .cooperation-form h2 { margin-top:30px; }
+  .cooperation-form form { top:116px; left:30px; width:540px; }
+  .cooperation-form .form-grid { grid-template-columns:repeat(2,262.5px); }
+  .cooperation-form .phone-field input { width:161.641px; }
+  .cooperation-chocolate { margin-top:28px; }
+  .cooperation-decor-left { top:66px; width:150px; height:202px; }
+  .cooperation-decor-right { top:960px; width:150px; height:202px; }
+
+  .delivery-page { padding:352px 0 45px; }
+  .delivery-breadcrumb { top:149px; }
+  .delivery-page > h1 { top:189px; font-size:44px; line-height:44px; }
+  .delivery-lead { left:50%; width:400px; transform:translateX(-50%); font-size:16px; line-height:21px; }
+  .delivery-accordion details summary { height:auto; min-height:75px; }
+  .delivery-decor { top:168px; width:150px; height:190px; }
+
+  .marketplace-breadcrumb { padding-top:148px; }
+  .marketplace-lead-break { display:none; }
+  .marketplace-intro > h1 { font-size:44px; line-height:44px; }
+  .marketplace-lead { width:500px; }
+  .marketplace-intro::before { top:50px; width:175px; height:230px; }
+  .marketplace-intro::after { display:none; }
+  .market-grid { grid-template-columns:repeat(2,290px); gap:38px 20px; }
+  .market-image { aspect-ratio:290/306; }
+
+  .buy-breadcrumb { padding-top:148px; }
+  .buy-intro > h1 { width:500px; margin-inline:auto; font-size:44px; line-height:44px; }
+  .buy-lead { margin-top:13px; }
+  .buy-location { height:388px; min-height:388px; margin-top:37px; }
+  .buy-location img { aspect-ratio:2/1; }
+  .buy-location .button { right:20px; bottom:26px; width:165px; }
+  .buy-intro { padding-bottom:78px; }
+  .buy-decor-left { top:229px; width:150px; height:202px; }
+  .buy-decor-right { top:761px; width:175px; height:230px; }
+
+  .media-page { padding-top:148px; }
+  .media-page > h1 { font-size:44px; line-height:44px; }
+  .media-lead { width:500px; }
+  .media-page::before { top:168px; width:150px; height:202px; }
+  .media-grid { margin-top:42px; grid-template-columns:1fr; gap:55px; }
+  .media-card-image { aspect-ratio:600/463; }
+  .media-card h2 { margin-top:20px; }
+
+  .legal-page,.legal-page-oferta { padding-top:325px; }
+  .legal-page::before { top:163px; width:150px; height:202px; }
+  .legal-breadcrumb { top:149px; }
+  .legal-page > h1 { top:189px; font-size:44px; line-height:44px; }
+  .legal-content { font-size:16px; line-height:24.8px; }
+
+  .product-detail-page { padding:120px 0 90px; }
+  .product-detail-hero { width:600px; display:block; }
+  .product-detail-image { width:600px; aspect-ratio:560/745; }
+  .product-detail-summary { padding:25px 10px 0; }
+  .product-detail-summary h1,.product-detail-copy { width:580px; }
+  .product-detail-buy { width:580px; gap:4px; }
+  body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button { width:196px !important; }
+  .product-detail-copy { font-size:16px; line-height:24px; }
+  .product-detail-accordions { width:600px; margin-top:65px; }
+  .product-related { width:600px; }
 }

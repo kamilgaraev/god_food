@@ -236,6 +236,16 @@ function theobroma_cart_count_fragment(array $fragments): array {
 }
 add_filter('woocommerce_add_to_cart_fragments', 'theobroma_cart_count_fragment');
 
+function theobroma_frontend_product_title(string $title, int $post_id): string {
+    if (is_admin() || get_post_type($post_id) !== 'product') {
+        return $title;
+    }
+
+    $title = mb_strtoupper($title, 'UTF-8');
+    return (string) preg_replace('/Г$/u', 'г', $title);
+}
+add_filter('the_title', 'theobroma_frontend_product_title', 10, 2);
+
 function theobroma_handle_contact_request(): void {
     check_admin_referer('theobroma_contact', 'theobroma_contact_nonce');
     $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
