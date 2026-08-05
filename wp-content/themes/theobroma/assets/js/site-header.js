@@ -6,6 +6,66 @@
     updateHeader();
     window.addEventListener('scroll', updateHeader, { passive: true });
 
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const menuClose = document.querySelector('.mobile-menu-close');
+
+    const setMenuOpen = (open) => {
+        if (!menuToggle || !mobileMenu) {
+            return;
+        }
+        document.body.classList.toggle('mobile-menu-open', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+        mobileMenu.setAttribute('aria-hidden', String(!open));
+        (open ? menuClose : menuToggle)?.focus({ preventScroll: true });
+    };
+
+    menuToggle?.addEventListener('click', () => setMenuOpen(true));
+    menuClose?.addEventListener('click', () => setMenuOpen(false));
+    mobileMenu?.addEventListener('click', (event) => {
+        if (event.target === mobileMenu || event.target.closest('a')) {
+            setMenuOpen(false);
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && document.body.classList.contains('mobile-menu-open')) {
+            setMenuOpen(false);
+        }
+    });
+
+    const revealTargets = document.querySelectorAll([
+        '#catalog .section-heading h2',
+        '#catalog .product',
+        '.about-award',
+        '.story',
+        '.value',
+        '.reviews .section-heading h2',
+        '.review',
+        '.contact-card h2',
+        '.recipe-card',
+        '.market-product',
+        '.media-card'
+    ].join(','));
+
+    if (revealTargets.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        revealTargets.forEach((element, index) => {
+            element.classList.add('reveal-item');
+            element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`);
+        });
+        document.documentElement.classList.add('reveal-ready');
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+
+        revealTargets.forEach((element) => revealObserver.observe(element));
+    }
+
     const reviewGrid = document.querySelector('.review-grid');
     const reviewButtons = document.querySelectorAll('[data-review-direction]');
     let reviewOffset = 0;
