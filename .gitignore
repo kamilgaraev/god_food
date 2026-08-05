@@ -1,0 +1,25 @@
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# Local runtime data and backups
+backups/
+*.sql
+*.sql.gz
+*.log
+
+# Codex / browser artifacts
+.codebase-memory/
+.playwright-cli/
+output/
+
+# Visual comparison artifacts kept only in the local workspace
+/*.png
+/a.href*
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

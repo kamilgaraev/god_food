@@ -1,0 +1,506 @@
+/*
+Theme Name: Theobroma
+Theme URI: http://localhost:8080
+Author: Theobroma team
+Description: Custom storefront theme for natural chocolate.
+Version: 1.0.0
+Text Domain: theobroma
+*/
+
+@font-face { font-family:'Cormorant'; src:url('assets/fonts/cormorant-cyrillic-variable.woff2') format('woff2'); font-style:normal; font-weight:300 700; font-display:block; unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Cormorant'; src:url('assets/fonts/cormorant-latin-variable.woff2') format('woff2'); font-style:normal; font-weight:300 700; font-display:block; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Montserrat'; src:url('assets/fonts/montserrat-cyrillic.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:block; unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Montserrat'; src:url('assets/fonts/montserrat-latin.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:block; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+:root { --ink:#241d19; --paper:#fcf9f7; --cream:#f3ebe4; --gold:#b0903d; --line:#dfd2c3; --muted:#766c64; }
+* { box-sizing:border-box; }
+html { overflow-x:hidden; scroll-behavior:smooth; }
+body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:'Montserrat', Arial, sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+a { color:inherit; text-decoration:none; }
+img { display:block; max-width:100%; }
+.home > main { position:relative; }.home-decor { position:absolute; z-index:4; inset:0; overflow:hidden; pointer-events:none; }.home-decor i { position:absolute; display:block; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }.home-decor i:nth-child(1) { top:590px; right:0; width:275px; height:347.5px; background-image:url('assets/images/botanical-home-right.webp'); }.home-decor i:nth-child(2) { top:1280.640625px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-home-left.webp'); }.home-decor i:nth-child(3) { top:1831.640625px; right:0; width:212px; height:413px; background-image:url('assets/images/botanical-home-right-tall.webp'); }.home-decor i:nth-child(4) { top:2480.640625px; left:0; width:185px; height:366.65625px; background-image:url('assets/images/botanical-home-left-tall.webp'); }
+html.fonts-loading .shipping span,
+html.fonts-loading .nav-links,
+html.fonts-loading .hero h1,
+html.fonts-loading .hero p,
+html.fonts-loading .hero .button { visibility:hidden; }
+.site-header { position:relative; z-index:20; height:51px; background:transparent; }
+.shipping { min-height:51px; position:relative; color:white; background:var(--gold); }
+.shipping img { position:absolute; top:10.234px; left:calc(50vw - 180.75px); width:30.719px; height:30.719px; object-fit:contain; }
+.shipping span { position:absolute; top:6px; left:calc(29.291154vw - 75.891px); width:211.144px; white-space:nowrap; font:400 11px/17px 'Montserrat',Arial,sans-serif; letter-spacing:normal; zoom:1.707; }
+.nav { position:absolute; top:51px; left:50vw; width:min(1280px,calc(100vw - 150px)); min-height:112px; transform:translateX(-50%); padding:0; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:34px; }
+.nav-links { position:relative; display:flex; font:400 16px/25px 'Montserrat',Arial,sans-serif; color:#000; white-space:nowrap; }
+.nav-links:first-child { gap:65px; transform:translate(60px,-9.5px); }
+.nav-links:last-child { justify-content:flex-end; gap:46px; transform:translate(-60px,-8.5px); }
+.nav-links:first-child a:nth-child(2) { transform:translateX(-.09375px); }.nav-links:first-child a:nth-child(3) { transform:translateX(.125px); }
+.nav-links:last-child a:nth-child(1) { transform:translateX(.125px); }.nav-links:last-child a:nth-child(2) { transform:translateX(.71875px); }.nav-links:last-child a:nth-child(3) { transform:translateX(-.125px); }
+.brand { width:210px; height:88.33px; transform:translateY(-2px); text-align:center; }
+.brand img { width:210px; height:88.33px; }
+.nav-action { color:var(--gold); font:700 11px/1 Arial,sans-serif; }
+.nav-sticky .nav { position:fixed; top:0; left:0; width:100%; min-height:107px; transform:none; padding-inline:max(75px,calc((100vw - 1280px)/2)); background:#f3ebe4; }
+.nav-sticky .nav-links:first-child { transform:translate(60px,-7px); }
+.nav-sticky .nav-links:last-child { transform:translate(-60px,-6px); }
+.nav-sticky .brand { transform:translateY(.672px); }
+.nav-sticky .floating-actions { top:110px; }
+.floating-actions { position:fixed; z-index:30; top:74px; right:0; display:grid; gap:6px; }.floating-actions a { width:87px; height:50px; padding-left:15px; display:flex; align-items:center; justify-content:flex-start; gap:9px; color:white; background:var(--gold); font:400 14px/14px 'Montserrat',Arial,sans-serif; }.floating-actions a:hover { background:#99741e; }
+.floating-actions img { width:26px; height:22px; object-fit:contain; }.floating-actions a:last-child { padding-left:17px; gap:10px; }.floating-actions a:last-child img { width:22px; }.floating-actions a:last-child span { position:relative; top:2px; }
+.hero { min-height:650px; overflow:hidden; position:relative; background:#fff; }
+.hero::after { content:''; position:absolute; z-index:0; inset:0; background:url('assets/images/hero-bg-original.jpg') center/cover no-repeat; opacity:.3; }
+.hero::before { content:''; position:absolute; z-index:1; width:458px; height:573px; left:calc(50vw + 63px); top:77px; background:url('assets/images/hero-chocolate-original.webp') center/contain no-repeat; }
+.hero-inner { width:1160px; height:650px; margin:0; padding:0; position:relative; left:calc(50vw - 580px); z-index:2; }
+.eyebrow { color:var(--gold); font:700 11px/1 Arial,sans-serif; text-transform:uppercase; letter-spacing:.13em; }
+h1,h2,.value h3,.footer-grid h3,.review strong { color:#000; font-family:'Cormorant', Arial, sans-serif; }
+h1 { position:absolute; top:171px; left:0; width:560px; margin:0; font:400 75px/75px 'Cormorant',Arial,sans-serif; text-transform:uppercase; letter-spacing:normal; }
+h1 span { display:block; height:71px; } h1 span:nth-child(2) { margin-left:50px; }
+.hero p { position:absolute; top:408px; left:0; width:560px; margin:0; color:#343434; font:400 18px/28px 'Montserrat',Arial,sans-serif; letter-spacing:normal; }
+.hero .button { position:absolute; top:476px; left:0; width:220px; min-height:42px; margin:0; font-size:16px; line-height:24.8px; }
+.button { display:inline-flex; justify-content:center; align-items:center; min-width:148px; min-height:42px; padding:0 24px; border:0; border-radius:999px; color:white; background:var(--gold); font:500 11px/1 'Montserrat',Arial,sans-serif; margin-top:14px; transition:transform .2s ease,background .2s ease; }
+.button:hover { background:#98731d; transform:translateY(-2px); }
+.section { max-width:1240px; margin:auto; padding:92px 28px; }
+.section-heading { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:32px; }
+h2 { margin:0; font-size:clamp(31px,4vw,54px); line-height:.94; font-weight:400; letter-spacing:-.045em; text-transform:uppercase; }
+.section-note { max-width:260px; color:var(--muted); font:13px/1.5 Arial,sans-serif; }
+#catalog { max-width:none; height:807px; padding:0; position:relative; overflow:hidden; }
+#catalog::before,#catalog::after,.feature::before,.reviews::before { content:none; }
+#catalog::before { top:-60px; right:0; width:275px; height:347.5px; background-image:url('assets/images/botanical-home-right.webp'); }
+#catalog::after { top:630.640625px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-home-left.webp'); }
+#catalog .section-heading { width:1160px; height:202px; margin:0; left:calc(50vw - 580px); display:block; position:relative; z-index:1; }
+#catalog .section-heading h2 { position:relative; top:100px; width:671px; margin:0 auto; font:400 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; white-space:nowrap; text-align:center; }
+#catalog .section-heading h2 em { color:var(--gold); font-weight:400; }
+#catalog .section-note { display:none; }
+.products { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+#catalog .products { width:1160px; height:463px; margin:0; position:relative; left:calc(50vw - 580px); grid-template-columns:repeat(4,260px); gap:40px; }
+#catalog > p { height:142px; margin:0; display:flex; justify-content:center; align-items:center; }
+#catalog > p .button { width:220px; margin:0; font:500 16px/24.8px 'Montserrat',Arial,sans-serif; }
+.product { position:relative; }
+.product-image { height:325px; overflow:hidden; position:relative; background:center/cover no-repeat; }
+.product-image::after { content:'♡'; position:absolute; top:10px; right:10px; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:#b8902f; background:#fff; font:25px/1 Arial,sans-serif; }
+.product:nth-child(1) .product-image { background-image:url('assets/images/product-68.webp'); }
+.product:nth-child(2) .product-image { background-image:url('assets/images/product-59.webp'); }
+.product:nth-child(3) .product-image { background-image:url('assets/images/product-65.webp'); }
+.product:nth-child(4) .product-image { background-image:url('assets/images/product-milk.webp'); }
+.product-image img { width:88%; height:88%; object-fit:contain; mix-blend-mode:multiply; transition:transform .35s ease; }
+.product:hover img { transform:scale(1.04); }
+.product h3 { margin:20px 0 8px; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }.product-unit { text-transform:lowercase; }
+.product p { margin:0; color:#343434; font:400 14px/21.7px 'Montserrat',Arial,sans-serif; }
+.price { display:block; margin-top:13px; color:var(--gold); font:500 18px/24.3px 'Montserrat',Arial,sans-serif; }
+.feature { height:585px; position:relative; background:var(--paper); overflow:hidden; }
+.feature::before { top:374.640625px; right:0; width:212px; height:413px; background-image:url('assets/images/botanical-home-right-tall.webp'); }
+.about-stage { width:1160px; height:585px; margin:0; position:relative; top:-.359375px; left:calc(50vw - 580px); }
+.about-award { position:absolute; top:53px; left:135px; width:235px; height:230px; object-fit:contain; will-change:transform; }
+.story { position:absolute; top:50px; left:600px; width:560px; height:235px; padding:0; background:#f3ebe4; text-align:center; }
+.story h2 { position:absolute; top:40px; left:53px; width:453px; margin:0; color:#000; font:400 26px/31px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.story h2 em { color:var(--gold); font-weight:400; }
+.story p { position:absolute; top:123px; left:65px; width:429px; margin:0; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.values { position:absolute; top:325px; left:0; width:1160px; display:grid; grid-template-columns:repeat(3,360px); gap:40px; }
+.value { height:210px; padding:30px; position:relative; background:#f3ebe4; }
+.value img { position:absolute; right:20px; top:100px; width:96px; height:96px; object-fit:contain; opacity:.1; }
+.value:nth-child(1) img { right:20px; top:106px; width:84px; height:84px; }.value:nth-child(2) img { right:14px; top:99px; }.value:nth-child(3) img { right:15px; top:99px; width:94px; height:94px; }
+.value > div { width:295px; }
+.value h3 { width:252px; margin:0 0 12px; color:#000; font:500 26px/31px 'Cormorant',Arial,sans-serif; text-transform:uppercase; opacity:.9; }
+.value p { max-width:295px; margin:0 0 6px; color:#343434; font:14px/18px 'Montserrat',Arial,sans-serif; }
+.value:nth-child(2) h3,.value:nth-child(3) h3 { transform:translateX(1px); }
+.value:nth-child(1) p:first-of-type { width:218px; transform:translateX(-1px); }
+.value:nth-child(1) p + p { width:229px; margin-top:9px; transform:translateX(-1px); }
+.value:nth-child(3) p { width:236px; }
+.reviews { height:691px; position:relative; background:var(--paper); overflow:hidden; }
+.reviews::before { top:438.640625px; left:0; width:185px; height:366.65625px; background-image:url('assets/images/botanical-home-left-tall.webp'); }
+.reviews-stage { width:1160px; height:691px; margin:0; position:relative; top:-.359375px; left:calc(50vw - 580px); }
+.reviews .section-heading { height:127px; margin:0; display:block; }
+.reviews .section-heading h2 { position:relative; top:50px; left:154px; width:853px; margin:0; font:400 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; white-space:nowrap; text-align:center; }
+.reviews .section-heading h2 em { color:var(--gold); font-weight:400; }
+.review-controls { position:absolute; z-index:2; top:55px; right:0; display:flex; gap:20px; }
+.review-controls button { width:40px; height:40px; padding:0; border:0; color:transparent; background:url('assets/images/review-arrow.svg') center/40px 40px no-repeat; font-size:0; cursor:pointer; }.review-controls button:last-child { transform:rotate(180deg); }
+.review-grid { height:397px; display:grid; grid-template-columns:repeat(7,260px); gap:40px; transition:transform .35s ease; }
+.review { height:347px; margin-top:25px; padding:30px 29px; position:relative; background:#f3ebe4; }
+.review p { width:198px; margin:0; color:#343434; font:14px/18px 'Montserrat',Arial,sans-serif; }
+.review time { display:block; margin-top:12px; color:#343434; font:12px/16px 'Montserrat',Arial,sans-serif; opacity:.5; }
+.review strong { position:absolute; left:29px; bottom:30px; color:#000; font:500 26px/31px 'Cormorant',Arial,sans-serif; text-transform:uppercase; opacity:.9; }
+.review:nth-child(n+3) { padding-left:28px; }.review:nth-child(n+3) strong { left:28px; }.review:nth-child(3) p { width:204px; }
+.review::after { content:'“'; position:absolute; right:28px; bottom:12px; color:#e0d1ad; font:700 50px/1 Georgia,serif; }
+.reviews-button { height:167px; display:flex; justify-content:center; align-items:flex-start; }
+.reviews-button .button { width:220px; margin-top:25px; font:500 16px/24.8px 'Montserrat',Arial,sans-serif; }
+.contact { height:457px; position:relative; background:#fbf7f2 url('assets/images/contact-bg-original.webp') center/cover no-repeat; overflow:hidden; }
+.contact .section { max-width:none; height:457px; margin:0; padding:145px 0 0; position:relative; top:-.359375px; }
+.contact-card { width:720px; margin:0; position:relative; left:calc(50vw - 360px); }
+.contact-card h2 { position:absolute; top:-95px; left:0; width:720px; margin:0; color:#000; font:400 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; white-space:nowrap; text-align:center; text-transform:uppercase; }
+.contact-card h2 em { color:var(--gold); font-weight:400; }
+.form-grid { display:grid; grid-template-columns:repeat(2,352.5px); gap:28px 15px; }
+.form-grid > input,.phone-field input { width:100%; height:52px; padding:0 20px; border:0; appearance:none; background:#efe5d9; color:#000; font:400 12px/15.96px 'Montserrat',Arial,sans-serif; }
+.form-grid > input,.phone-field { box-shadow:inset 0 -1px #b0903d; }
+.message-field { grid-column:1/-1; }
+.phone-field { height:52px; position:relative; background:#efe5d9; }.phone-field input { position:absolute; top:0; right:20px; width:251.641px; padding:0; background:transparent; }.phone-flag { position:absolute; top:19.5px; left:20px; width:18px; height:13px; background:linear-gradient(to bottom,#fff 0 33.333%,#1351b4 33.333% 66.666%,#d52b1e 66.666%); }.phone-triangle { position:absolute; top:23.5px; left:44px; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid #343434; }.phone-code { position:absolute; top:18.016px; left:62px; font:400 12px/15.96px 'Montserrat',Arial,sans-serif; }
+.form-message { padding:12px 16px; color:#5d4e22; background:#f6eee5; font:13px 'Montserrat',Arial,sans-serif; }
+.form-grid input::placeholder { color:#000; opacity:.5; }
+.consent { height:20px; margin-top:28px; position:relative; display:flex; align-items:center; gap:10px; color:#7a7a7a; font:400 12px/14.4px 'Montserrat',Arial,sans-serif; }
+.consent::before { content:""; box-sizing:border-box; flex:0 0 20px; width:20px; height:20px; border:2px solid #777; opacity:.6; }
+.consent input { position:absolute; z-index:1; top:5.796875px; left:4px; width:13px; height:13px; margin:0; opacity:0; }
+.consent:has(input:checked)::after { content:""; position:absolute; left:6px; top:5px; width:8px; height:4px; border:solid #777; border-width:0 0 2px 2px; transform:rotate(-45deg); }
+.consent a { color:#777; text-decoration:none; border-bottom:1px solid #777; }
+.form-submit { text-align:center; }
+.contact .form-submit { margin:40px 0 0; }.contact .button { width:220px; min-height:42px; margin:0; font:500 16px 'Montserrat',Arial,sans-serif; text-transform:none; }
+.site-footer { height:802px; padding:0; position:relative; background:#fcf9f7; overflow:hidden; }
+.footer-shell { width:1160px; height:650px; margin:0; position:relative; top:-.359375px; left:calc(50vw - 580px); }
+.footer-shell > * { position:absolute; width:360px; }
+.footer-map { left:0; top:122px; }
+.footer-logo { left:400px; top:100px; }
+.footer-phones { left:800px; top:308px; }
+.footer-address { left:0; top:307px; }
+.footer-media { left:400px; top:333px; }
+.footer-mail:nth-of-type(6) { left:0; top:490px; }
+.footer-mail:nth-of-type(7) { left:400px; top:490px; }
+.footer-mail:nth-of-type(8) { left:800px; top:490px; }
+.footer-map { display:grid; grid-template-columns:105px 1fr; gap:6px 36px; align-items:start; }
+.footer-map h3 { grid-column:1/-1; margin:0 0 9px; color:#000; font:400 26px/31px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.footer-map ul { margin:0; padding:0; list-style:none; color:#343434; font:14px/18px 'Montserrat',Arial,sans-serif; }.footer-map li + li { margin-top:10px; }
+.footer-logo { text-align:center; }.footer-logo img { width:180px; height:75.422px; margin:auto; }
+.footer-phones { height:147px; border-radius:20px; background:#f3ebe4; text-align:center; }.footer-phones img { position:absolute; height:25px; }.footer-phones img:first-child { top:38px; left:56px; width:232px; }.footer-phones img:last-child { top:83px; left:55px; width:234px; }.footer-phones span { position:absolute; left:0; width:100%; color:#000; font:400 32px/32px 'Cormorant',Arial,sans-serif; }.footer-phones span:first-child { top:34px; }.footer-phones span:last-child { top:79px; }
+.footer-phones strong { font:400 26px/1.24 'Cormorant',Arial,sans-serif; }
+.footer-card { height:147px; padding:0; position:absolute; border-radius:20px; background:#f3ebe4; text-align:center; }
+.footer-address { padding:14px 26px 13px 25px; color:#000; font:500 25px/30px 'Cormorant',Arial,sans-serif; opacity:.9; }
+.footer-media { text-align:center; font:11px 'Montserrat',Arial,sans-serif; color:var(--gold); }.social-icons { display:flex; justify-content:center; gap:10px; }.social-icons a,.social-icons img { width:40px; height:40px; }
+.site-footer .footer-media-button { width:190px; height:38px; margin:20px auto 0; padding:0 24px; display:flex; align-items:center; justify-content:center; border:0; border-radius:999px; color:#fff; background:#b0903d; font:400 14px/21px 'Montserrat',Arial,sans-serif; text-decoration:none; }
+.site-footer .footer-media-button:hover,.site-footer .footer-media-button:focus-visible { color:#fff; background:#98731d; }
+.footer-mail::before { content:''; position:absolute; top:12px; left:170px; width:20px; height:20px; background:url('assets/images/envelope.svg') center/contain no-repeat; opacity:.5; }
+.footer-mail strong { position:absolute; top:39px; display:block; width:max-content; color:#000; font:500 26px/31px 'Cormorant',Arial,sans-serif; text-align:left; opacity:.9; }.footer-mail small { position:absolute; top:83px; display:block; color:#343434; font:14px/18px 'Montserrat',Arial,sans-serif; text-align:left; opacity:.7; }
+.footer-mail:nth-of-type(6) strong { left:60px; }.footer-mail:nth-of-type(6) small { left:71px; width:229px; }
+.footer-mail:nth-of-type(7)::before { top:11px; }.footer-mail:nth-of-type(7) strong { left:60px; }.footer-mail:nth-of-type(7) small { top:92px; left:69px; width:246px; }
+.footer-mail:nth-of-type(8)::before { top:10px; }.footer-mail:nth-of-type(8) strong { top:37px; left:53px; }.footer-mail:nth-of-type(8) small { top:90px; left:53px; width:276px; }
+.copyright { position:absolute; left:calc(50vw - 580px); top:651.640625px; width:1160px; display:grid; grid-template-columns:360px 360px 360px; gap:40px; color:#343434; font:11px/17px 'Montserrat',Arial,sans-serif; opacity:.7; }.copyright span:nth-child(3) { text-align:left; line-height:19px; }
+.shop-page { min-height:600px; background:var(--paper); }.shop-shell { width:min(1180px,100%); margin:auto; padding:80px 28px; }.shop-shell .woocommerce-products-header__title,.shop-shell .entry-title { font:400 52px/.9 'Cormorant',Arial,sans-serif; text-transform:uppercase; }.shop-shell ul.products { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; padding:0; }.shop-shell ul.products li.product { width:auto; margin:0; float:none; }.shop-shell ul.products li.product img { background:#f1e8de; }.shop-shell .button { background:var(--gold); border-radius:999px; }.shop-shell .price { color:var(--gold); }.shop-shell .woocommerce-message { border-top-color:var(--gold); }.shop-shell .woocommerce-message::before { color:var(--gold); }
+.woocommerce-cart .shop-page { min-height:805px; }
+.woocommerce-cart .shop-shell { padding-top:145px; }
+.woocommerce-cart .wc-block-cart__submit-button,
+.woocommerce-checkout .wc-block-components-checkout-place-order-button,
+.woocommerce-account .woocommerce-form-login__submit,
+.woocommerce-account .woocommerce-message .button { min-height:42px; border:0; border-radius:999px; color:#fff; background:#b0903d; font:500 14px/21px 'Montserrat',Arial,sans-serif; }
+.woocommerce-cart .wc-block-cart__submit-button:hover,
+.woocommerce-checkout .wc-block-components-checkout-place-order-button:hover,
+.woocommerce-account .woocommerce-form-login__submit:hover,
+.woocommerce-account .woocommerce-message .button:hover { color:#fff; background:#98731d; }
+.woocommerce-checkout .shop-page { min-height:1040px; }
+.woocommerce-account .shop-page { min-height:760px; }
+.woocommerce-account .shop-shell { padding-top:145px; }
+.woocommerce-account .woocommerce h2 { margin:0 0 28px; color:#000; font:400 52px/52px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.woocommerce-account .woocommerce-form-login { padding:30px; border:0; border-radius:0; background:#f3ebe4; }
+.woocommerce-account .woocommerce-form-login input[type="text"],
+.woocommerce-account .woocommerce-form-login input[type="password"] { height:52px; padding:0 20px; border:0; border-bottom:1px solid #b0903d; background:#fcf9f7; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.woocommerce-account .woocommerce-form-login button[type="submit"] { min-width:148px; min-height:42px; padding:0 24px; border:0 !important; border-radius:999px !important; color:#fff !important; background:#b0903d !important; font:500 14px/21px 'Montserrat',Arial,sans-serif !important; }
+.catalog-page { min-height:1487px; position:relative; overflow:hidden; }
+.catalog-page::before { content:""; position:absolute; top:48px; right:0; width:250px; height:329.15625px; pointer-events:none; background:url('assets/images/botanical-page-right.webp') center/100% 100% no-repeat; }
+.catalog-page .shop-shell { width:1160px; padding:0; position:relative; }
+.catalog-breadcrumb { padding-top:137px; text-align:center; color:#b0903d; font:400 11px/18px 'Montserrat',Arial,sans-serif; }.catalog-breadcrumb a { color:#9d938a; text-decoration:none; }.catalog-breadcrumb span { margin:0 4px; }.catalog-breadcrumb strong { font-weight:400; }
+.catalog-title { position:static; width:auto; margin:22px 0 50px; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.catalog-filters { height:52px; margin-bottom:65px; display:flex; justify-content:center; gap:20px; }.catalog-filters a { width:180px; height:52px; display:flex; align-items:center; justify-content:center; border-radius:30px; color:#776f68; background:#efe5d9; text-decoration:none; font:400 16px/24px 'Montserrat',Arial,sans-serif; }.catalog-filters a.is-active { color:#fff; background:#b0903d; }
+.catalog-page .woocommerce-products-header,.catalog-page .woocommerce-result-count,.catalog-page .woocommerce-ordering { display:none; }
+.catalog-page h1.page-title { display:none; }
+.catalog-page ul.products { width:1160px; margin:0; display:grid; grid-template-columns:repeat(4,260px); grid-auto-rows:510.609375px; gap:40px; }
+.catalog-page ul.products::before,.catalog-page ul.products::after { display:none; }
+.catalog-page ul.products li.product { width:260px; height:510.609375px; margin:0; float:none; }
+.catalog-page.catalog-group-chocolate-30g { min-height:1972.765625px; }
+.catalog-page.catalog-group-chocolate-30g ul.products { grid-auto-rows:488.921875px; }
+.catalog-page.catalog-group-chocolate-30g ul.products li.product { height:488.921875px; }
+.catalog-page.catalog-group-cacao,
+.catalog-page.catalog-group-chia { min-height:914.921875px; }
+.catalog-page ul.products li.product .woocommerce-loop-product__link { display:block; position:relative; }
+.catalog-page ul.products li.product .woocommerce-loop-product__link::before { content:""; position:absolute; z-index:2; top:10px; right:10px; width:46px; height:46px; border-radius:50%; background:#fff url('assets/images/heart-gold.svg') center/20px 20px no-repeat; }
+.catalog-page ul.products li.product a img { width:260px; height:325px; margin:0 0 20px; object-fit:cover; background:#eee5db; }
+.catalog-page ul.products li.product .woocommerce-loop-product__title { padding:0; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; text-transform:none; }
+.catalog-page ul.products li.product .catalog-product-description { margin:8px 0 0; color:#343434; font:400 14px/21.7px 'Montserrat',Arial,sans-serif; }
+.catalog-page ul.products li.product .price { display:inline-block; margin:12px 0 0; vertical-align:middle; color:#b0903d; font:500 18px/24.3px 'Montserrat',Arial,sans-serif; }
+.catalog-page ul.products li.product .button { position:absolute; left:0; bottom:8px; width:165.96875px; min-width:165.96875px; min-height:34.96875px; height:34.96875px; margin:0; padding:0; display:flex; align-items:center; justify-content:center; border:0; border-radius:999px; color:#fff; background:#b0903d; font:400 13px/18.2px 'Montserrat',Arial,sans-serif; }
+.media-page { height:1201px; position:relative; overflow:hidden; background:var(--paper); }
+.media-page::before { content:""; position:absolute; top:93px; left:0; width:211px; height:284.390625px; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
+.media-breadcrumb { position:absolute; top:137px; left:0; width:100%; text-align:center; color:#b0903d; font:400 11px/18px 'Montserrat',Arial,sans-serif; }
+.media-breadcrumb a { color:#9d938a; }.media-breadcrumb span { margin:0 4px; }.media-breadcrumb strong { font-weight:400; }
+.media-page > h1 { top:177px; left:0; width:100%; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.media-lead { position:absolute; top:249px; left:0; width:100%; margin:0; text-align:center; color:#343434; font:400 16px/20px 'Montserrat',Arial,sans-serif; }
+.media-grid { position:absolute; top:345px; left:calc(50vw - 580px); width:1160px; display:grid; grid-template-columns:repeat(3,360px); grid-auto-rows:408px; gap:40px; }
+.media-card { width:360px; height:408px; margin:0; }
+.media-card-image { width:360px; height:276.921875px; display:block; overflow:hidden; }
+.media-card-image img { width:360px; height:276.921875px; object-fit:cover; }
+.media-card h2 { width:360px; min-height:37.78125px; margin:0; color:#000; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.media-card p { width:360px; min-height:37.1875px; margin:8px 0 0; color:#000; font:400 12px/18.6px 'Montserrat',Arial,sans-serif; }
+.media-card time { display:block; margin-top:15px; color:#414141; font:400 10px/13px 'Montserrat',Arial,sans-serif; }
+.media-article-view { min-width:1180px; background:#fff; color:#191919; }
+.media-article-header { height:56px; position:relative; border-bottom:1px solid #ddd; background:#fff; }
+.media-article-header span { position:absolute; top:22px; left:50%; transform:translateX(-50%); color:#363636; font:400 10px/12px 'Cormorant',Arial,sans-serif; }
+.media-article-back { position:absolute; top:6px; left:18px; width:32px; height:40px; color:#252525; font:400 43px/38px Arial,sans-serif; transform:scaleX(.58); transform-origin:left center; }
+.media-article { width:760px; margin:0 auto; padding:39px 0 94px; }
+.media-article h1 { position:static; width:760px; height:auto; margin:0 0 32px; color:#191919; font:400 34px/44px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.media-article figure { width:760px; margin:0 0 29px; }
+.media-article figure img { width:760px; height:auto; }
+.media-article-copy { width:760px; color:#282828; font:400 18px/25px 'Montserrat',Arial,sans-serif; }
+.media-article-copy p { margin:0; }
+.media-article-source { display:inline-block; margin-top:45px; color:#ff8066; font:400 17px/22px 'Montserrat',Arial,sans-serif; }
+.media-article time { display:block; margin-top:62px; color:#999; font:400 7px/10px 'Montserrat',Arial,sans-serif; letter-spacing:.2em; }
+.legal-page { min-height:651px; padding:339px 0 6px; position:relative; background:var(--paper); }
+.legal-page-oferta { padding-top:287px; }
+.legal-page::before { content:""; position:absolute; top:93px; left:0; width:211px; height:284.390625px; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
+.legal-breadcrumb { position:absolute; top:137px; left:0; width:100%; text-align:center; color:#b0903d; font:400 11px/18px 'Montserrat',Arial,sans-serif; }
+.legal-breadcrumb a { color:#9d938a; }.legal-breadcrumb span { margin:0 4px; }.legal-breadcrumb strong { font-weight:400; }
+.legal-page > h1 { top:177px; left:calc(50vw - 528.5px); width:1057px; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.legal-content { width:1160px; margin:0 auto; color:#343434; font:400 16px/24.8px 'Montserrat',Arial,sans-serif; }
+.legal-content p { margin:0; }
+.page-title { margin:0 0 42px; font-size:58px; }.shop-shell > p,.shop-shell .wp-block-paragraph { max-width:760px; color:#5f564f; font:15px/1.7 'Montserrat',Arial,sans-serif; }.shop-shell .wp-block-heading { font:400 31px/1 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.recipes-page { background:var(--paper); }
+.recipes-intro { min-height:808px; position:relative; overflow:hidden; }
+.recipes-intro::before { content:""; position:absolute; top:192px; left:0; width:211px; height:284.390625px; background:url('assets/images/botanical-home-left.webp') center/100% 100% no-repeat; pointer-events:none; }
+.recipes-breadcrumb { padding-top:137px; text-align:center; color:#b0903d; font:400 11px/18px 'Montserrat',Arial,sans-serif; }.recipes-breadcrumb a { color:#9d938a; text-decoration:none; }.recipes-breadcrumb span { margin:0 4px; }.recipes-breadcrumb strong { font-weight:400; }
+.recipes-intro > h1 { position:static; width:auto; margin:22px 0 20px; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }.recipes-intro > h1 em { color:#b0903d; font-weight:500; }
+.recipes-lead { margin:0; text-align:center; color:#343434; font:400 16px/20px 'Montserrat',Arial,sans-serif; }
+.recipe-grid { width:1160px; margin:56px auto 0; display:grid; grid-template-columns:repeat(3,360px); gap:40px; }
+.recipe-card { height:363px; padding:29px 30px 0; display:block; color:#000; background:#f3ebe4; text-decoration:none; text-align:center; }
+.recipe-card h2 { height:81px; margin:0; font:500 26px/30px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.recipe-image { width:300px; height:167px; display:block; position:relative; background-position:center; background-size:cover; }.recipe-image-classic { background-image:url('assets/images/recipe-classic.jpg'); }.recipe-image-marshmallow { background-image:url('assets/images/recipe-marshmallow.jpg'); }.recipe-image-banana { background-image:url('assets/images/recipe-banana.jpg'); }
+.recipe-image b { position:absolute; top:10px; left:10px; padding:6px 12px; color:#fff; background:#b0903d; font:500 11px/14px 'Montserrat',Arial,sans-serif; text-transform:none; }
+.recipe-card p { margin:21px 0 0; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.recipes-page .contact { position:relative; }.recipes-page .contact::after { content:""; position:absolute; z-index:2; top:240px; right:0; width:275px; height:347.5px; pointer-events:none; background:url('assets/images/botanical-home-right.webp') center/100% 100% no-repeat; }
+.marketplace-page { background:var(--paper); }.marketplace-intro { height:922px; position:relative; z-index:1; overflow:visible; }
+.marketplace-intro::before,.marketplace-intro::after { content:""; position:absolute; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }.marketplace-intro::before { top:80px; right:0; width:250px; height:329.15625px; background-image:url('assets/images/botanical-page-right.webp'); }.marketplace-intro::after { top:700px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-page-left.webp'); }
+.marketplace-breadcrumb { padding-top:137px; text-align:center; color:#b0903d; font:400 11px/18px 'Montserrat',Arial,sans-serif; }.marketplace-breadcrumb a { color:#9d938a; text-decoration:none; }.marketplace-breadcrumb span { margin:0 4px; }.marketplace-breadcrumb strong { font-weight:400; }
+.marketplace-intro > h1 { position:static; width:auto; margin:22px 0 20px; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }.marketplace-lead { margin:0; text-align:center; color:#343434; font:400 16px/20px 'Montserrat',Arial,sans-serif; }
+.market-grid { width:1160px; margin:57px auto 0; display:grid; grid-template-columns:repeat(4,260px); gap:40px; }.market-product { color:#343434; }.market-image { width:260px; height:300px; display:block; background-position:center; background-size:cover; }.market-cacao { background-image:url('assets/images/market-cacao.jpg'); }.market-dark { background-image:url('assets/images/market-dark.webp'); }.market-cinnamon { background-image:url('assets/images/market-cinnamon.webp'); }.market-milk { background-image:url('assets/images/market-milk.webp'); }
+.market-product h2 { margin:14px 0 3px; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }.market-product p { margin:0; color:#343434; font:400 14px/21.7px 'Montserrat',Arial,sans-serif; }.market-product strong { display:block; margin-top:7px; color:#b0903d; font:500 18px/24.3px 'Montserrat',Arial,sans-serif; }
+.market-buttons { margin-top:48px; display:flex; justify-content:center; gap:10px; }.market-buttons a { width:240px; height:42px; display:flex; justify-content:center; align-items:center; border-radius:24px; color:#fff; text-decoration:none; font:500 14px/18px 'Montserrat',Arial,sans-serif; }.market-wb { background:#a62cff; }.market-ozon { background:#0069ff; }
+.buy-page { background:var(--paper); }
+.buy-intro { height:859px; position:relative; overflow:visible; }
+.buy-breadcrumb { padding-top:137px; text-align:center; color:#b0903d; font:400 14px/22px 'Montserrat',Arial,sans-serif; }
+.buy-breadcrumb a { color:rgba(52,52,52,.7); text-decoration:none; }.buy-breadcrumb span { margin:0 6px; }.buy-breadcrumb strong { font-weight:500; }
+.buy-intro > h1 { position:static; width:auto; margin:18px 0 0; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.buy-intro > h1 em { color:#b0903d; font-weight:500; }
+.buy-lead { margin:20px 0 0; text-align:center; color:#343434; font:400 18px/23px 'Montserrat',Arial,sans-serif; }
+.buy-tabs { width:500px; height:58px; margin:29px auto 0; display:grid; grid-template-columns:repeat(3,1fr); align-items:start; border-bottom:1px solid #e0cfb8; }
+.buy-tabs a { height:58px; padding-top:21px; text-align:center; color:#000; font:400 14px/22px 'Montserrat',Arial,sans-serif; text-decoration:none; }
+.buy-location { width:560px; height:350px; margin:50px 0 0 calc(50vw - 580px); padding:20px; position:relative; background:#f3ebe4; }
+.buy-location img { width:520px; height:240px; object-fit:cover; object-position:50% 85.168%; transform:translateX(-1px); }
+.buy-location h2 { margin:10px 0 0; color:#000; font:500 26px/30px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.buy-location p { margin:12px 0 0; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.buy-location .button { position:absolute; right:20px; bottom:32px; width:200px; min-height:36px; height:36px; margin:0; font:500 14px/21.7px 'Montserrat',Arial,sans-serif; }
+.buy-decor { position:absolute; z-index:2; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }
+.buy-decor-left { top:120px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-buy-left.webp'); }
+.buy-decor-right { top:659px; right:0; width:250px; height:329.15625px; background-image:url('assets/images/botanical-page-right.webp'); }
+.cooperation-page { height:1524px; position:relative; background:var(--paper); overflow:visible; }
+.cooperation-breadcrumb { position:absolute; top:137px; left:0; width:100%; text-align:center; color:#b0903d; font:400 14px/22px 'Montserrat',Arial,sans-serif; }
+.cooperation-breadcrumb a { color:rgba(52,52,52,.7); }.cooperation-breadcrumb span { margin:0 6px; }.cooperation-breadcrumb strong { font-weight:500; }
+.cooperation-page > h1 { top:177px; left:0; width:100%; text-align:center; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.cooperation-lead { position:absolute; top:249px; left:0; width:100%; margin:0; text-align:center; color:#343434; font:400 18px/23px 'Montserrat',Arial,sans-serif; }
+.cooperation-chocolate { position:absolute; top:440px; left:calc(50vw - 450px); width:321px; height:314.328125px; object-fit:contain; }
+.cooperation-form { position:absolute; top:368px; left:calc(50vw + 20px); width:560px; height:458px; }
+.cooperation-form::before { content:''; position:absolute; inset:0; background:url('assets/images/cooperation-form-bg.jpg') 42.192% 0/111.436% auto no-repeat; opacity:.3; }
+.cooperation-form > * { position:relative; z-index:1; }
+.cooperation-form h2 { margin:50px 0 0; text-align:center; color:#000; font:500 26px/26px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.cooperation-form > p { margin:12px 0 0; text-align:center; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.cooperation-form form { position:absolute; top:146px; left:46px; width:480px; }
+.cooperation-form .form-grid { grid-template-columns:repeat(2,232.5px); gap:28px 15px; }
+.cooperation-form .phone-field input { width:131.641px; }
+.cooperation-form .consent { margin-top:18px; }
+.cooperation-form .form-submit { margin:41px 0 0; text-align:center; }
+.cooperation-form .button { width:220px; min-height:42px; margin:0; font:500 16px 'Montserrat',Arial,sans-serif; }
+.cooperation-benefits { position:absolute; top:926px; left:calc(50vw - 580px); width:1160px; }
+.cooperation-benefits > h2 { width:1057px; height:52px; margin:0 auto 51px; text-align:center; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; white-space:nowrap; text-transform:uppercase; }
+.cooperation-benefits > h2 em { color:#b0903d; font-weight:500; }
+.cooperation-benefit-grid { display:grid; grid-template-columns:repeat(2,560px); grid-template-rows:242px 211px; gap:40px; }
+.cooperation-benefit-grid article { padding:30px; position:relative; background:#f3ebe4; }
+.cooperation-benefit-grid article img { position:absolute; top:30px; right:30px; width:42px; height:42px; }
+.cooperation-benefit-grid article:nth-child(2) img,.cooperation-benefit-grid article:nth-child(4) img { top:30px; }
+.cooperation-benefit-grid h3 { margin:0 0 20px; color:#000; font:500 26px/26px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.cooperation-benefit-grid article:nth-child(even) h3 { transform:translateY(5px); }
+.cooperation-benefit-grid article:nth-child(even) ul { transform:translateY(5px); }
+.cooperation-benefit-grid ul { width:470px; margin:0; padding:0; list-style:none; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.cooperation-benefit-grid li { position:relative; padding-left:15px; }.cooperation-benefit-grid li + li { margin-top:8px; }.cooperation-benefit-grid li::before { content:'▪'; position:absolute; left:0; color:#b0903d; }
+.cooperation-decor { position:absolute; z-index:2; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }
+.cooperation-decor-left { top:93px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-page-left.webp'); }
+.cooperation-decor-right { top:650px; right:0; width:250px; height:329.15625px; background-image:url('assets/images/botanical-page-right.webp'); }
+.delivery-page { min-height:805.5625px; padding-top:345px; position:relative; background:var(--paper); }
+.delivery-breadcrumb { position:absolute; top:137px; left:0; width:100%; text-align:center; color:#b0903d; font:400 14px/22px 'Montserrat',Arial,sans-serif; }
+.delivery-breadcrumb a { color:rgba(52,52,52,.7); }.delivery-breadcrumb span { margin:0 6px; }.delivery-breadcrumb strong { font-weight:500; }
+.delivery-page > h1 { top:177px; left:0; width:100%; text-align:center; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.delivery-lead { position:absolute; top:249px; left:0; width:100%; margin:0; text-align:center; color:#343434; font:400 18px/23px 'Montserrat',Arial,sans-serif; }
+.delivery-accordion { width:1160px; margin:0 auto; }
+.delivery-accordion details { margin:0; background:#f3ebe4; }
+.delivery-accordion details + details { margin-top:2px; }
+.delivery-accordion summary { height:75.09375px; padding:20px 30px; display:flex; align-items:flex-start; justify-content:space-between; list-style:none; cursor:pointer; }
+.delivery-accordion summary::-webkit-details-marker { display:none; }
+.delivery-accordion summary span { color:#000; font:500 26px/35.1px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.delivery-accordion summary i { width:24px; height:24px; margin:5.546875px -2px 0 0; position:relative; flex:0 0 24px; background:#b0903d; }
+.delivery-accordion summary i::before,.delivery-accordion summary i::after { content:''; position:absolute; top:11px; left:6px; width:12px; height:2px; background:#fff; }.delivery-accordion summary i::after { transform:rotate(90deg); transition:transform .2s ease; }
+.delivery-accordion details[open] summary i::after { transform:rotate(0); }
+.delivery-answer { padding:0 30px 24px; color:#343434; font:400 14px/21px 'Montserrat',Arial,sans-serif; }
+.delivery-answer p,.delivery-answer ol { margin:0; }.delivery-answer ol { padding-left:20px; }
+.delivery-decor { position:absolute; z-index:2; top:93px; left:0; width:211px; height:284.390625px; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
+.recipe-detail { background:var(--paper); }
+.recipe-detail-intro { height:1721px; position:relative; overflow:hidden; }
+.recipe-detail-long .recipe-detail-intro { height:2117px; }
+.recipe-detail-banana .recipe-detail-intro { height:2033px; }
+.recipe-detail-breadcrumb { position:absolute; top:137px; left:0; width:100%; text-align:center; color:#b0903d; font:400 14px/22px 'Montserrat',Arial,sans-serif; }
+.recipe-detail-breadcrumb a { color:rgba(52,52,52,.7); }.recipe-detail-breadcrumb span { margin:0 6px; }.recipe-detail-breadcrumb strong { font-weight:500; }
+.recipe-detail-intro > h1 { top:177px; left:calc(50vw - 528.5px); width:1057px; text-align:center; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.recipe-detail-intro > h1 em { color:#b0903d; font-weight:500; }
+.recipe-detail-lead { position:absolute; top:249px; left:0; width:100%; margin:0; text-align:center; color:#343434; font:400 18px/23px 'Montserrat',Arial,sans-serif; }
+.recipe-detail-columns { position:absolute; top:322px; left:calc(50vw - 580px); width:1160px; display:grid; grid-template-columns:560px 560px; gap:40px; align-items:start; }
+.recipe-ingredients,.recipe-method { padding:30px; background:#f3ebe4; }
+.recipe-ingredients h2,.recipe-method h2 { margin:0 0 25px; color:#000; font:500 26px/31px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.recipe-ingredients dl { margin:0; }
+.recipe-ingredients dl div { min-height:42.5px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid rgba(176,144,61,.2); color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.recipe-ingredients dl div:last-child { border-bottom:0; }
+.recipe-ingredients dt,.recipe-ingredients dd { margin:0; }
+.recipe-ingredients dd { text-align:right; white-space:nowrap; }
+.recipe-method { height:658px; position:relative; }
+.recipe-detail-long .recipe-method { height:1054px; }
+.recipe-detail-banana .recipe-method { height:970px; }
+.recipe-method ol { margin:0; padding:0; list-style:none; }
+.recipe-method li + li { margin-top:20px; }
+.recipe-method li b { min-width:50px; height:25px; padding:0 9px; display:inline-flex; align-items:center; justify-content:center; color:#fff; background:#b0903d; font:500 12px/18px 'Montserrat',Arial,sans-serif; }
+.recipe-method li p { margin:10px 0 0; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.recipe-method > img { position:absolute; left:30px; bottom:30px; width:500px; height:278px; object-fit:cover; }
+.recipe-product-promo { position:absolute; top:1059px; left:calc(50vw - 580px); width:1160px; height:560px; text-align:center; }
+.recipe-detail-long .recipe-product-promo { top:1455px; }
+.recipe-detail-banana .recipe-product-promo { top:1371px; }
+.recipe-product-promo > h2 { height:52px; margin:0 0 71px; color:#000; font:500 52px/52px 'Cormorant',Arial,sans-serif; letter-spacing:normal; white-space:nowrap; text-transform:uppercase; }
+.recipe-product-promo > h2 em { color:#b0903d; font-weight:500; }
+.recipe-product-grid { display:grid; grid-template-columns:repeat(3,360px); gap:40px; text-align:left; }
+.recipe-product-grid article { position:relative; }
+.recipe-product-grid article:nth-child(2) { transform:translateX(1px); }
+.recipe-product-grid img { width:360px; height:268px; object-fit:cover; }
+.recipe-product-grid p { margin:12px 0 0; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
+.recipe-product-grid strong { display:block; margin-top:5px; color:#b0903d; font:400 18px/24px 'Montserrat',Arial,sans-serif; }
+.recipe-product-promo > .button { width:220px; min-height:42px; margin-top:52px; font:500 16px/24px 'Montserrat',Arial,sans-serif; }
+.recipe-detail-decor { position:absolute; z-index:2; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }
+.recipe-detail-decor-left { top:70px; left:0; width:267px; height:329.609375px; background-image:url('assets/images/botanical-page-left.webp'); }
+.recipe-detail-decor-right { top:980px; right:0; width:224px; height:284.171875px; background-image:url('assets/images/botanical-page-right.webp'); }
+.recipe-detail-long .recipe-detail-decor-right,.recipe-detail-banana .recipe-detail-decor-right { top:1288px; }
+@media (min-width:2049px) {
+  .site-header { height:calc(2.490234375vw - 1px); }
+  .shipping { left:50%; width:2048px; min-height:51px; transform:translateX(-50%) scale(calc(100vw / 2048px)); transform-origin:top center; clip-path:inset(0 0 calc(4096px / 100vw) 0); }
+  .shipping img { left:843.25px; }
+  .shipping span { left:523.991px; }
+  .nav { top:calc(2.490234375vw - 1px); }
+}
+.theobroma-product-view { min-width:1180px; background:#fcf9f7; }
+.product-detail-page { width:100%; min-height:1995px; position:relative; overflow:hidden; background:#fcf9f7; color:#343434; }
+.product-detail-back { position:absolute; top:21px; left:20px; color:#fff; font:400 12px/18px 'Montserrat',Arial,sans-serif; }
+.product-detail-close { position:absolute; z-index:3; top:20px; right:20px; width:30px; height:30px; }
+.product-detail-close::before,.product-detail-close::after { content:''; position:absolute; top:14px; left:2px; width:26px; height:1px; background:#fff; transform:rotate(45deg); }.product-detail-close::after { transform:rotate(-45deg); }
+.product-detail-hero { position:absolute; top:120px; left:calc(50vw - 580px); width:1160px; height:745px; display:grid; grid-template-columns:560px 560px; gap:40px; }
+.product-detail-image { width:560px; height:745px; margin:0; overflow:hidden; background:#f3ebe4; }
+.product-detail-image img { width:560px; height:745px; object-fit:cover; }
+.product-detail-summary { padding:0; position:relative; }
+.product-detail-summary h1 { position:static; width:560px; height:auto; margin:0; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.product-detail-price { margin-top:20.359375px; color:#b0903d; font:500 18px/24.3px 'Cormorant',Arial,sans-serif; }.product-detail-price .amount { color:inherit; }
+.product-detail-buy { height:45px; margin-top:20px; display:flex; align-items:center; gap:8px; }
+.product-detail-buy form.cart { margin:0; display:block; }.product-detail-buy .quantity { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }.product-detail-buy .single_add_to_cart_button { width:206.421875px; height:45px; min-height:45px; margin:0; padding:0; border:0; border-radius:999px; color:#fff; background:#b0903d; font:500 14px/21px 'Montserrat',Arial,sans-serif; }
+body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button { width:206.421875px !important; height:45px !important; min-height:45px !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:999px !important; color:#fff !important; background:#b0903d !important; font:500 14px/21px 'Montserrat',Arial,sans-serif !important; }
+.product-detail-favorite { width:45px; height:45px; padding:0; border:1px solid #e8ddca; border-radius:50%; color:#b0903d; background:#fff; font:400 25px/1 Arial,sans-serif; }
+.product-detail-marketplaces { margin-top:10px; display:flex; gap:10px; }.product-detail-marketplaces a { width:78px; height:45px; display:flex; align-items:center; justify-content:center; border-radius:999px; color:#fff; background:#a52dff; font:500 14px/21px 'Montserrat',Arial,sans-serif; }.product-detail-marketplaces a:last-child { background:#075bff; }
+.product-detail-copy { width:520px; margin-top:24px; color:#343434; font:400 14px/21px 'Montserrat',Arial,sans-serif; }.product-detail-copy p { margin:0 0 20px; }
+.product-detail-accordions { position:absolute; top:925px; left:calc(50vw - 580px); width:1160px; }
+.product-detail-accordions details { border-top:1px solid #343434; }.product-detail-accordions details:last-child { border-bottom:1px solid #343434; }.product-detail-accordions summary { height:61px; padding:20px 0; display:flex; justify-content:space-between; list-style:none; cursor:pointer; font:400 14px/19px 'Cormorant',Arial,sans-serif; }.product-detail-accordions summary::-webkit-details-marker { display:none; }.product-detail-accordions summary i { width:20px; height:20px; position:relative; }.product-detail-accordions summary i::before,.product-detail-accordions summary i::after { content:''; position:absolute; top:9px; left:0; width:20px; height:1px; background:#343434; }.product-detail-accordions summary i::after { transform:rotate(90deg); }.product-detail-accordions details[open] summary i::after { transform:rotate(0); }
+.product-detail-accordions details div { min-height:192px; padding:0 0 20px; color:#343434; font:400 11px/17px 'Cormorant',Arial,sans-serif; }.product-detail-accordions details p { margin:0 0 14px; }
+.product-related { position:absolute; top:1309.34375px; left:calc(50vw - 580px); width:1160px; }
+.product-related > h2 { margin:0 0 39px; color:#343434; font:500 14px/19px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:none; }
+.product-related-grid { display:grid; grid-template-columns:repeat(4,270px); gap:40px; }
+.product-related-grid article { min-height:560px; position:relative; }
+.product-related-image { width:270px; height:337.5px; display:block; position:relative; overflow:hidden; background:#f3ebe4; }.product-related-image img { width:270px; height:337.5px; object-fit:cover; }.product-related-image span { position:absolute; top:10px; right:10px; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:#b0903d; background:#fff; font:24px/1 Arial,sans-serif; }
+.product-related-grid h3 { margin:20px 0 8px; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }.product-related-grid h3 a { color:inherit; }.product-related-grid p { height:22px; margin:0; overflow:hidden; color:#343434; font:400 14px/21px 'Montserrat',Arial,sans-serif; white-space:nowrap; text-overflow:ellipsis; }.product-related-price { margin-top:13px; color:#b0903d; font:400 14px/21px 'Montserrat',Arial,sans-serif; }.product-related-price .amount { color:inherit; }
+.product-related-button { position:absolute; left:0; top:464.75px; width:165.96875px; height:35px; display:flex; align-items:center; justify-content:center; border-radius:999px; color:#fff; background:#b0903d; font:500 13px/18px 'Montserrat',Arial,sans-serif; }
+@media (max-width:800px) { .nav { grid-template-columns:1fr auto; min-height:66px; padding:0 18px; } .nav-links { display:none; } .brand { font-size:31px; } .floating-actions { top:28px; }.floating-actions a { width:30px; height:30px; font-size:13px; }.floating-actions a span { display:none; }.floating-actions img { width:15px; height:15px; } .hero { min-height:590px; align-items:start; } .hero::before { width:85vw; height:210px; right:7%; top:auto; bottom:0; } .hero-inner { padding:58px 22px; top:auto; } .products { grid-template-columns:repeat(2,1fr); } .product-image { height:220px; } .feature { height:auto; } .about-stage { width:auto; height:auto; padding:45px 18px; } .about-award,.story,.values { position:static; width:auto; height:auto; } .about-award { width:190px; margin:0 auto 25px; } .story { padding:30px; } .values { margin-top:18px; grid-template-columns:1fr; gap:12px; } .value { height:auto; min-height:180px; } .reviews { height:auto; } .reviews-stage { width:auto; height:auto; padding:45px 18px; } .reviews .section-heading { height:auto; } .review-grid { height:auto; grid-template-columns:repeat(6,260px); overflow-x:auto; } .review { margin-top:25px; } .reviews-button { height:110px; } .site-footer { height:auto; padding:45px 18px; } .footer-shell { width:auto; height:auto; display:grid; grid-template-columns:1fr; gap:18px; } .footer-shell > * { position:static; width:auto; } .copyright { position:static; width:auto; transform:none; margin-top:30px; grid-template-columns:1fr; gap:18px; } }
+@media (max-width:460px) { .hero { min-height:270px; } .hero::before { height:135px; right:13%; } .hero-inner { padding:35px 10px; } }
+@media (max-width:460px) { .section { padding:52px 8px; } h1 { font-size:38px; } .section-heading { padding:0 8px; margin-bottom:20px; } .products { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } .product-image { height:205px; } .product h3 { margin:8px 0 4px; font-size:9px; } .product p { font-size:8px; } .price { margin-top:7px; font-size:11px; } .review-grid { grid-template-columns:repeat(4,170px); overflow-x:auto; padding:0 8px 10px; scroll-snap-type:x mandatory; } .review { min-height:230px; scroll-snap-align:start; } .form-grid { grid-template-columns:1fr; } .footer-shell { padding:0 8px; } }
+@media (max-width:460px) {
+  .site-header { height:31px; }
+  .shipping { min-height:31px; }
+  .shipping img { top:6.094px; left:calc(50vw - 130.406px); width:21.938px; height:21.938px; }
+  .shipping span { top:5px; left:calc(41.017227vw - 78.972px); width:211.144px; font:400 11px/17px 'Montserrat',Arial,sans-serif; zoom:1.219; }
+  .nav { top:31px; left:0; width:100%; min-height:79px; transform:none; display:block; padding:0; }
+  .nav-sticky .nav { top:0; min-height:88px; padding:0; }
+  .brand { position:absolute; top:19.281px; left:18.281px; width:121.891px; height:51.188px; transform:none; }
+  .brand img { width:121.891px; height:51.188px; }
+  .nav::after { content:''; position:absolute; top:31px; right:18px; width:30px; height:12px; border-top:1px solid #2b211d; border-bottom:1px solid #2b211d; box-shadow:0 -5px 0 -4px #2b211d; }
+  .floating-actions { position:absolute; top:54.875px; right:109.625px; display:flex; gap:3px; }
+  .nav-sticky .floating-actions { position:fixed; top:22px; }
+  .floating-actions a { width:36px; height:42px; }
+  .floating-actions a:nth-child(3) { order:-1; }
+  .floating-actions a:nth-child(2) { margin-left:22.6px; }
+  .floating-actions img { width:21.938px; height:18.563px; }
+  .floating-actions a:nth-child(3) img { width:17.063px; height:17.063px; }
+  .hero { min-height:644px; align-items:start; }
+  .hero-inner { left:0; width:100%; height:644px; margin:0 auto; padding:110.703px 0 0; text-align:center; }
+  .hero .eyebrow { display:none; }
+  h1 { position:relative; left:-1.016px; top:auto; width:320px; max-width:none; margin:0 auto; font:400 36px/36px 'Cormorant',Arial,sans-serif; letter-spacing:normal; }
+  h1 span { width:320px; height:41.437px; transform:scale(1.219); transform-origin:center top; } h1 span:nth-child(2) { margin-left:0; }
+  .hero p { position:relative; left:.625px; top:auto; width:252.328px; margin:14.719px auto 0; font-size:17.066px; line-height:24.375px; }
+  .hero .button { position:relative; left:.64px; top:auto; width:213.312px; min-height:43.875px; margin-top:24.112px; font-size:17.066px; }
+  .hero::before { left:auto; width:260px; height:300px; right:57px; bottom:0; }
+  #catalog.section { height:1097.562px; padding:0 8px; }
+  #catalog .section-heading { left:0; width:auto; height:209px; margin:0; padding:0 12px; position:relative; display:block; }
+  #catalog .section-heading h2 { position:absolute; top:100.125px; left:50%; width:307px; transform:translateX(-50%); font:400 36.562px/36.562px 'Cormorant',Arial,sans-serif; white-space:normal; text-align:center; }
+  #catalog .section-heading h2 em { display:block; }
+  #catalog .section-note { display:none; }
+  #catalog .products { left:0; width:auto; height:771.562px; margin:0 12px; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(2,365.781px); gap:20px; }
+  #catalog .product-image { height:197px; }
+  #catalog .product h3 { margin:11px 0 8px; font-size:14px; line-height:1.2; }
+  #catalog .product p { font-size:14px; line-height:1.45; }
+  #catalog .price { margin-top:8px; font-size:18px; }
+  #catalog > p { height:117px; margin:0; display:flex; justify-content:center; align-items:center; }
+  #catalog > p .button { width:213.312px; min-height:43.875px; margin:0; }
+  .feature { height:1051px; }
+  .about-stage { left:0; width:375px; height:1051px; margin:0 auto; padding:0; }
+  .about-award { width:147px; height:139px; margin:29px auto 49px; }
+  .story { width:339px; height:258px; margin:0 auto; padding:16px 15px; }
+  .story h2 { position:static; width:auto; font-size:24px; line-height:1.16; }
+  .story p { position:static; width:auto; margin-top:12px; font-size:13px; line-height:1.45; }.story p br { display:none; }
+  .values { width:339px; margin:12px 0 0 18px; gap:12px; }
+  .value { width:339px; min-height:0; height:172px; padding:24px; grid-template-columns:1fr 70px; background:#f5ece4; }
+  .value img { width:70px; height:70px; }
+  .value h3 { font-size:20px; }
+  .value p { font-size:11px; line-height:1.35; }
+  .reviews { height:718px; }
+  .reviews-stage { left:0; width:375px; height:718px; margin:0 auto; padding:0; }
+  .reviews .section-heading { height:127px; padding:0; margin:0; position:relative; }
+  .reviews .section-heading h2 { position:absolute; top:36.562px; left:2px; width:371px; font:400 36.562px/36.562px 'Cormorant',Arial,sans-serif; white-space:normal; }
+  .review-controls { top:546px; right:138px; gap:22px; }
+  .review-controls button { width:38px; height:40px; }
+  .reviews .section-note { width:165px; font-size:11px; }
+  .review-grid { height:381px; padding:0 20px; grid-template-columns:repeat(6,260px); gap:40px; overflow-x:auto; }
+  .review-grid { scrollbar-width:none; }.review-grid::-webkit-scrollbar { display:none; }
+  .review { width:257px; height:332px; min-height:0; margin-top:17px; padding:27px 24px 24px; }
+  .reviews-button { height:210px; position:relative; }
+  .reviews-button::before { content:none; }
+  .reviews-button .button { width:213.312px; min-height:43.875px; margin-top:93.281px; font-size:16px; }
+  .contact,.contact .section { height:533px; }
+  .contact .section { padding:146.266px 18px 0; }
+  .contact-card { left:0; width:353.5px; margin:0 auto; }
+  .contact-card h2 { top:-109.704px; left:40.25px; width:273px; font:400 36.562px/36.562px 'Cormorant',Arial,sans-serif; white-space:normal; }
+  .form-grid { grid-template-columns:1fr; gap:18.281px; }
+  .form-grid input,.form-grid textarea { height:56.062px; }
+  .consent { min-height:34.125px; margin-top:18.281px; gap:15.86px; font-size:12.188px; line-height:14.625px; }
+  .consent input { flex-basis:15.844px; width:15.844px; height:15.844px; margin-left:4.906px; transform:translateY(-.5px); }
+  .consent span { transform:translateY(2.547px); }
+  .contact .form-submit { margin-top:30.48px; }
+  .contact .button { width:213.312px; min-height:43.875px; font-size:16px; }
+  .site-footer { height:1314px; padding:0; background:#fcf9f7; }
+  .footer-shell { left:0; width:375px; height:1011px; margin:0 auto; position:relative; display:block; padding:0; }
+  .footer-shell > * { position:absolute; }
+  .footer-logo { top:73.125px; left:10.781px; width:121.89px; }
+  .footer-logo img { width:121.89px; }
+  .footer-media { top:75px; left:182.656px; width:181.625px; }
+  .footer-media .social-icons { gap:7px; }
+  .footer-media .social-icons a,.footer-media .social-icons img { width:38px; height:38px; }
+  .footer-media-button { width:181.625px; height:39px; margin-top:11px; }
+  .footer-map { top:192.609px; left:10.781px; width:353.5px; }
+  .footer-phones { top:340.109px; left:10.781px; width:353.5px; height:121.891px; gap:14px; border-radius:20px; }
+  .footer-phones img { width:185px; height:20px; }
+  .footer-address { top:481.5px; left:10.781px; width:353.5px; height:121.891px; border-radius:20px; }
+  .footer-mail:nth-of-type(6) { top:621.688px; left:10.781px; width:353.5px; height:121.891px; border-radius:20px; }
+  .footer-mail:nth-of-type(7) { top:763.094px; left:10.781px; width:353.5px; height:106.047px; border-radius:20px; }
+  .footer-mail:nth-of-type(8) { top:888.641px; left:10.781px; width:353.5px; height:106.047px; border-radius:20px; }
+  .footer-address { padding:9px 24px; font:400 22px/26px 'Cormorant',Arial,sans-serif; }
+  .footer-mail strong { font:400 24px/30px 'Cormorant',Arial,sans-serif; }
+  .footer-mail small { margin-top:8px; font-size:11px; line-height:16px; }
+  .copyright { position:absolute; top:1031px; left:18px; width:339px; height:240px; transform:none; display:block; margin:0; }
+  .copyright span { position:absolute; left:0; width:300px; }
+  .copyright span:nth-child(1) { top:0; }
+  .copyright span:nth-child(2) { top:143px; }
+  .copyright span:nth-child(3) { top:68px; }
+}

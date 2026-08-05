@@ -1,0 +1,75 @@
+<?php
+declare(strict_types=1);
+
+require_once '/var/www/html/wp-load.php';
+require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+$options = array(
+    'blogdescription' => '',
+    'timezone_string' => 'Europe/Moscow',
+    'date_format' => 'd.m.Y',
+    'time_format' => 'H:i',
+    'start_of_week' => 1,
+    'default_comment_status' => 'closed',
+    'default_ping_status' => 'closed',
+    'comments_notify' => 0,
+    'uploads_use_yearmonth_folders' => 1,
+    'woocommerce_currency' => 'RUB',
+    'woocommerce_default_country' => 'RU',
+    'woocommerce_weight_unit' => 'kg',
+    'woocommerce_dimension_unit' => 'cm',
+    'woocommerce_enable_guest_checkout' => 'yes',
+    'woocommerce_enable_checkout_login_reminder' => 'yes',
+    'woocommerce_enable_signup_and_login_from_checkout' => 'yes',
+);
+
+foreach ($options as $name => $value) {
+    update_option($name, $value);
+    echo $name . '=' . (string) $value . PHP_EOL;
+}
+
+$page_slugs = array(
+    'Рецепты' => 'recipes',
+    'Маркетплейсы' => 'marketplace',
+    'Где купить' => 'buy',
+    'Сотрудничество' => 'cooperation',
+    'Доставка и оплата' => 'delivery',
+);
+foreach ($page_slugs as $title => $slug) {
+    $matches = get_posts(array('post_type' => 'page', 'post_status' => 'any', 'title' => $title, 'numberposts' => 1));
+    if ($matches && $matches[0] instanceof WP_Post && $matches[0]->post_name !== $slug) {
+        wp_update_post(array('ID' => $matches[0]->ID, 'post_name' => $slug));
+    }
+}
+$shop_page_id = function_exists('wc_get_page_id') ? wc_get_page_id('shop') : 0;
+if ($shop_page_id > 0) {
+    wp_update_post(array('ID' => $shop_page_id, 'post_name' => 'catalog'));
+}
+
+// Early local prototypes had no SKU and duplicate products now managed by sync-catalog.php.
+// Move only those unambiguous prototypes to Trash so the operation remains recoverable.
+$legacy_products = wc_get_products(array('limit' => -1, 'status' => 'publish', 'sku' => ''));
+foreach ($legacy_products as $legacy_product) {
+    if ($legacy_product instanceof WC_Product && $legacy_product->get_sku() === '') {
+        wp_trash_post($legacy_product->get_id());
+        echo 'trashed-legacy-product=' . $legacy_product->get_id() . PHP_EOL;
+    }
+}
+
+$plugin = 'theobroma-admin-tools/theobroma-admin-tools.php';
+if (!is_plugin_active($plugin)) {
+    $result = activate_plugin($plugin);
+    if (is_wp_error($result)) {
+        throw new RuntimeException($result->get_error_message());
+    }
+}
+echo 'plugin=' . $plugin . PHP_EOL;
+
+if ((string) get_option('permalink_structure') !== '/%postname%/') {
+    global $wp_rewrite;
+    $wp_rewrite->set_permalink_structure('/%postname%/');
+}
+// This explicit setup script is run only during environment configuration,
+// so a one-time hard flush is appropriate and also refreshes .htaccess.
+flush_rewrite_rules(true);
+echo 'permalinks=' . (string) get_option('permalink_structure') . PHP_EOL;
