@@ -457,7 +457,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .hero h1 span:nth-child(2) { margin-left:42px; }
   .hero p { top:355px; left:0; width:390px; font-size:14px; line-height:22px; }
   .hero .button { top:410px; left:0; width:220px; }
-  .hero::before { top:112px; right:calc((100vw - min(600px,calc(100vw - 80px)))/2 - 4px); left:auto; bottom:auto; width:300px; height:538px; }
+  .hero::before { top:140px; right:calc((100vw - min(600px,calc(100vw - 80px)))/2 - 8px); left:auto; bottom:auto; width:320px; height:510px; }
 
   #catalog { height:1280px; padding:0; }
   #catalog .section-heading { left:0; width:min(600px,calc(100vw - 80px)); height:245px; margin:0 auto; padding:0; }
@@ -468,23 +468,25 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   #catalog > p { height:145px; }
 
   .feature { height:950px; }
-  .about-stage { left:0; width:min(600px,calc(100vw - 80px)); height:950px; margin:0 auto; padding:55px 0 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:240px auto; gap:35px 40px; }
-  .about-award { position:static; width:220px; height:210px; margin:auto; }
-  .story { position:relative; top:auto; left:auto; width:auto; height:235px; padding:30px 24px; }
+  .about-stage { left:0; width:min(600px,calc(100vw - 80px)); height:950px; margin:0 auto; padding:0; display:block; }
+  .about-award { position:absolute; top:300px; left:55px; width:220px; height:210px; margin:0; }
+  .story { position:absolute; top:55px; left:0; width:100%; height:210px; padding:30px 40px; }
   .story h2,.story p { position:static; width:auto; }
   .story h2 { font-size:24px; line-height:28px; }
   .story p { margin-top:20px; font-size:12px; line-height:17px; }
   .story p br { display:none; }
-  .values { position:static; width:auto; margin:0; grid-column:1/-1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px 40px; }
+  .values { position:absolute; top:300px; left:0; width:100%; margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px 40px; }
   .value { width:auto; height:210px; min-height:0; }
-  .value:last-child { grid-column:2; }
+  .value:nth-child(1) { grid-column:2; }
+  .value:nth-child(2) { grid-column:1; grid-row:2; }
+  .value:nth-child(3) { grid-column:2; grid-row:2; }
 
   .reviews { height:760px; }
   .reviews-stage { left:0; width:min(600px,calc(100vw - 80px)); height:760px; margin:0 auto; padding:0; }
   .reviews .section-heading { height:150px; padding:0; }
   .reviews .section-heading h2 { top:55px; left:0; width:100%; font-size:48px; line-height:48px; white-space:normal; }
   .review-controls { top:585px; right:calc(50% - 42px); }
-  .review-grid { height:410px; padding:0; grid-template-columns:repeat(7,260px); gap:40px; overflow-x:auto; scrollbar-width:none; }
+  .review-grid { height:410px; padding:0; grid-template-columns:repeat(7,260px); gap:20px; overflow-x:auto; scrollbar-width:none; }
   .review-grid::-webkit-scrollbar { display:none; }
   .reviews-button { height:200px; }
   .reviews-button .button { margin-top:105px; }
@@ -503,7 +505,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .footer-media { grid-column:2; grid-row:1; align-self:start; }
   .footer-map { grid-column:1; grid-row:2; min-height:150px; }
   .footer-address,.footer-phones,.footer-mail { height:125px; }
-  .footer-phones { grid-column:2; grid-row:3; }
+  .footer-phones { grid-column:2; grid-row:2; }
   .footer-mail:nth-of-type(6) { grid-column:1; grid-row:3; }
   .footer-mail:nth-of-type(7) { grid-column:2; grid-row:3; }
   .footer-mail:nth-of-type(8) { grid-column:1; grid-row:4; }
