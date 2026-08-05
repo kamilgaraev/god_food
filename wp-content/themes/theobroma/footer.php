@@ -12,6 +12,10 @@
     </div>
     <div class="copyright"><span><?php echo nl2br(esc_html(theobroma_content('footer_company'))); ?></span><span><?php echo nl2br(esc_html(theobroma_content('footer_bank'))); ?></span><span><a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Политика конфиденциальности</a><br><a href="<?php echo esc_url(theobroma_page_url('Пользовательское соглашение')); ?>">Пользовательское соглашение</a><br><a href="<?php echo esc_url(theobroma_page_url('Публичная оферта')); ?>">Публичная оферта</a></span></div>
 </footer>
+<aside class="cookie-notice" aria-label="Уведомление о файлах cookie" hidden>
+    <p>Используя данный сайт, вы даете <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">согласие на использование файлов cookie</a>, помогающих нам сделать его удобнее для вас</p>
+    <button type="button">ОК, НЕ ПОКАЗЫВАТЬ СНОВА</button>
+</aside>
 <?php wp_footer(); ?>
 </body>
 </html>
