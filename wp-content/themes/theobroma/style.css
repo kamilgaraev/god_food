@@ -1426,11 +1426,14 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .marketplace-lead-break { display:none; }
   .marketplace-intro > h1 { font-size:44px; line-height:44px; transform:translateY(6px); }
   .marketplace-lead { width:500px; transform:translateY(2px); }
-  .marketplace-intro { padding-bottom:74.1875px; }
+  .marketplace-intro { padding-bottom:80px; }
   .marketplace-intro::before { top:48px; width:175px; height:234px; }
   .marketplace-intro::after { display:none; }
   .market-grid { grid-template-columns:repeat(2,290px); gap:38px 20px; transform:translateY(3px); }
-  .market-image { aspect-ratio:290/306; }
+  .market-image { height:310px; aspect-ratio:auto; margin-bottom:-4px; transform:translateY(-4px); }
+  .market-product:nth-child(n+3) { transform:translateY(1.09375px); }
+  .market-buttons { margin-top:39.1875px; }
+  .market-buttons .market-ozon { width:200px; }
 
   .buy-breadcrumb { padding-top:148px; }
   .buy-intro > h1 { width:487px; margin-inline:auto; font-size:44px; line-height:44px; transform:translateY(4px); }
