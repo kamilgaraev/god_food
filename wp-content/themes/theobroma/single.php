@@ -26,6 +26,10 @@ $related_product_ids = array_values(array_filter(array_map('absint', (array) get
         <figure><?php the_post_thumbnail('full', array('loading' => 'eager', 'fetchpriority' => 'high')); ?></figure>
     <?php endif; ?>
     <div class="media-article-copy"><?php echo wp_kses_post(get_the_content()); ?></div>
+    <?php if ($article_link !== '') : ?>
+        <a class="media-article-source" href="<?php echo esc_url($article_link); ?>" target="_blank" rel="noopener noreferrer">Читать статью</a>
+    <?php endif; ?>
+    <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(get_the_date('d.m.Y')); ?></time>
     <?php if ($related_product_ids && function_exists('wc_get_product')) : ?>
         <?php $related_products = array_filter(array_map('wc_get_product', $related_product_ids)); ?>
         <?php if ($related_products) : ?>
@@ -46,10 +50,6 @@ $related_product_ids = array_values(array_filter(array_map('absint', (array) get
             </section>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($article_link !== '') : ?>
-        <a class="media-article-source" href="<?php echo esc_url($article_link); ?>" target="_blank" rel="noopener noreferrer">Читать статью</a>
-    <?php endif; ?>
-    <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(get_the_date('d.m.Y')); ?></time>
 </main>
 <?php wp_footer(); ?>
 </body>

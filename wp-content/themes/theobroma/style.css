@@ -389,12 +389,14 @@ body.account-modal-open { overflow:hidden; }
 @media (max-width:900px) { .corporate-gifts-benefits,.corporate-gifts-showcase-grid,.corporate-gifts-branding > div,.corporate-gifts-cases > div { grid-template-columns:1fr; }.corporate-gifts-showcase-grid article { display:grid; grid-template-columns:180px 1fr; gap:0 24px; }.corporate-gifts-showcase-grid article > a:first-child { grid-row:1/4; }.corporate-gifts-minimum { grid-template-columns:1fr; }.corporate-gifts-minimum .button { justify-self:start; } }
 @media (max-width:700px) { .corporate-gifts-hero { min-height:0; padding:115px 20px 65px; }.corporate-gifts-hero h1 { font-size:43px; line-height:41px; }.corporate-gifts-benefits,.corporate-gifts-request,.corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases,.corporate-gifts-minimum { width:calc(100% - 32px); }.corporate-gifts-benefits,.corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases { margin:42px auto; }.corporate-gifts-benefits { grid-template-columns:1fr; }.corporate-gifts-showcase h2,.corporate-gifts-branding h2,.corporate-gifts-cases h2,.corporate-gifts-minimum h2 { font-size:36px; line-height:35px; }.corporate-gifts-showcase-grid article { display:block; }.corporate-gifts-showcase-grid article > a:first-child { aspect-ratio:1/1; }.corporate-gifts-minimum { padding:30px 20px; }.corporate-gifts-request { padding:30px 20px; grid-template-columns:1fr; gap:30px; }.corporate-gifts-request h2 { font-size:36px; line-height:35px; }.corporate-gifts-request form { grid-template-columns:1fr; }.corporate-gifts-request textarea,.corporate-gifts-request label,.corporate-gifts-request button { grid-column:auto; } }
 @media (max-width:600px) {
-  .media-article { width:calc(100% - 32px); padding:28px 0 56px; }
+  .media-article { width:calc(100% - 40px); padding:20px 0 56px; }
   .media-article-header { height:50px; }
   .media-article-header span { top:19px; }
   .media-article-back { top:5px; left:14px; }
-  .media-article h1 { margin-bottom:24px; font-size:29px; line-height:35px; }
-  .media-article-copy { font-size:16px; line-height:24px; }
+  .media-article h1 { margin-bottom:15px; font-size:28px; line-height:34.44px; }
+  .media-article figure { margin-bottom:20px; }
+  .media-article-copy { padding-bottom:23.6px; font-size:14.625px; line-height:19.6px; }
+  .media-article-source { margin-top:16px; font-size:14px; line-height:19.6px; }
   .media-article-products { margin-top:38px; padding-top:25px; }
   .media-article-products h2 { margin-bottom:18px; font-size:26px; line-height:30px; }
   .media-article-products-grid { grid-template-columns:1fr; gap:28px; }
@@ -402,7 +404,7 @@ body.account-modal-open { overflow:hidden; }
   .media-article-products-grid article > a:first-child { grid-row:1 / span 3; }
   .media-article-products-grid h3 { margin:0 0 7px; }
   .media-article-products-grid .button { width:auto; min-width:120px; margin-top:12px; }
-  .media-article time { margin-top:42px; }
+  .media-article time { margin-top:30.59375px; }
 }
 .legal-page { min-height:651px; padding:339px 0 6px; position:relative; background:var(--paper); }
 .legal-page-oferta { padding-top:287px; }
