@@ -1798,7 +1798,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal[data-commerce-type="product"] .commerce-modal-close { display:none; }
   .commerce-modal[data-commerce-type="product"] .commerce-modal-back { width:50px; height:50px; top:0; left:0; display:grid; place-items:center; color:transparent; font-size:0; }
   .commerce-modal[data-commerce-type="product"] .commerce-modal-back::before { content:"←"; color:#fff; font:300 30px/1 Arial,sans-serif; }
-  .commerce-modal-product .product-detail-page { padding-top:0; padding-bottom:44px; }
+  .commerce-modal-product .product-detail-page { padding-top:0; padding-bottom:60.40625px; }
   .commerce-modal-product .product-detail-page::before { content:none; }
   .commerce-modal-product .product-detail-summary { padding-top:30px; }
   .commerce-modal-product .product-detail-favorite { top:31px; right:20px; width:40px; height:40px; }
@@ -1814,17 +1814,17 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal-product .product-detail-accordions details p { margin-bottom:15.5px; }
   .commerce-modal-product .product-detail-benefits-1 .product-detail-accordions details[open] > div { padding-bottom:11px; }
   .commerce-modal-product .product-detail-benefits-2 .product-detail-accordions details[open] > div { padding-bottom:9px; }
-  .commerce-modal-product .product-related { width:calc(100% - 40px); margin:0 auto; padding:0; }
+  .commerce-modal-product .product-related { width:calc(100% - 40px); margin:0 auto; padding:40px 0 0; }
   .commerce-modal-product [class*="product-detail-sku-theobroma-cacao-"] .product-detail-accordions { margin-top:41.328125px; }
   .commerce-modal-product [class*="product-detail-sku-theobroma-cacao-"] .product-related { margin-top:13px; }
-  .commerce-modal-product .product-related > h2 { margin-bottom:70px; }
+  .commerce-modal-product .product-related > h2 { margin-bottom:71px; }
   .commerce-modal-product .product-related-grid { gap:40px; overflow-x:auto; scrollbar-width:none; }
   .commerce-modal-product .product-related-grid-tablet { display:none; }
   .commerce-modal-product .product-related-grid-mobile { display:flex; }
-  .commerce-modal-product .product-related-grid article { flex:0 0 218px; min-height:443px; }
+  .commerce-modal-product .product-related-grid article { flex:0 0 220px; min-height:469.140625px; }
   .commerce-modal-product .product-related-image,
-  .commerce-modal-product .product-related-image img { width:218px; height:273px; }
-  .commerce-modal-product .product-related-button { top:388px; }
+  .commerce-modal-product .product-related-image img { width:220px; height:275px; }
+  .commerce-modal-product .product-related-button { top:429.140625px; width:220px; height:40px; }
   .commerce-modal[data-commerce-type="cart"]::before { content:""; height:50px; position:fixed; z-index:4; inset:0 0 auto; background:#000; }
   .commerce-modal[data-commerce-type="cart"] .commerce-modal-close { top:7px; right:10px; width:36px; height:36px; }
   .commerce-modal[data-commerce-type="cart"] .commerce-modal-close::before,
@@ -1863,6 +1863,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-checkout > h3 { margin-bottom:19px; font-size:14px; line-height:19px; }
 }
 @media (min-width:391px) and (max-width:600px) {
+  .commerce-modal-product .product-detail-page { padding-bottom:41px; }
   .commerce-cart-product { min-height:70px; grid-template-rows:33.1875px 36.8125px; }
   .commerce-cart-product h3 { width:265px; height:33.1875px; }
   .commerce-cart-product h3 a { width:220.40625px; max-width:none; }
@@ -1877,18 +1878,22 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 }
 @media (min-width:601px) and (max-width:900px) {
   .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { width:640px; min-height:2021px; margin:65px auto; }
-  .commerce-modal-product .product-detail-page { width:640px; min-height:2021px; padding:55px 0 30px; }
+  .commerce-modal-product .product-detail-page { width:640px; min-height:2021px; padding:55px 0; }
   .commerce-modal-product .product-detail-hero { width:640px; margin-inline:auto; display:block; }
   .commerce-modal-product .product-detail-gallery,
   .commerce-modal-product .product-detail-image { width:600px; margin-inline:auto; }
   .commerce-modal-product .product-detail-image { height:798px; aspect-ratio:auto; }
   .commerce-modal-product .product-detail-image img { width:600px; height:798px; object-position:left center; }
-  .commerce-modal-product .product-detail-summary { width:620px; min-height:481px; margin-inline:auto; }
-  .commerce-modal-product .product-detail-accordions { width:600px; min-height:127px; margin:29px auto 0; }
+  .commerce-modal-product .product-detail-summary { width:640px; min-height:0; margin-left:10px; padding:25px 20px 0; }
+  .commerce-modal-product .product-detail-summary h1,
+  .commerce-modal-product .product-detail-buy,
+  .commerce-modal-product .product-detail-copy { width:600px; }
+  .commerce-modal-product .product-detail-accordions { width:640px; min-height:127px; margin:29px auto 0; }
+  .commerce-modal-product [class*="product-detail-sku-theobroma-cacao-"] .product-detail-accordions { margin-top:53.09375px; }
   .commerce-modal-product .product-detail-accordions summary { height:60px; padding:21.9px 0; font:500 12px/16.2px 'Cormorant',Arial,sans-serif; }
   .commerce-modal-product .product-detail-accordions details div { width:100%; font:400 10px/15.5px 'Cormorant',Arial,sans-serif; }
   .commerce-modal-product .product-detail-accordions details p { margin-bottom:15.5px; }
-  .commerce-modal-product .product-related { width:600px; margin:15px auto 0; padding:0; }
+  .commerce-modal-product .product-related { width:600px; margin:15.296875px auto 0; padding:40px 0 0; }
   .commerce-modal-product .product-related > h2 { margin-bottom:71px; }
   .commerce-modal-product .product-related-grid-desktop,
   .commerce-modal-product .product-related-grid-mobile { display:none; }

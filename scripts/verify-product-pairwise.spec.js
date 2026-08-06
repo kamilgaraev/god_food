@@ -3,6 +3,7 @@ const { chromium } = require('playwright');
 const sourceUrl = process.env.PRODUCT_SOURCE_URL || 'https://theobroma.one/catalog/tproduct/281858081192-kakao-poroshok-naturalnii';
 const localUrl = process.env.PRODUCT_LOCAL_URL || 'http://localhost:8080/product/theobroma-cacao-200/';
 const viewportWidth = Number(process.env.PRODUCT_WIDTH || 390);
+const isCacaoProduct = /\/product\/theobroma-cacao-/.test(localUrl);
 
 async function waitForProduct(page, side) {
   await page.goto(side === 'source' ? sourceUrl : localUrl, {
@@ -117,6 +118,18 @@ async function main() {
       return [name, { x: rect.x, y: rect.y, width: rect.width, height: rect.height }];
     })));
 
+    const relatedVariant = viewportWidth <= 600 ? 'mobile' : (viewportWidth <= 900 ? 'tablet' : 'desktop');
+    const sourceRelatedParts = {
+      title: await source.locator('.t-store__relevants__title').boundingBox(),
+      card: await source.locator('.js-product-relevant').first().boundingBox(),
+      button: await source.locator('.js-product-relevant .js-store-prod-btn2').first().boundingBox(),
+    };
+    const localRelatedParts = {
+      title: await local.locator('.commerce-modal.is-open .product-related > h2').boundingBox(),
+      card: await local.locator(`.commerce-modal.is-open .product-related-grid-${relatedVariant} article`).first().boundingBox(),
+      button: await local.locator(`.commerce-modal.is-open .product-related-grid-${relatedVariant} .product-related-button`).first().boundingBox(),
+    };
+
     console.log(JSON.stringify({ source: sourceMetrics, local: localMetrics }));
 
     for (const key of ['x', 'y', 'width', 'height']) {
@@ -132,6 +145,21 @@ async function main() {
     if (viewportWidth <= 460 && Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
       throw new Error(`Mobile related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
     }
+    if (viewportWidth <= 460) {
+      for (const key of ['x', 'y', 'width']) {
+        if (Math.abs(sourceRelatedParts.title[key] - localRelatedParts.title[key]) > 1) {
+          throw new Error(`Mobile related-products title ${key} differs: source ${sourceRelatedParts.title[key]}, local ${localRelatedParts.title[key]}`);
+        }
+        if (Math.abs(sourceRelatedParts.card[key] - localRelatedParts.card[key]) > 1) {
+          throw new Error(`Mobile related product card ${key} differs: source ${sourceRelatedParts.card[key]}, local ${localRelatedParts.card[key]}`);
+        }
+      }
+      for (const key of ['width', 'height']) {
+        if (Math.abs(sourceRelatedParts.button[key] - localRelatedParts.button[key]) > 1) {
+          throw new Error(`Mobile related product button ${key} differs: source ${sourceRelatedParts.button[key]}, local ${localRelatedParts.button[key]}`);
+        }
+      }
+    }
     if (viewportWidth >= 601 && viewportWidth <= 900) {
       for (const key of ['x', 'y', 'width', 'height']) {
         if (Math.abs(sourceMetrics.image[key] - localMetrics.image[key]) > 0.5) {
@@ -143,6 +171,16 @@ async function main() {
       }
       if (Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
         throw new Error(`Tablet related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
+      }
+      for (const key of isCacaoProduct ? ['y'] : ['y', 'height']) {
+        if (Math.abs(sourceMetrics.summary[key] - localMetrics.summary[key]) > 1.5) {
+          throw new Error(`Tablet product summary ${key} differs: source ${sourceMetrics.summary[key]}, local ${localMetrics.summary[key]}`);
+        }
+      }
+      for (const key of ['x', 'y', 'width']) {
+        if (Math.abs(sourceRelatedParts.card[key] - localRelatedParts.card[key]) > 1) {
+          throw new Error(`Tablet related product card ${key} differs: source ${sourceRelatedParts.card[key]}, local ${localRelatedParts.card[key]}`);
+        }
       }
     }
     if (viewportWidth >= 901) {
