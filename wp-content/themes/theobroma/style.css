@@ -1335,6 +1335,13 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
     gap:16px;
   }
   .floating-actions a { width:87px; height:50px; font-size:14px; }
+  .floating-actions a:nth-child(1),
+  .floating-actions a:nth-child(2) { padding-left:15px; justify-content:flex-start; gap:13px; }
+  .floating-actions a:nth-child(1) img,
+  .floating-actions a:nth-child(2) img { width:26px; height:22px; }
+  .floating-actions a:nth-child(3) { padding-left:15px; justify-content:flex-start; gap:12px; }
+  .floating-actions a:nth-child(3) img { width:20px; height:20px; }
+  .floating-actions a:nth-child(3) span { top:0; }
   .floating-actions a:nth-child(1) { order:2; }
   .floating-actions a:nth-child(2) { order:3; }
   .floating-actions a:nth-child(3) { order:1; }

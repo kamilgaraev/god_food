@@ -71,6 +71,11 @@ async function sourceAccountControl(page, viewport) {
   return { item: label.item, box };
 }
 
+async function actionPartBox(page, selector, viewport) {
+  const candidate = await largestVisible(page.locator(selector), viewport);
+  return candidate?.box || null;
+}
+
 async function dismissCookie(page, side) {
   const cookie = side === 'source' ? page.locator('.t657:visible') : page.locator('.cookie-notice:visible');
   if (!await cookie.count()) return;
@@ -106,6 +111,14 @@ async function headerMetrics(page, side, viewport) {
       accountHref: account ? await account.item.getAttribute('href') : null,
       accountTarget: account ? await account.item.getAttribute('target') : null,
       menu: menu?.box || null,
+      actionParts: {
+        accountIcon: await actionPartBox(page, 'img[data-original*="user_4_1"]', viewport),
+        accountText: await actionPartBox(page, '[data-elem-id="1764672147761000001"] .tn-atom', viewport),
+        cartIcon: await actionPartBox(page, '.mycart010 img', viewport),
+        cartText: await actionPartBox(page, '.mycount010 .tn-atom', viewport),
+        favoriteIcon: await actionPartBox(page, '.nolimWish065 img', viewport),
+        favoriteText: await actionPartBox(page, '.wishNolimQuantity065 .tn-atom', viewport),
+      },
     };
   }
   const box = async (selector) => page.locator(selector).evaluate((element) => {
@@ -115,6 +128,14 @@ async function headerMetrics(page, side, viewport) {
   return {
     account: await box('[data-account-trigger]'),
     menu: viewport.width <= 900 ? await box('.menu-toggle') : null,
+    actionParts: {
+      accountIcon: await actionPartBox(page, '[data-account-trigger] img', viewport),
+      accountText: await actionPartBox(page, '[data-account-trigger] span', viewport),
+      cartIcon: await actionPartBox(page, '.floating-actions a:nth-child(1) img', viewport),
+      cartText: await actionPartBox(page, '.floating-actions a:nth-child(1) span', viewport),
+      favoriteIcon: await actionPartBox(page, '.floating-actions a:nth-child(2) img', viewport),
+      favoriteText: await actionPartBox(page, '.floating-actions a:nth-child(2) span', viewport),
+    },
   };
 }
 
@@ -308,6 +329,16 @@ async function capture(browser, side, state, viewport, target) {
           for (const key of ['x', 'y', 'width', 'height']) {
             const delta = Math.abs(source.header.account[key] - local.header.account[key]);
             assert.ok(delta <= 1.25, `${widthKey}px account ${key} differs by ${delta}px`);
+          }
+          if (viewport.width <= 900) {
+            for (const part of Object.keys(source.header.actionParts)) {
+              assert.equal(Boolean(local.header.actionParts[part]), Boolean(source.header.actionParts[part]), `${widthKey}px ${part} visibility differs`);
+              if (!source.header.actionParts[part]) continue;
+              for (const key of ['x', 'y', 'width', 'height']) {
+                const delta = Math.abs(source.header.actionParts[part][key] - local.header.actionParts[part][key]);
+                assert.ok(delta <= 1.25, `${widthKey}px ${part} ${key} differs by ${delta}px`);
+              }
+            }
           }
         }
         const diff = await comparePng(sourceFile, localFile, diffFile);
