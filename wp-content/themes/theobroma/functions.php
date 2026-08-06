@@ -455,28 +455,16 @@ function theobroma_handle_contact_request(): void {
     exit;
 }
 
-function theobroma_related_product_ids(WC_Product $product, array $preferred_skus, int $limit = 4): array {
-    $preferred_ids = array_map('wc_get_product_id_by_sku', $preferred_skus);
-    $ids = array_values(array_unique(array_filter(array_map('absint', $preferred_ids), static function (int $product_id) use ($product): bool {
-        return $product_id > 0 && $product_id !== $product->get_id();
-    })));
+function theobroma_related_product_ids(WC_Product $product, int $limit = 4): array {
+    $ids = array_map('absint', wc_get_products(array(
+        'status' => 'publish',
+        'limit' => -1,
+        'return' => 'ids',
+        'exclude' => array($product->get_id()),
+    )));
+    shuffle($ids);
 
-    if (count($ids) < $limit) {
-        $ids = array_merge($ids, wc_get_related_products($product->get_id(), $limit - count($ids), $ids));
-    }
-    if (count($ids) < $limit) {
-        $fallback_ids = wc_get_products(array(
-            'status' => 'publish',
-            'limit' => -1,
-            'return' => 'ids',
-            'exclude' => array_merge(array($product->get_id()), $ids),
-            'orderby' => 'menu_order',
-            'order' => 'ASC',
-        ));
-        $ids = array_merge($ids, array_map('absint', $fallback_ids));
-    }
-
-    return array_slice(array_values(array_unique($ids)), 0, $limit);
+    return array_slice($ids, 0, $limit);
 }
 add_action('admin_post_nopriv_theobroma_contact', 'theobroma_handle_contact_request');
 add_action('admin_post_theobroma_contact', 'theobroma_handle_contact_request');

@@ -9,60 +9,9 @@ if (!$product instanceof WC_Product) {
     return;
 }
 
-$preferred_related_skus_by_product = array(
-    'theobroma-200-68-coriander' => array(
-        'theobroma-30-59-date',
-        'theobroma-100-65-cinnamon',
-        'theobroma-100-cow',
-        'theobroma-100-68-coriander',
-    ),
-    'theobroma-200-65-cinnamon' => array(
-        'theobroma-100-70',
-        'theobroma-200-cow',
-        'theobroma-30-goat',
-        'theobroma-30-59-date',
-    ),
-);
-$preferred_related_skus = apply_filters(
-    'theobroma_preferred_related_skus',
-    $preferred_related_skus_by_product[$product->get_sku()] ?? array(),
-    $product
-);
-$related_ids = theobroma_related_product_ids($product, $preferred_related_skus);
-$mobile_related_skus_by_product = array(
-    'theobroma-200-68-coriander' => array(
-        'theobroma-30-whole-hazelnut',
-        'theobroma-200-goat',
-        'theobroma-30-59-date',
-        'theobroma-200-80',
-    ),
-    'theobroma-200-65-cinnamon' => array(
-        'theobroma-30-whole-hazelnut',
-        'theobroma-30-80',
-        'theobroma-chia-250',
-        'theobroma-100-65-cinnamon',
-    ),
-);
-$mobile_related_skus = apply_filters(
-    'theobroma_mobile_related_skus',
-    $mobile_related_skus_by_product[$product->get_sku()] ?? $preferred_related_skus,
-    $product
-);
-$mobile_related_ids = theobroma_related_product_ids($product, $mobile_related_skus);
-$tablet_related_skus_by_product = array(
-    'theobroma-200-65-cinnamon' => array(
-        'theobroma-100-70',
-        'theobroma-30-59-cherry-buckwheat',
-        'theobroma-200-goat',
-        'theobroma-30-goat',
-    ),
-);
-$tablet_related_skus = apply_filters(
-    'theobroma_tablet_related_skus',
-    $tablet_related_skus_by_product[$product->get_sku()] ?? $preferred_related_skus,
-    $product
-);
-$tablet_related_ids = theobroma_related_product_ids($product, $tablet_related_skus);
+$related_ids = theobroma_related_product_ids($product);
+$mobile_related_ids = $related_ids;
+$tablet_related_ids = $related_ids;
 $detail_copy = $product->get_meta('_theobroma_detail_copy', true);
 if (!is_array($detail_copy) || !$detail_copy) {
     $detail_copy = array_filter(array(

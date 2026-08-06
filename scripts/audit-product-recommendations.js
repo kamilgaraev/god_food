@@ -44,12 +44,30 @@ async function extractLocal(page, url) {
       const source = await extractSource(page, new URL(pair.source, sourceBase).href);
       const local = await extractLocal(page, new URL(pair.local, localBase).href);
       await page.close();
-      const sourceIds = unique(source.map((card) => card.id).filter(Boolean));
+      const sourceCardIds = unique(source.map((card) => card.id).filter(Boolean));
       const localCardIds = unique(local.map((card) => card.id).filter(Boolean));
-      const matches = source.length === 4 && sourceIds.length === 4 && local.length === 4 && localCardIds.length === 4 && !localCardIds.includes(pair.id);
-      results.push({ id: pair.id, matches, source, local });
-      console.log(`${matches ? 'PASS' : 'FAIL'} ${pair.id}: source ${sourceIds.length}/4 unique, local ${localCardIds.length}/4 unique`);
+      const matches = source.length === 4
+        && sourceCardIds.length === 4
+        && local.length === 4
+        && localCardIds.length === 4
+        && !localCardIds.includes(pair.id);
+      results.push({ id: pair.id, matches, sourceCardIds, localCardIds, source, local });
+      console.log(`${matches ? 'PASS' : 'FAIL'} ${pair.id}: source ${sourceCardIds.length}/4 unique, local ${localCardIds.length}/4 unique`);
     }
+
+    const representative = products[0];
+    const sourceSets = [];
+    const localSets = [];
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const page = await browser.newPage({ viewport: { width: 1920, height: 1200 } });
+      sourceSets.push((await extractSource(page, new URL(representative.source, sourceBase).href)).map((card) => card.id));
+      localSets.push((await extractLocal(page, new URL(representative.local, localBase).href)).map((card) => card.id));
+      await page.close();
+    }
+    const behaviorMatches = new Set(sourceSets.map((set) => JSON.stringify(set))).size > 1
+      && new Set(localSets.map((set) => JSON.stringify(set))).size > 1;
+    results.push({ id: 'recommendation-randomization', matches: behaviorMatches, sourceSets, localSets });
+    console.log(`${behaviorMatches ? 'PASS' : 'FAIL'} recommendation randomization across repeated requests`);
   } finally {
     await browser.close();
   }
@@ -58,7 +76,7 @@ async function extractLocal(page, url) {
   fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, `${JSON.stringify(results, null, 2)}\n`);
   const failures = results.filter((result) => !result.matches);
-  console.log(`Recommendation matches: ${results.length - failures.length}/${results.length}`);
+  console.log(`Recommendation behavior checks: ${results.length - failures.length}/${results.length}`);
   if (failures.length) process.exitCode = 1;
 })().catch((error) => {
   console.error(error);
