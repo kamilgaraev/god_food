@@ -29,6 +29,24 @@ const assertNoViewportOverflow = async (page, label) => {
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto('http://localhost:8080/catalog/', { waitUntil: 'networkidle' });
 
+      if (width <= 430) {
+        await page.goto('http://localhost:8080/', { waitUntil: 'networkidle' });
+        const heroMetrics = await page.locator('.hero').evaluate((hero) => {
+          const rect = hero.getBoundingClientRect();
+          const chocolate = getComputedStyle(hero, '::before');
+          return {
+            height: rect.height,
+            chocolateWidth: parseFloat(chocolate.width),
+            chocolateHeight: parseFloat(chocolate.height),
+          };
+        });
+        const scale = width / 390;
+        assert.ok(Math.abs(heroMetrics.height - 670.4375 * scale) <= 0.2, `${widthKey}px: hero is ${heroMetrics.height}px tall`);
+        assert.ok(Math.abs(heroMetrics.chocolateWidth - 260 * scale) <= 0.2, `${widthKey}px: hero chocolate is ${heroMetrics.chocolateWidth}px wide`);
+        assert.ok(Math.abs(heroMetrics.chocolateHeight - 300 * scale) <= 0.2, `${widthKey}px: hero chocolate is ${heroMetrics.chocolateHeight}px tall`);
+        await page.goto('http://localhost:8080/catalog/', { waitUntil: 'networkidle' });
+      }
+
       const cookie = page.locator('.cookie-notice');
       await cookie.waitFor({ state: 'visible' });
       await page.screenshot({ path: path.join(outputDir, `cookie-${widthKey}.png`), fullPage: false, animations: 'disabled' });
@@ -41,6 +59,24 @@ const assertNoViewportOverflow = async (page, label) => {
         await page.locator('.menu-toggle').click();
         assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'), 'true');
         assert.equal(await page.locator('.mobile-menu').getAttribute('aria-hidden'), 'false');
+        const panelWidth = await page.locator('.mobile-menu').evaluate((menu) => parseFloat(getComputedStyle(menu, '::before').width));
+        assert.ok(Math.abs(panelWidth - Math.min(width * 0.82051, 320)) <= 0.2, `${widthKey}px: mobile menu panel is ${panelWidth}px`);
+        if (width >= 461) {
+          const menuMetrics = await page.locator('.mobile-menu').evaluate((menu) => {
+            const panel = getComputedStyle(menu, '::before');
+            const nav = getComputedStyle(menu.querySelector('nav'));
+            return {
+              panelWidth: parseFloat(panel.width),
+              navLeft: parseFloat(nav.left),
+              navWidth: parseFloat(nav.width),
+              fontSize: parseFloat(getComputedStyle(menu.querySelector('a')).fontSize),
+            };
+          });
+          assert.ok(Math.abs(menuMetrics.panelWidth - 320) <= 0.1, `${widthKey}px: tablet menu panel is ${menuMetrics.panelWidth}px`);
+          assert.ok(Math.abs(menuMetrics.navLeft - 40) <= 0.1, `${widthKey}px: tablet menu content starts at ${menuMetrics.navLeft}px`);
+          assert.ok(Math.abs(menuMetrics.navWidth - 240) <= 0.1, `${widthKey}px: tablet menu content is ${menuMetrics.navWidth}px wide`);
+          assert.ok(Math.abs(menuMetrics.fontSize - 26) <= 0.1, `${widthKey}px: tablet menu font is ${menuMetrics.fontSize}px`);
+        }
         await page.screenshot({ path: path.join(outputDir, `menu-${widthKey}.png`), fullPage: false, animations: 'disabled' });
         await page.keyboard.press('Escape');
         assert.equal(await page.locator('.mobile-menu').getAttribute('aria-hidden'), 'true');
@@ -48,6 +84,26 @@ const assertNoViewportOverflow = async (page, label) => {
 
       await page.locator('[data-account-trigger]').click();
       await page.locator('#account-modal.is-open').waitFor();
+      const accountLayout = await page.locator('.account-modal-panel').evaluate((panel) => {
+        const rect = panel.getBoundingClientRect();
+        const headingRange = document.createRange();
+        headingRange.selectNodeContents(panel.querySelector('h2'));
+        const heading = headingRange.getBoundingClientRect();
+        const input = panel.querySelector('#account-email').getBoundingClientRect();
+        return {
+          x: rect.x,
+          width: rect.width,
+          headingCenterDelta: Math.abs((heading.x + heading.width / 2) - (rect.x + rect.width / 2)),
+          inputWidth: input.width,
+          backdropDisplay: getComputedStyle(document.querySelector('.account-modal-backdrop')).display,
+        };
+      });
+      const expectedAccountWidth = width <= 600 ? width : width / 2;
+      assert.ok(Math.abs(accountLayout.width - expectedAccountWidth) <= 0.1, `${widthKey}px: account panel width is ${accountLayout.width}px`);
+      assert.ok(Math.abs(accountLayout.x - (width - expectedAccountWidth)) <= 0.1, `${widthKey}px: account panel x is ${accountLayout.x}px`);
+      assert.ok(accountLayout.headingCenterDelta <= 0.1, `${widthKey}px: account heading is off-center by ${accountLayout.headingCenterDelta}px`);
+      assert.ok(Math.abs(accountLayout.inputWidth - (width >= 601 && width <= 900 ? 335 : 340)) <= 0.1, `${widthKey}px: account input is ${accountLayout.inputWidth}px wide`);
+      assert.equal(accountLayout.backdropDisplay, width <= 600 ? 'none' : 'block', `${widthKey}px: account backdrop visibility differs`);
       await page.locator('#account-email').fill('audit@example.com');
       await page.locator('[data-account-continue]').click();
       assert.equal(await page.locator('[data-account-login]').isVisible(), true, `${widthKey}px: login step is hidden`);
@@ -66,6 +122,23 @@ const assertNoViewportOverflow = async (page, label) => {
       assert.ok(Math.abs(emptyCartBox.width - (width <= 600 ? 350 : 560)) <= 1, `${widthKey}px: empty cart width ${emptyCartBox.width}px`);
       assert.ok(emptyCartBox.height <= 160, `${widthKey}px: empty cart is not a compact alert (${emptyCartBox.height}px)`);
       assert.ok(Math.abs((emptyCartBox.y + emptyCartBox.height / 2) - config.viewports[widthKey].height / 2) <= 2, `${widthKey}px: empty cart is not vertically centered`);
+      const emptyCartStyles = await page.locator('.commerce-cart-empty').evaluate((empty) => {
+        const text = getComputedStyle(empty.querySelector('p'));
+        const close = empty.querySelector('.commerce-cart-empty-close').getBoundingClientRect();
+        const box = empty.getBoundingClientRect();
+        return {
+          fontFamily: text.fontFamily,
+          fontSize: parseFloat(text.fontSize),
+          closeTop: close.top - box.top,
+          closeRight: box.right - close.right,
+          overlay: getComputedStyle(document.querySelector('#commerce-modal')).backgroundColor,
+        };
+      });
+      assert.match(emptyCartStyles.fontFamily, /Cormorant/i, `${widthKey}px: empty cart uses the wrong font`);
+      assert.ok(Math.abs(emptyCartStyles.fontSize - (width <= 600 ? 19 : 25)) <= 0.1, `${widthKey}px: empty cart font is ${emptyCartStyles.fontSize}px`);
+      assert.ok(Math.abs(emptyCartStyles.closeTop - 10) <= 0.1, `${widthKey}px: empty cart close top is ${emptyCartStyles.closeTop}px`);
+      assert.ok(Math.abs(emptyCartStyles.closeRight - 10) <= 0.1, `${widthKey}px: empty cart close right is ${emptyCartStyles.closeRight}px`);
+      assert.equal(emptyCartStyles.overlay, 'rgba(52, 52, 52, 0.8)', `${widthKey}px: empty cart overlay differs from source`);
       await page.screenshot({ path: path.join(outputDir, `cart-empty-${widthKey}.png`), fullPage: false, animations: 'disabled' });
       await page.locator('#commerce-modal .commerce-cart-empty-close').click();
       await page.locator('#commerce-modal').waitFor({ state: 'hidden' });
