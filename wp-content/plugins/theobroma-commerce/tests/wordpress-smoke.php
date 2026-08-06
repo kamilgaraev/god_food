@@ -11,6 +11,8 @@ if (!is_file($pluginFile)) {
 
 require_once $pluginFile;
 
+Theobroma\Commerce\Installer::activate();
+
 if (!class_exists(Theobroma\Commerce\Plugin::class)) {
     throw new RuntimeException('Plugin class is not autoloadable');
 }
@@ -26,6 +28,15 @@ Theobroma\Commerce\Plugin::boot();
 $methods = apply_filters('woocommerce_shipping_methods', []);
 if (!isset($methods['theobroma_cdek'])) {
     throw new RuntimeException('CDEK shipping method is not registered');
+}
+
+global $wpdb;
+foreach (['theobroma_loyalty_accounts', 'theobroma_loyalty_ledger'] as $suffix) {
+    $table = $wpdb->prefix . $suffix;
+    $exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+    if ($exists !== $table) {
+        throw new RuntimeException('Loyalty table is missing: ' . $table);
+    }
 }
 
 $ozonCatalog = (new Theobroma\Commerce\Products\OzonCatalogAudit())->audit(wc_get_products([
