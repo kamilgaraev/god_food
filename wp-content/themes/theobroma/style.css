@@ -1643,9 +1643,15 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal[data-commerce-type="product"] .commerce-modal-close::before,
 .commerce-modal[data-commerce-type="product"] .commerce-modal-close::after { background:#fff; }
 .commerce-modal-product .product-detail-page { width:1240px; min-height:1651px; }
-.commerce-modal-product .product-detail-hero { top:40px; left:40px; }
-.commerce-modal-product .product-detail-accordions { position:relative; top:auto; left:auto; margin:845px 0 0 40px; }
-.commerce-modal-product .product-related { position:relative; top:auto; left:auto; width:1200px; margin:70.1875px 0 0 20px; padding:0 20px; }
+.commerce-modal-product .product-detail-hero { top:55px; left:40px; }
+.commerce-modal-product .product-detail-accordions { position:relative; top:auto; left:auto; margin:860px 0 0 40px; }
+.commerce-modal-product .product-detail-accordions summary { font:500 14px/18.9px 'Cormorant',Arial,sans-serif; }
+.commerce-modal-product .product-detail-accordions details div { font:400 12px/18.6px 'Cormorant',Arial,sans-serif; }
+.commerce-modal-product .product-detail-accordions details p { margin-bottom:18.6px; }
+@media (min-width:901px) {
+  .commerce-modal-product .product-detail-accordions details[open] > div { padding-bottom:22px; }
+}
+.commerce-modal-product .product-related { position:relative; top:auto; left:auto; width:1200px; margin:0 0 0 20px; padding:0 20px; }
 .commerce-modal-product .product-related > h2 { margin-bottom:43px; }
 .commerce-modal-product .product-related-grid { grid-template-columns:repeat(4,260px); gap:40px; }
 .commerce-modal-product .product-related-grid-tablet,

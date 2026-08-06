@@ -141,6 +141,27 @@ async function main() {
         throw new Error(`Tablet related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
       }
     }
+    if (viewportWidth >= 901) {
+      for (const key of ['x', 'y', 'width', 'height']) {
+        if (Math.abs(sourceMetrics.image[key] - localMetrics.image[key]) > 0.5) {
+          throw new Error(`Desktop product image ${key} differs: source ${sourceMetrics.image[key]}, local ${localMetrics.image[key]}`);
+        }
+      }
+      for (const key of ['fontSize', 'lineHeight']) {
+        if (sourceDetailsType[key] !== localDetailsType[key]) {
+          throw new Error(`Desktop product accordion title ${key} differs: source ${sourceDetailsType[key]}, local ${localDetailsType[key]}`);
+        }
+        if (sourceDetailsCopyType[key] !== localDetailsCopyType[key]) {
+          throw new Error(`Desktop product accordion copy ${key} differs: source ${sourceDetailsCopyType[key]}, local ${localDetailsCopyType[key]}`);
+        }
+      }
+      if (Math.abs(sourceMetrics.accordions.y - localMetrics.accordions.y) > 1) {
+        throw new Error(`Desktop product accordion start differs: source ${sourceMetrics.accordions.y}, local ${localMetrics.accordions.y}`);
+      }
+      if (Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
+        throw new Error(`Desktop related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
+      }
+    }
 
     console.log(`PASS product mobile top bar: ${localTopBar}`);
     console.log(JSON.stringify({ sourceDetailsType, localDetailsType, sourceDetailsCopyType, localDetailsCopyType }));
