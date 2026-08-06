@@ -1414,7 +1414,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cooperation-benefit-grid article:nth-child(even) h3,
   .cooperation-benefit-grid article:nth-child(even) ul { transform:none; }
 
-  .delivery-page { padding:354px 0 45px; }
+  .delivery-page { padding:354px 0 0; }
   .delivery-breadcrumb { top:149px; }
   .delivery-page > h1 { top:192px; font-size:44px; line-height:44px; }
   .delivery-lead { left:50%; width:427px; transform:translateX(-50%); font-size:16px; line-height:21px; }
