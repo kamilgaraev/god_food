@@ -1567,7 +1567,8 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .copyright span:nth-child(2) { top:647px; left:0; }
   .copyright span:nth-child(3) { top:705px; left:310px; }
 
-  .legal-page,.legal-page-oferta { padding-top:325px; }
+  .legal-page { padding:328px 0 6px; }
+  .legal-page-oferta { padding-top:284px; }
   .legal-page::before { top:163px; width:150px; height:202px; }
   .legal-breadcrumb { top:149px; }
   .legal-page > h1 { top:189px; font-size:44px; line-height:44px; }
