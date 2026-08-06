@@ -23,6 +23,10 @@ const widths = (process.env.THEOBROMA_WIDTHS || '390,768,1440').split(',').map(N
 
       await page.locator('[data-product-modal-link]').first().click();
       await page.locator('#commerce-modal .product-detail-page').waitFor();
+      const productAccordions = page.locator('#commerce-modal .product-detail-accordions details');
+      assert.equal(await productAccordions.count(), 2, `${width}px: product accordions are missing`);
+      assert.equal(await productAccordions.nth(0).getAttribute('open'), '', `${width}px: product description must be open by default`);
+      assert.equal(await productAccordions.nth(1).getAttribute('open'), null, `${width}px: product benefit must be closed by default`);
       await page.locator('#commerce-modal .single_add_to_cart_button').click();
 
       await page.locator('#commerce-modal[data-commerce-type="cart"].is-open').waitFor();

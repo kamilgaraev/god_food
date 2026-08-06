@@ -153,7 +153,7 @@ get_header();
         </div>
     </section>
     <section class="product-detail-accordions">
-        <details><summary>Описание продукта<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_details); ?></div></details>
+        <details open><summary>Описание продукта<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_details); ?></div></details>
         <details><summary>Польза кокосового сахара<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_benefit); ?></div></details>
     </section>
     <section class="product-related">

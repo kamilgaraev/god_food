@@ -63,6 +63,13 @@ async function capture(browser, side, url, viewport, target) {
   page.on('pageerror', (error) => pageErrors.push(error.message));
   const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
   const assetFailures = await settlePage(page);
+  const hasOpenModal = await page.locator('#commerce-modal.is-open .commerce-modal-panel').count() > 0;
+  if (hasOpenModal) {
+    await page.addStyleTag({ content: `
+      body > *:not(#commerce-modal){display:none!important}
+      #commerce-modal{position:relative!important;inset:auto!important;height:auto!important;overflow:visible!important}
+    ` });
+  }
   const metrics = await page.evaluate(() => ({
     url: location.href,
     title: document.title,
@@ -77,7 +84,7 @@ async function capture(browser, side, url, viewport, target) {
   }));
   await page.screenshot({ path: target, fullPage: true, animations: 'disabled' });
   await context.close();
-  return { side, status: response?.status() || null, ...metrics, assetFailures, consoleErrors, pageErrors };
+  return { side, status: response?.status() || null, ...metrics, hasOpenModal, assetFailures, consoleErrors, pageErrors };
 }
 
 function pad(image, width, height) {
