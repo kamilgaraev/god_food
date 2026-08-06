@@ -1277,6 +1277,9 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
     transform:scale(calc(100vw / 390px));
     transform-origin:top left;
   }
+
+  .catalog-page { padding-bottom:65.5625px; }
+  .catalog-filters { margin-bottom:98.4375px; }
 }
 
 /* Tablet inner-page calibration against the original 768px composition. */
