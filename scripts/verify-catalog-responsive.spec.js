@@ -30,13 +30,21 @@ const closeEnough = (actual, expected, tolerance, label) => {
       assert.equal(metrics.scrollWidth, width, `${width}px: horizontal overflow`);
       assert.equal(metrics.products.length, 6, `${width}px: all catalog products must remain visible`);
       assert.ok(metrics.products.every((product) => product.x >= 0 && product.x + product.width <= width), `${width}px: product is clipped`);
-      if (width === 430) {
-        closeEnough(metrics.products[0].x, 20, 1, '430px first product x');
-        closeEnough(metrics.products[0].y, 521, 2, '430px first product y');
-        closeEnough(metrics.products[0].imageWidth, 185, 1, '430px product image width');
-        closeEnough(metrics.products[0].imageHeight, 231.25, 1, '430px product image height');
-        closeEnough(metrics.footerY, 1935.5625, 2, '430px footer boundary');
-        closeEnough(metrics.height, 3384, 2, '430px document height');
+      if (width === 390 || width === 430) {
+        const expected = width === 390
+          ? { rows: [473, 944.9375, 1416.875], cardWidth: 185, cardHeights: [411.9375, 411.9375, 411.9375], imageWidth: 165, imageHeight: 206.25, footerY: 1888.8125, height: 3203 }
+          : { rows: [521, 999.75, 1456.8125], cardWidth: 205, cardHeights: [418.75, 397.0625, 418.75], imageWidth: 185, imageHeight: 231.25, footerY: 1935.5625, height: 3384 };
+        metrics.products.forEach((product, index) => {
+          const row = Math.floor(index / 2);
+          closeEnough(product.x, index % 2 === 0 ? 10 : 10 + expected.cardWidth, 1, `${width}px product ${index + 1} x`);
+          closeEnough(product.y, expected.rows[row], 1, `${width}px product ${index + 1} y`);
+          closeEnough(product.width, expected.cardWidth, 1, `${width}px product ${index + 1} width`);
+          closeEnough(product.height, expected.cardHeights[row], 1, `${width}px product ${index + 1} height`);
+          closeEnough(product.imageWidth, expected.imageWidth, 1, `${width}px product ${index + 1} image width`);
+          closeEnough(product.imageHeight, expected.imageHeight, 1, `${width}px product ${index + 1} image height`);
+        });
+        closeEnough(metrics.footerY, expected.footerY, 1, `${width}px footer boundary`);
+        closeEnough(metrics.height, expected.height, 2, `${width}px document height`);
       }
       if (width === 768) {
         const expectedRows = [467, 1040.921875, 1614.84375];
