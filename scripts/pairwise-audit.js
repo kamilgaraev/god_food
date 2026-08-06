@@ -16,7 +16,10 @@ const widths = (args.widths || args.width || '390').split(',');
 const group = args.group || 'core';
 const offset = Number(args.offset || 0);
 const limit = Number(args.limit || Number.MAX_SAFE_INTEGER);
-const selectedPairs = config.pairs.filter((pair) => group === 'all' || pair.group === group).slice(offset, offset + limit);
+const requestedIds = new Set((args.ids || '').split(',').filter(Boolean));
+const selectedPairs = config.pairs
+  .filter((pair) => (group === 'all' || pair.group === group) && (!requestedIds.size || requestedIds.has(pair.id)))
+  .slice(offset, offset + limit);
 
 function normalizeUrl(base, route) {
   return new URL(route, `${base}/`).href;
@@ -54,6 +57,27 @@ async function settlePage(page) {
   return assetFailures;
 }
 
+async function navigate(page, url) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError;
+}
+
+async function sourceProductIsComplete(page, viewport) {
+  await page.waitForFunction(() => document.querySelectorAll('.js-product-relevant').length >= 4, null, { timeout: 5000 }).catch(() => {});
+  return page.evaluate(({ width, height }) => {
+    const documentHeight = document.documentElement.scrollHeight;
+    const minimumHeight = width >= 901 ? 1800 : (width >= 601 ? 2200 : 1800);
+    return document.querySelectorAll('.js-product-relevant').length >= 4 && documentHeight >= Math.min(minimumHeight, height);
+  }, viewport);
+}
+
 async function capture(browser, side, url, viewport, target) {
   const context = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const page = await context.newPage();
@@ -61,8 +85,13 @@ async function capture(browser, side, url, viewport, target) {
   const pageErrors = [];
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   page.on('pageerror', (error) => pageErrors.push(error.message));
-  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
-  const assetFailures = await settlePage(page);
+  let response = await navigate(page, url);
+  let assetFailures = await settlePage(page);
+  if (side === 'source' && url.includes('/tproduct/') && !await sourceProductIsComplete(page, viewport)) {
+    response = await navigate(page, url);
+    assetFailures = await settlePage(page);
+    if (!await sourceProductIsComplete(page, viewport)) throw new Error(`Incomplete source product page after retry: ${url}`);
+  }
   const hasOpenModal = await page.locator('#commerce-modal.is-open .commerce-modal-panel').count() > 0;
   if (hasOpenModal) {
     await page.addStyleTag({ content: `

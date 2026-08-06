@@ -86,6 +86,11 @@ wp_set_current_user(1);
 ob_start();
 Theobroma_Admin_Tools::render_content_hub();
 $content_hub = (string) ob_get_clean();
-verify_value(str_contains($content_hub, 'Контент сайта') && str_contains($content_hub, 'Товары') && str_contains($content_hub, 'Рецепты') && str_contains($content_hub, 'Общие блоки'), 'content hub renders');
+verify_value(
+    str_contains($content_hub, 'post_type=product')
+    && str_contains($content_hub, 'post_type=theobroma_recipe')
+    && str_contains($content_hub, 'page=theobroma-settings'),
+    'content hub renders'
+);
 
 echo 'verification complete' . PHP_EOL;

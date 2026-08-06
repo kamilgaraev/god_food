@@ -28,13 +28,7 @@ $preferred_related_skus = apply_filters(
     $preferred_related_skus_by_product[$product->get_sku()] ?? array(),
     $product
 );
-$related_ids = array_values(array_filter(array_map('wc_get_product_id_by_sku', $preferred_related_skus), static function ($product_id) use ($product): bool {
-    return (int) $product_id > 0 && (int) $product_id !== $product->get_id();
-}));
-if (count($related_ids) < 4) {
-    $fallback_ids = wc_get_related_products($product->get_id(), 4 - count($related_ids), $related_ids);
-    $related_ids = array_merge($related_ids, $fallback_ids);
-}
+$related_ids = theobroma_related_product_ids($product, $preferred_related_skus);
 $mobile_related_skus_by_product = array(
     'theobroma-200-68-coriander' => array(
         'theobroma-30-whole-hazelnut',
@@ -54,13 +48,7 @@ $mobile_related_skus = apply_filters(
     $mobile_related_skus_by_product[$product->get_sku()] ?? $preferred_related_skus,
     $product
 );
-$mobile_related_ids = array_values(array_filter(array_map('wc_get_product_id_by_sku', $mobile_related_skus), static function ($product_id) use ($product): bool {
-    return (int) $product_id > 0 && (int) $product_id !== $product->get_id();
-}));
-if (count($mobile_related_ids) < 4) {
-    $mobile_related_ids = array_values(array_unique(array_merge($mobile_related_ids, $related_ids)));
-}
-$mobile_related_ids = array_slice($mobile_related_ids, 0, 4);
+$mobile_related_ids = theobroma_related_product_ids($product, $mobile_related_skus);
 $tablet_related_skus_by_product = array(
     'theobroma-200-65-cinnamon' => array(
         'theobroma-100-70',
@@ -74,13 +62,7 @@ $tablet_related_skus = apply_filters(
     $tablet_related_skus_by_product[$product->get_sku()] ?? $preferred_related_skus,
     $product
 );
-$tablet_related_ids = array_values(array_filter(array_map('wc_get_product_id_by_sku', $tablet_related_skus), static function ($product_id) use ($product): bool {
-    return (int) $product_id > 0 && (int) $product_id !== $product->get_id();
-}));
-if (count($tablet_related_ids) < 4) {
-    $tablet_related_ids = array_values(array_unique(array_merge($tablet_related_ids, $related_ids)));
-}
-$tablet_related_ids = array_slice($tablet_related_ids, 0, 4);
+$tablet_related_ids = theobroma_related_product_ids($product, $tablet_related_skus);
 $detail_copy = $product->get_meta('_theobroma_detail_copy', true);
 if (!is_array($detail_copy) || !$detail_copy) {
     $detail_copy = array_filter(array(

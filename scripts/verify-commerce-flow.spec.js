@@ -27,6 +27,21 @@ const widths = (process.env.THEOBROMA_WIDTHS || '390,768,1440').split(',').map(N
       assert.equal(await productAccordions.count(), 2, `${width}px: product accordions are missing`);
       assert.equal(await productAccordions.nth(0).getAttribute('open'), '', `${width}px: product description must be open by default`);
       assert.equal(await productAccordions.nth(1).getAttribute('open'), null, `${width}px: product benefit must be closed by default`);
+      assert.equal(
+        await page.locator('#commerce-modal').evaluate((element) => getComputedStyle(element).backgroundColor),
+        'rgb(252, 249, 247)',
+        `${width}px: product view backdrop must match the source page`,
+      );
+      if (width === 768) {
+        const panelBox = await page.locator('#commerce-modal .commerce-modal-panel').boundingBox();
+        const imageBox = await page.locator('#commerce-modal .product-detail-image').boundingBox();
+        assert.equal(Math.round(panelBox.width), 640, '768px: product panel width differs from source');
+        assert.deepEqual(
+          { width: Math.round(imageBox.width), height: Math.round(imageBox.height) },
+          { width: 600, height: 798 },
+          '768px: product image geometry differs from source',
+        );
+      }
       await page.locator('#commerce-modal .single_add_to_cart_button').click();
 
       await page.locator('#commerce-modal[data-commerce-type="cart"].is-open').waitFor();

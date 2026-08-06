@@ -1387,6 +1387,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .product-image-lightbox-close::after { transform:rotate(-45deg); }
 .product-image-lightbox-close:focus-visible { outline:2px solid #b0903d; outline-offset:3px; }
 .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { min-height:1651px; margin:65px auto; }
+.commerce-modal[data-commerce-type="product"] { background:#fcf9f7; }
 .commerce-modal[data-commerce-type="product"] .commerce-modal-back { display:block; }
 .commerce-modal[data-commerce-type="product"] .commerce-modal-close::before,
 .commerce-modal[data-commerce-type="product"] .commerce-modal-close::after { background:#fff; }
@@ -1529,26 +1530,27 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-checkout { margin-top:62px; }
 }
 @media (min-width:601px) and (max-width:900px) {
-  .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { width:600px; min-height:2021px; margin:65px auto; }
-  .commerce-modal-product .product-detail-page { width:600px; min-height:2021px; padding:30px 0; }
-  .commerce-modal-product .product-detail-hero { width:580px; margin-inline:auto; display:block; }
+  .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { width:640px; min-height:2021px; margin:65px auto; }
+  .commerce-modal-product .product-detail-page { width:640px; min-height:2021px; padding:55px 0 30px; }
+  .commerce-modal-product .product-detail-hero { width:640px; margin-inline:auto; display:block; }
   .commerce-modal-product .product-detail-gallery,
-  .commerce-modal-product .product-detail-image { width:580px; }
-  .commerce-modal-product .product-detail-image { height:888px; aspect-ratio:auto; }
+  .commerce-modal-product .product-detail-image { width:600px; margin-inline:auto; }
+  .commerce-modal-product .product-detail-image { height:798px; aspect-ratio:auto; }
   .commerce-modal-product .product-detail-image img { object-position:left center; }
-  .commerce-modal-product .product-detail-summary { min-height:429.03125px; }
-  .commerce-modal-product .product-detail-accordions { width:580px; min-height:127px; margin:29px auto 0; }
-  .commerce-modal-product .product-detail-accordions summary { height:63.5px; padding:19.75px 0; font:400 16px/24px 'Montserrat',Arial,sans-serif; }
-  .commerce-modal-product .product-detail-accordions details div { width:100%; }
-  .commerce-modal-product .product-related { width:560px; margin:45px auto 0; padding:0; }
+  .commerce-modal-product .product-detail-summary { width:620px; min-height:481px; margin-inline:auto; }
+  .commerce-modal-product .product-detail-accordions { width:600px; min-height:127px; margin:29px auto 0; }
+  .commerce-modal-product .product-detail-accordions summary { height:60px; padding:21.9px 0; font:500 12px/16.2px 'Cormorant',Arial,sans-serif; }
+  .commerce-modal-product .product-detail-accordions details div { width:100%; font:400 10px/15.5px 'Cormorant',Arial,sans-serif; }
+  .commerce-modal-product .product-detail-accordions details p { margin-bottom:15.5px; }
+  .commerce-modal-product .product-related { width:600px; margin:40px auto 0; padding:0; }
   .commerce-modal-product .product-related > h2 { margin-bottom:71px; }
   .commerce-modal-product .product-related-grid-desktop,
   .commerce-modal-product .product-related-grid-mobile { display:none; }
   .commerce-modal-product .product-related-grid-tablet { display:flex; gap:40px; overflow-x:auto; scrollbar-width:none; }
   .commerce-modal-product .product-related-grid-tablet::-webkit-scrollbar { display:none; }
-  .commerce-modal-product .product-related-grid article { flex:0 0 220px; width:220px; min-width:220px; min-height:463px; }
+  .commerce-modal-product .product-related-grid article { flex:0 0 228px; width:228px; min-width:228px; min-height:463px; }
   .commerce-modal-product .product-related-image,
-  .commerce-modal-product .product-related-image img { width:220px; height:275px; }
+  .commerce-modal-product .product-related-image img { width:228px; height:285px; }
   .commerce-modal-product .product-related-button { top:428px; }
 }
 
