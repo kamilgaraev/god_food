@@ -371,6 +371,7 @@ body.account-modal-open { overflow:hidden; }
 .media-article-source { display:inline-block; margin-top:45px; color:#ff8066; font:400 17px/22px 'Montserrat',Arial,sans-serif; }
 .media-article time { display:block; margin-top:62px; color:#999; font:400 7px/10px 'Montserrat',Arial,sans-serif; letter-spacing:.2em; }
 .corporate-gifts-page { background:#fcf9f7; color:#241d19; }
+.theobroma-honeypot { position:absolute !important; left:-9999px !important; width:1px !important; height:1px !important; overflow:hidden !important; }
 .corporate-gifts-hero { min-height:570px; padding:150px max(28px,calc((100% - 1160px)/2)) 92px; background:#f3ebe4 url('assets/images/hero-bg-original.jpg') center/cover no-repeat; }
 .corporate-gifts-eyebrow { margin:0 0 16px; color:#b0903d; font:600 12px/16px 'Montserrat',Arial,sans-serif; text-transform:uppercase; letter-spacing:.08em; }
 .corporate-gifts-hero h1,.corporate-gifts-request h2 { position:static; width:auto; margin:0; color:#000; font:400 62px/59px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }

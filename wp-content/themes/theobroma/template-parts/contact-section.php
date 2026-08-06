@@ -8,6 +8,7 @@
             <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
                 <input type="hidden" name="action" value="theobroma_contact">
                 <?php wp_nonce_field('theobroma_contact', 'theobroma_contact_nonce'); ?>
+                <?php theobroma_contact_antispam_fields(); ?>
                 <div class="form-grid">
                     <input type="text" name="name" placeholder="Имя" aria-label="Имя" required>
                     <div class="phone-field">

@@ -360,8 +360,10 @@ function theobroma_handle_contact_request(): void {
     $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
     $request_type = sanitize_key(wp_unslash($_POST['request_type'] ?? 'contact'));
     $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $honeypot = sanitize_text_field(wp_unslash($_POST['theobroma_website'] ?? ''));
+    $started_at = absint($_POST['theobroma_form_started'] ?? 0);
     $consent = sanitize_text_field(wp_unslash($_POST['consent'] ?? ''));
-    if ($name === '' || $phone === '' || $consent !== '1' || ($request_type === 'corporate_gift' && !is_email($email))) {
+    if ($name === '' || $phone === '' || $consent !== '1' || $honeypot !== '' || $started_at === 0 || (time() - $started_at) < 3 || ($request_type === 'corporate_gift' && !is_email($email))) {
         wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')));
         exit;
     }
@@ -390,6 +392,10 @@ function theobroma_handle_contact_request(): void {
 }
 add_action('admin_post_nopriv_theobroma_contact', 'theobroma_handle_contact_request');
 add_action('admin_post_theobroma_contact', 'theobroma_handle_contact_request');
+
+function theobroma_contact_antispam_fields(): void {
+    printf('<input type="hidden" name="theobroma_form_started" value="%d"><p class="theobroma-honeypot" aria-hidden="true"><label>Website<input type="text" name="theobroma_website" tabindex="-1" autocomplete="off"></label></p>', time());
+}
 
 /**
  * Shared, progressively enhanced commerce modal shell.
