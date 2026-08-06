@@ -44,6 +44,12 @@ const widths = [1440, 1920, 2048, 2560, 3840];
 
     const mobile = await browser.newPage({ viewport: { width: 430, height: 932 } });
     await mobile.goto(url, { waitUntil: 'networkidle' });
+    await mobile.waitForTimeout(3000);
+    assert.equal(
+      await mobile.locator('.hero h1').evaluate((title) => getComputedStyle(title).visibility),
+      'visible',
+      '430px: hero title remains hidden after critical fonts settle',
+    );
     const mobileMetrics = await mobile.evaluate(() => {
       const rect = (selector) => {
         const box = document.querySelector(selector).getBoundingClientRect();
@@ -56,6 +62,9 @@ const widths = [1440, 1920, 2048, 2560, 3840];
         cart: rect('.floating-actions a:nth-child(1)'),
         favorite: rect('.floating-actions a:nth-child(2)'),
         menu: rect('.menu-toggle'),
+        heroTitle: rect('.hero h1'),
+        heroLead: rect('.hero p'),
+        heroButton: rect('.hero .button'),
       };
     });
     const expectedMobile = {
@@ -64,13 +73,16 @@ const widths = [1440, 1920, 2048, 2560, 3840];
       cart: { x: 225.78, y: 60.19, width: 64.5, height: 47.03 },
       favorite: { x: 297.02, y: 60.19, width: 64.5, height: 47.03 },
       menu: { x: 368.25, y: 53.47, width: 59.13, height: 59.13 },
+      heroTitle: { x: 33.94, y: 156.95, width: 362.13, height: 137.1 },
+      heroLead: { x: 76.56, y: 310.17, width: 278.2, height: 53.75 },
+      heroButton: { x: 97.41, y: 390.81, width: 235.19, height: 48.38 },
     };
     for (const [name, expected] of Object.entries(expectedMobile)) {
       for (const [metric, target] of Object.entries(expected)) {
         const actual = mobileMetrics[name][metric];
         assert.ok(
-          Math.abs(actual - target) <= 1,
-          `430px: ${name} ${metric} is ${actual}px, expected ${target}px (+/- 1px)`,
+          Math.abs(actual - target) <= (name.startsWith('hero') ? 2 : 1),
+          `430px: ${name} ${metric} is ${actual}px, expected ${target}px`,
         );
       }
     }

@@ -1052,6 +1052,12 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .floating-actions a span { display:inline; font-size:12px; line-height:1; }
   .floating-actions a:nth-child(3) span { display:none; }
 
+  .hero-inner { padding-top:120.96875px; }
+  .hero h1 { left:0; width:362.125px; font-size:40px; line-height:40px; }
+  .hero h1 span { width:362.125px; height:45.6875px; }
+  .hero p { left:0; width:278.2px; margin-top:15px; font-size:18.8px; line-height:26.875px; }
+  .hero .button { left:0; width:235.1875px; min-height:48.375px; margin-top:26.890625px; font-size:18.8px; }
+
   .catalog-page::before { top:27px; width:145px; height:190.910625px; }
   .catalog-breadcrumb { padding-top:121px; }
   .catalog-title { margin-bottom:36px; transform:translateY(2.90625px); }
