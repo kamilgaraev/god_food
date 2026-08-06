@@ -1436,7 +1436,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-intro > h1 { width:487px; margin-inline:auto; font-size:44px; line-height:44px; transform:translateY(4px); }
   .buy-lead { width:450.0625px; margin:13px auto 0; transform:translateY(6px); font-size:16px; line-height:21px; }
   .buy-location { height:388px; min-height:388px; margin-top:41px; }
-  .buy-location img { aspect-ratio:2/1; }
+  .buy-location img { aspect-ratio:2/1; object-position:50% 88.462%; }
   .buy-location .button { right:20px; bottom:26px; width:165px; }
   .buy-intro { padding-bottom:80px; }
   .buy-decor-left { top:235px; width:150px; height:202px; }
