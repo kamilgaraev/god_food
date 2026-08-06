@@ -8,8 +8,8 @@ const closeEnough = (actual, expected, tolerance, label) => {
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
-    for (const width of [390, 430]) {
-      const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 932 }, reducedMotion: 'reduce' });
+    for (const width of [390, 430, 768]) {
+      const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : (width === 430 ? 932 : 1024) }, reducedMotion: 'reduce' });
       const page = await context.newPage();
       await page.goto('http://localhost:8080/catalog/', { waitUntil: 'networkidle' });
       await page.evaluate(async () => document.fonts?.ready);
@@ -17,7 +17,7 @@ const closeEnough = (actual, expected, tolerance, label) => {
         const products = [...document.querySelectorAll('ul.products li.product')].map((product) => {
           const rect = product.getBoundingClientRect();
           const image = product.querySelector('img').getBoundingClientRect();
-          return { x: rect.x, y: rect.y + scrollY, width: rect.width, imageWidth: image.width, imageHeight: image.height };
+          return { x: rect.x, y: rect.y + scrollY, width: rect.width, height: rect.height, imageWidth: image.width, imageHeight: image.height };
         });
         const footer = document.querySelector('.site-footer').getBoundingClientRect();
         return {
@@ -37,6 +37,19 @@ const closeEnough = (actual, expected, tolerance, label) => {
         closeEnough(metrics.products[0].imageHeight, 231.25, 1, '430px product image height');
         closeEnough(metrics.footerY, 1935.5625, 2, '430px footer boundary');
         closeEnough(metrics.height, 3384, 2, '430px document height');
+      }
+      if (width === 768) {
+        const expectedRows = [467, 1040.921875, 1614.84375];
+        metrics.products.forEach((product, index) => {
+          closeEnough(product.x, index % 2 === 0 ? 84 : 404, 1, `768px product ${index + 1} x`);
+          closeEnough(product.y, expectedRows[Math.floor(index / 2)], 2, `768px product ${index + 1} y`);
+          closeEnough(product.width, 280, 1, `768px product ${index + 1} width`);
+          closeEnough(product.height, 529, 1, `768px product ${index + 1} height`);
+          closeEnough(product.imageWidth, 280, 1, `768px product ${index + 1} image width`);
+          closeEnough(product.imageHeight, 350, 1, `768px product ${index + 1} image height`);
+        });
+        closeEnough(metrics.footerY, 2240.453125, 2, '768px footer boundary');
+        closeEnough(metrics.height, 3039, 2, '768px document height');
       }
       await context.close();
     }

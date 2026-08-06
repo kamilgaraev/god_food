@@ -1361,6 +1361,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .catalog-page ul.products li.product .price { font-size:18px; line-height:24.3px; }
   .catalog-page ul.products li.product .woocommerce-Price-currencySymbol { margin-left:4px; }
   .catalog-page ul.products li.product .button { top:471.78125px; bottom:auto; width:165px; height:35px; }
+  .catalog-page { padding-bottom:102.453125px; }
 
   .recipes-breadcrumb { padding-top:148px; transform:translateY(4px); }
   .recipes-intro > h1 { width:512px; margin-inline:auto; font-size:44px; line-height:44px; transform:translateY(6px); }
