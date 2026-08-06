@@ -6,6 +6,7 @@ require_once '/var/www/html/wp-load.php';
 
 $hasCdekLifecycle = false;
 $hasOzonLifecycle = false;
+$hasLoyaltyLifecycle = false;
 $hook = $GLOBALS['wp_filter']['woocommerce_order_status_processing'] ?? null;
 if ($hook instanceof WP_Hook) {
     foreach ($hook->callbacks as $callbacks) {
@@ -22,6 +23,21 @@ if ($hook instanceof WP_Hook) {
 }
 if (!$hasCdekLifecycle || !$hasOzonLifecycle) {
     throw new RuntimeException('Theobroma paid-order provider hooks are not registered');
+}
+
+$paymentHook = $GLOBALS['wp_filter']['woocommerce_payment_complete'] ?? null;
+if ($paymentHook instanceof WP_Hook) {
+    foreach ($paymentHook->callbacks as $callbacks) {
+        foreach ($callbacks as $callback) {
+            $function = $callback['function'] ?? null;
+            if (is_array($function) && is_object($function[0]) && $function[0] instanceof Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle) {
+                $hasLoyaltyLifecycle = true;
+            }
+        }
+    }
+}
+if (!$hasLoyaltyLifecycle) {
+    throw new RuntimeException('Loyalty payment hook is not registered');
 }
 
 if (!has_action('rest_api_init')) {

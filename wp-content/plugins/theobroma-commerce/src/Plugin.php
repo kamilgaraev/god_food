@@ -12,6 +12,7 @@ use Theobroma\Commerce\Rest\CdekPointsController;
 use Theobroma\Commerce\Rest\CdekWebhookController;
 use Theobroma\Commerce\Orders\CdekOrderLifecycle;
 use Theobroma\Commerce\Orders\OzonOrderLifecycle;
+use Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle;
 use Theobroma\Commerce\Products\OzonProductFields;
 use Theobroma\Commerce\Shipping\CdekShippingMethod;
 
@@ -34,6 +35,7 @@ final class Plugin
         (new CdekWebhookController())->register();
         (new CdekOrderLifecycle())->register();
         (new OzonOrderLifecycle())->register();
+        (new WooLoyaltyLifecycle())->register();
         (new OzonProductFields())->register();
         (new ProductWeightBackfill())->register();
     }
