@@ -14,7 +14,21 @@ async function waitForProduct(page, side) {
     side === 'source' ? '.t-store__prod-popup__slider' : '.commerce-modal.is-open .product-detail-image',
     { state: 'visible', timeout: 20_000 },
   );
+  await page.waitForLoadState('load');
   await page.evaluate(() => document.fonts?.ready);
+  if (viewportWidth <= 460) {
+    const selector = side === 'source' ? '.js-product-relevant' : '.commerce-modal.is-open .product-related-grid-mobile article';
+    await page.waitForFunction((cardSelector) => {
+      const card = document.querySelector(cardSelector);
+      if (!card) return false;
+      const width = card.getBoundingClientRect().width;
+      const previous = window.__theobromaStableCardWidth || { width: 0, count: 0 };
+      window.__theobromaStableCardWidth = Math.abs(previous.width - width) <= 0.1
+        ? { width, count: previous.count + 1 }
+        : { width, count: 0 };
+      return width > 100 && window.__theobromaStableCardWidth.count >= 3;
+    }, selector, { polling: 100, timeout: 10_000 });
+  }
 }
 
 async function main() {
@@ -117,6 +131,12 @@ async function main() {
       const rect = element.getBoundingClientRect();
       return [name, { x: rect.x, y: rect.y, width: rect.width, height: rect.height }];
     })));
+    const sourceTitle = await source.locator('.t-store__prod-popup__info .js-store-prod-name').textContent();
+    const localTitle = await local.locator('.commerce-modal.is-open .product-detail-summary h1').textContent();
+    const sourcePrimaryButton = await source.locator('.t-store__prod-popup__btn').boundingBox();
+    const localPrimaryButton = await local.locator('.commerce-modal.is-open .single_add_to_cart_button').boundingBox();
+    const sourceFirstProse = await source.locator('.js-store-prod-all-text span').first().boundingBox();
+    const localFirstProse = await local.locator('.commerce-modal.is-open .product-detail-copy p').first().boundingBox();
 
     const relatedVariant = viewportWidth <= 600 ? 'mobile' : (viewportWidth <= 900 ? 'tablet' : 'desktop');
     const sourceRelatedParts = {
@@ -131,6 +151,20 @@ async function main() {
     };
 
     console.log(JSON.stringify({ source: sourceMetrics, local: localMetrics }));
+
+    if (sourceTitle.trim() !== localTitle.trim()) {
+      throw new Error(`Product title differs: source "${sourceTitle.trim()}", local "${localTitle.trim()}"`);
+    }
+    for (const key of ['x', 'y', 'width', 'height']) {
+      if (Math.abs(sourcePrimaryButton[key] - localPrimaryButton[key]) > 1.5) {
+        throw new Error(`Primary product button ${key} differs: source ${sourcePrimaryButton[key]}, local ${localPrimaryButton[key]}`);
+      }
+    }
+    for (const key of ['x', 'y']) {
+      if (Math.abs(sourceFirstProse[key] - localFirstProse[key]) > 1.5) {
+        throw new Error(`First product prose ${key} differs: source ${sourceFirstProse[key]}, local ${localFirstProse[key]}`);
+      }
+    }
 
     for (const key of ['x', 'y', 'width', 'height']) {
       if (viewportWidth <= 460 && Math.abs(sourceMetrics.image[key] - localMetrics.image[key]) > 0.5) {
