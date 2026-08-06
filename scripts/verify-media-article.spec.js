@@ -16,14 +16,14 @@ const widths = [390, 768, 1440];
       assert.equal(await page.locator('.media-article-products [data-product-modal-link]').count(), 9, `${width}px: every related product must have image, title and purchase modal links`);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width, `${width}px: horizontal overflow detected`);
 
-      if (width === 390) {
-        await page.locator('.media-article-products [data-product-modal-link]').first().click();
-        await page.locator('#commerce-modal.is-open').waitFor();
-        await page.locator('#commerce-modal .product-detail-page').waitFor();
-        assert.equal(await page.locator('#commerce-modal .product-detail-page').count(), 1, 'product modal did not render');
-        await page.locator('.commerce-modal-close').click();
-        await page.locator('#commerce-modal').evaluate((modal) => assert.equal(modal.hidden, true, 'product modal did not close'));
-      }
+      await page.locator('.media-article-products [data-product-modal-link]').first().click();
+      await page.locator('#commerce-modal.is-open').waitFor();
+      await page.locator('#commerce-modal .product-detail-page').waitFor();
+      assert.equal(await page.locator('#commerce-modal .product-detail-page').count(), 1, `${width}px: product modal did not render`);
+      const closeControl = width <= 600 ? '.commerce-modal-back' : '.commerce-modal-close';
+      await page.locator(closeControl).click();
+      await page.locator('#commerce-modal').waitFor({ state: 'hidden' });
+      assert.equal(await page.locator('#commerce-modal').getAttribute('hidden'), '', `${width}px: product modal did not close`);
 
       await page.close();
     }
