@@ -18,7 +18,7 @@ final class OzonClientTest extends TestCase
         ]);
         $client = new OzonClient($transport, 'private-oauth-token');
 
-        $client->deliveryCheck(['phone' => '+79990000000']);
+        $client->deliveryCheck(['client_phone' => '79990000000']);
         $client->deliveryPointList(['limit' => 100]);
         $client->deliveryCheckout(['delivery_method' => 'pickup', 'products' => []]);
 
@@ -36,17 +36,17 @@ final class OzonClientTest extends TestCase
         $transport = new RecordingTransport([
             ['status' => 200, 'body' => ['result' => ['map_url' => 'https://example.test/map']]],
             ['status' => 200, 'body' => ['result' => ['id' => 10]]],
-            ['status' => 200, 'body' => ['result' => ['order_id' => 77, 'postings' => [['posting_number' => 'P1']]]]],
+            ['status' => 200, 'body' => ['result' => ['order_number' => 'OZ-77', 'postings' => ['P1']]]],
         ]);
         $client = new OzonClient($transport, 'private-oauth-token');
 
-        $map = $client->deliveryMap(['phone' => '+79990000000']);
+        $map = $client->deliveryMap(['client_phone' => '79990000000']);
         $point = $client->deliveryPointInfo(['id' => 10]);
         $order = $client->createOrder(['external_order_id' => 'WC-42']);
 
         $this->assertSame('https://example.test/map', $map['map_url']);
         $this->assertSame(10, $point['id']);
-        $this->assertSame(77, $order['order_id']);
+        $this->assertSame('OZ-77', $order['order_number']);
     }
 
     public function testSupportsDocumentedCancellationTrackingReturnsAndStocksEndpoints(): void

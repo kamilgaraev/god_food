@@ -8,7 +8,8 @@ use Theobroma\Commerce\Integrations\Ozon\OzonOrderApi;
 
 final class OzonOrderService
 {
-    private const ORDER_ID_META = '_theobroma_ozon_order_id';
+    private const ORDER_NUMBER_META = '_theobroma_ozon_order_number';
+    private const LEGACY_ORDER_ID_META = '_theobroma_ozon_order_id';
     private const POSTINGS_META = '_theobroma_ozon_postings';
 
     public function __construct(private readonly OzonOrderApi $api)
@@ -16,36 +17,42 @@ final class OzonOrderService
     }
 
     /** @param array<mixed> $payload */
-    public function create(ShipmentOrder $order, bool $paid, array $payload): ?int
+    public function create(ShipmentOrder $order, bool $paid, array $payload): ?string
     {
         if (!$paid) {
             return null;
         }
 
-        $existing = (int) $order->get(self::ORDER_ID_META);
-        if ($existing > 0) {
+        $existing = trim((string) $order->get(self::ORDER_NUMBER_META));
+        if ($existing === '') {
+            $existing = trim((string) $order->get(self::LEGACY_ORDER_ID_META));
+        }
+        if ($existing !== '') {
             return $existing;
         }
 
         $response = $this->api->createOrder($payload);
-        $orderId = (int) ($response['order_id'] ?? 0);
-        if ($orderId <= 0) {
+        $orderNumber = trim((string) ($response['order_number'] ?? ''));
+        if ($orderNumber === '') {
             throw new \RuntimeException('Ozon accepted the request but did not confirm order creation');
         }
 
         $postingNumbers = [];
         foreach ((array) ($response['postings'] ?? []) as $posting) {
-            if (!is_array($posting) || trim((string) ($posting['posting_number'] ?? '')) === '') {
+            $postingNumber = is_array($posting)
+                ? trim((string) ($posting['posting_number'] ?? ''))
+                : trim((string) $posting);
+            if ($postingNumber === '') {
                 continue;
             }
-            $postingNumbers[] = trim((string) $posting['posting_number']);
+            $postingNumbers[] = $postingNumber;
         }
 
-        $order->set(self::ORDER_ID_META, $orderId);
+        $order->set(self::ORDER_NUMBER_META, $orderNumber);
         $order->set(self::POSTINGS_META, array_values(array_unique($postingNumbers)));
-        $order->note(sprintf('Заказ Ozon Доставки создан: %d', $orderId));
+        $order->note(sprintf('Заказ Ozon Доставки создан: %s', $orderNumber));
         $order->save();
 
-        return $orderId;
+        return $orderNumber;
     }
 }
