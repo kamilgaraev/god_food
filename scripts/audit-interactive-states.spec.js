@@ -176,7 +176,7 @@ const assertNoViewportOverflow = async (page, label) => {
       const plus = page.locator('.commerce-cart-product [data-cart-quantity="2"]');
       await plus.click();
       await page.locator('.commerce-cart-quantity span').filter({ hasText: '2' }).waitFor();
-      await page.locator('.commerce-cart-clear').click();
+      await page.locator('.commerce-cart-remove').first().click();
       await page.locator('.commerce-cart-empty').waitFor();
 
       await assertNoViewportOverflow(page, `${widthKey}px`);

@@ -54,7 +54,8 @@ const widths = (process.env.THEOBROMA_WIDTHS || '390,768,1440').split(',').map(N
       );
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width, `${width}px: horizontal overflow detected`);
 
-      await page.locator('.commerce-cart-clear').click();
+      await page.locator('.commerce-cart-remove').first().click();
+      await page.locator('.commerce-cart--empty').waitFor();
       await page.close();
     }
   } finally {
