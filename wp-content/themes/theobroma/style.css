@@ -1168,12 +1168,12 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cooperation-chocolate { margin-top:50px; }
   .cooperation-page { width:390px; height:auto; padding-bottom:49.109375px; margin-inline:auto; }
 
-  .delivery-page { padding:361px 0 53px; }
-  .delivery-breadcrumb { top:121px; }
-  .delivery-page > h1 { top:161.90625px; left:47.53125px; width:294.984375px; transform:none; }
-  .delivery-lead { top:247.234375px; left:45.09375px; width:301.078125px; padding:0; transform:none; font-size:14.625px; line-height:19.5px; }
-  .delivery-decor { top:55px; width:125px; height:168px; }
-  .delivery-accordion { width:350px; }
+  .delivery-page { padding:calc(94.140625vw - 7.8046875px) 0 0; }
+  .delivery-page .delivery-breadcrumb { top:calc(32.890625vw - 9.9453125px); left:18.4375vw; width:63.125vw; font-size:3.4375vw; line-height:5.3125vw; }
+  .delivery-page > h1 { top:calc(42.890625vw - 7.0234375px); left:12.1875vw; width:75.6375vw; padding:0; transform:none; font-size:9.375vw; line-height:9.375vw; }
+  .delivery-lead { top:calc(64.765625vw - 7.0078125px); left:11.5625vw; width:77.2vw; padding:0; transform:none; font-size:3.75vw; line-height:5vw; }
+  .delivery-decor { top:calc(19.453125vw - 7.0546875px); width:27.1875vw; height:36.602564vw; }
+  .delivery-accordion { width:calc(100vw - 40px); }
   .delivery-accordion summary { height:auto; min-height:0; padding:20px; position:relative; display:block; }
   .delivery-accordion summary span { width:max-content; max-width:310px; padding-right:30px; display:block; box-sizing:border-box; font-size:22px; line-height:29.6875px; }
   .delivery-accordion summary i { position:absolute; top:50%; right:16px; margin:0; transform:translateY(-50%); }
