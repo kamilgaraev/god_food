@@ -1365,12 +1365,12 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 
 /* Tilda proportionally scales its desktop delivery record from a 1200px artboard. */
 @media (min-width:901px) {
-  .site-header { height:calc(2.5vw - .2px); }
-  .shipping { min-height:calc(2.5vw - .2px); }
-  .shipping img { width:1.5vw; height:1.5vw; position:absolute; top:.5vw; left:41.166667vw; object-fit:contain; zoom:1; }
-  .shipping span { width:auto; position:absolute; top:.5vw; left:43.666667vw; zoom:1; font-size:.916667vw; line-height:1.416667vw; }
-  .nav { top:calc(2.5vw - .2px); }
-  .floating-actions { top:calc(2.5vw + 22.8px); }
+  .site-header { height:min(calc(2.5vw - .2px),51px); }
+  .shipping { min-height:min(calc(2.5vw - .2px),51px); }
+  .shipping img { width:min(1.5vw,30.72px); height:min(1.5vw,30.72px); position:absolute; top:min(.5vw,10.24px); left:calc(50% - min(8.833333vw,180.906667px)); object-fit:contain; zoom:1; }
+  .shipping span { width:auto; position:absolute; top:min(.5vw,10.24px); left:calc(50% - min(6.333333vw,129.706667px)); zoom:1; font-size:min(.916667vw,18.77334px); line-height:min(1.416667vw,29.01334px); }
+  .nav { top:min(calc(2.5vw - .2px),51px); }
+  .floating-actions { top:min(calc(2.5vw + 22.8px),74px); }
 }
 
 .commerce-modal-cart { width:560px; margin:65px auto 60px; padding:40px; background:#fcf9f7; color:#343434; }
