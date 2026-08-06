@@ -1472,3 +1472,23 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal-product .product-related-image img { width:220px; height:275px; }
   .commerce-modal-product .product-related-button { top:428px; }
 }
+
+/* Loyalty is provided by the commerce plugin; the theme owns only its visual presentation. */
+.theobroma-loyalty-checkout { margin:28px 0 24px; padding:22px 20px; border:1px solid rgba(176,144,61,.35); background:#f3ebe4; color:#343434; font:400 13px/19px 'Montserrat',Arial,sans-serif; }
+.theobroma-loyalty-checkout h3 { margin:0 0 8px !important; color:#111 !important; font:500 20px/26px 'Cormorant',Arial,sans-serif !important; }
+.theobroma-loyalty-balance { margin:0 0 16px; }
+.theobroma-loyalty-balance strong { color:#9b7827; font-weight:500; }
+.theobroma-loyalty-control { display:grid; grid-template-columns:minmax(0,1fr) 130px; gap:8px 12px; align-items:end; }
+.theobroma-loyalty-control label { grid-column:1/-1; margin:0 !important; color:#6f655e !important; font:400 12px/17px 'Montserrat',Arial,sans-serif !important; }
+.theobroma-loyalty-control input { width:100% !important; height:42px !important; min-height:42px !important; padding:0 14px !important; border:0 !important; border-bottom:1px solid #b0903d !important; border-radius:0 !important; background:#fcf9f7 !important; color:#343434 !important; font:400 14px/20px 'Montserrat',Arial,sans-serif !important; }
+.theobroma-loyalty-control .button { width:130px; height:42px; min-height:42px; margin:0; padding:0 15px; border:0; border-radius:999px; color:#fff; background:#b0903d; font:500 13px/18px 'Montserrat',Arial,sans-serif; }
+.theobroma-loyalty-control .button:disabled { cursor:wait; opacity:.6; }
+.theobroma-loyalty-status { min-height:18px; margin:8px 0 0; color:#6d7d51; font-size:11px; line-height:18px; }
+.theobroma-loyalty-status.is-error { color:#8c3b2f; }
+
+@media (max-width:600px) {
+  .theobroma-loyalty-checkout { margin:24px 0 20px; padding:20px 16px; }
+  .theobroma-loyalty-control { grid-template-columns:1fr; }
+  .theobroma-loyalty-control label { grid-column:auto; }
+  .theobroma-loyalty-control .button { width:100%; }
+}
