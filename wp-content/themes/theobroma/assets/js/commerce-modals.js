@@ -35,11 +35,18 @@
         });
     };
 
+    const focusFirstModalControl = () => {
+        const focusable = Array.from(panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+            .find((element) => element.getClientRects().length);
+        focusable?.focus({ preventScroll: true });
+    };
+
     const setLoading = (label = 'Загрузка…') => {
         status.textContent = label;
         status.hidden = false;
         content.replaceChildren();
         panel.scrollTop = 0;
+        focusFirstModalControl();
     };
 
     const showModal = (type, label) => {
@@ -238,8 +245,12 @@
             window.localStorage.setItem(wishlistStorageKey, JSON.stringify([...wishlistIds]));
             renderWishlist(response.data.items || []);
             syncWishlistUi();
+            focusFirstModalControl();
         } catch (error) {
-            if (error.name !== 'AbortError') renderWishlist([]);
+            if (error.name !== 'AbortError') {
+                renderWishlist([]);
+                focusFirstModalControl();
+            }
         }
     };
 
@@ -308,6 +319,7 @@
                 productCache.set(url, await response.text());
             }
             renderProduct(productCache.get(url));
+            focusFirstModalControl();
         } catch (error) {
             if (error.name === 'AbortError') {
                 return;
@@ -348,6 +360,7 @@
                 throw new Error(response.data?.message || 'Cart request failed');
             }
             renderCart(response.data);
+            focusFirstModalControl();
         } catch (error) {
             if (error.name === 'AbortError') {
                 return;
@@ -369,6 +382,7 @@
                 throw new Error(response.data?.message || 'Cart update failed');
             }
             renderCart(response.data);
+            if (Number(response.data.count) === 0) focusFirstModalControl();
             if (window.jQuery) {
                 window.jQuery(document.body).trigger('wc_fragment_refresh');
             }
@@ -479,7 +493,10 @@
 
         if (event.target.closest('[data-wishlist-clear]')) {
             wishlistIds.clear();
-            persistWishlist().then(() => renderWishlist([]));
+            persistWishlist().then(() => {
+                renderWishlist([]);
+                focusFirstModalControl();
+            });
             return;
         }
 
@@ -559,7 +576,13 @@
             return;
         }
         if (!modal.hidden) {
+            const opener = trigger;
             hideModal({ restoreFocus: false });
+            window.requestAnimationFrame(() => {
+                if (opener instanceof HTMLElement && opener.isConnected) {
+                    opener.focus({ preventScroll: true });
+                }
+            });
         }
     });
 
@@ -572,6 +595,8 @@
         }, '', window.location.href);
         showModal('product', 'Информация о товаре');
         mountProduct(directProduct);
+        focusFirstModalControl();
+        directProduct.closest('.product-modal-source')?.remove();
     }
     syncWishlistUi();
     window.localStorage.setItem(wishlistStorageKey, JSON.stringify([...wishlistIds]));

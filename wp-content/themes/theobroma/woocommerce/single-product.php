@@ -62,7 +62,7 @@ if (!$main_image_url) {
 $shop_url = wc_get_page_permalink('shop');
 get_header();
 ?>
-<main class="product-modal-underlay" aria-hidden="true"><i></i></main>
+<div class="product-modal-underlay" aria-hidden="true"><i></i></div>
 <div class="product-modal-source" hidden>
 <main class="product-detail-page product-detail-sku-<?php echo esc_attr(sanitize_html_class($product->get_sku())); ?> product-detail-benefits-<?php echo esc_attr((string) count($product_benefits)); ?>">
     <a class="product-detail-back" href="<?php echo esc_url($shop_url); ?>">← Назад</a>

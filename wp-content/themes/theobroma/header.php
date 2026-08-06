@@ -7,12 +7,13 @@
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<a class="skip-link" href="#theobroma-main">Перейти к основному содержимому</a>
 <header class="site-header">
     <div class="shipping"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/truck-original.webp'); ?>" alt=""><span><?php echo esc_html(theobroma_content('shipping_text')); ?></span></div>
     <nav class="nav" aria-label="Основная навигация">
         <div class="nav-links"><a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : '#catalog'); ?>">Каталог</a><a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a><a href="<?php echo esc_url(theobroma_page_url('Маркетплейсы')); ?>">Маркетплейсы</a></div>
         <a class="brand" href="<?php echo esc_url(home_url('/')); ?>"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" decoding="async" fetchpriority="high" alt="Theobroma — Пища богов"></a>
-        <div class="nav-links"><a href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a><a href="#contacts">Контакты</a></div>
+        <div class="nav-links"><a href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a><a href="<?php echo esc_url(home_url('/#contacts')); ?>">Контакты</a></div>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Открыть меню"><span></span><span></span><span></span></button>
     </nav>
 </header>
@@ -30,6 +31,7 @@
         <li><a href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a></li>
         <li><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a></li>
         <li><a href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">Доставка и оплата</a></li>
-        <li><a href="#contacts">Контакты</a></li>
+        <li><a href="<?php echo esc_url(home_url('/#contacts')); ?>">Контакты</a></li>
     </ul></nav>
 </div>
+<span class="skip-target" id="theobroma-main" tabindex="-1"></span>

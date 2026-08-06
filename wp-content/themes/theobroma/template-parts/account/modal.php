@@ -30,7 +30,7 @@ $posted_email = isset($_POST['email']) && is_string($_POST['email'])
                 <label for="account-login-password">Пароль</label>
                 <input id="account-login-password" name="password" type="password" autocomplete="current-password" required>
                 <input type="hidden" name="redirect" value="<?php echo esc_url($account_url); ?>">
-                <?php wp_nonce_field('woocommerce-login', 'woocommerce-login-nonce'); ?>
+                <input type="hidden" id="account-modal-login-nonce" name="woocommerce-login-nonce" value="<?php echo esc_attr(wp_create_nonce('woocommerce-login')); ?>">
                 <button type="submit" name="login" value="Войти">Войти</button>
                 <div class="account-auth-links">
                     <a href="<?php echo esc_url(wp_lostpassword_url()); ?>">Забыли пароль?</a>
@@ -44,7 +44,7 @@ $posted_email = isset($_POST['email']) && is_string($_POST['email'])
                 <label for="account-register-password">Придумайте пароль</label>
                 <input id="account-register-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
                 <input type="hidden" name="redirect" value="<?php echo esc_url($account_url); ?>">
-                <?php wp_nonce_field('woocommerce-register', 'woocommerce-register-nonce'); ?>
+                <input type="hidden" id="account-modal-register-nonce" name="woocommerce-register-nonce" value="<?php echo esc_attr(wp_create_nonce('woocommerce-register')); ?>">
                 <button type="submit" name="register" value="Создать профиль">Создать профиль</button>
                 <div class="account-auth-links"><button type="button" data-account-show-login>Уже есть профиль</button></div>
             </form>

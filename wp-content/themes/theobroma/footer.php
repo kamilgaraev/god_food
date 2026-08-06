@@ -1,4 +1,4 @@
-<footer class="site-footer" id="contacts">
+<footer class="site-footer" id="site-footer">
     <div class="footer-shell">
         <div class="footer-map"><h3>Карта сайта</h3><ul><li><a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/')); ?>">Каталог</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a></li></ul><ul><li><a href="<?php echo esc_url(theobroma_page_url('Маркетплейсы')); ?>">Маркетплейсы</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">Доставка и оплата</a></li></ul></div>
         <div class="footer-logo"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" loading="lazy" decoding="async" alt="Theobroma — Пища богов"></div>

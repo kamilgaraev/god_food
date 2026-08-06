@@ -16,10 +16,12 @@ $related_product_ids = array_values(array_filter(array_map('absint', (array) get
 </head>
 <body <?php body_class('media-article-view'); ?>>
 <?php wp_body_open(); ?>
+<a class="skip-link" href="#theobroma-main">Перейти к основному содержимому</a>
 <header class="media-article-header">
     <a class="media-article-back" href="<?php echo esc_url(theobroma_page_url('Медиа')); ?>" aria-label="Вернуться в раздел Медиа">‹</a>
     <span>Пища богов</span>
 </header>
+<span class="skip-target" id="theobroma-main" tabindex="-1"></span>
 <main class="media-article">
     <h1><?php the_title(); ?></h1>
     <?php if (has_post_thumbnail()) : ?>

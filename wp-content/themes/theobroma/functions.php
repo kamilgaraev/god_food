@@ -492,8 +492,8 @@ function theobroma_render_commerce_modal_root(): void {
     ?>
     <div class="commerce-modal" id="commerce-modal" hidden aria-hidden="true">
         <div class="commerce-modal-backdrop" data-commerce-close></div>
-        <button class="commerce-modal-back" type="button" data-commerce-close><?php esc_html_e('← Назад', 'theobroma'); ?></button>
         <section class="commerce-modal-panel" role="dialog" aria-modal="true" aria-live="polite" aria-label="<?php esc_attr_e('Информация о товаре', 'theobroma'); ?>">
+            <button class="commerce-modal-back" type="button" data-commerce-close><?php esc_html_e('← Назад', 'theobroma'); ?></button>
             <button class="commerce-modal-close" type="button" data-commerce-close aria-label="<?php esc_attr_e('Закрыть', 'theobroma'); ?>"></button>
             <div class="commerce-modal-status" role="status"><?php esc_html_e('Загрузка…', 'theobroma'); ?></div>
             <div class="commerce-modal-content">

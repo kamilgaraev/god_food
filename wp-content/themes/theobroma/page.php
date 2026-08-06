@@ -45,6 +45,6 @@ if (is_page(array('Политика конфиденциальности', 'По
 }
 ?>
 <main class="shop-page"><div class="shop-shell">
-<?php while (have_posts()) { the_post(); if (!function_exists('is_cart') || (!is_cart() && !is_checkout() && !is_account_page())) { echo '<h1 class="page-title">' . esc_html(get_the_title()) . '</h1>'; } the_content(); } ?>
+<?php while (have_posts()) { the_post(); if (function_exists('is_cart') && (is_cart() || is_checkout() || is_account_page())) { $accessible_title = is_cart() ? 'Корзина' : (is_checkout() ? 'Оформление заказа' : 'Личный кабинет'); echo '<h1 class="screen-reader-text">' . esc_html($accessible_title) . '</h1>'; } else { echo '<h1 class="page-title">' . esc_html(get_the_title()) . '</h1>'; } the_content(); } ?>
 </div></main>
 <?php get_footer();

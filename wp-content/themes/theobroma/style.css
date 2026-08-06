@@ -15,6 +15,10 @@ Text Domain: theobroma
 :root { --ink:#241d19; --paper:#fcf9f7; --cream:#f3ebe4; --gold:#b0903d; --line:#dfd2c3; --muted:#766c64; }
 * { box-sizing:border-box; }
 html { overflow-x:hidden; scroll-behavior:smooth; }
+.screen-reader-text { width:1px; height:1px; padding:0; margin:-1px; position:absolute; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.skip-link { position:fixed; z-index:10000010; top:8px; left:8px; padding:10px 14px; color:#fff; background:#343434; transform:translateY(-160%); transition:transform .15s ease; }
+.skip-link:focus { transform:translateY(0); }
+.skip-target { width:0; height:0; display:block; overflow:hidden; }
 body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:'Montserrat', Arial, sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 a { color:inherit; text-decoration:none; }
 img { display:block; max-width:100%; }
@@ -1648,8 +1652,11 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-backdrop { position:fixed; inset:0; }
 .commerce-modal-panel { width:min(1240px,calc(100vw - 40px)); min-height:100%; margin:0 auto; position:relative; background:#fcf9f7; outline:0; }
 .commerce-modal-back { display:none; position:fixed; z-index:6; top:20px; left:20px; padding:0; border:0; color:#fff; background:transparent; font:500 12px/18px 'Montserrat',Arial,sans-serif; text-transform:uppercase; cursor:pointer; }
+.commerce-modal-back:focus { outline:2px solid #fff; outline-offset:2px; }
 .commerce-modal-close { position:fixed; z-index:5; top:10px; right:10px; width:43px; height:43px; padding:0; border:0; background:transparent; cursor:pointer; }
-.commerce-modal-close:focus { outline:0; }
+.commerce-modal-close:focus { outline:2px solid #b0903d; outline-offset:2px; }
+.commerce-modal[data-commerce-type="cart"] .commerce-modal-close:focus,
+.commerce-modal[data-commerce-type="wishlist"] .commerce-modal-close:focus { outline-color:#fff; }
 .commerce-modal-close::before,.commerce-modal-close::after { content:""; position:absolute; top:21px; left:10px; width:23px; height:1px; background:#8e8985; transform:rotate(45deg); }
 .commerce-modal-close::after { transform:rotate(-45deg); }
 .commerce-modal-status { padding-top:45vh; text-align:center; color:#8e8985; font:400 14px/21px 'Montserrat',Arial,sans-serif; }
