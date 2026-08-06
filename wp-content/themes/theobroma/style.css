@@ -1229,11 +1229,12 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .delivery-breadcrumb span,
   .recipe-detail-breadcrumb span { margin-inline:7.3125px; }
 
-  .legal-page,.legal-page-oferta { padding-top:257px; }
+  .legal-page { padding:calc(66.6015625vw - 4.38671875px) 0 6px; }
+  .legal-page-oferta { padding-top:calc(56.6015625vw + 9.61328125px); }
   .legal-page::before { top:54px; width:115px; height:155px; }
   .legal-breadcrumb { top:121px; }
   .legal-page > h1 { top:161px; left:20px; width:350px; padding:0; font-size:27px; line-height:30px; }
-  .legal-content { width:350px; font-size:14px; line-height:20px; }
+  .legal-content { width:calc(100vw - 40px); font-size:14px; line-height:20.3px; }
 
   .product-detail-image { aspect-ratio:390/519; }
   .product-detail-close { display:none; }
