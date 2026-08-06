@@ -1411,6 +1411,35 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .media-card h2 { min-height:0; margin-top:18.5px; }
   .media-card p { min-height:0; }
 
+  .recipe-detail-intro,
+  .recipe-detail-long .recipe-detail-intro,
+  .recipe-detail-banana .recipe-detail-intro { padding-bottom:80px; }
+  .recipe-detail-breadcrumb { transform:translateY(19px); }
+  .recipe-detail-intro > h1 { margin:20px auto 30px; font-size:44px; line-height:44px; transform:translateY(15px); }
+  .recipe-detail-lead { margin-bottom:40px; font-size:16px; line-height:21px; }
+  .recipe-detail-columns { grid-template-columns:1fr; gap:20px; }
+  .recipe-ingredients { height:274px; }
+  .recipe-detail-long .recipe-ingredients { height:372px; }
+  .recipe-detail-banana .recipe-ingredients { height:323px; }
+  .recipe-method,
+  .recipe-detail-long .recipe-method,
+  .recipe-detail-banana .recipe-method { min-height:0; padding-bottom:30px; }
+  .recipe-method { height:686px; }
+  .recipe-detail-long .recipe-method { height:1065px; }
+  .recipe-detail-banana .recipe-method { height:981px; }
+  .recipe-method > img { width:540px; height:306px; aspect-ratio:auto; }
+  .recipe-product-promo,
+  .recipe-detail-long .recipe-product-promo,
+  .recipe-detail-banana .recipe-product-promo { margin-top:80px; }
+  .recipe-product-promo > h2 { margin-bottom:40px; font-size:44px; line-height:44px; }
+  .recipe-product-grid { grid-template-columns:repeat(2,290px); gap:42px 20px; }
+  .recipe-product-grid img { width:290px; height:268px; aspect-ratio:auto; }
+  .recipe-product-grid p { width:270px; }
+  .recipe-product-promo > .button { margin-top:42px; }
+  .recipe-detail .contact,
+  .recipe-detail .contact .section { height:419px; }
+  .recipe-detail .contact .section { padding-top:140px; }
+
   .site-footer { height:799px; padding:0; }
   .footer-shell { width:600px; height:799px; margin:0 auto; padding:0; position:relative; top:0; left:0; display:block; }
   .footer-shell > * { position:absolute; top:auto !important; left:auto !important; width:auto; }

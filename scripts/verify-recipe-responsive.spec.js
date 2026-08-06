@@ -12,6 +12,11 @@ const cases = {
     marshmallow: { height: 5759, headingY: 2182.3125, contactY: 3723 },
     banana: { height: 5628, headingY: 2051.3125, contactY: 3592 },
   },
+  768: {
+    classic: { height: 3751, headingY: 1473, contactY: 2533, methodY: 707, methodHeight: 686 },
+    marshmallow: { height: 4228, headingY: 1950, contactY: 3010, methodY: 805, methodHeight: 1065 },
+    banana: { height: 4095, headingY: 1817, contactY: 2877, methodY: 756, methodHeight: 981 },
+  },
 };
 
 const closeEnough = (actual, expected, tolerance, label) => {
@@ -24,19 +29,22 @@ const closeEnough = (actual, expected, tolerance, label) => {
     for (const [widthKey, recipes] of Object.entries(cases)) {
       const width = Number(widthKey);
       for (const [slug, expected] of Object.entries(recipes)) {
-        const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 932 }, reducedMotion: 'reduce' });
+        const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : (width === 430 ? 932 : 1024) }, reducedMotion: 'reduce' });
         const page = await context.newPage();
         await page.goto(`http://localhost:8080/recipe/${slug}/`, { waitUntil: 'networkidle' });
         await page.evaluate(async () => document.fonts?.ready);
 
         const metrics = await page.evaluate(() => {
           const heading = document.querySelector('.recipe-product-promo > h2').getBoundingClientRect();
+          const method = document.querySelector('.recipe-method').getBoundingClientRect();
           const contact = document.querySelector('section.contact').getBoundingClientRect();
           const images = [...document.querySelectorAll('.recipe-method > img,.recipe-product-grid img')];
           return {
             height: document.documentElement.scrollHeight,
             scrollWidth: document.documentElement.scrollWidth,
             headingY: heading.y + scrollY,
+            methodY: method.y + scrollY,
+            methodHeight: method.height,
             contactY: contact.y + scrollY,
             imagesLoaded: images.every((image) => image.complete && image.naturalWidth > 0 && image.getBoundingClientRect().height > 0),
           };
@@ -47,6 +55,10 @@ const closeEnough = (actual, expected, tolerance, label) => {
         closeEnough(metrics.height, expected.height, 2, `${width}px ${slug} document height`);
         closeEnough(metrics.headingY, expected.headingY, 2, `${width}px ${slug} product heading`);
         closeEnough(metrics.contactY, expected.contactY, 2, `${width}px ${slug} contact boundary`);
+        if (expected.methodY !== undefined) {
+          closeEnough(metrics.methodY, expected.methodY, 2, `${width}px ${slug} method position`);
+          closeEnough(metrics.methodHeight, expected.methodHeight, 2, `${width}px ${slug} method height`);
+        }
         await context.close();
       }
     }
