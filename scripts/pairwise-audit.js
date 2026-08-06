@@ -86,6 +86,13 @@ async function capture(browser, side, url, viewport, target) {
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   page.on('pageerror', (error) => pageErrors.push(error.message));
   let response = await navigate(page, url);
+  if (new URL(url).pathname.replace(/\/$/, '') === '/media') {
+    await page.waitForFunction(
+      () => document.querySelectorAll('.js-feed-post,.media-card').length >= 4,
+      null,
+      { timeout: 10000 },
+    ).catch(() => {});
+  }
   let assetFailures = await settlePage(page);
   if (side === 'source' && url.includes('/tproduct/') && !await sourceProductIsComplete(page, viewport)) {
     response = await navigate(page, url);
