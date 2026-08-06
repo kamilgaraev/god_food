@@ -1203,6 +1203,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .media-card-image { aspect-ratio:350/270; }
   .media-card h2 { margin-top:19.21875px; }
   .media-grid { margin-top:37.4375px; gap:60px; }
+  .media-page { padding-bottom:0; margin-bottom:-1.75px; }
 
   .catalog-breadcrumb,
   .recipes-breadcrumb,
@@ -1257,6 +1258,15 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   }
   .recipe-detail-long .recipe-detail-intro { margin-bottom:calc(857.435897vw - 3344px); }
   .recipe-detail-banana .recipe-detail-intro { margin-bottom:calc(826.923077vw - 3225px); }
+
+  .media-page {
+    padding-top:calc(38.75vw - 30.125px);
+    padding-bottom:calc(11.875vw - 46.3125px);
+  }
+  .media-page > h1 { width:calc(100vw - 40px); font-size:9.374872vw; line-height:9.374872vw; }
+  .media-lead { width:80.953526vw; font-size:3.75vw; line-height:5vw; }
+  .media-grid { width:calc(100vw - 40px); margin-top:calc(11.875vw - 8.875px); }
+  .media-card-image { aspect-ratio:350/269.21875; }
 }
 
 /* Tablet inner-page calibration against the original 768px composition. */
