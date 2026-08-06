@@ -1494,7 +1494,9 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .media-lead { width:427px; }
   .media-page::before { top:171px; width:140px; height:188.533333px; }
   .media-grid { margin-top:44px; grid-template-columns:1fr; gap:60px; }
-  .media-card-image { aspect-ratio:600/463; }
+  .media-card { height:555px; }
+  .media-card:nth-child(n+3) { height:574px; }
+  .media-card-image { height:461.515625px; aspect-ratio:auto; }
   .media-card h2 { min-height:0; margin-top:18.5px; }
   .media-card p { min-height:0; }
 

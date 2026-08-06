@@ -17,7 +17,7 @@ $media_posts = new WP_Query(array(
             $article_url = get_permalink();
         ?>
             <article class="media-card">
-                <a class="media-card-image" href="<?php echo esc_url($article_url); ?>" aria-label="<?php echo esc_attr(get_the_title()); ?>"><?php echo wp_get_attachment_image(get_post_thumbnail_id(), 'theobroma-media-card', false, array('loading' => 'eager', 'sizes' => '360px')); ?></a>
+                <a class="media-card-image" href="<?php echo esc_url($article_url); ?>" aria-label="<?php echo esc_attr(get_the_title()); ?>"><?php echo wp_get_attachment_image(get_post_thumbnail_id(), 'full', false, array('loading' => 'eager', 'sizes' => '600px')); ?></a>
                 <h2><a href="<?php echo esc_url($article_url); ?>"><?php the_title(); ?></a></h2>
                 <p><?php echo esc_html(get_the_excerpt()); ?></p>
                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(get_the_date('d.m.Y')); ?></time>
