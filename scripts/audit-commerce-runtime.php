@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once '/var/www/html/wp-load.php';
 
 $settings = (array) get_option('theobroma_commerce_settings', []);
+$analytics = (array) get_option('theobroma_analytics_settings', []);
 $gateways = WC()->payment_gateways()->payment_gateways();
 
 $gatewayStatuses = [];
@@ -32,6 +33,10 @@ $output = [
         'live_test_completed' => ($settings['ozon_live_test_completed'] ?? 'no') === 'yes',
     ],
     'payment_gateways' => $gatewayStatuses,
+    'analytics' => [
+        'yandex_metrika_counter_set' => preg_match('/^[1-9][0-9]{0,14}$/', (string) ($analytics['counter_id'] ?? '')) === 1,
+        'consent_gated' => true,
+    ],
     'active_plugins' => array_values((array) get_option('active_plugins', [])),
 ];
 

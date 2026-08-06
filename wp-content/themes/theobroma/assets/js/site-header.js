@@ -42,6 +42,7 @@
     cookieButton?.addEventListener('click', () => {
         window.localStorage.setItem(cookieKey, '1');
         cookieNotice.hidden = true;
+        window.dispatchEvent(new CustomEvent('theobroma:cookie-consent'));
     });
 
     const sourceTextReveals = document.querySelectorAll('.source-text-reveal');

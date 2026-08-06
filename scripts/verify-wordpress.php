@@ -14,6 +14,7 @@ function verify_value(bool $condition, string $label, $actual = null): void {
 
 verify_value(is_plugin_active('woocommerce/woocommerce.php'), 'WooCommerce active');
 verify_value(is_plugin_active('theobroma-admin-tools/theobroma-admin-tools.php'), 'admin tools active');
+verify_value(is_plugin_active('theobroma-analytics/theobroma-analytics.php'), 'analytics settings active');
 verify_value(is_plugin_active('theobroma-commerce/theobroma-commerce.php'), 'commerce integrations active');
 verify_value(is_plugin_active('theobroma-seo/theobroma-seo.php'), 'SEO active');
 verify_value(is_plugin_active('yookassa/yookassa.php'), 'YooKassa active');
@@ -21,6 +22,7 @@ $active_plugins = (array) get_option('active_plugins', array());
 sort($active_plugins);
 verify_value($active_plugins === array(
     'theobroma-admin-tools/theobroma-admin-tools.php',
+    'theobroma-analytics/theobroma-analytics.php',
     'theobroma-commerce/theobroma-commerce.php',
     'theobroma-seo/theobroma-seo.php',
     'woocommerce/woocommerce.php',
@@ -81,6 +83,15 @@ verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_recipe_box'), '
 verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_content_settings'), 'shared blocks editor available');
 verify_value(class_exists(Theobroma\Seo\WordPressDocumentResolver::class), 'SEO resolver available');
 verify_value(class_exists(Theobroma\Seo\SeoMetaBox::class), 'SEO editor available');
+verify_value(class_exists(Theobroma\Analytics\SettingsPage::class), 'analytics settings available');
+verify_value(class_exists(Theobroma\Analytics\MetrikaRenderer::class), 'analytics renderer available');
+
+$analytics = array_replace((new Theobroma\Analytics\AnalyticsConfig())->defaults(), (array) get_option(Theobroma\Analytics\SettingsPage::OPTION, array()));
+$analytics_javascript = (new Theobroma\Analytics\MetrikaRenderer())->javascript($analytics);
+verify_value(
+    $analytics['counter_id'] === '' ? $analytics_javascript === '' : str_contains($analytics_javascript, 'mc.yandex.ru/metrika/tag.js'),
+    'analytics readiness matches configured counter'
+);
 
 wp_set_current_user(1);
 ob_start();

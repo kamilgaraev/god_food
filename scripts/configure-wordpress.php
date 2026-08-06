@@ -58,6 +58,7 @@ foreach ($legacy_products as $legacy_product) {
 
 $required_plugins = array(
     'theobroma-admin-tools/theobroma-admin-tools.php',
+    'theobroma-analytics/theobroma-analytics.php',
     'theobroma-commerce/theobroma-commerce.php',
     'theobroma-seo/theobroma-seo.php',
 );
