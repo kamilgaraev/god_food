@@ -1330,6 +1330,12 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
   #catalog { height:1366.90625px; }
   #catalog .section-heading { height:208px; }
+  #catalog .section-heading h2 {
+    top:80px;
+    width:386px;
+    font-size:44px;
+    line-height:44px;
+  }
   #catalog .products {
     height:1036.90625px;
     grid-template-rows:repeat(2,450.953125px);
@@ -1340,7 +1346,33 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   #catalog .product-image { height:350px; }
   #catalog > p { height:122px; }
   .feature,.about-stage { height:756px; }
+  .story { top:40px; height:202px; padding:0; }
+  .story h2 { position:absolute; top:30px; left:87px; width:426px; line-height:29px; }
+  .story p {
+    position:absolute;
+    top:108px;
+    left:36px;
+    width:528px;
+    margin:0;
+    font-size:14px;
+    line-height:18px;
+  }
+  .about-award { top:282px; left:58px; width:174px; height:171px; }
+  .values { top:262px; grid-template-columns:repeat(2,290px); gap:20px; }
+  .value:nth-child(2),.value:nth-child(3) { height:224px; }
   .reviews,.reviews-stage { height:757px; }
+  .reviews .section-heading { height:143px; }
+  .reviews .section-heading h2 {
+    top:40px;
+    left:74px;
+    width:453px;
+    font-size:44px;
+    line-height:44px;
+  }
+  .home-decor i:nth-child(1) { top:618px; width:182px; height:229.578125px; }
+  .home-decor i:nth-child(2) { top:1829.90625px; width:160px; height:215px; }
+  .home-decor i:nth-child(3) { top:2673.90625px; width:149px; height:289.625px; }
+  .home-decor i:nth-child(4) { top:3310.90625px; width:136px; height:269.484375px; }
 
   .catalog-breadcrumb { padding-top:148px; transform:translateY(4px); }
   .catalog-title { margin-bottom:40px; font-size:44px; line-height:44px; transform:translateY(6px); }
