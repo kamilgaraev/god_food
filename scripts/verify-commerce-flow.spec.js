@@ -2,13 +2,22 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 
 const url = process.env.THEOBROMA_URL || 'http://localhost:8080/kak-vybrat-nastoyashchiy-shokolad-dlya-rebenka/';
-const widths = [390, 768, 1440];
+const widths = (process.env.THEOBROMA_WIDTHS || '390,768,1440').split(',').map(Number);
 
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
     for (const width of widths) {
+      const catalog = await browser.newPage({ viewport: { width, height: 1000 } });
+      await catalog.goto('http://localhost:8080/catalog/', { waitUntil: 'networkidle' });
+      assert.equal(
+        await catalog.locator('.catalog-page ul.products li.product > a.add_to_cart_button:visible').count(),
+        6,
+        `${width}px: catalog add-to-cart buttons are hidden`,
+      );
+      await catalog.close();
+
       const page = await browser.newPage({ viewport: { width, height: 1000 } });
       await page.goto(url, { waitUntil: 'networkidle' });
 
@@ -16,8 +25,8 @@ const widths = [390, 768, 1440];
       await page.locator('#commerce-modal .product-detail-page').waitFor();
       await page.locator('#commerce-modal .single_add_to_cart_button').click();
 
-      await page.locator('.floating-actions a').first().click();
       await page.locator('#commerce-modal[data-commerce-type="cart"].is-open').waitFor();
+      await page.locator('.commerce-cart-product').first().waitFor();
       assert.ok(await page.locator('.commerce-cart-product').count() >= 1, `${width}px: product was not added to cart`);
       assert.equal(
         await page.locator('#billing_first_name, #billing_phone, #billing_email, #billing_city').count(),

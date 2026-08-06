@@ -336,7 +336,7 @@ body.account-modal-open { overflow:hidden; }
 .catalog-page ul.products li.product .woocommerce-loop-product__title { padding:0; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; text-transform:none; }
 .catalog-page ul.products li.product .catalog-product-description { margin:8px 0 0; color:#343434; font:400 14px/21.7px 'Montserrat',Arial,sans-serif; }
 .catalog-page ul.products li.product .price { display:inline-block; margin:12px 0 0; vertical-align:middle; color:#b0903d; font:500 18px/24.3px 'Montserrat',Arial,sans-serif; }
-.catalog-page ul.products li.product .button { position:absolute; left:0; bottom:8px; width:165.96875px; min-width:165.96875px; min-height:34.96875px; height:34.96875px; margin:0; padding:0; display:flex; align-items:center; justify-content:center; border:0; border-radius:999px; color:#fff; background:#b0903d; font:400 13px/18.2px 'Montserrat',Arial,sans-serif; }
+.catalog-page ul.products li.product .button { position:absolute; left:0; bottom:8px; width:165.96875px; min-width:165.96875px; min-height:34.96875px; height:34.96875px; margin:0; padding:0; display:flex !important; align-items:center; justify-content:center; border:0; border-radius:999px; color:#fff; background:#b0903d; font:400 13px/18.2px 'Montserrat',Arial,sans-serif; }
 .media-page { height:1201px; position:relative; overflow:hidden; background:var(--paper); }
 .media-page::before { content:""; position:absolute; top:93px; left:0; width:211px; height:284.390625px; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
 .media-breadcrumb { position:absolute; top:137px; left:0; width:100%; text-align:center; color:#b0903d; font:400 11px/18px 'Montserrat',Arial,sans-serif; }
