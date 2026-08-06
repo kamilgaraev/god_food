@@ -28,4 +28,17 @@ if (!isset($methods['theobroma_cdek'])) {
     throw new RuntimeException('CDEK shipping method is not registered');
 }
 
-echo "WordPress commerce smoke passed\n";
+$ozonCatalog = (new Theobroma\Commerce\Products\OzonCatalogAudit())->audit(wc_get_products([
+    'status' => 'publish',
+    'limit' => -1,
+    'return' => 'objects',
+]));
+if ($ozonCatalog['total'] < 1 || $ozonCatalog['mapped'] > $ozonCatalog['total']) {
+    throw new RuntimeException('Ozon catalog audit returned an invalid result');
+}
+
+printf(
+    "WordPress commerce smoke passed; Ozon SKU mapped %d/%d\n",
+    $ozonCatalog['mapped'],
+    $ozonCatalog['total']
+);

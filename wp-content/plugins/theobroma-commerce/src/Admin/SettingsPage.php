@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Theobroma\Commerce\Admin;
 
 use Theobroma\Commerce\Integrations\Ozon\OzonCapabilities;
+use Theobroma\Commerce\Products\OzonCatalogAudit;
 
 final class SettingsPage
 {
@@ -45,9 +46,15 @@ final class SettingsPage
             return;
         }
         $values = array_merge((new Settings())->defaults(), (array) get_option('theobroma_commerce_settings', []));
+        $catalogAudit = (new OzonCatalogAudit())->audit(wc_get_products([
+            'status' => 'publish',
+            'limit' => -1,
+            'return' => 'objects',
+        ]));
         $ozon = new OzonCapabilities(
             $values['ozon_approved'] === 'yes',
             $values['ozon_access_token'] !== '' || defined('THEOBROMA_OZON_ACCESS_TOKEN'),
+            $catalogAudit['complete'],
             $values['ozon_products_mapped'] === 'yes',
             $values['ozon_live_test_completed'] === 'yes'
         );
@@ -66,10 +73,16 @@ final class SettingsPage
 
                 <h2><?php esc_html_e('Ozon Доставка (частное Seller API приложение)', 'theobroma-commerce'); ?></h2>
                 <p><strong><?php esc_html_e('Статус готовности:', 'theobroma-commerce'); ?></strong> <?php echo esc_html($ozon->status()); ?></p>
+                <p><?php echo esc_html(sprintf(__('SKU Ozon заполнены: %1$d из %2$d товаров.', 'theobroma-commerce'), $catalogAudit['mapped'], $catalogAudit['total'])); ?></p>
+                <?php if ($catalogAudit['missing_product_ids'] !== []) : ?>
+                    <p class="notice notice-warning inline">
+                        <?php echo esc_html(sprintf(__('Не заполнен Ozon SKU у товаров: %s', 'theobroma-commerce'), implode(', ', $catalogAudit['missing_product_ids']))); ?>
+                    </p>
+                <?php endif; ?>
                 <?php $this->checkbox('ozon_enabled', __('Включить после полного живого теста', 'theobroma-commerce'), $values); ?>
                 <?php $this->checkbox('ozon_approved', __('Заявка Ozon Доставки одобрена', 'theobroma-commerce'), $values); ?>
                 <?php $this->secret('ozon_access_token', __('OAuth access token частного приложения', 'theobroma-commerce'), $values, defined('THEOBROMA_OZON_ACCESS_TOKEN')); ?>
-                <?php $this->checkbox('ozon_products_mapped', __('SKU сопоставлены и остатки зарегистрированы в Ozon', 'theobroma-commerce'), $values); ?>
+                <?php $this->checkbox('ozon_products_mapped', __('Остатки для сопоставленных SKU зарегистрированы в Ozon', 'theobroma-commerce'), $values); ?>
                 <?php $this->checkbox('ozon_live_test_completed', __('Реальный полный цикл заказа проверен', 'theobroma-commerce'), $values); ?>
                 <?php submit_button(); ?>
             </form>
