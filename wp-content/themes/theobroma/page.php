@@ -20,6 +20,11 @@ if (is_page('Сотрудничество')) {
     get_footer();
     return;
 }
+if (is_page('Корпоративные подарки')) {
+    get_template_part('template-parts/pages/corporate-gifts');
+    get_footer();
+    return;
+}
 if (is_page('Доставка и оплата')) {
     get_template_part('template-parts/pages/delivery');
     get_footer();

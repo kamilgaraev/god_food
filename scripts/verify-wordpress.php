@@ -31,7 +31,7 @@ verify_value(get_option('timezone_string') === 'Europe/Moscow', 'timezone');
 verify_value((int) get_option('wp_page_for_privacy_policy') > 0, 'privacy page configured');
 verify_value((int) get_option('woocommerce_terms_page_id') > 0, 'terms page configured');
 
-$expected_pages = array('catalog', 'recipes', 'marketplace', 'buy', 'cooperation', 'delivery', 'media', 'policy', 'agreement', 'oferta');
+$expected_pages = array('catalog', 'recipes', 'marketplace', 'buy', 'cooperation', 'corporate-gifts', 'delivery', 'media', 'policy', 'agreement', 'oferta');
 foreach ($expected_pages as $slug) {
     $page = get_page_by_path($slug, OBJECT, 'page');
     verify_value($page instanceof WP_Post, 'page /' . $slug . '/');
