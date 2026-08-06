@@ -14,6 +14,7 @@ use Theobroma\Commerce\Orders\CdekOrderLifecycle;
 use Theobroma\Commerce\Orders\OzonOrderLifecycle;
 use Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle;
 use Theobroma\Commerce\Loyalty\LoyaltyCheckout;
+use Theobroma\Commerce\Loyalty\LoyaltyAccountEndpoint;
 use Theobroma\Commerce\Products\OzonProductFields;
 use Theobroma\Commerce\Shipping\CdekShippingMethod;
 
@@ -38,6 +39,7 @@ final class Plugin
         (new OzonOrderLifecycle())->register();
         (new WooLoyaltyLifecycle())->register();
         (new LoyaltyCheckout())->register();
+        (new LoyaltyAccountEndpoint())->register();
         (new OzonProductFields())->register();
         (new ProductWeightBackfill())->register();
     }

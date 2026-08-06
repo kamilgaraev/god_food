@@ -22,6 +22,9 @@ final class Installer
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta((new LoyaltySchema($wpdb->prefix))->statements($wpdb->get_charset_collate()));
 
+        add_rewrite_endpoint('bonuses', EP_ROOT | EP_PAGES);
+        flush_rewrite_rules();
+
         if (!class_exists('WC_Shipping_Zone')) {
             return;
         }

@@ -446,6 +446,7 @@ function theobroma_account_menu_items(array $items): array {
     return array_filter(array(
         'dashboard'       => __('Главная', 'theobroma'),
         'orders'          => __('Заказы', 'theobroma'),
+        'bonuses'         => __('Бонусы', 'theobroma'),
         'edit-address'    => __('Адреса', 'theobroma'),
         'edit-account'    => __('Профиль', 'theobroma'),
         'customer-logout' => $items['customer-logout'] ?? __('Выйти', 'theobroma'),

@@ -253,7 +253,7 @@ body.account-modal-open { overflow:hidden; }
 .theobroma-account-dashboard .account-eyebrow { margin:0 0 9px; color:#b0903d; font:600 11px/16px 'Montserrat',Arial,sans-serif; text-transform:uppercase; letter-spacing:.12em; }
 .theobroma-account-dashboard h1 { position:static; width:auto; margin:0; color:#000; font:400 42px/45px 'Cormorant',Arial,sans-serif; text-transform:none; }
 .theobroma-account-dashboard .account-lead { max-width:620px; margin:15px 0 28px; color:#6f655e; }
-.account-dashboard-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.account-dashboard-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
 .account-dashboard-grid a { min-height:112px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(176,144,61,.35) !important; border-radius:14px; background:#fcf9f7; }
 .account-dashboard-grid span { color:#000; font:500 24px/27px 'Cormorant',Arial,sans-serif; }
 .account-dashboard-grid small { color:#766c64; font:400 11px/16px 'Montserrat',Arial,sans-serif; }
@@ -267,6 +267,23 @@ body.account-modal-open { overflow:hidden; }
 .logged-in.woocommerce-account .woocommerce-info,.logged-in.woocommerce-account .woocommerce-message { margin:0; padding:18px 20px 18px 48px; border:0; border-top:2px solid #b0903d; background:#fcf9f7; color:#343434; }
 .logged-in.woocommerce-account .woocommerce-info::before,.logged-in.woocommerce-account .woocommerce-message::before { top:18px; color:#b0903d; }
 .logged-in.woocommerce-account .woocommerce-info .button,.logged-in.woocommerce-account .woocommerce-message .button { min-height:42px; padding:0 24px; }
+.theobroma-bonuses h1 { position:static; width:auto; margin:0; color:#000; font:400 42px/45px 'Cormorant',Arial,sans-serif; text-transform:none; }
+.theobroma-bonus-summary { margin:24px 0 20px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.theobroma-bonus-summary > div { min-height:112px; padding:19px 20px; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(176,144,61,.35); border-radius:14px; background:#fcf9f7; }
+.theobroma-bonus-summary span { color:#766c64; font-size:12px; }
+.theobroma-bonus-summary strong,.theobroma-bonus-summary strong * { color:#9b7827; font:500 29px/34px 'Cormorant',Arial,sans-serif; }
+.theobroma-bonus-rules { max-width:660px; margin:0 0 33px; color:#6f655e; }
+.logged-in.woocommerce-account .theobroma-bonuses h2 { margin:0 0 16px; color:#000; font:400 28px/32px 'Cormorant',Arial,sans-serif; text-transform:none; }
+.theobroma-bonus-empty { margin:0; padding:20px; border-radius:12px; background:#fcf9f7; color:#766c64; }
+.theobroma-bonus-history { border-top:1px solid rgba(176,144,61,.35); }
+.theobroma-bonus-entry { min-height:74px; display:grid; grid-template-columns:minmax(0,1fr) 130px 105px; gap:16px; align-items:center; border-bottom:1px solid rgba(176,144,61,.25); }
+.theobroma-bonus-entry div { display:flex; flex-direction:column; }
+.theobroma-bonus-entry div strong { color:#343434; font-weight:500; }
+.theobroma-bonus-entry time { margin-top:3px; color:#8c837d; font-size:11px; }
+.theobroma-bonus-entry > a { justify-self:start; font-size:12px; }
+.theobroma-bonus-entry > span { justify-self:end; color:#8c3b2f; font-weight:600; white-space:nowrap; }
+.theobroma-bonus-entry > span.is-positive { color:#6d7d51; }
+.theobroma-bonus-pagination { margin-top:20px; display:flex; justify-content:space-between; }
 
 @media (max-width:900px) {
   .account-modal-panel { width:100%; }
@@ -274,7 +291,7 @@ body.account-modal-open { overflow:hidden; }
   .account-modal-body { top:calc(50% - 103.5px); }
   .logged-in.woocommerce-account .shop-shell { width:min(600px,calc(100vw - 80px)); padding:148px 0 80px; }
   .logged-in.woocommerce-account .shop-shell > .woocommerce { grid-template-columns:1fr; gap:20px; }
-  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { display:grid; grid-template-columns:repeat(5,1fr); border-radius:16px; }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { display:grid; grid-template-columns:repeat(6,1fr); border-radius:16px; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { min-height:52px; padding:0 10px; justify-content:center; border-right:1px solid rgba(176,144,61,.22); border-bottom:0; font-size:12px; }
 }
 
@@ -284,12 +301,18 @@ body.account-modal-open { overflow:hidden; }
   .account-email-step > button,.account-auth-form > button[type="submit"] { width:146px; }
   .logged-in.woocommerce-account .shop-shell { width:350px; padding:121px 0 60px; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation { overflow:visible; }
-  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { width:350px; grid-template-columns:repeat(5,70px); }
-  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { padding:0 2px; font-size:10px; }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { width:350px; grid-template-columns:repeat(6,1fr); }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { padding:0 1px; font-size:9px; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-content { min-height:0; padding:25px 20px 30px; border-radius:16px; }
   .theobroma-account-dashboard h1 { font-size:32px; line-height:35px; }
   .account-dashboard-grid { grid-template-columns:1fr; }
   .account-dashboard-grid a { min-height:92px; }
+  .theobroma-bonuses h1 { font-size:32px; line-height:35px; }
+  .theobroma-bonus-summary { grid-template-columns:1fr; }
+  .theobroma-bonus-summary > div { min-height:92px; }
+  .theobroma-bonus-entry { padding:13px 0; grid-template-columns:minmax(0,1fr) auto; gap:5px 10px; }
+  .theobroma-bonus-entry > a { grid-column:1; }
+  .theobroma-bonus-entry > span { grid-column:2; grid-row:1/3; }
 }
 .catalog-page { min-height:1487px; position:relative; overflow:hidden; }
 .catalog-page::before { content:""; position:absolute; top:48px; right:0; width:250px; height:329.15625px; pointer-events:none; background:url('assets/images/botanical-page-right.webp') center/100% 100% no-repeat; }
