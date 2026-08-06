@@ -4,6 +4,7 @@ const { chromium } = require('playwright');
 const cases = {
   390: { height: 3451, titleY: 192.90625, image: { x: 20, y: 356, width: 350, height: 269.21875 }, footerY: 2136.75 },
   430: { height: 3745, titleY: 213.40625, image: { x: 20, y: 393, width: 390, height: 300 }, footerY: 2296.875 },
+  768: { height: 3627, titleY: 226, image: { x: 84, y: 390, width: 600, height: 463 }, footerY: 2828 },
 };
 
 const closeEnough = (actual, expected, tolerance, label) => {
@@ -15,7 +16,7 @@ const closeEnough = (actual, expected, tolerance, label) => {
   try {
     for (const [widthKey, expected] of Object.entries(cases)) {
       const width = Number(widthKey);
-      const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 932 }, reducedMotion: 'reduce' });
+      const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : (width === 430 ? 932 : 1024) }, reducedMotion: 'reduce' });
       const page = await context.newPage();
       await page.goto('http://localhost:8080/media/', { waitUntil: 'networkidle' });
       await page.evaluate(async () => document.fonts?.ready);

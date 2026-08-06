@@ -1401,14 +1401,15 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-decor-left { top:235px; width:150px; height:202px; }
   .buy-decor-right { top:781px; width:150px; height:197.5px; }
 
-  .media-page { padding-top:148px; }
+  .media-page { padding-top:148px; padding-bottom:0; }
   .media-breadcrumb { transform:translateY(4px); }
   .media-page > h1 { width:512px; font-size:44px; line-height:44px; transform:translateY(4px); }
   .media-lead { width:427px; }
   .media-page::before { top:171px; width:140px; height:188.533333px; }
-  .media-grid { margin-top:44px; grid-template-columns:1fr; gap:55px; }
+  .media-grid { margin-top:44px; grid-template-columns:1fr; gap:60px; }
   .media-card-image { aspect-ratio:600/463; }
-  .media-card h2 { margin-top:20px; }
+  .media-card h2 { min-height:0; margin-top:18.5px; }
+  .media-card p { min-height:0; }
 
   .site-footer { height:799px; padding:0; }
   .footer-shell { width:600px; height:799px; margin:0 auto; padding:0; position:relative; top:0; left:0; display:block; }
