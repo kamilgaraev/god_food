@@ -17,6 +17,7 @@ use Theobroma\Commerce\Loyalty\LoyaltyCheckout;
 use Theobroma\Commerce\Loyalty\LoyaltyAccountEndpoint;
 use Theobroma\Commerce\Products\OzonProductFields;
 use Theobroma\Commerce\Shipping\CdekShippingMethod;
+use Theobroma\Commerce\Shipping\OzonShippingMethod;
 
 final class Plugin
 {
@@ -50,6 +51,7 @@ final class Plugin
     public static function shippingMethods(array $methods): array
     {
         $methods['theobroma_cdek'] = CdekShippingMethod::class;
+        $methods['theobroma_ozon'] = OzonShippingMethod::class;
         return $methods;
     }
 }

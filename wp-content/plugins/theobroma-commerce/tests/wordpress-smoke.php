@@ -26,8 +26,10 @@ if (!has_filter('woocommerce_checkout_fields') || !has_action('woocommerce_after
 
 Theobroma\Commerce\Plugin::boot();
 $methods = apply_filters('woocommerce_shipping_methods', []);
-if (!isset($methods['theobroma_cdek'])) {
-    throw new RuntimeException('CDEK shipping method is not registered');
+foreach (['theobroma_cdek' => 'CDEK', 'theobroma_ozon' => 'Ozon'] as $methodId => $provider) {
+    if (!isset($methods[$methodId])) {
+        throw new RuntimeException($provider . ' shipping method is not registered');
+    }
 }
 
 global $wpdb;
