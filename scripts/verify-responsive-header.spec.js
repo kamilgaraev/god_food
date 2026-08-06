@@ -41,6 +41,12 @@ const widths = [1440, 1920, 2048, 2560, 3840];
 
       await page.close();
     }
+
+    const mobile = await browser.newPage({ viewport: { width: 430, height: 932 } });
+    await mobile.goto(url, { waitUntil: 'networkidle' });
+    const accountAction = await mobile.locator('.floating-actions a:nth-child(3)').evaluate((action) => action.getBoundingClientRect().x);
+    assert.ok(accountAction <= 185, `430px: account action starts too far right (${accountAction}px)`);
+    await mobile.close();
   } finally {
     await browser.close();
   }

@@ -1036,7 +1036,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
 /* Mobile inner-page calibration against the original 390px layout. */
 @media (max-width:460px) {
-  .floating-actions { top:53.9375px; right:62.109375px; gap:6.1015625px; }
+  .floating-actions { top:53.9375px; right:84.25px; gap:6.1015625px; }
   .floating-actions a { height:42.65625px; padding:0; justify-content:center; gap:5px; }
   .floating-actions a:nth-child(1) { width:58.5px; }
   .floating-actions a:nth-child(2) { width:58.5px; margin-left:0; }
