@@ -1160,6 +1160,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cooperation-form .form-submit { margin-top:30.46875px; }
   .cooperation-form .button { width:213.3125px; min-height:43.875px; height:43.875px; }
   .cooperation-chocolate { margin-top:50px; }
+  .cooperation-page { width:390px; height:auto; padding-bottom:49.109375px; margin-inline:auto; }
 
   .delivery-page { padding:361px 0 53px; }
   .delivery-breadcrumb { top:121px; }
@@ -1295,6 +1296,14 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
     margin-left:0;
     margin-right:0;
     margin-bottom:calc(208.553686vw - 813.359375px);
+    transform:scale(calc(100vw / 390px));
+    transform-origin:top left;
+  }
+
+  .cooperation-page {
+    margin-left:0;
+    margin-right:0;
+    margin-bottom:calc(608.810096vw - 2374.359375px);
     transform:scale(calc(100vw / 390px));
     transform-origin:top left;
   }
