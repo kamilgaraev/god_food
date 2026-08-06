@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Theobroma\Commerce\Admin;
 
-use Theobroma\Commerce\Integrations\Ozon\OzonCapabilities;
+use Theobroma\Commerce\Integrations\Ozon\OzonReadinessFactory;
 use Theobroma\Commerce\Products\OzonCatalogAudit;
 
 final class SettingsPage
@@ -51,12 +51,10 @@ final class SettingsPage
             'limit' => -1,
             'return' => 'objects',
         ]));
-        $ozon = new OzonCapabilities(
-            $values['ozon_approved'] === 'yes',
+        $ozon = (new OzonReadinessFactory())->build(
+            $values,
             $values['ozon_access_token'] !== '' || defined('THEOBROMA_OZON_ACCESS_TOKEN'),
-            $catalogAudit['complete'],
-            $values['ozon_products_mapped'] === 'yes',
-            $values['ozon_live_test_completed'] === 'yes'
+            wc_get_products(['status' => 'publish', 'limit' => -1, 'return' => 'objects'])
         );
         ?>
         <div class="wrap">

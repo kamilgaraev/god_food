@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Theobroma\Commerce\Orders;
 
 use Theobroma\Commerce\Infrastructure\WpTransport;
-use Theobroma\Commerce\Integrations\Ozon\OzonCapabilities;
 use Theobroma\Commerce\Integrations\Ozon\OzonClient;
+use Theobroma\Commerce\Integrations\Ozon\OzonReadinessFactory;
 
 final class OzonOrderLifecycle
 {
@@ -26,11 +26,10 @@ final class OzonOrderLifecycle
         $token = defined('THEOBROMA_OZON_ACCESS_TOKEN')
             ? (string) constant('THEOBROMA_OZON_ACCESS_TOKEN')
             : (string) ($settings['ozon_access_token'] ?? '');
-        $capabilities = new OzonCapabilities(
-            ($settings['ozon_approved'] ?? 'no') === 'yes',
+        $capabilities = (new OzonReadinessFactory())->build(
+            $settings,
             $token !== '',
-            ($settings['ozon_products_mapped'] ?? 'no') === 'yes',
-            ($settings['ozon_live_test_completed'] ?? 'no') === 'yes'
+            wc_get_products(['status' => 'publish', 'limit' => -1, 'return' => 'objects'])
         );
         if (($settings['ozon_enabled'] ?? 'no') !== 'yes' || !$capabilities->canOfferDelivery()) {
             return;

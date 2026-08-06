@@ -36,6 +36,14 @@ $ozonCatalog = (new Theobroma\Commerce\Products\OzonCatalogAudit())->audit(wc_ge
 if ($ozonCatalog['total'] < 1 || $ozonCatalog['mapped'] > $ozonCatalog['total']) {
     throw new RuntimeException('Ozon catalog audit returned an invalid result');
 }
+$ozonReadiness = (new Theobroma\Commerce\Integrations\Ozon\OzonReadinessFactory())->build(
+    (new Theobroma\Commerce\Admin\Settings())->defaults(),
+    false,
+    wc_get_products(['status' => 'publish', 'limit' => -1, 'return' => 'objects'])
+);
+if ($ozonReadiness->status() !== 'awaiting_approval') {
+    throw new RuntimeException('Ozon readiness must fail closed with default settings');
+}
 
 printf(
     "WordPress commerce smoke passed; Ozon SKU mapped %d/%d\n",
