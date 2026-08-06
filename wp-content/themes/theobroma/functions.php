@@ -12,6 +12,43 @@ function theobroma_setup(): void {
 }
 add_action('after_setup_theme', 'theobroma_setup');
 
+function theobroma_redirect_legacy_wordpress_routes(): void {
+    if (is_admin() || wp_doing_ajax()) {
+        return;
+    }
+
+    $target = '';
+    if (is_page()) {
+        $page = get_queried_object();
+        $page_redirects = array(
+            'sample-page' => home_url('/'),
+            'offer' => home_url('/oferta/'),
+            'policy-2' => home_url('/policy/'),
+        );
+        if ($page instanceof WP_Post && isset($page_redirects[$page->post_name])) {
+            $target = $page_redirects[$page->post_name];
+        }
+    } elseif (is_author()) {
+        $target = home_url('/');
+    } elseif (is_single()) {
+        $post = get_queried_object();
+        if ($post instanceof WP_Post && rawurldecode($post->post_name) === 'привет-мир') {
+            $target = home_url('/');
+        }
+    } elseif (is_category()) {
+        $term = get_queried_object();
+        if ($term instanceof WP_Term && rawurldecode($term->slug) === 'без-рубрики') {
+            $target = theobroma_page_url('Медиа');
+        }
+    }
+
+    if ($target !== '') {
+        wp_safe_redirect($target, 301, 'Theobroma');
+        exit;
+    }
+}
+add_action('template_redirect', 'theobroma_redirect_legacy_wordpress_routes');
+
 function theobroma_assets(): void {
     $theme_dir = get_stylesheet_directory();
     wp_enqueue_style('theobroma-style', get_stylesheet_uri(), array(), (string) filemtime($theme_dir . '/style.css'));
