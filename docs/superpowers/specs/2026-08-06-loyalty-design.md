@@ -14,6 +14,7 @@ Implement the loyalty requirements from “Перенос сайта на WP The
 - Checkout reserves bonuses before the payment redirect. A failed, cancelled or expired unpaid order releases the reservation.
 - Successful payment converts the reservation into a spend without changing the reserved amount a second time.
 - Full or partial refunds reverse only the proportionate accrual and restore the proportionate spent bonuses.
+- If refunded-order bonuses were already spent on another order, reversal creates a visible negative balance; further redemption remains unavailable until later accruals repay it.
 - Every operation has a unique idempotency key derived from order, operation type and refund where applicable.
 
 ## Architecture
@@ -51,7 +52,7 @@ Two custom InnoDB tables are used: one row per customer account and an append-on
 
 - All mutations require the authenticated customer and verified WooCommerce checkout/nonces.
 - Browser-submitted amounts are never trusted.
-- Database constraints prevent duplicate operations.
+- Database constraints prevent duplicate operations. Ordinary reservations cannot make available balance negative; a refund reversal may record a debt so accounting is not silently lost.
 - Provider webhook retries are safe because order operations are idempotent.
 - If storage or validation fails, checkout continues without a bonus discount rather than creating an underpaid order.
 - Secrets and external integrations are unrelated to the loyalty tables.
