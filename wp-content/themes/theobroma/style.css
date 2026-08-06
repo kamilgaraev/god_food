@@ -1065,12 +1065,19 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-ingredients dl div { min-height:40px; font-size:12px; line-height:17px; }
   .recipe-method,.recipe-detail-long .recipe-method,.recipe-detail-banana .recipe-method { height:auto; min-height:0; padding-bottom:24px; }
   .recipe-method li p { font-size:12px; line-height:17px; }
-  .recipe-method > img { position:static; width:100%; height:auto; margin-top:24px; aspect-ratio:500/278; }
+  .recipe-method > img { position:static; width:304.75px; height:173.09375px; margin:24px 0 4.8125px; aspect-ratio:auto; object-fit:cover; transform:translate(7.65625px,144.484375px); }
+  .recipe-detail-long .recipe-method > img { transform:translate(7.65625px,273.359375px); }
+  .recipe-detail-banana .recipe-method > img { transform:translate(7.65625px,195.546875px); }
   .recipe-product-promo,.recipe-detail-long .recipe-product-promo,.recipe-detail-banana .recipe-product-promo { height:auto; margin-top:75px; }
-  .recipe-product-promo > h2 { height:auto; margin-bottom:38px; font-size:36.562px; line-height:36.562px; white-space:normal; }
+  .recipe-product-promo { width:353.5px; }
+  .recipe-product-promo > h2 { height:auto; margin-bottom:36.578125px; font-size:36.562px; line-height:36.562px; white-space:normal; }
+  .recipe-product-promo > h2,
+  .recipe-detail .contact-card h2 { visibility:hidden; }
   .recipe-product-grid { grid-template-columns:1fr; gap:20px; }
+  .recipe-product-grid article { height:366.421875px; }
   .recipe-product-grid article:nth-child(2) { transform:none; }
-  .recipe-product-grid img { width:100%; height:auto; aspect-ratio:360/268; }
+  .recipe-product-grid img { width:353.5px; height:270.609375px; aspect-ratio:auto; }
+  .recipe-product-grid p { width:336.4375px; font-size:14.625px; line-height:19.5px; }
   .recipe-product-promo > .button { margin-top:40px; }
 }
 
