@@ -1238,6 +1238,25 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .product-detail-buy { margin-top:23px; }
   .product-detail-marketplaces { display:grid; grid-template-columns:repeat(2,1fr); gap:4px; margin-top:10px; }
   .product-detail-marketplaces a { width:100%; }
+
+  .recipe-detail-intro { width:390px; height:2785px; margin-inline:auto; }
+  .recipe-detail-long .recipe-detail-intro { height:3344px; }
+  .recipe-detail-banana .recipe-detail-intro { height:3225px; }
+  .recipe-product-promo { margin-top:212.328125px; }
+  .recipe-detail-long .recipe-product-promo { margin-top:341.890625px; }
+  .recipe-detail-banana .recipe-product-promo { margin-top:263.328125px; }
+}
+
+@media (min-width:391px) and (max-width:460px) {
+  .recipe-detail-intro {
+    margin-left:0;
+    margin-right:0;
+    margin-bottom:calc(714.102564vw - 2785px);
+    transform:scale(calc(100vw / 390px));
+    transform-origin:top left;
+  }
+  .recipe-detail-long .recipe-detail-intro { margin-bottom:calc(857.435897vw - 3344px); }
+  .recipe-detail-banana .recipe-detail-intro { margin-bottom:calc(826.923077vw - 3225px); }
 }
 
 /* Tablet inner-page calibration against the original 768px composition. */
