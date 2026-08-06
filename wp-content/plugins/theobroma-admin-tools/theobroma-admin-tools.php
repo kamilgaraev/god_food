@@ -216,6 +216,17 @@ final class Theobroma_Admin_Tools {
     public static function render_media_box(WP_Post $post): void {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
         self::input('theobroma_article_link', 'Ссылка «Читать статью»', (string) get_post_meta($post->ID, '_theobroma_article_link', true), 'url');
+        $product_ids = array_values(array_filter(array_map('absint', (array) get_post_meta($post->ID, '_theobroma_product_ids', true))));
+        $products = get_posts(array('post_type' => 'product', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC'));
+        echo '<section class="theobroma-related-products"><h3>Шоколад по теме статьи</h3><p class="description">Выберите до трёх товаров, которые будут показаны в конце статьи.</p>';
+        for ($slot = 0; $slot < 3; $slot++) {
+            printf('<label>Товар %1$d<select name="theobroma_product_ids[]"><option value="">— не выбран —</option>', $slot + 1);
+            foreach ($products as $product) {
+                printf('<option value="%1$d"%2$s>%3$s</option>', $product->ID, selected($product_ids[$slot] ?? 0, $product->ID, false), esc_html($product->post_title));
+            }
+            echo '</select></label>';
+        }
+        echo '</section>';
         echo '<p>Изображение карточки и статьи задаётся через «Изображение записи».</p>';
     }
 
@@ -323,6 +334,10 @@ final class Theobroma_Admin_Tools {
             return;
         }
         update_post_meta($post_id, '_theobroma_article_link', esc_url_raw(wp_unslash($_POST['theobroma_article_link'] ?? '')));
+        $product_ids = array_slice(array_values(array_filter(array_map('absint', (array) ($_POST['theobroma_product_ids'] ?? array())), static function (int $product_id): bool {
+            return function_exists('wc_get_product') && wc_get_product($product_id) instanceof WC_Product;
+        })), 0, 3);
+        update_post_meta($post_id, '_theobroma_product_ids', $product_ids);
     }
 
     public static function save_recipe_fields(int $post_id): void {

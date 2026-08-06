@@ -350,18 +350,42 @@ body.account-modal-open { overflow:hidden; }
 .media-card h2 { width:360px; min-height:37.78125px; margin:0; color:#000; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
 .media-card p { width:360px; min-height:37.1875px; margin:8px 0 0; color:#000; font:400 12px/18.6px 'Montserrat',Arial,sans-serif; }
 .media-card time { display:block; margin-top:15px; color:#414141; font:400 10px/13px 'Montserrat',Arial,sans-serif; }
-.media-article-view { min-width:1180px; background:#fff; color:#191919; }
+.media-article-view { min-width:0; background:#fff; color:#191919; }
 .media-article-header { height:56px; position:relative; border-bottom:1px solid #ddd; background:#fff; }
 .media-article-header span { position:absolute; top:22px; left:50%; transform:translateX(-50%); color:#363636; font:400 10px/12px 'Cormorant',Arial,sans-serif; }
 .media-article-back { position:absolute; top:6px; left:18px; width:32px; height:40px; color:#252525; font:400 43px/38px Arial,sans-serif; transform:scaleX(.58); transform-origin:left center; }
-.media-article { width:760px; margin:0 auto; padding:39px 0 94px; }
-.media-article h1 { position:static; width:760px; height:auto; margin:0 0 32px; color:#191919; font:400 34px/44px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
-.media-article figure { width:760px; margin:0 0 29px; }
-.media-article figure img { width:760px; height:auto; }
-.media-article-copy { width:760px; color:#282828; font:400 18px/25px 'Montserrat',Arial,sans-serif; }
+.media-article { width:min(760px,calc(100% - 40px)); margin:0 auto; padding:39px 0 94px; }
+.media-article h1 { position:static; width:auto; height:auto; margin:0 0 32px; color:#191919; font:400 34px/44px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
+.media-article figure { width:auto; margin:0 0 29px; }
+.media-article figure img { width:100%; height:auto; }
+.media-article-copy { width:auto; color:#282828; font:400 18px/25px 'Montserrat',Arial,sans-serif; }
 .media-article-copy p { margin:0; }
+.media-article-products { margin-top:52px; padding-top:32px; border-top:1px solid #ddd; }
+.media-article-products h2 { margin:0 0 24px; color:#191919; font:400 30px/36px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.media-article-products-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.media-article-products-grid article { min-width:0; }
+.media-article-products-grid img { width:100%; height:auto; aspect-ratio:1; object-fit:cover; background:#f3ebe4; }
+.media-article-products-grid h3 { margin:12px 0 7px; color:#191919; font:500 12px/17px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }
+.media-article-products-grid strong { display:block; color:#b0903d; font:500 15px/20px 'Montserrat',Arial,sans-serif; }
+.media-article-products-grid .button { min-width:0; width:100%; min-height:38px; margin-top:12px; padding:0 12px; font-size:12px; }
 .media-article-source { display:inline-block; margin-top:45px; color:#ff8066; font:400 17px/22px 'Montserrat',Arial,sans-serif; }
 .media-article time { display:block; margin-top:62px; color:#999; font:400 7px/10px 'Montserrat',Arial,sans-serif; letter-spacing:.2em; }
+@media (max-width:600px) {
+  .media-article { width:calc(100% - 32px); padding:28px 0 56px; }
+  .media-article-header { height:50px; }
+  .media-article-header span { top:19px; }
+  .media-article-back { top:5px; left:14px; }
+  .media-article h1 { margin-bottom:24px; font-size:29px; line-height:35px; }
+  .media-article-copy { font-size:16px; line-height:24px; }
+  .media-article-products { margin-top:38px; padding-top:25px; }
+  .media-article-products h2 { margin-bottom:18px; font-size:26px; line-height:30px; }
+  .media-article-products-grid { grid-template-columns:1fr; gap:28px; }
+  .media-article-products-grid article { display:grid; grid-template-columns:112px minmax(0,1fr); column-gap:16px; align-items:start; }
+  .media-article-products-grid article > a:first-child { grid-row:1 / span 3; }
+  .media-article-products-grid h3 { margin:0 0 7px; }
+  .media-article-products-grid .button { width:auto; min-width:120px; margin-top:12px; }
+  .media-article time { margin-top:42px; }
+}
 .legal-page { min-height:651px; padding:339px 0 6px; position:relative; background:var(--paper); }
 .legal-page-oferta { padding-top:287px; }
 .legal-page::before { content:""; position:absolute; top:93px; left:0; width:211px; height:284.390625px; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }

@@ -56,6 +56,11 @@ verify_value(count($media_posts) === 4, '4 media posts', count($media_posts));
 foreach ($media_posts as $media_post) {
     verify_value(has_post_thumbnail($media_post), $media_post->post_name . ' thumbnail');
     verify_value((string) get_post_meta($media_post->ID, '_theobroma_article_link', true) !== '', $media_post->post_name . ' source link');
+    $related_product_ids = array_values(array_filter(array_map('absint', (array) get_post_meta($media_post->ID, '_theobroma_product_ids', true))));
+    verify_value($related_product_ids !== array(), $media_post->post_name . ' related products');
+    foreach ($related_product_ids as $related_product_id) {
+        verify_value(wc_get_product($related_product_id) instanceof WC_Product, $media_post->post_name . ' related product ' . $related_product_id);
+    }
 }
 
 $recipes = get_posts(array('post_type' => 'theobroma_recipe', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'menu_order', 'order' => 'ASC'));
