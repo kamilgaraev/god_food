@@ -23,8 +23,20 @@ $product_details = (string) $product->get_meta('_theobroma_product_details', tru
 if ($product_details === '') {
     $product_details = '<p><strong>Состав:</strong> информация указана на упаковке продукта.</p><p><strong>Условия хранения:</strong> хранить в сухом прохладном месте.</p><p><strong>Срок годности:</strong> 12 месяцев.</p>';
 }
-$product_benefit = (string) $product->get_meta('_theobroma_product_benefit', true);
-$product_benefit_title = theobroma_product_benefit_title($product);
+$product_benefits = $product->get_meta('_theobroma_product_benefits', true);
+if (!is_array($product_benefits)) {
+    $legacy_benefit = (string) $product->get_meta('_theobroma_product_benefit', true);
+    $product_benefits = $legacy_benefit !== '' ? array(array(
+        'title' => theobroma_product_benefit_title($product),
+        'content' => $legacy_benefit,
+    )) : array();
+}
+$product_benefits = array_values(array_filter(array_map(static function ($benefit): array {
+    return is_array($benefit) ? array(
+        'title' => trim((string) ($benefit['title'] ?? '')),
+        'content' => (string) ($benefit['content'] ?? ''),
+    ) : array('title' => '', 'content' => '');
+}, $product_benefits), static fn(array $benefit): bool => $benefit['title'] !== '' && $benefit['content'] !== ''));
 $marketplaces = $product->get_meta('_theobroma_marketplaces', true);
 if (!is_array($marketplaces)) {
     $marketplaces = array();
@@ -52,7 +64,7 @@ get_header();
 ?>
 <main class="product-modal-underlay" aria-hidden="true"><i></i></main>
 <div class="product-modal-source" hidden>
-<main class="product-detail-page">
+<main class="product-detail-page product-detail-sku-<?php echo esc_attr(sanitize_html_class($product->get_sku())); ?> product-detail-benefits-<?php echo esc_attr((string) count($product_benefits)); ?>">
     <a class="product-detail-back" href="<?php echo esc_url($shop_url); ?>">← Назад</a>
     <a class="product-detail-close" href="<?php echo esc_url($shop_url); ?>" aria-label="Закрыть"></a>
     <section class="product-detail-hero">
@@ -83,7 +95,9 @@ get_header();
     </section>
     <section class="product-detail-accordions">
         <details open><summary>Описание продукта<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_details); ?></div></details>
-        <?php if ($product_benefit !== '') : ?><details><summary><?php echo esc_html($product_benefit_title); ?><i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_benefit); ?></div></details><?php endif; ?>
+        <?php foreach ($product_benefits as $product_benefit) : ?>
+            <details><summary><?php echo esc_html($product_benefit['title']); ?><i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_benefit['content']); ?></div></details>
+        <?php endforeach; ?>
     </section>
     <section class="product-related">
         <h2>Вам может понравиться</h2>

@@ -1645,12 +1645,12 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-product .product-detail-page { width:1240px; min-height:1651px; }
 .commerce-modal-product .product-detail-hero { top:55px; left:40px; }
 .commerce-modal-product .product-detail-accordions { position:relative; top:auto; left:auto; margin:860px 0 0 40px; }
-.commerce-modal-product .product-detail-accordions summary { font:500 14px/18.9px 'Cormorant',Arial,sans-serif; }
+.commerce-modal-product .product-detail-accordions summary { height:60px; font:500 14px/18.9px 'Cormorant',Arial,sans-serif; }
 .commerce-modal-product .product-detail-accordions details div { font:400 12px/18.6px 'Cormorant',Arial,sans-serif; }
 .commerce-modal-product .product-detail-accordions details p { margin-bottom:18.6px; }
 @media (min-width:901px) {
   .commerce-modal-product .product-detail-page { padding-bottom:55px; }
-  .commerce-modal-product .product-detail-accordions details[open] > div { padding-bottom:22px; }
+  .commerce-modal-product .product-detail-accordions details[open] > div { padding:2px 0 22px; }
   .commerce-modal-product .product-related { min-height:635.75px; }
 }
 .commerce-modal-product .product-related { position:relative; top:auto; left:auto; width:1200px; margin:0 0 0 20px; padding:0 20px; }
@@ -1771,11 +1771,15 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal-product .product-detail-marketplaces a { height:40px; font:400 13px/40px 'Montserrat',Arial,sans-serif; }
   .commerce-modal-product .product-detail-copy { width:100%; margin-top:26.796875px; font:400 16px/24.8px 'Montserrat',Arial,sans-serif; }
   .commerce-modal-product .product-detail-copy p { margin-bottom:24.796875px; }
-  .commerce-modal-product .product-detail-accordions { width:calc(100% - 40px); margin:41.328125px auto 0; }
+  .commerce-modal-product .product-detail-accordions { width:calc(100% - 40px); margin:-8.296875px auto 0; }
   .commerce-modal-product .product-detail-accordions summary { height:48px; padding:17.25px 20px 17.25px 0; font:500 10px/13.5px 'Cormorant',Arial,sans-serif; }
   .commerce-modal-product .product-detail-accordions details div { width:100%; font:400 10px/15.5px 'Cormorant',Arial,sans-serif; }
   .commerce-modal-product .product-detail-accordions details p { margin-bottom:15.5px; }
-  .commerce-modal-product .product-related { width:calc(100% - 40px); margin:13px auto 0; padding:0; }
+  .commerce-modal-product .product-detail-benefits-1 .product-detail-accordions details[open] > div { padding-bottom:11px; }
+  .commerce-modal-product .product-detail-benefits-2 .product-detail-accordions details[open] > div { padding-bottom:9px; }
+  .commerce-modal-product .product-related { width:calc(100% - 40px); margin:0 auto; padding:0; }
+  .commerce-modal-product [class*="product-detail-sku-theobroma-cacao-"] .product-detail-accordions { margin-top:41.328125px; }
+  .commerce-modal-product [class*="product-detail-sku-theobroma-cacao-"] .product-related { margin-top:13px; }
   .commerce-modal-product .product-related > h2 { margin-bottom:70px; }
   .commerce-modal-product .product-related-grid { gap:40px; overflow-x:auto; scrollbar-width:none; }
   .commerce-modal-product .product-related-grid-tablet { display:none; }
@@ -1806,11 +1810,8 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-checkout { margin-top:62px; }
 }
 @media (min-width:391px) and (max-width:460px) {
-  .commerce-modal-product .product-detail-accordions {
+  .commerce-modal-product [class*="product-detail-sku-theobroma-cacao-"] .product-detail-accordions {
     margin-top:calc(61.4453125vw - 198.30859375px);
-  }
-  .commerce-modal-product .product-related {
-    margin-top:calc(5vw - 6.5px);
   }
 }
 @media (min-width:601px) and (max-width:900px) {

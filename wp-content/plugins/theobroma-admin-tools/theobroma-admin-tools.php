@@ -217,16 +217,25 @@ final class Theobroma_Admin_Tools {
         $copy = get_post_meta($post->ID, '_theobroma_detail_copy', true);
         $copy_text = is_array($copy) ? implode("\n\n", $copy) : '';
         $details = (string) get_post_meta($post->ID, '_theobroma_product_details', true);
-        $benefit_title = (string) get_post_meta($post->ID, '_theobroma_product_benefit_title', true);
-        $benefit = (string) get_post_meta($post->ID, '_theobroma_product_benefit', true);
+        $benefits = get_post_meta($post->ID, '_theobroma_product_benefits', true);
+        if (!is_array($benefits)) {
+            $legacy_title = (string) get_post_meta($post->ID, '_theobroma_product_benefit_title', true);
+            $legacy_content = (string) get_post_meta($post->ID, '_theobroma_product_benefit', true);
+            $benefits = $legacy_title !== '' && $legacy_content !== ''
+                ? array(array('title' => $legacy_title, 'content' => $legacy_content))
+                : array();
+        }
         $marketplaces = get_post_meta($post->ID, '_theobroma_marketplaces', true);
         $marketplaces = is_array($marketplaces) ? $marketplaces : array();
         self::media_field('theobroma_product_detail_image_id', 'Изображение в детальной карточке', $detail_image_id);
         echo '<p class="description">Рекомендуемый размер: 560 × 745 px. Изображение товара WooCommerce продолжит использоваться в каталоге.</p>';
         self::textarea('theobroma_detail_copy', 'Описание рядом с товаром', $copy_text, 'Каждый абзац отделяйте пустой строкой.');
         self::textarea('theobroma_product_details', 'Состав и характеристики', $details, 'Допускается безопасная HTML-разметка.');
-        self::input('theobroma_product_benefit_title', 'Заголовок второго блока', $benefit_title);
-        self::textarea('theobroma_product_benefit', 'Содержимое второго блока', $benefit, 'Оставьте заголовок и содержимое пустыми, если у товара нет второго блока.');
+        for ($index = 0; $index < 3; $index++) {
+            $benefit = is_array($benefits[$index] ?? null) ? $benefits[$index] : array();
+            self::input('theobroma_product_benefits[' . $index . '][title]', 'Заголовок дополнительного блока ' . ($index + 1), (string) ($benefit['title'] ?? ''));
+            self::textarea('theobroma_product_benefits[' . $index . '][content]', 'Содержимое дополнительного блока ' . ($index + 1), (string) ($benefit['content'] ?? ''), 'Оставьте оба поля пустыми, если блок не нужен.');
+        }
         self::input('theobroma_wb_url', 'Ссылка Wildberries', (string) ($marketplaces['wb'] ?? ''), 'url');
         self::input('theobroma_ozon_url', 'Ссылка Ozon', (string) ($marketplaces['ozon'] ?? ''), 'url');
     }
@@ -347,8 +356,23 @@ final class Theobroma_Admin_Tools {
         $copy = array_values(array_filter(array_map('trim', preg_split('~\R\s*\R~u', $copy_raw) ?: array())));
         update_post_meta($post_id, '_theobroma_detail_copy', $copy);
         update_post_meta($post_id, '_theobroma_product_details', wp_kses_post(wp_unslash($_POST['theobroma_product_details'] ?? '')));
-        update_post_meta($post_id, '_theobroma_product_benefit_title', sanitize_text_field(wp_unslash($_POST['theobroma_product_benefit_title'] ?? '')));
-        update_post_meta($post_id, '_theobroma_product_benefit', wp_kses_post(wp_unslash($_POST['theobroma_product_benefit'] ?? '')));
+        $benefits = array();
+        $benefit_rows = isset($_POST['theobroma_product_benefits']) && is_array($_POST['theobroma_product_benefits'])
+            ? wp_unslash($_POST['theobroma_product_benefits'])
+            : array();
+        foreach (array_slice($benefit_rows, 0, 3) as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $title = sanitize_text_field($row['title'] ?? '');
+            $content = wp_kses_post($row['content'] ?? '');
+            if ($title !== '' && $content !== '') {
+                $benefits[] = array('title' => $title, 'content' => $content);
+            }
+        }
+        update_post_meta($post_id, '_theobroma_product_benefits', $benefits);
+        update_post_meta($post_id, '_theobroma_product_benefit_title', (string) ($benefits[0]['title'] ?? ''));
+        update_post_meta($post_id, '_theobroma_product_benefit', (string) ($benefits[0]['content'] ?? ''));
         update_post_meta($post_id, '_theobroma_marketplaces', array(
             'wb' => esc_url_raw(wp_unslash($_POST['theobroma_wb_url'] ?? '')),
             'ozon' => esc_url_raw(wp_unslash($_POST['theobroma_ozon_url'] ?? '')),
