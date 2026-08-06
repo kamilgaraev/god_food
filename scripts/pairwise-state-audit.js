@@ -80,10 +80,11 @@ async function dismissCookie(page, side) {
   const cookie = side === 'source' ? page.locator('.t657:visible') : page.locator('.cookie-notice:visible');
   if (!await cookie.count()) return;
   const button = side === 'source'
-    ? cookie.locator('button,a').filter({ hasText: /НЕ ПОКАЗЫВАТЬ|OK/i }).last()
+    ? cookie.locator('.t657__btn:visible,[role="button"]:visible,button:visible').last()
     : cookie.locator('button').last();
-  if (await button.count()) await button.click({ force: true });
-  await cookie.first().waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+  assert.ok(await button.count(), `${side} cookie dismiss button is missing`);
+  await button.click({ force: true });
+  await cookie.first().waitFor({ state: 'hidden', timeout: 3000 });
 }
 
 async function settle(page) {
@@ -137,6 +138,23 @@ async function headerMetrics(page, side, viewport) {
       favoriteText: await actionPartBox(page, '.floating-actions a:nth-child(2) span', viewport),
     },
   };
+}
+
+async function menuMetrics(page, side, viewport) {
+  const root = side === 'source' ? page.locator('.t450__container:visible').last() : page.locator('.mobile-menu[aria-hidden="false"]');
+  const links = side === 'source' ? root.locator('a:visible') : root.locator('nav a:visible');
+  const items = await links.evaluateAll((elements) => elements.map((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      text: element.textContent.replace(/\s+/g, ' ').trim().toUpperCase(),
+      box: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+    };
+  }).filter(({ text, box }) => text && box.width > 0 && box.height > 0));
+  const close = await largestVisible(page.locator(side === 'source' ? '[class*="t450__close"]:visible' : '.mobile-menu-close'), viewport);
+  const panel = side === 'source'
+    ? await root.boundingBox()
+    : await root.evaluate((element) => ({ x: 0, y: 0, width: parseFloat(getComputedStyle(element, '::before').width), height: innerHeight }));
+  return { panel, close: close?.box || null, items };
 }
 
 async function openState(page, side, state, viewport) {
@@ -294,6 +312,7 @@ async function capture(browser, side, state, viewport, target) {
     ...metrics,
     box: await stateBox(page, side, state),
     header: state === 'header' ? await headerMetrics(page, side, viewport) : null,
+    menu: state === 'menu' ? await menuMetrics(page, side, viewport) : null,
   };
   const options = state === 'header'
     ? { path: target, clip: { x: 0, y: 0, width: viewport.width, height: Math.min(240, viewport.height) }, animations: 'disabled' }
@@ -340,6 +359,25 @@ async function capture(browser, side, state, viewport, target) {
               }
             }
           }
+        }
+        if (state === 'menu') {
+          assert.equal(local.menu.items.length, source.menu.items.length, `${widthKey}px menu item count differs`);
+          const mismatches = [];
+          for (const key of ['x', 'y', 'width', 'height']) {
+            const delta = Math.abs(source.menu.panel[key] - local.menu.panel[key]);
+            if (delta > 1.25) mismatches.push(`panel ${key}: ${delta}px`);
+            const closeDelta = Math.abs(source.menu.close[key] - local.menu.close[key]);
+            if (closeDelta > 1.25) mismatches.push(`close ${key}: ${closeDelta}px`);
+          }
+          source.menu.items.forEach((sourceItem, index) => {
+            const localItem = local.menu.items[index];
+            assert.equal(localItem.text, sourceItem.text, `${widthKey}px menu item ${index + 1} text differs`);
+            for (const key of ['x', 'y', 'width', 'height']) {
+              const delta = Math.abs(sourceItem.box[key] - localItem.box[key]);
+              if (delta > 1.25) mismatches.push(`item ${index + 1} ${key}: ${delta}px`);
+            }
+          });
+          assert.deepEqual(mismatches, [], `${widthKey}px menu geometry differs:\n${mismatches.join('\n')}`);
         }
         const diff = await comparePng(sourceFile, localFile, diffFile);
         results.push({ width: widthKey, state, source, local, diff });

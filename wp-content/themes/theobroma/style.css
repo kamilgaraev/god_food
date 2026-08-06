@@ -594,9 +594,11 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 @media (max-width:800px) { .nav { grid-template-columns:1fr auto; min-height:66px; padding:0 18px; } .nav-links { display:none; } .brand { font-size:31px; } .floating-actions { top:28px; }.floating-actions a { width:30px; height:30px; font-size:13px; }.floating-actions a span { display:none; }.floating-actions img { width:15px; height:15px; } .hero { min-height:590px; align-items:start; } .hero::before { width:85vw; height:210px; right:7%; top:auto; bottom:0; } .hero-inner { padding:58px 22px; top:auto; } .products { grid-template-columns:repeat(2,1fr); } .product-image { height:220px; } .feature { height:auto; } .about-stage { width:auto; height:auto; padding:45px 18px; } .about-award,.story,.values { position:static; width:auto; height:auto; } .about-award { width:190px; margin:0 auto 25px; } .story { padding:30px; } .values { margin-top:18px; grid-template-columns:1fr; gap:12px; } .value { height:auto; min-height:180px; } .reviews { height:auto; } .reviews-stage { width:auto; height:auto; padding:45px 18px; } .reviews .section-heading { height:auto; } .review-grid { height:auto; grid-template-columns:repeat(6,260px); overflow-x:auto; } .review { margin-top:25px; } .reviews-button { height:110px; } .site-footer { height:auto; padding:45px 18px; } .footer-shell { width:auto; height:auto; display:grid; grid-template-columns:1fr; gap:18px; } .footer-shell > * { position:static; width:auto; } .copyright { position:static; width:auto; transform:none; margin-top:30px; grid-template-columns:1fr; gap:18px; } }
 @media (min-width:461px) and (max-width:900px) {
   .mobile-menu::before { width:320px; }
-  .mobile-menu nav { top:50px; left:40px; width:240px; }
-  .mobile-menu a { font-size:26px; }
-  .mobile-menu-close { top:9px; left:276px; }
+  .mobile-menu nav { top:48px; left:40px; width:240px; }
+  .mobile-menu li + li { margin-top:15px; }
+  .mobile-menu a { width:max-content; max-width:240px; font-size:26px; line-height:31px; letter-spacing:.1px; }
+  .mobile-menu-close { top:5px; left:275px; width:40px; height:40px; }
+  .mobile-menu-close::before,.mobile-menu-close::after { top:19px; left:7px; }
   .site-header { height:36px; }
   .shipping { min-height:36px; }
   .shipping img { width:2.8117vw; height:2.8117vw; position:absolute; top:.93587vw; left:32.9671vw; zoom:1; }
@@ -1085,6 +1087,11 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
 /* Mobile inner-page calibration against the original 390px layout. */
 @media (max-width:460px) {
+  .mobile-menu nav { top:42px; left:25px; width:270px; }
+  .mobile-menu li + li { margin-top:15px; }
+  .mobile-menu a { width:max-content; max-width:270px; font-size:26px; line-height:31px; letter-spacing:.1px; }
+  .mobile-menu-close { top:5px; left:275px; width:40px; height:40px; }
+  .mobile-menu-close::before,.mobile-menu-close::after { top:19px; left:7px; }
   .site-header { height:8.372093vw; }
   .shipping { min-height:8.372093vw; }
   .shipping img { top:1.5625vw; left:16.5625vw; width:5.625vw; height:5.625vw; }
