@@ -59,11 +59,13 @@ async function settlePage(page) {
 
 async function navigate(page, url) {
   let lastError;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
     try {
       return await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
     } catch (error) {
       lastError = error;
+      await page.goto('about:blank', { waitUntil: 'commit', timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(1000 * (attempt + 1));
     }
   }
   throw lastError;
@@ -94,9 +96,12 @@ async function capture(browser, side, url, viewport, target) {
     ).catch(() => {});
   }
   let assetFailures = await settlePage(page);
-  if (side === 'source' && url.includes('/tproduct/') && !await sourceProductIsComplete(page, viewport)) {
-    response = await navigate(page, url);
-    assetFailures = await settlePage(page);
+  if (side === 'source' && url.includes('/tproduct/')) {
+    for (let attempt = 0; attempt < 3 && !await sourceProductIsComplete(page, viewport); attempt += 1) {
+      await page.waitForTimeout(1500 * (attempt + 1));
+      response = await navigate(page, url);
+      assetFailures = await settlePage(page);
+    }
     if (!await sourceProductIsComplete(page, viewport)) throw new Error(`Incomplete source product page after retry: ${url}`);
   }
   const hasOpenModal = await page.locator('#commerce-modal.is-open .commerce-modal-panel').count() > 0;
