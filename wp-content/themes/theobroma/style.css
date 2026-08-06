@@ -1328,6 +1328,20 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .nav-sticky .floating-actions a:nth-child(2) { order:2; }
   .nav-sticky .floating-actions a:nth-child(3) { order:1; }
 
+  #catalog { height:1366.90625px; }
+  #catalog .section-heading { height:208px; }
+  #catalog .products {
+    height:1036.90625px;
+    grid-template-rows:repeat(2,450.953125px);
+    gap:60px 40px;
+    align-content:start;
+  }
+  #catalog .product { height:450.953125px; }
+  #catalog .product-image { height:350px; }
+  #catalog > p { height:122px; }
+  .feature,.about-stage { height:756px; }
+  .reviews,.reviews-stage { height:757px; }
+
   .catalog-breadcrumb { padding-top:148px; transform:translateY(4px); }
   .catalog-title { margin-bottom:40px; font-size:44px; line-height:44px; transform:translateY(6px); }
   .catalog-page::before { top:68px; width:172px; height:226.466667px; }
@@ -1351,6 +1365,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipes-breadcrumb { padding-top:148px; transform:translateY(4px); }
   .recipes-intro > h1 { width:512px; margin-inline:auto; font-size:44px; line-height:44px; transform:translateY(6px); }
   .recipes-lead { width:427px; margin-inline:auto; transform:translateY(1px); }
+  .recipes-intro { padding-bottom:76px; }
   .recipes-intro::before { top:249px; width:150px; height:202px; }
   .recipe-grid { grid-template-columns:1fr; gap:20px; transform:translateY(-1px); }
   .recipe-card { width:600px; height:190px; padding:0; position:relative; display:block; }
@@ -1386,6 +1401,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .marketplace-lead-break { display:none; }
   .marketplace-intro > h1 { font-size:44px; line-height:44px; transform:translateY(6px); }
   .marketplace-lead { width:500px; transform:translateY(2px); }
+  .marketplace-intro { padding-bottom:74.1875px; }
   .marketplace-intro::before { top:48px; width:175px; height:234px; }
   .marketplace-intro::after { display:none; }
   .market-grid { grid-template-columns:repeat(2,290px); gap:38px 20px; transform:translateY(3px); }
@@ -1397,9 +1413,13 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-location { height:388px; min-height:388px; margin-top:41px; }
   .buy-location img { aspect-ratio:2/1; }
   .buy-location .button { right:20px; bottom:26px; width:165px; }
-  .buy-intro { padding-bottom:78px; }
+  .buy-intro { padding-bottom:80px; }
   .buy-decor-left { top:235px; width:150px; height:202px; }
   .buy-decor-right { top:781px; width:150px; height:197.5px; }
+
+  .contact,.contact .section { height:414px; }
+  .contact .section { padding-top:140px; }
+  .recipes-page .contact,.recipes-page .contact .section { height:419px; }
 
   .media-page { padding-top:148px; padding-bottom:0; }
   .media-breadcrumb { transform:translateY(4px); }
