@@ -65,6 +65,24 @@ final class Theobroma_Admin_Tools {
                 'contact_accent' => array('Акцентная часть', 'text'),
                 'contact_success' => array('Сообщение после отправки', 'text'),
             ),
+            'Корпоративные подарки' => array(
+                'corporate_hero_title' => array('Заголовок', 'text'),
+                'corporate_hero_accent' => array('Акцентная строка', 'text'),
+                'corporate_intro' => array('Вступительный текст', 'textarea'),
+                'corporate_branding_1_title' => array('Брендирование 1: заголовок', 'text'),
+                'corporate_branding_1_text' => array('Брендирование 1: текст', 'textarea'),
+                'corporate_branding_2_title' => array('Брендирование 2: заголовок', 'text'),
+                'corporate_branding_2_text' => array('Брендирование 2: текст', 'textarea'),
+                'corporate_branding_3_title' => array('Брендирование 3: заголовок', 'text'),
+                'corporate_branding_3_text' => array('Брендирование 3: текст', 'textarea'),
+                'corporate_case_1_title' => array('Кейс 1: заголовок', 'text'),
+                'corporate_case_1_text' => array('Кейс 1: текст', 'textarea'),
+                'corporate_case_2_title' => array('Кейс 2: заголовок', 'text'),
+                'corporate_case_2_text' => array('Кейс 2: текст', 'textarea'),
+                'corporate_case_3_title' => array('Кейс 3: заголовок', 'text'),
+                'corporate_case_3_text' => array('Кейс 3: текст', 'textarea'),
+                'corporate_minimum' => array('Минимальный заказ', 'textarea'),
+            ),
             'Футер' => array(
                 'footer_address' => array('Адрес фабрики', 'textarea'),
                 'footer_phone_1' => array('Телефон 1', 'text'),
@@ -113,7 +131,12 @@ final class Theobroma_Admin_Tools {
         }
         check_admin_referer('theobroma_save_content_settings');
         $input = isset($_POST['settings']) && is_array($_POST['settings']) ? wp_unslash($_POST['settings']) : array();
-        $multiline = array('story_heading', 'story_text', 'footer_address', 'footer_info_note', 'footer_opt_note', 'footer_press_note', 'footer_company', 'footer_bank');
+        $multiline = array(
+            'story_heading', 'story_text', 'corporate_intro', 'corporate_minimum',
+            'corporate_branding_1_text', 'corporate_branding_2_text', 'corporate_branding_3_text',
+            'corporate_case_1_text', 'corporate_case_2_text', 'corporate_case_3_text',
+            'footer_address', 'footer_info_note', 'footer_opt_note', 'footer_press_note', 'footer_company', 'footer_bank',
+        );
         $emails = array('footer_info_email', 'footer_opt_email', 'footer_press_email');
         $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen');
         $clean = array();

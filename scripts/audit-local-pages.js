@@ -36,7 +36,7 @@ function routeId(route) {
           url: location.href,
           title: document.title,
           viewportWidth: document.documentElement.clientWidth,
-          scrollWidth: document.documentElement.scrollWidth,
+          scrollWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
           documentHeight: document.documentElement.scrollHeight,
           heading: document.querySelector('h1')?.textContent.replace(/\s+/g, ' ').trim() || '',
         }));
@@ -55,6 +55,16 @@ function routeId(route) {
   const report = path.join(outputRoot, `report-${widths.join('-')}.json`);
   fs.writeFileSync(report, `${JSON.stringify(results, null, 2)}\n`);
   console.log(`Report: ${report}`);
+
+  const failures = results.filter((result) => (
+    result.status !== 200
+    || result.scrollWidth - result.viewportWidth > 1
+    || result.consoleErrors.length > 0
+    || result.pageErrors.length > 0
+  ));
+  if (failures.length > 0) {
+    throw new Error(`${failures.length} local page audits failed; inspect ${report}`);
+  }
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;
