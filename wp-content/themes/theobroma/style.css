@@ -1649,7 +1649,9 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-product .product-detail-accordions details div { font:400 12px/18.6px 'Cormorant',Arial,sans-serif; }
 .commerce-modal-product .product-detail-accordions details p { margin-bottom:18.6px; }
 @media (min-width:901px) {
+  .commerce-modal-product .product-detail-page { padding-bottom:55px; }
   .commerce-modal-product .product-detail-accordions details[open] > div { padding-bottom:22px; }
+  .commerce-modal-product .product-related { min-height:635.75px; }
 }
 .commerce-modal-product .product-related { position:relative; top:auto; left:auto; width:1200px; margin:0 0 0 20px; padding:0 20px; }
 .commerce-modal-product .product-related > h2 { margin-bottom:43px; }

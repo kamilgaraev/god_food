@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 
-const sourceUrl = 'https://theobroma.one/catalog/tproduct/281858081192-kakao-poroshok-naturalnii';
-const localUrl = 'http://localhost:8080/product/theobroma-cacao-200/';
+const sourceUrl = process.env.PRODUCT_SOURCE_URL || 'https://theobroma.one/catalog/tproduct/281858081192-kakao-poroshok-naturalnii';
+const localUrl = process.env.PRODUCT_LOCAL_URL || 'http://localhost:8080/product/theobroma-cacao-200/';
 const viewportWidth = Number(process.env.PRODUCT_WIDTH || 390);
 
 async function waitForProduct(page, side) {
@@ -37,8 +37,12 @@ async function main() {
     const localTopBar = await local.locator('.commerce-modal[data-commerce-type="product"]').evaluate((element) => (
       getComputedStyle(element, '::before').backgroundColor
     ));
-    const sourceCopyType = await source.locator('.js-store-prod-all-text span').filter({ hasText: 'Прекрасный выбор' }).evaluate((element) => {
-      const style = getComputedStyle(element);
+    const sourceCopyType = await source.evaluate(() => {
+      const root = document.querySelector('.js-store-prod-all-text');
+      const candidates = [root, ...root.querySelectorAll('*')]
+        .filter((element) => element.textContent.replace(/\s+/g, ' ').trim().length > 30)
+        .sort((left, right) => parseFloat(getComputedStyle(right).fontSize) - parseFloat(getComputedStyle(left).fontSize));
+      const style = getComputedStyle(candidates[0]);
       return { fontSize: style.fontSize, lineHeight: style.lineHeight };
     });
     const localCopyType = await local.locator('.commerce-modal.is-open .product-detail-copy p').first().evaluate((element) => {
@@ -160,6 +164,9 @@ async function main() {
       }
       if (Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
         throw new Error(`Desktop related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
+      }
+      if (Math.abs(sourceMetrics.related.height - localMetrics.related.height) > 0.5) {
+        throw new Error(`Desktop related-products height differs: source ${sourceMetrics.related.height}, local ${localMetrics.related.height}`);
       }
     }
 
