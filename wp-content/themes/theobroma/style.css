@@ -499,13 +499,6 @@ body.account-modal-open { overflow:hidden; }
 .recipe-detail-decor-left { top:70px; left:0; width:267px; height:329.609375px; background-image:url('assets/images/botanical-page-left.webp'); }
 .recipe-detail-decor-right { top:980px; right:0; width:224px; height:284.171875px; background-image:url('assets/images/botanical-page-right.webp'); }
 .recipe-detail-long .recipe-detail-decor-right,.recipe-detail-banana .recipe-detail-decor-right { top:1288px; }
-@media (min-width:2049px) {
-  .site-header { height:calc(2.490234375vw - 1px); }
-  .shipping { left:50%; width:2048px; min-height:51px; transform:translateX(-50%) scale(calc(100vw / 2048px)); transform-origin:top center; clip-path:inset(0 0 calc(4096px / 100vw) 0); }
-  .shipping img { left:843.25px; }
-  .shipping span { left:523.991px; }
-  .nav { top:calc(2.490234375vw - 1px); }
-}
 .theobroma-product-view { min-width:1180px; background:#fcf9f7; }
 .product-detail-page { width:100%; min-height:1995px; position:relative; overflow:hidden; background:#fcf9f7; color:#343434; }
 .product-detail-back { position:absolute; top:21px; left:20px; color:#fff; font:400 12px/18px 'Montserrat',Arial,sans-serif; }
@@ -1363,8 +1356,8 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 @media (min-width:901px) {
   .site-header { height:calc(2.5vw - .2px); }
   .shipping { min-height:calc(2.5vw - .2px); }
-  .shipping img { width:1.5vw; height:1.5vw; position:absolute; top:.5vw; left:41.1797vw; object-fit:contain; zoom:1; }
-  .shipping span { width:auto; position:absolute; top:.5vw; left:43.6745vw; zoom:1; font-size:.916667vw; line-height:1.416667vw; }
+  .shipping img { width:1.5vw; height:1.5vw; position:absolute; top:.5vw; left:41.166667vw; object-fit:contain; zoom:1; }
+  .shipping span { width:auto; position:absolute; top:.5vw; left:43.666667vw; zoom:1; font-size:.916667vw; line-height:1.416667vw; }
   .nav { top:calc(2.5vw - .2px); }
   .floating-actions { top:calc(2.5vw + 22.8px); }
 }
