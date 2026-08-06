@@ -44,8 +44,36 @@ const widths = [1440, 1920, 2048, 2560, 3840];
 
     const mobile = await browser.newPage({ viewport: { width: 430, height: 932 } });
     await mobile.goto(url, { waitUntil: 'networkidle' });
-    const accountAction = await mobile.locator('.floating-actions a:nth-child(3)').evaluate((action) => action.getBoundingClientRect().x);
-    assert.ok(accountAction <= 185, `430px: account action starts too far right (${accountAction}px)`);
+    const mobileMetrics = await mobile.evaluate(() => {
+      const rect = (selector) => {
+        const box = document.querySelector(selector).getBoundingClientRect();
+        return { x: box.x, y: box.y, width: box.width, height: box.height };
+      };
+
+      return {
+        brand: rect('.brand'),
+        account: rect('.floating-actions a:nth-child(3)'),
+        cart: rect('.floating-actions a:nth-child(1)'),
+        favorite: rect('.floating-actions a:nth-child(2)'),
+        menu: rect('.menu-toggle'),
+      };
+    });
+    const expectedMobile = {
+      brand: { x: 20.16, y: 56.16, width: 134.39, height: 55.98 },
+      account: { x: 178.75, y: 60.19, width: 40.31, height: 47.03 },
+      cart: { x: 225.78, y: 60.19, width: 64.5, height: 47.03 },
+      favorite: { x: 297.02, y: 60.19, width: 64.5, height: 47.03 },
+      menu: { x: 368.25, y: 53.47, width: 59.13, height: 59.13 },
+    };
+    for (const [name, expected] of Object.entries(expectedMobile)) {
+      for (const [metric, target] of Object.entries(expected)) {
+        const actual = mobileMetrics[name][metric];
+        assert.ok(
+          Math.abs(actual - target) <= 1,
+          `430px: ${name} ${metric} is ${actual}px, expected ${target}px (+/- 1px)`,
+        );
+      }
+    }
     await mobile.close();
   } finally {
     await browser.close();

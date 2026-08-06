@@ -1036,11 +1036,19 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
 /* Mobile inner-page calibration against the original 390px layout. */
 @media (max-width:460px) {
-  .floating-actions { top:53.9375px; right:84.25px; gap:6.1015625px; }
-  .floating-actions a { height:42.65625px; padding:0; justify-content:center; gap:5px; }
-  .floating-actions a:nth-child(1) { width:58.5px; }
-  .floating-actions a:nth-child(2) { width:58.5px; margin-left:0; }
-  .floating-actions a:nth-child(3) { width:36.5625px; }
+  .site-header { height:36px; }
+  .shipping { min-height:36px; }
+  .shipping img { top:6.71875px; left:calc(50vw - 143.78125px); width:24.1875px; height:24.1875px; }
+  .shipping span { top:8.0625px; left:calc(50vw - 106.140625px); font-size:15px; line-height:22.84375px; zoom:1; }
+  .nav { top:36px; }
+  .brand { top:20.15625px; left:20.15625px; width:134.390625px; height:55.984375px; }
+  .brand img { width:134.390625px; height:55.984375px; }
+  .menu-toggle { top:17.46875px; right:2.625px; width:59.125px; height:59.125px; }
+  .floating-actions { top:60.1875px; right:68.484375px; gap:6.71875px; }
+  .floating-actions a { height:47.03125px; padding:0; justify-content:center; gap:5px; }
+  .floating-actions a:nth-child(1) { width:64.5px; }
+  .floating-actions a:nth-child(2) { width:64.5px; margin-left:0; }
+  .floating-actions a:nth-child(3) { width:40.3125px; }
   .floating-actions a span { display:inline; font-size:12px; line-height:1; }
   .floating-actions a:nth-child(3) span { display:none; }
 
