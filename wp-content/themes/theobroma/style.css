@@ -1812,13 +1812,13 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal-product .product-detail-gallery,
   .commerce-modal-product .product-detail-image { width:600px; margin-inline:auto; }
   .commerce-modal-product .product-detail-image { height:798px; aspect-ratio:auto; }
-  .commerce-modal-product .product-detail-image img { object-position:left center; }
+  .commerce-modal-product .product-detail-image img { width:600px; height:798px; object-position:left center; }
   .commerce-modal-product .product-detail-summary { width:620px; min-height:481px; margin-inline:auto; }
   .commerce-modal-product .product-detail-accordions { width:600px; min-height:127px; margin:29px auto 0; }
   .commerce-modal-product .product-detail-accordions summary { height:60px; padding:21.9px 0; font:500 12px/16.2px 'Cormorant',Arial,sans-serif; }
   .commerce-modal-product .product-detail-accordions details div { width:100%; font:400 10px/15.5px 'Cormorant',Arial,sans-serif; }
   .commerce-modal-product .product-detail-accordions details p { margin-bottom:15.5px; }
-  .commerce-modal-product .product-related { width:600px; margin:40px auto 0; padding:0; }
+  .commerce-modal-product .product-related { width:600px; margin:15px auto 0; padding:0; }
   .commerce-modal-product .product-related > h2 { margin-bottom:71px; }
   .commerce-modal-product .product-related-grid-desktop,
   .commerce-modal-product .product-related-grid-mobile { display:none; }

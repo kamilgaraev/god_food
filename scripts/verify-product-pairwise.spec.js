@@ -71,25 +71,25 @@ async function main() {
       return { fontSize: style.fontSize, lineHeight: style.lineHeight, y: rect.y, height: rect.height };
     });
 
-    if (sourceTopBar !== 'rgb(74, 74, 74)') {
+    if (viewportWidth <= 460 && sourceTopBar !== 'rgb(74, 74, 74)') {
       throw new Error(`Unexpected source mobile product bar: ${sourceTopBar}`);
     }
-    if (localTopBar !== sourceTopBar) {
+    if (viewportWidth <= 460 && localTopBar !== sourceTopBar) {
       throw new Error(`Mobile product bar differs: source ${sourceTopBar}, local ${localTopBar}`);
     }
-    if (JSON.stringify(localCopyType) !== JSON.stringify(sourceCopyType)) {
+    if (viewportWidth <= 460 && JSON.stringify(localCopyType) !== JSON.stringify(sourceCopyType)) {
       throw new Error(`Mobile product copy typography differs: source ${JSON.stringify(sourceCopyType)}, local ${JSON.stringify(localCopyType)}`);
     }
     for (const key of ['fontSize', 'lineHeight']) {
-      if (sourceDetailsType[key] !== localDetailsType[key]) {
+      if (viewportWidth <= 460 && sourceDetailsType[key] !== localDetailsType[key]) {
         throw new Error(`Mobile product accordion title ${key} differs: source ${sourceDetailsType[key]}, local ${localDetailsType[key]}`);
       }
-      if (sourceDetailsCopyType[key] !== localDetailsCopyType[key]) {
+      if (viewportWidth <= 460 && sourceDetailsCopyType[key] !== localDetailsCopyType[key]) {
         throw new Error(`Mobile product accordion copy ${key} differs: source ${sourceDetailsCopyType[key]}, local ${localDetailsCopyType[key]}`);
       }
     }
     const sourceMetrics = await source.evaluate(() => Object.fromEntries([
-      ['image', '.t-store__prod-popup__slider'],
+      ['image', '.t-store__prod-popup__slider .t-slds__item_active .t-slds__bgimg'],
       ['summary', '.t-store__prod-popup__info'],
       ['copy', '.t-store__prod-popup__text'],
       ['accordions', '.js-store-tabs'],
@@ -116,17 +116,30 @@ async function main() {
     console.log(JSON.stringify({ source: sourceMetrics, local: localMetrics }));
 
     for (const key of ['x', 'y', 'width', 'height']) {
-      if (Math.abs(sourceMetrics.image[key] - localMetrics.image[key]) > 0.5) {
+      if (viewportWidth <= 460 && Math.abs(sourceMetrics.image[key] - localMetrics.image[key]) > 0.5) {
         throw new Error(`Mobile product image ${key} differs: source ${sourceMetrics.image[key]}, local ${localMetrics.image[key]}`);
       }
     }
     for (const key of ['y', 'height']) {
-      if (Math.abs(sourceMetrics.accordions[key] - localMetrics.accordions[key]) > 2.5) {
+      if (viewportWidth <= 460 && Math.abs(sourceMetrics.accordions[key] - localMetrics.accordions[key]) > 2.5) {
         throw new Error(`Mobile product accordion ${key} differs: source ${sourceMetrics.accordions[key]}, local ${localMetrics.accordions[key]}`);
       }
     }
-    if (Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
+    if (viewportWidth <= 460 && Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
       throw new Error(`Mobile related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
+    }
+    if (viewportWidth >= 601 && viewportWidth <= 900) {
+      for (const key of ['x', 'y', 'width', 'height']) {
+        if (Math.abs(sourceMetrics.image[key] - localMetrics.image[key]) > 0.5) {
+          throw new Error(`Tablet product image ${key} differs: source ${sourceMetrics.image[key]}, local ${localMetrics.image[key]}`);
+        }
+      }
+      if (Math.abs(sourceMetrics.accordions.y - localMetrics.accordions.y) > 2) {
+        throw new Error(`Tablet product accordion start differs: source ${sourceMetrics.accordions.y}, local ${localMetrics.accordions.y}`);
+      }
+      if (Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
+        throw new Error(`Tablet related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
+      }
     }
 
     console.log(`PASS product mobile top bar: ${localTopBar}`);
