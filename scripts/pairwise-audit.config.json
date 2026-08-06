@@ -15,6 +15,7 @@
     { "id": "recipes", "group": "core", "source": "/recipes", "local": "/recipes/" },
     { "id": "marketplace", "group": "core", "source": "/marketplace", "local": "/marketplace/" },
     { "id": "buy", "group": "core", "source": "/buy", "local": "/buy/" },
+    { "id": "buy-old", "group": "legacy", "source": "/buy-old", "local": "/buy-old/" },
     { "id": "cooperation", "group": "core", "source": "/cooperation", "local": "/cooperation/" },
     { "id": "delivery", "group": "core", "source": "/delivery", "local": "/delivery/" },
     { "id": "media", "group": "core", "source": "/media", "local": "/media/" },
@@ -67,5 +68,5 @@
     "/consent/",
     "/category/media/"
   ],
-  "sourceOnly": ["/buy-old"]
+  "sourceOnly": []
 }

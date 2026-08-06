@@ -18,7 +18,10 @@ function theobroma_redirect_legacy_wordpress_routes(): void {
     }
 
     $target = '';
-    if (is_page()) {
+    $request_path = trim((string) wp_parse_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+    if ($request_path === 'buy-old') {
+        $target = theobroma_page_url('Где купить');
+    } elseif (is_page()) {
         $page = get_queried_object();
         $page_redirects = array(
             'sample-page' => home_url('/'),
