@@ -1443,7 +1443,14 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-decor-right { top:781px; width:150px; height:197.5px; }
 
   .contact,.contact .section { height:414px; }
-  .contact .section { padding-top:140px; }
+  .contact .section { padding-top:123px; }
+  .contact-card h2 {
+    top:-83px;
+    left:41px;
+    width:519px;
+    font-size:44px;
+    line-height:44px;
+  }
   .recipes-page .contact,.recipes-page .contact .section { height:419px; }
 
   .media-page { padding-top:148px; padding-bottom:0; }
