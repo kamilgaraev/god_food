@@ -37,6 +37,8 @@ async function settlePage(page) {
       scrollTo(0, y);
       await new Promise((resolve) => setTimeout(resolve, 30));
     }
+    scrollTo(0, 0);
+    await new Promise((resolve) => setTimeout(resolve, 500));
     const lazyElements = [...document.querySelectorAll('[data-original]')];
     const urls = [...new Set(lazyElements.map((element) => element.dataset.original).filter(Boolean))];
     const loaded = await Promise.all(urls.map((url) => new Promise((resolve) => {
@@ -49,13 +51,13 @@ async function settlePage(page) {
     for (const element of lazyElements) {
       if (element instanceof HTMLImageElement) element.src = element.dataset.original;
       else element.style.backgroundImage = `url("${element.dataset.original}")`;
+      element.classList.remove('loading');
       element.classList.add('loaded');
     }
     await Promise.all([...document.images].map(async (image) => {
       if (typeof image.decode !== 'function') return;
       await image.decode().catch(() => {});
     }));
-    scrollTo(0, 0);
     return loaded.filter((value) => !value).length;
   });
   await page.waitForTimeout(150);
