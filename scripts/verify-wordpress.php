@@ -14,9 +14,18 @@ function verify_value(bool $condition, string $label, $actual = null): void {
 
 verify_value(is_plugin_active('woocommerce/woocommerce.php'), 'WooCommerce active');
 verify_value(is_plugin_active('theobroma-admin-tools/theobroma-admin-tools.php'), 'admin tools active');
+verify_value(is_plugin_active('theobroma-commerce/theobroma-commerce.php'), 'commerce integrations active');
+verify_value(is_plugin_active('theobroma-seo/theobroma-seo.php'), 'SEO active');
+verify_value(is_plugin_active('yookassa/yookassa.php'), 'YooKassa active');
 $active_plugins = (array) get_option('active_plugins', array());
 sort($active_plugins);
-verify_value($active_plugins === array('theobroma-admin-tools/theobroma-admin-tools.php', 'woocommerce/woocommerce.php'), 'only required plugins active', $active_plugins);
+verify_value($active_plugins === array(
+    'theobroma-admin-tools/theobroma-admin-tools.php',
+    'theobroma-commerce/theobroma-commerce.php',
+    'theobroma-seo/theobroma-seo.php',
+    'woocommerce/woocommerce.php',
+    'yookassa/yookassa.php',
+), 'only required plugins active', $active_plugins);
 verify_value(get_option('permalink_structure') === '/%postname%/', 'permalink structure');
 verify_value(get_option('timezone_string') === 'Europe/Moscow', 'timezone');
 verify_value((int) get_option('wp_page_for_privacy_policy') > 0, 'privacy page configured');
@@ -24,7 +33,9 @@ verify_value((int) get_option('woocommerce_terms_page_id') > 0, 'terms page conf
 
 $expected_pages = array('catalog', 'recipes', 'marketplace', 'buy', 'cooperation', 'delivery', 'media', 'policy', 'agreement', 'oferta');
 foreach ($expected_pages as $slug) {
-    verify_value(get_page_by_path($slug, OBJECT, 'page') instanceof WP_Post, 'page /' . $slug . '/');
+    $page = get_page_by_path($slug, OBJECT, 'page');
+    verify_value($page instanceof WP_Post, 'page /' . $slug . '/');
+    verify_value((string) get_post_meta($page->ID, '_theobroma_seo_description', true) !== '', 'SEO description /' . $slug . '/');
 }
 
 $products = wc_get_products(array('limit' => -1, 'status' => 'publish'));
@@ -63,6 +74,8 @@ verify_value(function_exists('theobroma_content'), 'shared content settings avai
 verify_value(theobroma_content('shipping_text') !== '', 'shipping text configured');
 verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_recipe_box'), 'recipe editor available');
 verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_content_settings'), 'shared blocks editor available');
+verify_value(class_exists(Theobroma\Seo\WordPressDocumentResolver::class), 'SEO resolver available');
+verify_value(class_exists(Theobroma\Seo\SeoMetaBox::class), 'SEO editor available');
 
 wp_set_current_user(1);
 ob_start();

@@ -15,12 +15,12 @@ docker compose up -d
 После первого запуска или развёртывания в новом Docker volume выполните:
 
 ```powershell
-docker exec food-wordpress-1 php /var/www/html/scripts/sync-catalog.php
-docker exec food-wordpress-1 php /var/www/html/scripts/sync-pages.php
-docker exec food-wordpress-1 php /var/www/html/scripts/sync-recipes.php
-docker exec food-wordpress-1 php /var/www/html/scripts/sync-reviews.php
-docker exec food-wordpress-1 php /var/www/html/scripts/configure-wordpress.php
-docker exec food-wordpress-1 php /var/www/html/scripts/verify-wordpress.php
+docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-catalog.php
+docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-pages.php
+docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-recipes.php
+docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-reviews.php
+docker exec food-wordpress-1 php /opt/theobroma-scripts/configure-wordpress.php
+docker exec food-wordpress-1 php /opt/theobroma-scripts/verify-wordpress.php
 ```
 
 Скрипты можно запускать повторно: они обновляют существующие сущности, не создавая дубликатов.

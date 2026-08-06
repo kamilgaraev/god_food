@@ -5,7 +5,7 @@ require_once '/var/www/html/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 $options = array(
-    'blogdescription' => '',
+    'blogdescription' => 'Натуральный пористый шоколад Theobroma — интернет-магазин «Пища Богов».',
     'timezone_string' => 'Europe/Moscow',
     'date_format' => 'd.m.Y',
     'time_format' => 'H:i',
@@ -56,14 +56,22 @@ foreach ($legacy_products as $legacy_product) {
     }
 }
 
-$plugin = 'theobroma-admin-tools/theobroma-admin-tools.php';
-if (!is_plugin_active($plugin)) {
-    $result = activate_plugin($plugin);
-    if (is_wp_error($result)) {
-        throw new RuntimeException($result->get_error_message());
+$required_plugins = array(
+    'theobroma-admin-tools/theobroma-admin-tools.php',
+    'theobroma-commerce/theobroma-commerce.php',
+    'theobroma-seo/theobroma-seo.php',
+);
+foreach ($required_plugins as $plugin) {
+    if (!is_plugin_active($plugin)) {
+        $result = activate_plugin($plugin);
+        if (is_wp_error($result)) {
+            throw new RuntimeException($result->get_error_message());
+        }
     }
+    echo 'plugin=' . $plugin . PHP_EOL;
 }
-echo 'plugin=' . $plugin . PHP_EOL;
+
+require __DIR__ . '/sync-seo.php';
 
 if ((string) get_option('permalink_structure') !== '/%postname%/') {
     global $wp_rewrite;
