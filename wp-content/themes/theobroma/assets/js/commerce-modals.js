@@ -7,6 +7,7 @@
 
     const panel = modal.querySelector('.commerce-modal-panel');
     const content = modal.querySelector('.commerce-modal-content');
+    const checkoutFormAnchor = content.querySelector('.theobroma-checkout-anchor');
     const status = modal.querySelector('.commerce-modal-status');
     const closeButton = modal.querySelector('.commerce-modal-close');
     const productCache = new Map();
@@ -214,6 +215,15 @@
     const renderCart = (payload) => {
         const wrapper = document.createElement('div');
         wrapper.innerHTML = payload.html;
+        const injectedCheckout = wrapper.querySelector('form.checkout');
+        if (injectedCheckout && checkoutFormAnchor) {
+            [...checkoutFormAnchor.attributes].forEach(({ name }) => checkoutFormAnchor.removeAttribute(name));
+            [...injectedCheckout.attributes].forEach(({ name, value }) => checkoutFormAnchor.setAttribute(name, value));
+            checkoutFormAnchor.classList.add('theobroma-checkout-anchor');
+            checkoutFormAnchor.setAttribute('novalidate', 'novalidate');
+            checkoutFormAnchor.replaceChildren(...injectedCheckout.childNodes);
+            injectedCheckout.replaceWith(checkoutFormAnchor);
+        }
         content.replaceChildren(...wrapper.childNodes);
         content.className = 'commerce-modal-content commerce-modal-cart';
         status.hidden = true;
