@@ -82,6 +82,8 @@ function theobroma_assets(): void {
             'cartUrl' => wc_get_cart_url(),
             'checkoutUrl' => wc_get_checkout_url(),
             'shopUrl' => wc_get_page_permalink('shop'),
+            'wishlistIds' => array_values(array_map('absint', (array) apply_filters('theobroma_wishlist_ids', array()))),
+            'wishlistLoggedIn' => is_user_logged_in(),
         ));
 
         if (!is_user_logged_in()) {

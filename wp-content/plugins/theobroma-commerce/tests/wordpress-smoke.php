@@ -23,6 +23,9 @@ if (!has_action('woocommerce_product_options_sku') || !has_action('woocommerce_a
 if (!has_filter('woocommerce_checkout_fields') || !has_action('woocommerce_after_checkout_validation')) {
     throw new RuntimeException('Provider delivery address hooks are not registered');
 }
+if (!has_action('wp_ajax_theobroma_wishlist_items') || !has_action('wp_ajax_nopriv_theobroma_wishlist_items') || !has_action('wp_ajax_theobroma_wishlist_save')) {
+    throw new RuntimeException('Wishlist AJAX hooks are not registered');
+}
 
 Theobroma\Commerce\Plugin::boot();
 $methods = apply_filters('woocommerce_shipping_methods', []);

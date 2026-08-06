@@ -17,6 +17,17 @@
     let requestController = null;
     let imageLightbox = null;
     let imageLightboxTrigger = null;
+    const wishlistStorageKey = 'theobroma_wishlist_product_ids';
+    const storedWishlistIds = (() => {
+        try {
+            const value = JSON.parse(window.localStorage.getItem(wishlistStorageKey) || '[]');
+            return Array.isArray(value) ? value.map(Number).filter((id) => Number.isInteger(id) && id > 0) : [];
+        } catch (error) {
+            return [];
+        }
+    })();
+    let wishlistIds = new Set([...(config.wishlistIds || []).map(Number), ...storedWishlistIds]);
+    let wishlistSyncPromise = Promise.resolve();
 
     const setCartCount = (count) => {
         document.querySelectorAll('.cart-count').forEach((element) => {
@@ -41,6 +52,19 @@
         document.body.classList.add('commerce-modal-open');
         window.requestAnimationFrame(() => modal.classList.add('is-open'));
         closeButton.focus({ preventScroll: true });
+    };
+
+    const syncWishlistUi = (root = document) => {
+        document.querySelectorAll('.wishlist-count').forEach((element) => {
+            element.textContent = `(${wishlistIds.size})`;
+        });
+        root.querySelectorAll('[data-wishlist-toggle]').forEach((button) => {
+            const active = wishlistIds.has(Number(button.dataset.productId));
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-pressed', String(active));
+            button.setAttribute('aria-label', active ? 'Удалить из избранного' : 'Добавить в избранное');
+            button.textContent = active ? '♥' : '♡';
+        });
     };
 
     const ensureImageLightbox = () => {
@@ -140,6 +164,85 @@
         return response.json();
     };
 
+    const backgroundRequest = async (body) => {
+        const response = await window.fetch(config.ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: new URLSearchParams({ nonce: config.nonce, ...body }),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    };
+
+    const persistWishlist = () => {
+        const ids = [...wishlistIds];
+        window.localStorage.setItem(wishlistStorageKey, JSON.stringify(ids));
+        syncWishlistUi();
+        if (config.wishlistLoggedIn) {
+            wishlistSyncPromise = backgroundRequest({ action: 'theobroma_wishlist_save', ids: JSON.stringify(ids) })
+                .then((response) => {
+                    if (!response.success) throw new Error(response.data?.message || 'Wishlist save failed');
+                    wishlistIds = new Set((response.data.ids || []).map(Number));
+                    window.localStorage.setItem(wishlistStorageKey, JSON.stringify([...wishlistIds]));
+                    syncWishlistUi();
+                })
+                .catch(() => {});
+        }
+        return wishlistSyncPromise;
+    };
+
+    const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;',
+    })[character]);
+
+    const formatWishlistPrice = (value) => String(value).replace(/\s*р\.?$/iu, ' р.');
+
+    const renderWishlist = (items) => {
+        const cards = items.map((item) => `
+            <article class="commerce-wishlist-product" data-wishlist-product="${Number(item.id)}">
+                <a class="commerce-wishlist-thumb" href="${escapeHtml(item.url)}" data-product-modal-link><img src="${escapeHtml(item.image)}" alt=""></a>
+                <h3><a href="${escapeHtml(item.url)}" data-product-modal-link>${escapeHtml(item.title)}</a></h3>
+                <strong>${escapeHtml(formatWishlistPrice(item.price))}</strong>
+                <button type="button" data-wishlist-remove="${Number(item.id)}" aria-label="Удалить из избранного"></button>
+            </article>
+        `).join('');
+        content.innerHTML = items.length ? `
+            <section class="commerce-wishlist">
+                <header><h2>Избранное:</h2><button type="button" data-wishlist-clear>Очистить</button></header>
+                <div class="commerce-wishlist-products">${cards}</div>
+            </section>
+        ` : `
+            <section class="commerce-wishlist commerce-wishlist--empty">
+                <div class="commerce-wishlist-empty">
+                    <button type="button" class="commerce-cart-empty-close" data-commerce-close aria-label="Закрыть"></button>
+                    <p>Пожалуйста, добавьте товары в избранное</p>
+                </div>
+            </section>
+        `;
+        content.className = 'commerce-modal-content commerce-modal-wishlist';
+        status.hidden = true;
+        panel.scrollTop = 0;
+        syncWishlistUi(content);
+    };
+
+    const openWishlist = async (opener = null) => {
+        if (opener) trigger = opener;
+        showModal('wishlist', 'Избранные товары');
+        setLoading('Загрузка избранного…');
+        try {
+            await wishlistSyncPromise;
+            const response = await request({ action: 'theobroma_wishlist_items', ids: JSON.stringify([...wishlistIds]) });
+            if (!response.success) throw new Error(response.data?.message || 'Wishlist request failed');
+            wishlistIds = new Set((response.data.ids || []).map(Number));
+            window.localStorage.setItem(wishlistStorageKey, JSON.stringify([...wishlistIds]));
+            renderWishlist(response.data.items || []);
+            syncWishlistUi();
+        } catch (error) {
+            if (error.name !== 'AbortError') renderWishlist([]);
+        }
+    };
+
     const activateInjectedCheckout = () => {
         if (!window.jQuery) {
             return;
@@ -177,6 +280,7 @@
         content.className = 'commerce-modal-content commerce-modal-product';
         status.hidden = true;
         bindProductGallery();
+        syncWishlistUi(content);
         panel.scrollTop = 0;
     };
 
@@ -349,6 +453,36 @@
             return;
         }
 
+        const wishlistLink = event.target.closest('[data-wishlist-open]');
+        if (wishlistLink && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+            event.preventDefault();
+            openWishlist(wishlistLink);
+            return;
+        }
+
+        const wishlistToggle = event.target.closest('[data-wishlist-toggle]');
+        if (wishlistToggle) {
+            event.preventDefault();
+            const productId = Number(wishlistToggle.dataset.productId);
+            if (wishlistIds.has(productId)) wishlistIds.delete(productId);
+            else if (productId > 0) wishlistIds.add(productId);
+            persistWishlist();
+            return;
+        }
+
+        const wishlistRemove = event.target.closest('[data-wishlist-remove]');
+        if (wishlistRemove) {
+            wishlistIds.delete(Number(wishlistRemove.dataset.wishlistRemove));
+            persistWishlist().then(() => openWishlist(trigger));
+            return;
+        }
+
+        if (event.target.closest('[data-wishlist-clear]')) {
+            wishlistIds.clear();
+            persistWishlist().then(() => renderWishlist([]));
+            return;
+        }
+
         const productLink = event.target.closest('[data-product-modal-link],ul.products li.product a.woocommerce-LoopProduct-link,.product > a,.product-related a[href*="/product/"]');
         if (productLink && productLink.href && !event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) {
             event.preventDefault();
@@ -392,6 +526,7 @@
             event.preventDefault();
             return;
         }
+
         if (event.key === 'Escape' && !modal.hidden) {
             closeModal();
         }
@@ -437,5 +572,10 @@
         }, '', window.location.href);
         showModal('product', 'Информация о товаре');
         mountProduct(directProduct);
+    }
+    syncWishlistUi();
+    window.localStorage.setItem(wishlistStorageKey, JSON.stringify([...wishlistIds]));
+    if (config.wishlistLoggedIn && storedWishlistIds.some((id) => !(config.wishlistIds || []).map(Number).includes(id))) {
+        persistWishlist();
     }
 })();

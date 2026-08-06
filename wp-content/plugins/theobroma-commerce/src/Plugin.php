@@ -18,6 +18,7 @@ use Theobroma\Commerce\Loyalty\LoyaltyAccountEndpoint;
 use Theobroma\Commerce\Products\OzonProductFields;
 use Theobroma\Commerce\Shipping\CdekShippingMethod;
 use Theobroma\Commerce\Shipping\OzonShippingMethod;
+use Theobroma\Commerce\Wishlist\WishlistController;
 
 final class Plugin
 {
@@ -43,6 +44,7 @@ final class Plugin
         (new LoyaltyAccountEndpoint())->register();
         (new OzonProductFields())->register();
         (new ProductWeightBackfill())->register();
+        (new WishlistController())->register();
     }
 
     /** @param array<string, class-string> $methods
