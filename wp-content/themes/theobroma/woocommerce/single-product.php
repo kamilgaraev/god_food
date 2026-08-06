@@ -75,9 +75,7 @@ if ($product_details === '') {
     $product_details = '<p><strong>Состав:</strong> информация указана на упаковке продукта.</p><p><strong>Условия хранения:</strong> хранить в сухом прохладном месте.</p><p><strong>Срок годности:</strong> 12 месяцев.</p>';
 }
 $product_benefit = (string) $product->get_meta('_theobroma_product_benefit', true);
-if ($product_benefit === '') {
-    $product_benefit = '<p>Кокосовый сахар придаёт шоколаду мягкую карамельную ноту и гармонично дополняет вкус какао.</p>';
-}
+$product_benefit_title = theobroma_product_benefit_title($product);
 $marketplaces = $product->get_meta('_theobroma_marketplaces', true);
 if (!is_array($marketplaces)) {
     $marketplaces = array();
@@ -136,7 +134,7 @@ get_header();
     </section>
     <section class="product-detail-accordions">
         <details open><summary>Описание продукта<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_details); ?></div></details>
-        <details><summary>Польза кокосового сахара<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_benefit); ?></div></details>
+        <?php if ($product_benefit !== '') : ?><details><summary><?php echo esc_html($product_benefit_title); ?><i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_benefit); ?></div></details><?php endif; ?>
     </section>
     <section class="product-related">
         <h2>Вам может понравиться</h2>

@@ -406,6 +406,17 @@ function theobroma_frontend_product_title(string $title, int $post_id): string {
 }
 add_filter('the_title', 'theobroma_frontend_product_title', 10, 2);
 
+function theobroma_product_benefit_title(WC_Product $product): string {
+    $title = trim((string) $product->get_meta('_theobroma_product_benefit_title', true));
+    if ($title !== '') {
+        return $title;
+    }
+
+    return strpos($product->get_sku(), 'theobroma-chia-') === 0
+        ? 'Полезные свойства семян чиа'
+        : 'Польза кокосового сахара';
+}
+
 function theobroma_handle_contact_request(): void {
     check_admin_referer('theobroma_contact', 'theobroma_contact_nonce');
     $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));

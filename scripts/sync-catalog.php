@@ -90,7 +90,7 @@ $product_sources = array(
     'theobroma-chia-100' => 'https://theobroma.one/catalog/tproduct/692070558902-semena-chia',
 );
 
-/** @return array{copy:array<int,string>,details:string,benefit:string,marketplaces:array<string,string>}|null */
+/** @return array{copy:array<int,string>,details:string,benefit_title:string,benefit:string,marketplaces:array<string,string>}|null */
 function fetch_source_product_content(string $url): ?array {
     $response = wp_remote_get($url, array('timeout' => 20));
     if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
@@ -109,6 +109,7 @@ function fetch_source_product_content(string $url): ?array {
     $xpath = new DOMXPath($document);
     $description = $xpath->query("//div[contains(concat(' ', normalize-space(@class), ' '), ' js-store-prod-all-text ')]")->item(0);
     $tabs = $xpath->query("//div[contains(concat(' ', normalize-space(@class), ' '), ' t-store__tabs__content ')]");
+    $tab_titles = $xpath->query("//div[contains(concat(' ', normalize-space(@class), ' '), ' t-store__tabs__button-title ')]");
     if (!$description instanceof DOMElement || !$tabs instanceof DOMNodeList || $tabs->length === 0) {
         return null;
     }
@@ -141,6 +142,7 @@ function fetch_source_product_content(string $url): ?array {
     return array(
         'copy' => $copy,
         'details' => $tab_html($tabs->item(0)),
+        'benefit_title' => $tabs->length > 1 && $tab_titles instanceof DOMNodeList && $tab_titles->length > 1 ? trim((string) $tab_titles->item(1)->textContent) : '',
         'benefit' => $tabs->length > 1 ? $tab_html($tabs->item(1)) : '',
         'marketplaces' => $marketplaces,
     );
@@ -179,12 +181,14 @@ foreach ($products as $order => $data) {
         $stored_source = (string) $product->get_meta('_theobroma_source_url', true);
         $stored_copy = $product->get_meta('_theobroma_detail_copy', true);
         $stored_details = (string) $product->get_meta('_theobroma_product_details', true);
+        $stored_benefit_title = (string) $product->get_meta('_theobroma_product_benefit_title', true);
         $stored_benefit = (string) $product->get_meta('_theobroma_product_benefit', true);
-        if ($stored_source !== $source_url || !is_array($stored_copy) || !$stored_copy || $stored_details === '' || $stored_benefit === '') {
+        if ($stored_source !== $source_url || !is_array($stored_copy) || !$stored_copy || $stored_details === '' || ($stored_benefit !== '' && $stored_benefit_title === '')) {
             $source_content = fetch_source_product_content($source_url);
             if ($source_content !== null) {
                 $product->update_meta_data('_theobroma_detail_copy', $source_content['copy']);
                 $product->update_meta_data('_theobroma_product_details', $source_content['details']);
+                $product->update_meta_data('_theobroma_product_benefit_title', $source_content['benefit_title']);
                 $product->update_meta_data('_theobroma_product_benefit', $source_content['benefit']);
                 $product->update_meta_data('_theobroma_marketplaces', $source_content['marketplaces']);
                 $product->update_meta_data('_theobroma_source_url', $source_url);
