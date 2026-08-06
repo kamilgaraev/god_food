@@ -12,7 +12,7 @@
             <input type="hidden" name="action" value="theobroma_contact">
             <?php wp_nonce_field('theobroma_contact', 'theobroma_contact_nonce'); ?>
             <div class="form-grid"><input type="text" name="name" placeholder="Имя" aria-label="Имя" required><div class="phone-field"><span class="phone-flag" aria-hidden="true"></span><span class="phone-triangle" aria-hidden="true"></span><span class="phone-code" aria-hidden="true">+7</span><input type="tel" name="phone" placeholder="(000) 000-00-00" aria-label="Телефон" required></div><input class="message-field" type="text" name="message" placeholder="Ваш вопрос или комментарий" aria-label="Ваш вопрос"></div>
-            <label class="consent"><input type="checkbox" name="consent" value="1" required><span>Отправляя форму я даю&nbsp;<a href="<?php echo esc_url(theobroma_page_url('Согласие на обработку персональных данных')); ?>">согласие</a>&nbsp;на&nbsp;<a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">обработку персональных данных</a></span></label>
+            <label class="consent"><input type="checkbox" name="consent" value="1" required><span>Отправляя форму я даю <a href="<?php echo esc_url(theobroma_page_url('Согласие на обработку персональных данных')); ?>">согласие</a> на <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">обработку персональных данных</a></span></label>
             <p class="form-submit"><button class="button" type="submit">Отправить</button></p>
         </form>
     </section>

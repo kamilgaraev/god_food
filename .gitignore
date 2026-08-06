@@ -13,6 +13,7 @@ backups/
 .codebase-memory/
 .playwright-cli/
 output/
+tmp/
 
 # Visual comparison artifacts kept only in the local workspace
 /*.png

@@ -12,7 +12,7 @@ $delivery_items = array(
     <div class="delivery-decor" aria-hidden="true"></div>
     <nav class="delivery-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Доставка и оплата</strong></nav>
     <h1>Доставка и&nbsp;оплата</h1>
-    <p class="delivery-lead">Мы заботимся о том, чтобы ваши заказы приходили быстро и удобно.<br>Доставка осуществляется по всей России и странам СНГ.</p>
+    <p class="delivery-lead">Мы заботимся о том, чтобы ваши заказы приходили быстро и удобно. Доставка осуществляется по всей России и странам СНГ.</p>
     <section class="delivery-accordion" aria-label="Условия доставки и оплаты">
         <?php foreach ($delivery_items as $title => $content) : ?>
             <details><summary><span><?php echo esc_html($title); ?></span><i aria-hidden="true"></i></summary><div class="delivery-answer"><?php echo wp_kses_post($content); ?></div></details>

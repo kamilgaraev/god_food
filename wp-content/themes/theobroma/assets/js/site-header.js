@@ -44,27 +44,11 @@
         cookieNotice.hidden = true;
     });
 
-    const revealTargets = document.querySelectorAll([
-        '#catalog .section-heading h2',
-        '#catalog .product',
-        '.about-award',
-        '.story',
-        '.value',
-        '.reviews .section-heading h2',
-        '.review',
-        '.contact-card h2',
-        '.recipe-card',
-        '.market-product',
-        '.media-card'
-    ].join(','));
+    const sourceTextReveals = document.querySelectorAll('.source-text-reveal');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    if (revealTargets.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        revealTargets.forEach((element, index) => {
-            element.classList.add('reveal-item');
-            element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`);
-        });
-        document.documentElement.classList.add('reveal-ready');
-
+    if (sourceTextReveals.length && !reduceMotion.matches) {
+        document.documentElement.classList.add('source-motion-ready');
         const revealObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -72,9 +56,9 @@
                     observer.unobserve(entry.target);
                 }
             });
-        }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+        }, { threshold: 0.01 });
 
-        revealTargets.forEach((element) => revealObserver.observe(element));
+        sourceTextReveals.forEach((element) => revealObserver.observe(element));
     }
 
     const reviewGrid = document.querySelector('.review-grid');
@@ -94,42 +78,4 @@
         });
     });
 
-    const parallaxChocolate = document.querySelector('.about-award');
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    if (parallaxChocolate && !reduceMotion.matches) {
-        let frame = 0;
-        let targetX = 0;
-        let targetY = 0;
-        let currentX = 0;
-        let currentY = 0;
-
-        const renderParallax = () => {
-            currentX += (targetX - currentX) * 0.12;
-            currentY += (targetY - currentY) * 0.12;
-            parallaxChocolate.style.transform = `translate3d(${currentX.toFixed(3)}px, ${currentY.toFixed(3)}px, 0)`;
-
-            if (Math.abs(targetX - currentX) > 0.01 || Math.abs(targetY - currentY) > 0.01) {
-                frame = window.requestAnimationFrame(renderParallax);
-            } else {
-                frame = 0;
-            }
-        };
-
-        window.addEventListener('pointermove', (event) => {
-            targetX = Math.max(-22, Math.min(22, ((event.clientX / window.innerWidth) - 0.5) * 44));
-            targetY = Math.max(-22, Math.min(22, ((event.clientY / window.innerHeight) - 0.5) * 44));
-            if (!frame) {
-                frame = window.requestAnimationFrame(renderParallax);
-            }
-        }, { passive: true });
-
-        document.documentElement.addEventListener('mouseleave', () => {
-            targetX = 0;
-            targetY = 0;
-            if (!frame) {
-                frame = window.requestAnimationFrame(renderParallax);
-            }
-        });
-    }
 })();
