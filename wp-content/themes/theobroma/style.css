@@ -1180,6 +1180,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .market-image { aspect-ratio:171/208; }
   .market-product h2 { font-size:14px; line-height:18.9px; }
   .market-product strong { font-size:18px; line-height:24.3px; }
+  .marketplace-intro { width:390px; height:1218.359375px; margin-inline:auto; }
 
   .buy-breadcrumb { padding-top:121px; }
   .buy-intro > h1 { width:382.765625px; transform:translateY(2.90625px); }
@@ -1280,6 +1281,14 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
   .catalog-page { padding-bottom:65.5625px; }
   .catalog-filters { margin-bottom:98.4375px; }
+
+  .marketplace-intro {
+    margin-left:0;
+    margin-right:0;
+    margin-bottom:calc(312.39984vw - 1218.359375px);
+    transform:scale(calc(100vw / 390px));
+    transform-origin:top left;
+  }
 }
 
 /* Tablet inner-page calibration against the original 768px composition. */
