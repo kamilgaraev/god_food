@@ -892,6 +892,33 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .copyright span:nth-child(2) { top:145px; }
   .copyright span:nth-child(3) { top:68px; }
 
+  /* The source scales its 390px mobile artboards continuously through 430px. */
+  body.home { --mobile-home-scale:calc(100vw / 390px); }
+  #catalog.section { height:calc(201.666667vw + 284.062px); }
+  #catalog .section-heading { height:46.666667vw; }
+  #catalog .section-heading h2 { top:18.75vw; width:78.717949vw; font-size:9.374872vw; line-height:9.374872vw; }
+  #catalog .products { height:calc(125vw + 284.062px); grid-template-rows:repeat(2,calc(62.5vw + 132.031px)); }
+  #catalog .product-image { height:50.512821vw; }
+  #catalog .product h3 { margin:2.820513vw 0 2.051282vw; font-size:3.589744vw; }
+  #catalog .product p { font-size:3.589744vw; }
+  #catalog .price { margin-top:2.051282vw; font-size:4.615385vw; }
+  #catalog > p { height:30vw; }
+  #catalog > p .button { width:54.695385vw; min-height:11.25vw; font-size:4.102564vw; }
+
+  .feature { height:269.487179vw; }
+  .about-stage { left:1.923077vw; width:375px; height:1051px; margin:0; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
+
+  .reviews { height:184.102564vw; }
+  .reviews-stage { left:1.923077vw; width:375px; height:718px; margin:0; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
+
+  .contact,.contact .section { height:136.666667vw; }
+  .contact .section { padding-top:37.504103vw; }
+  .contact-card { left:4.679487vw; margin:0; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
+
+  .site-footer { height:336.923077vw; }
+  .footer-shell { left:1.923077vw; margin:0; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
+  .copyright { top:262.051282vw; left:4.615385vw; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
+
   .catalog-page,.catalog-page.catalog-group-chocolate-30g,.catalog-page.catalog-group-cacao,.catalog-page.catalog-group-chia { min-height:0; }
   .catalog-page::before { top:78px; width:175px; height:230px; }
   .catalog-page .shop-shell { width:100%; padding:0 13px; }

@@ -44,6 +44,23 @@ const assertNoViewportOverflow = async (page, label) => {
         assert.ok(Math.abs(heroMetrics.height - 670.4375 * scale) <= 0.2, `${widthKey}px: hero is ${heroMetrics.height}px tall`);
         assert.ok(Math.abs(heroMetrics.chocolateWidth - 260 * scale) <= 0.2, `${widthKey}px: hero chocolate is ${heroMetrics.chocolateWidth}px wide`);
         assert.ok(Math.abs(heroMetrics.chocolateHeight - 300 * scale) <= 0.2, `${widthKey}px: hero chocolate is ${heroMetrics.chocolateHeight}px tall`);
+        const sectionHeights = await page.evaluate(() => Object.fromEntries([
+          ['catalog', document.querySelector('#catalog')],
+          ['about', document.querySelector('#about')],
+          ['reviews', document.querySelector('#reviews')],
+          ['contact', document.querySelector('section.contact')],
+          ['footer', document.querySelector('.site-footer')],
+        ].map(([name, element]) => [name, element.getBoundingClientRect().height])));
+        const expectedSections = {
+          catalog: width * 2.01666667 + 284.062,
+          about: 1051 * scale,
+          reviews: 718 * scale,
+          contact: 533 * scale,
+          footer: 1314 * scale,
+        };
+        for (const [section, expected] of Object.entries(expectedSections)) {
+          assert.ok(Math.abs(sectionHeights[section] - expected) <= 1.5, `${widthKey}px: ${section} is ${sectionHeights[section]}px tall, expected ${expected}px`);
+        }
         await page.goto('http://localhost:8080/catalog/', { waitUntil: 'networkidle' });
       }
 
