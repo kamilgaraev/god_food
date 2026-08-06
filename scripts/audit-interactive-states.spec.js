@@ -61,8 +61,13 @@ const assertNoViewportOverflow = async (page, label) => {
       await page.locator('#commerce-modal[data-commerce-type="cart"].is-open').waitFor();
       await page.locator('#commerce-modal .commerce-cart').waitFor();
       assert.equal(await page.locator('.commerce-cart-empty').count(), 1, `${widthKey}px: empty cart state is missing`);
+      assert.match(await page.locator('.commerce-cart-empty').innerText(), /ПОЖАЛУЙСТА, ДОБАВЬТЕ ТОВАРЫ В КОРЗИНУ/i);
+      const emptyCartBox = await page.locator('.commerce-modal-cart').boundingBox();
+      assert.ok(Math.abs(emptyCartBox.width - (width <= 600 ? 350 : 560)) <= 1, `${widthKey}px: empty cart width ${emptyCartBox.width}px`);
+      assert.ok(emptyCartBox.height <= 160, `${widthKey}px: empty cart is not a compact alert (${emptyCartBox.height}px)`);
+      assert.ok(Math.abs((emptyCartBox.y + emptyCartBox.height / 2) - config.viewports[widthKey].height / 2) <= 2, `${widthKey}px: empty cart is not vertically centered`);
       await page.screenshot({ path: path.join(outputDir, `cart-empty-${widthKey}.png`), fullPage: false, animations: 'disabled' });
-      await page.locator('#commerce-modal .commerce-modal-close').click();
+      await page.locator('#commerce-modal .commerce-cart-empty-close').click();
       await page.locator('#commerce-modal').waitFor({ state: 'hidden' });
 
       await page.locator('ul.products li.product a.woocommerce-LoopProduct-link').first().click();

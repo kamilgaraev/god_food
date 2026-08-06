@@ -7,18 +7,18 @@ if (!function_exists('WC') || !WC()->cart) {
 
 $cart = WC()->cart->get_cart();
 ?>
-<div class="commerce-cart" data-commerce-cart>
-    <header class="commerce-cart-header">
-        <h2>Ваш заказ</h2>
-        <?php if ($cart) : ?>
+<div class="commerce-cart<?php echo $cart ? '' : ' commerce-cart--empty'; ?>" data-commerce-cart>
+    <?php if ($cart) : ?>
+        <header class="commerce-cart-header">
+            <h2>Ваш заказ</h2>
             <button type="button" class="commerce-cart-clear" data-cart-clear>Очистить корзину</button>
-        <?php endif; ?>
-    </header>
+        </header>
+    <?php endif; ?>
 
     <?php if (!$cart) : ?>
         <div class="commerce-cart-empty">
-            <p>Ваша корзина пока пуста.</p>
-            <a class="button" href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" data-commerce-close>Перейти в каталог</a>
+            <button type="button" class="commerce-cart-empty-close" data-commerce-close aria-label="Закрыть"></button>
+            <p>Пожалуйста, добавьте товары в корзину</p>
         </div>
     <?php else : ?>
         <div class="commerce-cart-products">
