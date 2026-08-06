@@ -50,6 +50,10 @@ async function settlePage(page) {
       image.onerror = () => { clearTimeout(timeout); resolve(false); };
       image.src = url;
     })));
+    await Promise.all([...document.images].map(async (image) => {
+      if (typeof image.decode !== 'function') return;
+      await image.decode().catch(() => {});
+    }));
     scrollTo(0, 0);
     return loaded.filter((value) => !value).length;
   });
