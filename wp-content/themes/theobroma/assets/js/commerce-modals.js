@@ -14,6 +14,8 @@
     let modalType = '';
     let returnUrl = window.location.href;
     let requestController = null;
+    let imageLightbox = null;
+    let imageLightboxTrigger = null;
 
     const setCartCount = (count) => {
         document.querySelectorAll('.cart-count').forEach((element) => {
@@ -40,9 +42,60 @@
         closeButton.focus({ preventScroll: true });
     };
 
+    const ensureImageLightbox = () => {
+        if (imageLightbox) {
+            return imageLightbox;
+        }
+        imageLightbox = document.createElement('div');
+        imageLightbox.className = 'product-image-lightbox';
+        imageLightbox.dataset.productLightbox = '';
+        imageLightbox.hidden = true;
+        imageLightbox.setAttribute('aria-hidden', 'true');
+        imageLightbox.setAttribute('role', 'dialog');
+        imageLightbox.setAttribute('aria-modal', 'true');
+        imageLightbox.setAttribute('aria-label', 'Увеличенное изображение товара');
+        imageLightbox.innerHTML = `
+            <button class="product-image-lightbox-backdrop" type="button" data-product-lightbox-close tabindex="-1" aria-label="Закрыть увеличенное изображение"></button>
+            <figure><img data-product-lightbox-image src="" alt=""></figure>
+            <button class="product-image-lightbox-close" type="button" data-product-lightbox-close aria-label="Закрыть увеличенное изображение"></button>
+        `;
+        panel.appendChild(imageLightbox);
+        return imageLightbox;
+    };
+
+    const openImageLightbox = (button) => {
+        const sourceImage = button.querySelector('[data-product-main-image]');
+        if (!sourceImage) {
+            return;
+        }
+        const lightbox = ensureImageLightbox();
+        const image = lightbox.querySelector('[data-product-lightbox-image]');
+        image.src = sourceImage.currentSrc || sourceImage.src;
+        image.alt = sourceImage.alt;
+        imageLightboxTrigger = button;
+        lightbox.hidden = false;
+        lightbox.setAttribute('aria-hidden', 'false');
+        lightbox.querySelector('.product-image-lightbox-close').focus({ preventScroll: true });
+    };
+
+    const closeImageLightbox = ({ restoreFocus = true } = {}) => {
+        if (!imageLightbox || imageLightbox.hidden) {
+            return false;
+        }
+        imageLightbox.hidden = true;
+        imageLightbox.setAttribute('aria-hidden', 'true');
+        imageLightbox.querySelector('[data-product-lightbox-image]').removeAttribute('src');
+        if (restoreFocus && imageLightboxTrigger instanceof HTMLElement) {
+            imageLightboxTrigger.focus({ preventScroll: true });
+        }
+        imageLightboxTrigger = null;
+        return true;
+    };
+
     const hideModal = ({ restoreFocus = true } = {}) => {
         requestController?.abort();
         requestController = null;
+        closeImageLightbox({ restoreFocus: false });
         modal.classList.remove('is-open');
         modal.hidden = true;
         modal.setAttribute('aria-hidden', 'true');
@@ -259,6 +312,19 @@
     };
 
     document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-product-lightbox-close]')) {
+            event.preventDefault();
+            closeImageLightbox();
+            return;
+        }
+
+        const imageZoomButton = event.target.closest('[data-product-image-zoom]');
+        if (imageZoomButton) {
+            event.preventDefault();
+            openImageLightbox(imageZoomButton);
+            return;
+        }
+
         const close = event.target.closest('[data-commerce-close]');
         if (close) {
             event.preventDefault();
@@ -312,8 +378,17 @@
     });
 
     document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && closeImageLightbox()) {
+            event.preventDefault();
+            return;
+        }
         if (event.key === 'Escape' && !modal.hidden) {
             closeModal();
+        }
+        if (event.key === 'Tab' && imageLightbox && !imageLightbox.hidden) {
+            event.preventDefault();
+            imageLightbox.querySelector('.product-image-lightbox-close').focus({ preventScroll: true });
+            return;
         }
         if (event.key !== 'Tab' || modal.hidden) {
             return;

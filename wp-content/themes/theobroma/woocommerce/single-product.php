@@ -128,7 +128,11 @@ get_header();
     <a class="product-detail-close" href="<?php echo esc_url($shop_url); ?>" aria-label="Закрыть"></a>
     <section class="product-detail-hero">
         <div class="product-detail-gallery">
-            <figure class="product-detail-image"><img data-product-main-image src="<?php echo esc_url($main_image_url ?: wc_placeholder_img_src('full')); ?>" width="624" height="780" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>"></figure>
+            <figure class="product-detail-image">
+                <button class="product-detail-zoom-trigger" type="button" data-product-image-zoom aria-label="<?php echo esc_attr(sprintf('Увеличить изображение товара «%s»', $product->get_name())); ?>">
+                    <img data-product-main-image src="<?php echo esc_url($main_image_url ?: wc_placeholder_img_src('full')); ?>" width="624" height="780" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>">
+                </button>
+            </figure>
             <?php if (count($product_image_ids) > 1) : ?>
                 <div class="product-detail-thumbnails" aria-label="Галерея товара">
                     <?php foreach (array_slice($product_image_ids, 0, 9) as $image_index => $image_id) : ?>
