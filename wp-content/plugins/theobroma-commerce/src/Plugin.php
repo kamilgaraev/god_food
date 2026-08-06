@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Theobroma\Commerce;
+
+use Theobroma\Commerce\Admin\SettingsPage;
+use Theobroma\Commerce\Catalog\ProductWeightBackfill;
+use Theobroma\Commerce\Checkout\PickupPointFields;
+use Theobroma\Commerce\Checkout\DeliveryAddressFields;
+use Theobroma\Commerce\Rest\CdekPointsController;
+use Theobroma\Commerce\Rest\CdekWebhookController;
+use Theobroma\Commerce\Orders\CdekOrderLifecycle;
+use Theobroma\Commerce\Orders\OzonOrderLifecycle;
+use Theobroma\Commerce\Products\OzonProductFields;
+use Theobroma\Commerce\Shipping\CdekShippingMethod;
+
+final class Plugin
+{
+    private static bool $booted = false;
+
+    public static function boot(): void
+    {
+        if (self::$booted || !class_exists('WooCommerce')) {
+            return;
+        }
+        self::$booted = true;
+
+        add_filter('woocommerce_shipping_methods', [self::class, 'shippingMethods']);
+        (new SettingsPage())->register();
+        (new PickupPointFields())->register();
+        (new DeliveryAddressFields())->register();
+        (new CdekPointsController())->register();
+        (new CdekWebhookController())->register();
+        (new CdekOrderLifecycle())->register();
+        (new OzonOrderLifecycle())->register();
+        (new OzonProductFields())->register();
+        (new ProductWeightBackfill())->register();
+    }
+
+    /** @param array<string, class-string> $methods
+     *  @return array<string, class-string>
+     */
+    public static function shippingMethods(array $methods): array
+    {
+        $methods['theobroma_cdek'] = CdekShippingMethod::class;
+        return $methods;
+    }
+}

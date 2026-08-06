@@ -14,6 +14,7 @@ services:
       - ./docker/wordpress/.htaccess:/var/www/html/.htaccess
       - ./wp-content/themes/theobroma:/var/www/html/wp-content/themes/theobroma
       - ./wp-content/plugins/theobroma-admin-tools:/var/www/html/wp-content/plugins/theobroma-admin-tools
+      - ./wp-content/plugins/theobroma-commerce:/var/www/html/wp-content/plugins/theobroma-commerce
       - ./scripts:/var/www/html/scripts:ro
     depends_on:
       db:
