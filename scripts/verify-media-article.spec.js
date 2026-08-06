@@ -7,6 +7,12 @@ const mobileSharedMetrics = {
   390: { title: { x: 20, y: 70, width: 350, height: 103.3125 }, image: { x: 20, y: 188.3125, width: 350, height: 437.5 }, copy: { x: 20, y: 645.8125, width: 350, height: 180.34375 }, sourceY: 842.15625 },
   430: { title: { x: 20, y: 70, width: 390, height: 68.875 }, image: { x: 20, y: 153.875, width: 390, height: 487.5 }, copy: { x: 20, y: 661.375, width: 390, height: 160.75 }, sourceY: 838.125 },
 };
+const tabletSourceMetrics = {
+  title: { x: 64, y: 95, width: 640, height: 78.71875 },
+  image: { x: 64, y: 203.71875, width: 640, height: 800 },
+  copy: { x: 64, y: 1033.71875, width: 640 },
+  sourceY: 1189.0625,
+};
 
 const closeEnough = (actual, expected, tolerance, label) => {
   assert.ok(Math.abs(actual - expected) <= tolerance, `${label}: expected ${expected}px, got ${actual}px`);
@@ -42,6 +48,19 @@ const closeEnough = (actual, expected, tolerance, label) => {
           for (const [metric, target] of Object.entries(expected[part])) closeEnough(metrics[part][metric], target, 1, `${width}px ${part} ${metric}`);
         }
         closeEnough(metrics.sourceY, expected.sourceY, 1, `${width}px source link y`);
+      }
+      if (width === 768) {
+        const metrics = await page.evaluate(() => {
+          const rect = (selector) => {
+            const box = document.querySelector(selector).getBoundingClientRect();
+            return { x: box.x, y: box.y + scrollY, width: box.width, height: box.height };
+          };
+          return { title: rect('.media-article h1'), image: rect('.media-article figure img'), copy: rect('.media-article-copy'), sourceY: rect('.media-article-source').y };
+        });
+        for (const part of ['title', 'image', 'copy']) {
+          for (const [metric, target] of Object.entries(tabletSourceMetrics[part])) closeEnough(metrics[part][metric], target, 1, `768px ${part} ${metric}`);
+        }
+        closeEnough(metrics.sourceY, tabletSourceMetrics.sourceY, 1, '768px source link y');
       }
 
       await page.locator('.media-article-products [data-product-modal-link]').first().click();

@@ -406,6 +406,14 @@ body.account-modal-open { overflow:hidden; }
   .media-article-products-grid .button { width:auto; min-width:120px; margin-top:12px; }
   .media-article time { margin-top:30.59375px; }
 }
+@media (min-width:601px) and (max-width:900px) {
+  .media-article { width:640px; }
+  .media-article h1 { margin-bottom:30px; line-height:39.359375px; }
+  .media-article figure { margin-bottom:30px; }
+  .media-article-copy { font-size:16px; line-height:24.8px; }
+  .media-article-source { margin-top:31.34375px; color:#ff8562; font-size:16px; line-height:22.4px; }
+  .media-article time { margin-top:53px; }
+}
 .legal-page { min-height:651px; padding:339px 0 6px; position:relative; background:var(--paper); }
 .legal-page-oferta { padding-top:287px; }
 .legal-page::before { content:""; position:absolute; top:93px; left:0; width:211px; height:284.390625px; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
