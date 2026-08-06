@@ -1755,16 +1755,19 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal[data-commerce-type="product"] .commerce-modal-back::before { content:"←"; color:#fff; font:300 30px/1 Arial,sans-serif; }
   .commerce-modal-product .product-detail-page { padding-top:0; padding-bottom:44px; }
   .commerce-modal-product .product-detail-page::before { content:none; }
+  .commerce-modal-product .product-detail-summary { padding-top:30px; }
   .commerce-modal-product .product-detail-favorite { top:31px; right:20px; width:40px; height:40px; }
   .commerce-modal-product .product-detail-buy { margin-top:21px; }
-  .commerce-modal-product .product-detail-buy button.single_add_to_cart_button { width:100% !important; height:40px !important; min-height:40px !important; padding:10.9px 15px !important; }
-  .commerce-modal-product .product-detail-marketplaces { width:348.046875px; grid-template-columns:repeat(2,172.1875px); gap:3.671875px; margin-top:10px; }
+  .commerce-modal-product .product-detail-buy button.single_add_to_cart_button { width:100% !important; height:50px !important; min-height:50px !important; padding:15.9px 15px !important; }
+  .commerce-modal-product .product-detail-marketplaces { width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; margin-top:10px; }
   .commerce-modal-product .product-detail-marketplaces a { height:40px; font:400 13px/40px 'Montserrat',Arial,sans-serif; }
-  .commerce-modal-product .product-detail-copy { width:350px; margin-top:22.234375px; font:400 14px/21px 'Montserrat',Arial,sans-serif; }
-  .commerce-modal-product .product-detail-copy p { margin-bottom:21px; }
-  .commerce-modal-product .product-detail-accordions { width:350px; margin:0 auto; }
-  .commerce-modal-product .product-detail-accordions details div { width:100%; }
-  .commerce-modal-product .product-related { width:350px; margin:7px auto 0; padding:0; }
+  .commerce-modal-product .product-detail-copy { width:100%; margin-top:26.796875px; font:400 16px/24.8px 'Montserrat',Arial,sans-serif; }
+  .commerce-modal-product .product-detail-copy p { margin-bottom:24.796875px; }
+  .commerce-modal-product .product-detail-accordions { width:calc(100% - 40px); margin:41.328125px auto 0; }
+  .commerce-modal-product .product-detail-accordions summary { height:48px; padding:17.25px 20px 17.25px 0; font:500 10px/13.5px 'Cormorant',Arial,sans-serif; }
+  .commerce-modal-product .product-detail-accordions details div { width:100%; font:400 10px/15.5px 'Cormorant',Arial,sans-serif; }
+  .commerce-modal-product .product-detail-accordions details p { margin-bottom:15.5px; }
+  .commerce-modal-product .product-related { width:calc(100% - 40px); margin:13px auto 0; padding:0; }
   .commerce-modal-product .product-related > h2 { margin-bottom:70px; }
   .commerce-modal-product .product-related-grid { gap:40px; overflow-x:auto; scrollbar-width:none; }
   .commerce-modal-product .product-related-grid-tablet { display:none; }
@@ -1793,6 +1796,14 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-auth { padding:20px; font-size:14px; line-height:18px; }
   .commerce-cart-notes { font-size:14px; line-height:18px; }
   .commerce-cart-checkout { margin-top:62px; }
+}
+@media (min-width:391px) and (max-width:460px) {
+  .commerce-modal-product .product-detail-accordions {
+    margin-top:calc(61.4453125vw - 198.30859375px);
+  }
+  .commerce-modal-product .product-related {
+    margin-top:calc(5vw - 6.5px);
+  }
 }
 @media (min-width:601px) and (max-width:900px) {
   .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { width:640px; min-height:2021px; margin:65px auto; }
