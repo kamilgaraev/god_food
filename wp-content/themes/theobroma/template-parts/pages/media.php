@@ -11,7 +11,7 @@ $media_posts = new WP_Query(array(
 <main class="media-page">
     <nav class="media-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Медиа</strong></nav>
     <h1>Медиа</h1>
-    <p class="media-lead">Материалы СМИ, экспертные комментарии и авторские статьи бренда<br>Theobroma «Пища Богов» о шоколаде и индустрии вкуса.</p>
+    <p class="media-lead">Материалы СМИ, экспертные комментарии и&nbsp;авторские статьи бренда Theobroma «Пища Богов» о&nbsp;шоколаде и&nbsp;индустрии вкуса.</p>
     <div class="media-grid">
         <?php while ($media_posts->have_posts()) : $media_posts->the_post();
             $article_url = get_permalink();

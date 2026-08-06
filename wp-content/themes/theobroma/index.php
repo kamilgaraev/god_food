@@ -1,8 +1,8 @@
 <?php get_header(); ?>
 <main>
     <div class="home-decor" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <section class="hero"><div class="hero-inner"><h1><span><?php echo esc_html(theobroma_content('hero_line_1')); ?></span><span><?php echo esc_html(theobroma_content('hero_line_2')); ?></span><span><?php echo esc_html(theobroma_content('hero_line_3')); ?></span></h1><p><?php echo esc_html(theobroma_content('hero_subtitle')); ?></p><a class="button" href="#catalog">В каталог</a></div></section>
-    <section class="section" id="catalog"><div class="section-heading"><h2><em><?php echo esc_html(theobroma_content('products_accent')); ?></em> <?php echo esc_html(theobroma_content('products_heading')); ?></h2><p class="section-note"><?php echo esc_html(theobroma_content('products_note')); ?></p></div><div class="products">
+    <section class="hero"><div class="hero-inner"><h1><span class="source-text-reveal"><i><?php echo esc_html(theobroma_content('hero_line_1')); ?></i></span><span class="source-text-reveal"><i><?php echo esc_html(theobroma_content('hero_line_2')); ?></i></span><span class="source-text-reveal"><i><?php echo esc_html(theobroma_content('hero_line_3')); ?></i></span></h1><p><?php echo esc_html(theobroma_content('hero_subtitle')); ?></p><a class="button" href="#catalog">В каталог</a></div></section>
+    <section class="section" id="catalog"><div class="section-heading"><h2 class="source-text-reveal"><span><em><?php echo esc_html(theobroma_content('products_accent')); ?></em> <?php echo esc_html(theobroma_content('products_heading')); ?></span></h2><p class="section-note"><?php echo esc_html(theobroma_content('products_note')); ?></p></div><div class="products">
         <?php
         $homepage_products = array();
         if (function_exists('wc_get_product_id_by_sku')) {
@@ -28,7 +28,7 @@
             <article class="value"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/cube.svg'); ?>" alt=""><div><h3><?php echo esc_html(theobroma_content('value_3_title')); ?></h3><p><?php echo esc_html(theobroma_content('value_3_text')); ?></p></div></article>
         </div>
     </div></section>
-    <section class="reviews" id="reviews"><div class="reviews-stage"><div class="section-heading"><h2><em><?php echo esc_html(theobroma_content('reviews_accent')); ?></em> <?php echo esc_html(theobroma_content('reviews_heading')); ?></h2><div class="review-controls" aria-label="Навигация по отзывам"><button type="button" data-review-direction="-1" aria-label="Предыдущие отзывы">‹</button><button type="button" data-review-direction="1" aria-label="Следующие отзывы">›</button></div></div><div class="review-grid">
+    <section class="reviews" id="reviews"><div class="reviews-stage"><div class="section-heading"><h2 class="source-text-reveal"><span><em><?php echo esc_html(theobroma_content('reviews_accent')); ?></em> <?php echo esc_html(theobroma_content('reviews_heading')); ?></span></h2><div class="review-controls" aria-label="Навигация по отзывам"><button type="button" data-review-direction="-1" aria-label="Предыдущие отзывы">‹</button><button type="button" data-review-direction="1" aria-label="Следующие отзывы">›</button></div></div><div class="review-grid">
         <?php $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => array('menu_order' => 'ASC', 'date' => 'ASC'))); ?>
         <?php foreach ($site_reviews as $site_review) : ?>
             <article class="review"><p><?php echo wp_kses_post($site_review->post_content); ?></p><time><?php echo esc_html(get_the_date('d.m.Y', $site_review)); ?></time><strong><?php echo esc_html($site_review->post_title); ?></strong></article>

@@ -190,12 +190,15 @@ final class Theobroma_Admin_Tools {
 
     public static function render_product_box(WP_Post $post): void {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
+        $detail_image_id = absint(get_post_meta($post->ID, '_theobroma_product_detail_image_id', true));
         $copy = get_post_meta($post->ID, '_theobroma_detail_copy', true);
         $copy_text = is_array($copy) ? implode("\n\n", $copy) : '';
         $details = (string) get_post_meta($post->ID, '_theobroma_product_details', true);
         $benefit = (string) get_post_meta($post->ID, '_theobroma_product_benefit', true);
         $marketplaces = get_post_meta($post->ID, '_theobroma_marketplaces', true);
         $marketplaces = is_array($marketplaces) ? $marketplaces : array();
+        self::media_field('theobroma_product_detail_image_id', 'Изображение в детальной карточке', $detail_image_id);
+        echo '<p class="description">Рекомендуемый размер: 560 × 745 px. Изображение товара WooCommerce продолжит использоваться в каталоге.</p>';
         self::textarea('theobroma_detail_copy', 'Описание рядом с товаром', $copy_text, 'Каждый абзац отделяйте пустой строкой.');
         self::textarea('theobroma_product_details', 'Состав и характеристики', $details, 'Допускается безопасная HTML-разметка.');
         self::textarea('theobroma_product_benefit', 'Польза кокосового сахара', $benefit, 'Содержимое второго раскрывающегося блока.');
@@ -222,7 +225,7 @@ final class Theobroma_Admin_Tools {
 
     public static function enqueue_recipe_assets(string $hook): void {
         $screen = get_current_screen();
-        if (!in_array($hook, array('post.php', 'post-new.php'), true) || !$screen || $screen->post_type !== 'theobroma_recipe') {
+        if (!in_array($hook, array('post.php', 'post-new.php'), true) || !$screen || !in_array($screen->post_type, array('theobroma_recipe', 'product'), true)) {
             return;
         }
         wp_enqueue_media();
@@ -303,6 +306,7 @@ final class Theobroma_Admin_Tools {
         if (!self::can_save($post_id)) {
             return;
         }
+        update_post_meta($post_id, '_theobroma_product_detail_image_id', absint($_POST['theobroma_product_detail_image_id'] ?? 0));
         $copy_raw = isset($_POST['theobroma_detail_copy']) ? sanitize_textarea_field(wp_unslash($_POST['theobroma_detail_copy'])) : '';
         $copy = array_values(array_filter(array_map('trim', preg_split('~\R\s*\R~u', $copy_raw) ?: array())));
         update_post_meta($post_id, '_theobroma_detail_copy', $copy);

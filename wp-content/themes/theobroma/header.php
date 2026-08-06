@@ -19,7 +19,7 @@
 <aside class="floating-actions" aria-label="Быстрые действия">
     <a href="<?php echo esc_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/')); ?>" aria-label="Корзина"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/cart.svg'); ?>" alt=""><span class="cart-count">(<?php echo esc_html(function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : '0'); ?>)</span></a>
     <a href="#catalog" aria-label="Избранное"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/heart.svg'); ?>" alt=""><span>(0)</span></a>
-    <a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : wp_login_url()); ?>" aria-label="Личный кабинет"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/user.png'); ?>" alt=""><span>ЛК</span></a>
+    <a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : wp_login_url()); ?>"<?php echo !is_user_logged_in() ? ' data-account-trigger' : ''; ?> aria-label="Личный кабинет"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/user.png'); ?>" alt=""><span>ЛК</span></a>
 </aside>
 <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
     <button class="mobile-menu-close" type="button" aria-label="Закрыть меню"></button>

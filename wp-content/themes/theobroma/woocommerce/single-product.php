@@ -9,11 +9,24 @@ if (!$product instanceof WC_Product) {
     return;
 }
 
-$preferred_related_skus = array(
-    'theobroma-200-goat',
-    'theobroma-200-70',
-    'theobroma-30-goat',
-    'theobroma-chia-100',
+$preferred_related_skus_by_product = array(
+    'theobroma-200-68-coriander' => array(
+        'theobroma-30-59-date',
+        'theobroma-100-65-cinnamon',
+        'theobroma-100-cow',
+        'theobroma-100-68-coriander',
+    ),
+    'theobroma-200-65-cinnamon' => array(
+        'theobroma-100-70',
+        'theobroma-200-cow',
+        'theobroma-30-goat',
+        'theobroma-30-59-date',
+    ),
+);
+$preferred_related_skus = apply_filters(
+    'theobroma_preferred_related_skus',
+    $preferred_related_skus_by_product[$product->get_sku()] ?? array(),
+    $product
 );
 $related_ids = array_values(array_filter(array_map('wc_get_product_id_by_sku', $preferred_related_skus), static function ($product_id) use ($product): bool {
     return (int) $product_id > 0 && (int) $product_id !== $product->get_id();
@@ -22,6 +35,52 @@ if (count($related_ids) < 4) {
     $fallback_ids = wc_get_related_products($product->get_id(), 4 - count($related_ids), $related_ids);
     $related_ids = array_merge($related_ids, $fallback_ids);
 }
+$mobile_related_skus_by_product = array(
+    'theobroma-200-68-coriander' => array(
+        'theobroma-30-whole-hazelnut',
+        'theobroma-200-goat',
+        'theobroma-30-59-date',
+        'theobroma-200-80',
+    ),
+    'theobroma-200-65-cinnamon' => array(
+        'theobroma-30-whole-hazelnut',
+        'theobroma-30-80',
+        'theobroma-chia-250',
+        'theobroma-100-65-cinnamon',
+    ),
+);
+$mobile_related_skus = apply_filters(
+    'theobroma_mobile_related_skus',
+    $mobile_related_skus_by_product[$product->get_sku()] ?? $preferred_related_skus,
+    $product
+);
+$mobile_related_ids = array_values(array_filter(array_map('wc_get_product_id_by_sku', $mobile_related_skus), static function ($product_id) use ($product): bool {
+    return (int) $product_id > 0 && (int) $product_id !== $product->get_id();
+}));
+if (count($mobile_related_ids) < 4) {
+    $mobile_related_ids = array_values(array_unique(array_merge($mobile_related_ids, $related_ids)));
+}
+$mobile_related_ids = array_slice($mobile_related_ids, 0, 4);
+$tablet_related_skus_by_product = array(
+    'theobroma-200-65-cinnamon' => array(
+        'theobroma-100-70',
+        'theobroma-30-59-cherry-buckwheat',
+        'theobroma-200-goat',
+        'theobroma-30-goat',
+    ),
+);
+$tablet_related_skus = apply_filters(
+    'theobroma_tablet_related_skus',
+    $tablet_related_skus_by_product[$product->get_sku()] ?? $preferred_related_skus,
+    $product
+);
+$tablet_related_ids = array_values(array_filter(array_map('wc_get_product_id_by_sku', $tablet_related_skus), static function ($product_id) use ($product): bool {
+    return (int) $product_id > 0 && (int) $product_id !== $product->get_id();
+}));
+if (count($tablet_related_ids) < 4) {
+    $tablet_related_ids = array_values(array_unique(array_merge($tablet_related_ids, $related_ids)));
+}
+$tablet_related_ids = array_slice($tablet_related_ids, 0, 4);
 $detail_copy = $product->get_meta('_theobroma_detail_copy', true);
 if (!is_array($detail_copy) || !$detail_copy) {
     $detail_copy = array_filter(array(
@@ -41,21 +100,46 @@ $marketplaces = $product->get_meta('_theobroma_marketplaces', true);
 if (!is_array($marketplaces)) {
     $marketplaces = array();
 }
+$product_image_ids = array_values(array_unique(array_filter(array_merge(
+    array($product->get_image_id()),
+    $product->get_gallery_image_ids()
+))));
+if (!$product_image_ids) {
+    $product_image_ids = array(0);
+}
+$detail_image_id = absint($product->get_meta('_theobroma_product_detail_image_id', true));
+$main_image_url = $detail_image_id ? wp_get_attachment_image_url($detail_image_id, 'full') : '';
+if (!$main_image_url) {
+    $bundled_detail_image = '/assets/images/products/detail/' . sanitize_file_name($product->get_sku()) . '.webp';
+    if (is_file(get_template_directory() . $bundled_detail_image)) {
+        $main_image_url = get_template_directory_uri() . $bundled_detail_image;
+    }
+}
+if (!$main_image_url) {
+    $main_image_url = $product_image_ids[0] ? wp_get_attachment_image_url($product_image_ids[0], 'full') : wc_placeholder_img_src('full');
+}
 $shop_url = wc_get_page_permalink('shop');
-?><!doctype html>
-<html <?php language_attributes(); ?>>
-<head>
-    <meta charset="<?php bloginfo('charset'); ?>">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <?php wp_head(); ?>
-</head>
-<body <?php body_class('theobroma-product-view'); ?>>
-<?php wp_body_open(); ?>
+get_header();
+?>
+<main class="product-modal-underlay" aria-hidden="true"><i></i></main>
+<div class="product-modal-source" hidden>
 <main class="product-detail-page">
     <a class="product-detail-back" href="<?php echo esc_url($shop_url); ?>">← Назад</a>
     <a class="product-detail-close" href="<?php echo esc_url($shop_url); ?>" aria-label="Закрыть"></a>
     <section class="product-detail-hero">
-        <figure class="product-detail-image"><img src="<?php echo esc_url(wp_get_attachment_image_url($product->get_image_id(), 'full') ?: wc_placeholder_img_src('full')); ?>" width="624" height="780" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>"></figure>
+        <div class="product-detail-gallery">
+            <figure class="product-detail-image"><img data-product-main-image src="<?php echo esc_url($main_image_url ?: wc_placeholder_img_src('full')); ?>" width="624" height="780" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>"></figure>
+            <?php if (count($product_image_ids) > 1) : ?>
+                <div class="product-detail-thumbnails" aria-label="Галерея товара">
+                    <?php foreach (array_slice($product_image_ids, 0, 9) as $image_index => $image_id) : ?>
+                        <?php $full_image_url = $image_index === 0 ? $main_image_url : ($image_id ? wp_get_attachment_image_url($image_id, 'full') : wc_placeholder_img_src('full')); ?>
+                        <button class="<?php echo $image_index === 0 ? 'is-active' : ''; ?>" type="button" data-product-gallery-image="<?php echo esc_url($full_image_url ?: wc_placeholder_img_src('full')); ?>" aria-label="Показать изображение <?php echo esc_attr((string) ($image_index + 1)); ?>">
+                            <?php echo wp_get_attachment_image($image_id, 'woocommerce_thumbnail', false, array('loading' => 'eager', 'alt' => '')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
         <div class="product-detail-summary">
             <h1><?php echo esc_html(theobroma_frontend_product_title($product->get_name(), $product->get_id())); ?></h1>
             <div class="product-detail-price"><?php echo esc_html(number_format((float) $product->get_price(), 0, '', ' ') . ' р.'); ?></div>
@@ -65,24 +149,33 @@ $shop_url = wc_get_page_permalink('shop');
         </div>
     </section>
     <section class="product-detail-accordions">
-        <details open><summary>Описание продукта<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_details); ?></div></details>
+        <details><summary>Описание продукта<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_details); ?></div></details>
         <details><summary>Польза кокосового сахара<i aria-hidden="true"></i></summary><div><?php echo wp_kses_post($product_benefit); ?></div></details>
     </section>
     <section class="product-related">
         <h2>Вам может понравиться</h2>
-        <div class="product-related-grid">
-            <?php foreach ($related_ids as $related_id) : $related = wc_get_product($related_id); if (!$related instanceof WC_Product) { continue; } ?>
+        <?php foreach (array('desktop' => $related_ids, 'tablet' => $tablet_related_ids, 'mobile' => $mobile_related_ids) as $related_layout => $layout_related_ids) : ?>
+        <div class="product-related-grid product-related-grid-<?php echo esc_attr($related_layout); ?>">
+            <?php foreach ($layout_related_ids as $related_id) : $related = wc_get_product($related_id); if (!$related instanceof WC_Product) { continue; } ?>
                 <article>
                     <a class="product-related-image" href="<?php echo esc_url(get_permalink($related_id)); ?>"><img src="<?php echo esc_url(wp_get_attachment_image_url($related->get_image_id(), 'full') ?: wc_placeholder_img_src('full')); ?>" width="312" height="390" loading="eager" decoding="async" alt="<?php echo esc_attr($related->get_name()); ?>"><span>♡</span></a>
                     <h3><a href="<?php echo esc_url(get_permalink($related_id)); ?>"><?php echo esc_html($related->get_name()); ?></a></h3>
                     <p><?php echo esc_html($related->get_short_description()); ?></p>
                     <div class="product-related-price"><?php echo esc_html(number_format((float) $related->get_price(), 0, '', ' ') . ' р.'); ?></div>
-                    <a class="product-related-button ajax_add_to_cart add_to_cart_button" data-product_id="<?php echo esc_attr((string) $related_id); ?>" data-quantity="1" href="<?php echo esc_url($related->add_to_cart_url()); ?>">Добавить в корзину</a>
+                    <a
+                        class="product-related-button product_type_<?php echo esc_attr($related->get_type()); ?> add_to_cart_button ajax_add_to_cart"
+                        href="<?php echo esc_url($related->add_to_cart_url()); ?>"
+                        data-quantity="1"
+                        data-product_id="<?php echo esc_attr((string) $related_id); ?>"
+                        data-product_sku="<?php echo esc_attr($related->get_sku()); ?>"
+                        aria-label="<?php echo esc_attr(sprintf('Добавить «%s» в корзину', $related->get_name())); ?>"
+                        rel="nofollow"
+                    >Добавить в корзину</a>
                 </article>
             <?php endforeach; ?>
         </div>
+        <?php endforeach; ?>
     </section>
 </main>
-<?php wp_footer(); ?>
-</body>
-</html>
+</div>
+<?php get_footer(); ?>

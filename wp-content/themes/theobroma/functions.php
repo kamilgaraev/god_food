@@ -22,6 +22,38 @@ function theobroma_assets(): void {
         (string) filemtime($theme_dir . '/assets/js/site-header.js'),
         array('strategy' => 'defer', 'in_footer' => true)
     );
+
+    if (class_exists('WooCommerce')) {
+        foreach (array('wc-add-to-cart', 'wc-country-select', 'wc-address-i18n', 'wc-checkout') as $handle) {
+            wp_enqueue_script($handle);
+        }
+
+        wp_enqueue_script(
+            'theobroma-commerce-modals',
+            get_template_directory_uri() . '/assets/js/commerce-modals.js',
+            array('jquery', 'wc-add-to-cart'),
+            (string) filemtime($theme_dir . '/assets/js/commerce-modals.js'),
+            array('strategy' => 'defer', 'in_footer' => true)
+        );
+        wp_localize_script('theobroma-commerce-modals', 'theobromaCommerce', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'wcAjaxUrl' => class_exists('WC_AJAX') ? WC_AJAX::get_endpoint('%%endpoint%%') : '',
+            'nonce' => wp_create_nonce('theobroma_commerce'),
+            'cartUrl' => wc_get_cart_url(),
+            'checkoutUrl' => wc_get_checkout_url(),
+            'shopUrl' => wc_get_page_permalink('shop'),
+        ));
+
+        if (!is_user_logged_in()) {
+            wp_enqueue_script(
+                'theobroma-account-modal',
+                get_template_directory_uri() . '/assets/js/account-modal.js',
+                array(),
+                (string) filemtime($theme_dir . '/assets/js/account-modal.js'),
+                array('strategy' => 'defer', 'in_footer' => true)
+            );
+        }
+    }
 }
 add_action('wp_enqueue_scripts', 'theobroma_assets');
 
@@ -229,6 +261,81 @@ add_filter('woocommerce_price_format', static fn(string $format): string => '%2$
 add_filter('wc_get_price_decimals', static fn(int $decimals): int => 0);
 add_filter('wc_get_price_thousand_separator', static fn(string $separator): string => ' ');
 
+/**
+ * Keep the classic checkout inside the cart modal as concise as the original
+ * storefront while still letting WooCommerce own validation and order data.
+ */
+function theobroma_checkout_fields(array $fields): array {
+    $allowed = array('billing_city', 'billing_first_name', 'billing_phone', 'billing_email');
+    foreach (array_keys($fields['billing'] ?? array()) as $key) {
+        if (!in_array($key, $allowed, true)) {
+            unset($fields['billing'][$key]);
+        }
+    }
+
+    $field_config = array(
+        'billing_city' => array('label' => 'Город', 'placeholder' => '', 'priority' => 10),
+        'billing_first_name' => array('label' => '', 'placeholder' => 'Имя', 'priority' => 20),
+        'billing_phone' => array('label' => '', 'placeholder' => '+7 (000) 000-00-00', 'priority' => 30, 'required' => true),
+        'billing_email' => array('label' => '', 'placeholder' => 'Email', 'priority' => 40),
+    );
+    foreach ($field_config as $key => $config) {
+        if (isset($fields['billing'][$key])) {
+            $fields['billing'][$key] = array_merge($fields['billing'][$key], $config, array('class' => array('form-row-wide')));
+        }
+    }
+
+    $fields['shipping'] = array();
+    $fields['account'] = array();
+    $fields['order'] = array();
+    return $fields;
+}
+add_filter('woocommerce_checkout_fields', 'theobroma_checkout_fields', 20);
+add_filter('woocommerce_checkout_registration_enabled', '__return_false');
+add_filter('woocommerce_order_button_text', static fn(): string => 'заказать');
+add_filter('woocommerce_checkout_privacy_policy_text', '__return_empty_string');
+
+function theobroma_checkout_consent(): void {
+    $agreement_url = theobroma_page_url('Пользовательское соглашение');
+    $policy_url = theobroma_page_url('Политика конфиденциальности');
+    ?>
+    <p class="commerce-checkout-consent form-row validate-required">
+        <label>
+            <input type="checkbox" name="theobroma_privacy_consent" value="1" required>
+            <span>Отправляя форму я даю <a href="<?php echo esc_url($agreement_url); ?>">согласие</a> на <a href="<?php echo esc_url($policy_url); ?>">обработку персональных данных</a></span>
+        </label>
+    </p>
+    <?php
+}
+add_action('woocommerce_checkout_before_terms_and_conditions', 'theobroma_checkout_consent');
+
+function theobroma_validate_checkout_consent(): void {
+    if (sanitize_text_field(wp_unslash($_POST['theobroma_privacy_consent'] ?? '')) !== '1') {
+        wc_add_notice('Подтвердите согласие на обработку персональных данных.', 'error');
+    }
+}
+add_action('woocommerce_checkout_process', 'theobroma_validate_checkout_consent');
+
+add_filter('woocommerce_get_terms_and_conditions_checkbox_text', static function (): string {
+    $offer_url = theobroma_page_url('Публичная оферта');
+    return 'Отправляя форму я соглашаюсь с <a href="' . esc_url($offer_url) . '">публичной офертой</a>';
+});
+
+function theobroma_checkout_total(): void {
+    if (!function_exists('WC') || !WC()->cart) {
+        return;
+    }
+    ?>
+    <div class="commerce-checkout-total"><span>Итоговая сумма:</span><strong><?php echo wp_kses_post(WC()->cart->get_total()); ?></strong></div>
+    <?php
+}
+add_action('woocommerce_checkout_after_terms_and_conditions', 'theobroma_checkout_total');
+
+function theobroma_checkout_afterword(): void {
+    echo '<p class="commerce-checkout-afterword">После оформления заказа с вами свяжется наш менеджер для уточнения деталей заказа и доставки. Пожалуйста, будьте на связи, чтобы мы могли быстрее обработать ваш заказ.</p>';
+}
+add_action('woocommerce_review_order_after_submit', 'theobroma_checkout_afterword');
+
 function theobroma_cart_count_fragment(array $fragments): array {
     $count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
     $fragments['.floating-actions .cart-count'] = '<span class="cart-count">(' . esc_html((string) $count) . ')</span>';
@@ -269,3 +376,131 @@ function theobroma_handle_contact_request(): void {
 }
 add_action('admin_post_nopriv_theobroma_contact', 'theobroma_handle_contact_request');
 add_action('admin_post_theobroma_contact', 'theobroma_handle_contact_request');
+
+/**
+ * Shared, progressively enhanced commerce modal shell.
+ *
+ * Product pages remain valid standalone URLs for SEO and no-JS clients. The
+ * catalogue upgrades those URLs to an overlay and keeps browser history in
+ * sync, while cart and checkout content is rendered by WooCommerce itself.
+ */
+function theobroma_render_commerce_modal_root(): void {
+    if (is_admin() || !class_exists('WooCommerce')) {
+        return;
+    }
+    ?>
+    <div class="commerce-modal" id="commerce-modal" hidden aria-hidden="true">
+        <div class="commerce-modal-backdrop" data-commerce-close></div>
+        <button class="commerce-modal-back" type="button" data-commerce-close><?php esc_html_e('← Назад', 'theobroma'); ?></button>
+        <section class="commerce-modal-panel" role="dialog" aria-modal="true" aria-live="polite" aria-label="<?php esc_attr_e('Информация о товаре', 'theobroma'); ?>">
+            <button class="commerce-modal-close" type="button" data-commerce-close aria-label="<?php esc_attr_e('Закрыть', 'theobroma'); ?>"></button>
+            <div class="commerce-modal-status" role="status"><?php esc_html_e('Загрузка…', 'theobroma'); ?></div>
+            <div class="commerce-modal-content"></div>
+        </section>
+    </div>
+    <?php
+}
+add_action('wp_footer', 'theobroma_render_commerce_modal_root', 5);
+
+/**
+ * Keep authentication native to WooCommerce while presenting it with the same
+ * progressively enhanced side panel as the source storefront.
+ */
+function theobroma_render_account_modal(): void {
+    if (is_admin() || is_user_logged_in() || !class_exists('WooCommerce')) {
+        return;
+    }
+
+    get_template_part('template-parts/account/modal');
+}
+add_action('wp_footer', 'theobroma_render_account_modal', 6);
+
+function theobroma_enable_customer_registration(mixed $value): string {
+    return 'yes';
+}
+add_filter('pre_option_woocommerce_enable_myaccount_registration', 'theobroma_enable_customer_registration');
+
+function theobroma_require_customer_password(mixed $value): string {
+    return 'no';
+}
+add_filter('pre_option_woocommerce_registration_generate_password', 'theobroma_require_customer_password');
+
+function theobroma_generate_customer_username(mixed $value): string {
+    return 'yes';
+}
+add_filter('pre_option_woocommerce_registration_generate_username', 'theobroma_generate_customer_username');
+
+function theobroma_allow_customer_email_login(array $credentials): array {
+    $login = isset($credentials['user_login']) ? trim((string) $credentials['user_login']) : '';
+    if (is_email($login)) {
+        $user = get_user_by('email', $login);
+        if ($user instanceof WP_User) {
+            $credentials['user_login'] = $user->user_login;
+        }
+    }
+    return $credentials;
+}
+add_filter('woocommerce_login_credentials', 'theobroma_allow_customer_email_login');
+
+function theobroma_account_menu_items(array $items): array {
+    return array_filter(array(
+        'dashboard'       => __('Главная', 'theobroma'),
+        'orders'          => __('Заказы', 'theobroma'),
+        'edit-address'    => __('Адреса', 'theobroma'),
+        'edit-account'    => __('Профиль', 'theobroma'),
+        'customer-logout' => $items['customer-logout'] ?? __('Выйти', 'theobroma'),
+    ));
+}
+add_filter('woocommerce_account_menu_items', 'theobroma_account_menu_items');
+
+function theobroma_cart_modal_html(): string {
+    ob_start();
+    get_template_part('template-parts/commerce/cart-modal');
+    return (string) ob_get_clean();
+}
+
+function theobroma_ajax_cart_modal(): void {
+    check_ajax_referer('theobroma_commerce', 'nonce');
+    if (!function_exists('WC')) {
+        wp_send_json_error(array('message' => __('Корзина недоступна.', 'theobroma')), 503);
+    }
+    if (!WC()->cart) {
+        wc_load_cart();
+    }
+    wp_send_json_success(array(
+        'html' => theobroma_cart_modal_html(),
+        'count' => WC()->cart->get_cart_contents_count(),
+    ));
+}
+add_action('wp_ajax_theobroma_cart_modal', 'theobroma_ajax_cart_modal');
+add_action('wp_ajax_nopriv_theobroma_cart_modal', 'theobroma_ajax_cart_modal');
+
+function theobroma_ajax_cart_update(): void {
+    check_ajax_referer('theobroma_commerce', 'nonce');
+    if (!function_exists('WC')) {
+        wp_send_json_error(array('message' => __('Корзина недоступна.', 'theobroma')), 503);
+    }
+    if (!WC()->cart) {
+        wc_load_cart();
+    }
+
+    $clear = sanitize_text_field(wp_unslash($_POST['clear'] ?? '')) === '1';
+    if ($clear) {
+        WC()->cart->empty_cart();
+    } else {
+        $cart_key = sanitize_text_field(wp_unslash($_POST['cart_key'] ?? ''));
+        $quantity = max(0, absint($_POST['quantity'] ?? 0));
+        if ($cart_key === '' || !isset(WC()->cart->get_cart()[$cart_key])) {
+            wp_send_json_error(array('message' => __('Товар не найден в корзине.', 'theobroma')), 404);
+        }
+        WC()->cart->set_quantity($cart_key, $quantity, true);
+    }
+
+    WC()->cart->calculate_totals();
+    wp_send_json_success(array(
+        'html' => theobroma_cart_modal_html(),
+        'count' => WC()->cart->get_cart_contents_count(),
+    ));
+}
+add_action('wp_ajax_theobroma_cart_update', 'theobroma_ajax_cart_update');
+add_action('wp_ajax_nopriv_theobroma_cart_update', 'theobroma_ajax_cart_update');

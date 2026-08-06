@@ -204,5 +204,15 @@ foreach ($products as $order => $data) {
             $product->save();
         }
     }
+    if (!$product->get_meta('_theobroma_product_detail_image_id', true)) {
+        $detail_image_url = str_replace('/cover/312x390/', '/cover/560x745/', $data['image']);
+        $detail_attachment_id = media_sideload_image($detail_image_url, $product_id, $data['name'] . ' — детальная карточка', 'id');
+        if (is_wp_error($detail_attachment_id)) {
+            fwrite(STDERR, $data['sku'] . ' detail: ' . $detail_attachment_id->get_error_message() . "\n");
+        } else {
+            $product->update_meta_data('_theobroma_product_detail_image_id', (int) $detail_attachment_id);
+            $product->save();
+        }
+    }
     echo $data['sku'] . ':' . $product_id . "\n";
 }
