@@ -1373,7 +1373,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-card p { position:absolute; top:105px; left:30px; width:277px; margin:0; text-align:left; font-size:14px; line-height:18px; }
   .recipe-card .recipe-image { position:absolute; top:30px; right:30px; width:232px; height:130px; aspect-ratio:auto; }
 
-  .cooperation-page { padding-top:148px; }
+  .cooperation-page { padding-top:148px; padding-bottom:0; }
   .cooperation-breadcrumb { transform:translateY(3px); }
   .cooperation-page > h1 { font-size:44px; line-height:44px; transform:translateY(2px); }
   .cooperation-lead { width:400px; font-size:16px; line-height:21px; }
@@ -1389,6 +1389,30 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cooperation-decor-right { top:960px; width:150px; height:202px; }
   .cooperation-form .consent { transform:translateY(10px); }
   .cooperation-form .button { transform:translateY(-3px); }
+  .cooperation-chocolate {
+    width:253px;
+    height:240px;
+    margin-top:40px;
+    margin-bottom:0;
+  }
+  .cooperation-benefits {
+    height:1030px;
+    margin-top:38px;
+    padding-top:40px;
+  }
+  .cooperation-benefits > h2 {
+    height:88px;
+    margin-bottom:34px;
+  }
+  .cooperation-benefit-grid {
+    height:860px;
+    grid-template-columns:600px;
+    grid-template-rows:224px 198px 198px 180px;
+    gap:20px;
+  }
+  .cooperation-benefit-grid article { min-height:0; }
+  .cooperation-benefit-grid article:nth-child(even) h3,
+  .cooperation-benefit-grid article:nth-child(even) ul { transform:none; }
 
   .delivery-page { padding:354px 0 45px; }
   .delivery-breadcrumb { top:149px; }
