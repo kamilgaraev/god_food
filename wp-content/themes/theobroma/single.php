@@ -59,7 +59,7 @@ $related_articles = function_exists('theobroma_related_media_posts') ? theobroma
             <div class="media-article-related-grid">
                 <?php foreach ($related_articles as $related_article) : ?>
                     <article>
-                        <a class="media-article-related-image" href="<?php echo esc_url(get_permalink($related_article)); ?>">
+                        <a class="media-article-related-image" href="<?php echo esc_url(get_permalink($related_article)); ?>" aria-label="<?php echo esc_attr(sprintf('Открыть статью: %s', get_the_title($related_article))); ?>">
                             <?php echo get_the_post_thumbnail($related_article, 'theobroma-media-card', array('loading' => 'lazy', 'decoding' => 'async')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                         </a>
                         <h3><a href="<?php echo esc_url(get_permalink($related_article)); ?>"><?php echo esc_html(get_the_title($related_article)); ?></a></h3>

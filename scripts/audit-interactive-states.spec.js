@@ -33,11 +33,11 @@ const assertNoViewportOverflow = async (page, label) => {
         await page.goto('http://localhost:8080/', { waitUntil: 'networkidle' });
         const heroMetrics = await page.locator('.hero').evaluate((hero) => {
           const rect = hero.getBoundingClientRect();
-          const chocolate = getComputedStyle(hero, '::before');
+          const chocolate = hero.querySelector('.hero-chocolate').getBoundingClientRect();
           return {
             height: rect.height,
-            chocolateWidth: parseFloat(chocolate.width),
-            chocolateHeight: parseFloat(chocolate.height),
+            chocolateWidth: chocolate.width,
+            chocolateHeight: chocolate.height,
           };
         });
         const scale = width / 390;
