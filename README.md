@@ -32,6 +32,7 @@ docker compose exec -T wordpress php /opt/theobroma-scripts/verify-email-flow.ph
 После первого запуска или развёртывания в новом Docker volume выполните:
 
 ```powershell
+bash scripts/install-required-plugins.sh
 docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-catalog.php
 docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-pages.php
 docker exec food-wordpress-1 php /opt/theobroma-scripts/sync-recipes.php
