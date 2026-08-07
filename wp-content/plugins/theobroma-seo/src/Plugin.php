@@ -11,6 +11,7 @@ final class Plugin
         add_action('wp_head', [self::class, 'renderHead'], 2);
         add_filter('document_title_parts', [self::class, 'titleParts']);
         add_filter('wp_robots', [self::class, 'robots']);
+        add_filter('wp_sitemaps_add_provider', [self::class, 'sitemapProvider'], 10, 2);
         (new SeoMetaBox())->register();
     }
 
@@ -22,6 +23,9 @@ final class Plugin
         $document = (new WordPressDocumentResolver())->current();
         if ($document instanceof SeoDocument) {
             echo (new MetadataRenderer())->render($document); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            if (!is_singular()) {
+                printf("<link rel=\"canonical\" href=\"%s\">\n", esc_url($document->canonicalUrl));
+            }
         }
     }
 
@@ -53,5 +57,13 @@ final class Plugin
             unset($robots['index'], $robots['nofollow']);
         }
         return $robots;
+    }
+
+    /** @param object|false $provider
+     *  @return object|false
+     */
+    public static function sitemapProvider(object|false $provider, string $name): object|false
+    {
+        return $name === 'users' ? false : $provider;
     }
 }

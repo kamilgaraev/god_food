@@ -4,6 +4,7 @@
   "scripts": {
     "audit:cwv": "node scripts/audit-core-web-vitals.js",
     "audit:pairwise": "node scripts/pairwise-audit.js",
+    "audit:seo": "node scripts/verify-seo-runtime.js",
     "test:header": "node scripts/verify-responsive-header.spec.js"
   },
   "devDependencies": {
