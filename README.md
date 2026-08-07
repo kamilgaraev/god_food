@@ -10,6 +10,14 @@ docker compose up -d
 
 Админка: <http://localhost:8080/wp-admin/>.
 
+Локальные письма WordPress/WooCommerce принимаются Mailpit и доступны по адресу <http://localhost:8025>. Проверка реального письма покупателю:
+
+```powershell
+docker compose exec -T wordpress php /opt/theobroma-scripts/verify-email-flow.php
+```
+
+На production задайте SMTP-переменные `THEOBROMA_SMTP_HOST`, `THEOBROMA_SMTP_PORT`, `THEOBROMA_SMTP_USERNAME`, `THEOBROMA_SMTP_PASSWORD`, `THEOBROMA_SMTP_ENCRYPTION`, `THEOBROMA_MAIL_FROM` и `THEOBROMA_MAIL_FROM_NAME`. Без `THEOBROMA_SMTP_HOST` внешний SMTP-транспорт не включается.
+
 ## Воспроизводимая настройка
 
 После первого запуска или развёртывания в новом Docker volume выполните:

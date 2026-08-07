@@ -9,6 +9,11 @@ services:
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      THEOBROMA_SMTP_HOST: mailpit
+      THEOBROMA_SMTP_PORT: 1025
+      THEOBROMA_SMTP_ENCRYPTION: ""
+      THEOBROMA_MAIL_FROM: shop@theobroma.local
+      THEOBROMA_MAIL_FROM_NAME: Theobroma
     volumes:
       - wordpress_data:/var/www/html
       - ./docker/wordpress/.htaccess:/var/www/html/.htaccess
@@ -21,6 +26,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_healthy
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_BIND_ADDRESS:-127.0.0.1}:${MAILPIT_PORT:-8025}:8025"
 
   db:
     image: mysql:8.0

@@ -19,6 +19,7 @@ use Theobroma\Commerce\Products\OzonProductFields;
 use Theobroma\Commerce\Shipping\CdekShippingMethod;
 use Theobroma\Commerce\Shipping\OzonShippingMethod;
 use Theobroma\Commerce\Wishlist\WishlistController;
+use Theobroma\Commerce\Infrastructure\MailTransport;
 
 final class Plugin
 {
@@ -45,6 +46,7 @@ final class Plugin
         (new OzonProductFields())->register();
         (new ProductWeightBackfill())->register();
         (new WishlistController())->register();
+        MailTransport::fromEnvironment()->register();
     }
 
     /** @param array<string, class-string> $methods
