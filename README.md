@@ -63,20 +63,19 @@ docker exec food-wordpress-1 php /opt/theobroma-scripts/verify-wordpress.php
 
 ## Резервная копия
 
-Создайте каталог для копий:
+Создание атомарного дампа MySQL, архива uploads, SHA-256 checksums и manifest:
 
 ```powershell
-New-Item -ItemType Directory -Force backups
+.\scripts\backup-site.ps1
 ```
 
-Сохраните базу данных и загруженные медиафайлы:
+Полная проверка создаёт новую копию, восстанавливает dump в изолированную временную БД, сравнивает контрольные количества сущностей, проверяет uploads-архив и удаляет только созданную тестовую БД:
 
 ```powershell
-docker compose exec -T db sh -c 'exec mysqldump --no-tablespaces -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' > backups/theobroma.sql
-docker cp food-wordpress-1:/var/www/html/wp-content/uploads backups/uploads
+.\scripts\verify-backup-restore.ps1
 ```
 
-Тема, пользовательский модуль, Docker-конфигурация и скрипты синхронизации уже находятся в рабочей папке проекта и должны сохраняться вместе с ней.
+Для production рекомендуется ежедневная копия базы и uploads, хранение минимум 14 ежедневных, 8 еженедельных и 12 ежемесячных копий, а также перенос копий в отдельное зашифрованное хранилище. Планировщик должен запускать `backup-site.ps1` (или эквивалентный server-side wrapper) вне web-root; минимум раз в месяц нужно выполнять restore-test. Тема, плагины, Docker-конфигурация и скрипты синхронизации дополнительно сохраняются в Git.
 
 ## Управление контейнерами
 
