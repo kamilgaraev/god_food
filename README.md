@@ -8,6 +8,15 @@
 docker compose up -d
 ```
 
+Браузерные acceptance-тесты устанавливаются отдельно от runtime WordPress:
+
+```powershell
+npm install
+npm run audit:cwv
+```
+
+Отчёты и снимки сохраняются в `output/playwright/` и не попадают в Git.
+
 Админка: <http://localhost:8080/wp-admin/>.
 
 Локальные письма WordPress/WooCommerce принимаются Mailpit и доступны по адресу <http://localhost:8025>. Проверка реального письма покупателю:

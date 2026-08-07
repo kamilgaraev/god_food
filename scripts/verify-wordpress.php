@@ -32,6 +32,9 @@ verify_value(get_option('permalink_structure') === '/%postname%/', 'permalink st
 verify_value(get_option('timezone_string') === 'Europe/Moscow', 'timezone');
 verify_value((int) get_option('wp_page_for_privacy_policy') > 0, 'privacy page configured');
 verify_value((int) get_option('woocommerce_terms_page_id') > 0, 'terms page configured');
+verify_value(get_option('woocommerce_allowed_countries') === 'specific', 'sales limited to configured countries');
+verify_value(get_option('woocommerce_specific_allowed_countries') === array('RU'), 'Russia is the allowed sales country');
+verify_value(get_option('woocommerce_ship_to_countries') === '', 'shipping follows allowed sales countries');
 
 $expected_pages = array('catalog', 'recipes', 'marketplace', 'buy', 'cooperation', 'corporate-gifts', 'delivery', 'media', 'policy', 'agreement', 'oferta');
 foreach ($expected_pages as $slug) {

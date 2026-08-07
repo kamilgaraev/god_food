@@ -105,28 +105,23 @@ function theobroma_preload_critical_fonts(): void {
         '<link rel="icon" href="%s" type="image/webp">' . "\n",
         esc_url(get_template_directory_uri() . '/assets/images/logo.webp')
     );
-    foreach (array('montserrat-cyrillic.woff2', 'montserrat-latin.woff2', 'cormorant-cyrillic-variable.woff2') as $font) {
+    foreach (array('montserrat-cyrillic.woff2', 'cormorant-cyrillic-variable.woff2') as $font) {
         printf(
             '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
             esc_url($font_base . $font)
         );
     }
+    if (is_front_page()) {
+        foreach (array('hero-bg-original.jpg', 'hero-chocolate-original.webp') as $image) {
+            printf(
+                '<link rel="preload" href="%s" as="image" fetchpriority="high">' . "\n",
+                esc_url(get_template_directory_uri() . '/assets/images/' . $image)
+            );
+        }
+    }
 }
-add_action('wp_head', 'theobroma_preload_critical_fonts', 1);
+add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
 
-function theobroma_mark_critical_type_loading(): void {
-    ?>
-    <script>document.documentElement.classList.add('fonts-loading');</script>
-    <?php
-}
-add_action('wp_head', 'theobroma_mark_critical_type_loading', 2);
-
-function theobroma_stabilize_critical_type(): void {
-    ?>
-    <script>(function(){var root=document.documentElement;var reveal=function(){root.classList.remove('fonts-loading');};Promise.all([document.fonts.load('400 11px Montserrat','Бесплатная доставка от 2500 рублей'),document.fonts.load('400 16px Montserrat','Каталог Рецепты Маркетплейсы Где купить Сотрудничество Контакты'),document.fonts.load('400 18px Montserrat','Необычный, кусковой, пористый шоколад'),document.fonts.load('500 16px Montserrat','В каталог'),document.fonts.load('400 75px Cormorant','АБСОЛЮТНО НАТУРАЛЬНЫЙ ШОКОЛАД')]).then(function(){return document.fonts.ready;}).then(reveal,reveal);}());</script>
-    <?php
-}
-add_action('wp_head', 'theobroma_stabilize_critical_type', 99);
 add_filter('show_admin_bar', '__return_false');
 
 function theobroma_content(string $key): string {

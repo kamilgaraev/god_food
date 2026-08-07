@@ -17,6 +17,7 @@ const group = args.group || 'core';
 const offset = Number(args.offset || 0);
 const limit = Number(args.limit || Number.MAX_SAFE_INTEGER);
 const requestedIds = new Set((args.ids || '').split(',').filter(Boolean));
+const reuseSource = args['reuse-source'] === 'true';
 const selectedPairs = config.pairs
   .filter((pair) => (group === 'all' || pair.group === group) && (!requestedIds.size || requestedIds.has(pair.id)))
   .slice(offset, offset + limit);
@@ -32,6 +33,7 @@ async function settlePage(page) {
   ` });
   const assetFailures = await page.evaluate(async () => {
     if (document.fonts && document.fonts.ready) await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 2500))]);
+    document.querySelectorAll('img[loading="lazy"]').forEach((image) => { image.loading = 'eager'; });
     const step = Math.max(500, Math.floor(innerHeight * 0.8));
     for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
       scrollTo(0, y);
@@ -56,7 +58,10 @@ async function settlePage(page) {
     }
     await Promise.all([...document.images].map(async (image) => {
       if (typeof image.decode !== 'function') return;
-      await image.decode().catch(() => {});
+      await Promise.race([
+        image.decode().catch(() => {}),
+        new Promise((resolve) => setTimeout(resolve, 5000)),
+      ]);
     }));
     return loaded.filter((value) => !value).length;
   });
@@ -170,8 +175,13 @@ async function comparePng(sourceFile, localFile, diffFile) {
         const sourceFile = path.join(viewportDir, `${pair.id}-source.png`);
         const localFile = path.join(viewportDir, `${pair.id}-local.png`);
         const diffFile = path.join(viewportDir, `${pair.id}-diff.png`);
-        const source = await capture(browser, 'source', normalizeUrl(sourceBase, pair.source), viewport, sourceFile);
+        console.log(`${widthKey}px ${pair.id}: preparing source`);
+        const source = reuseSource && fs.existsSync(sourceFile)
+          ? { side: 'source', status: 200, reused: true, screenshot: sourceFile }
+          : await capture(browser, 'source', normalizeUrl(sourceBase, pair.source), viewport, sourceFile);
+        console.log(`${widthKey}px ${pair.id}: capturing local`);
         const local = await capture(browser, 'local', normalizeUrl(localBase, pair.local), viewport, localFile);
+        console.log(`${widthKey}px ${pair.id}: comparing screenshots`);
         const diff = await comparePng(sourceFile, localFile, diffFile);
         const result = { id: pair.id, group: pair.group, width: widthKey, source, local, diff };
         results.push(result);

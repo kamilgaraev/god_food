@@ -1,0 +1,14 @@
+{
+  "name": "theobroma-acceptance-tests",
+  "private": true,
+  "scripts": {
+    "audit:cwv": "node scripts/audit-core-web-vitals.js",
+    "audit:pairwise": "node scripts/pairwise-audit.js",
+    "test:header": "node scripts/verify-responsive-header.spec.js"
+  },
+  "devDependencies": {
+    "pixelmatch": "7.1.0",
+    "playwright": "1.62.1",
+    "pngjs": "7.0.0"
+  }
+}

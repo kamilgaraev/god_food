@@ -7,10 +7,10 @@ Version: 1.0.0
 Text Domain: theobroma
 */
 
-@font-face { font-family:'Cormorant'; src:url('assets/fonts/cormorant-cyrillic-variable.woff2') format('woff2'); font-style:normal; font-weight:300 700; font-display:block; unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
-@font-face { font-family:'Cormorant'; src:url('assets/fonts/cormorant-latin-variable.woff2') format('woff2'); font-style:normal; font-weight:300 700; font-display:block; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face { font-family:'Montserrat'; src:url('assets/fonts/montserrat-cyrillic.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:block; unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
-@font-face { font-family:'Montserrat'; src:url('assets/fonts/montserrat-latin.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:block; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Cormorant'; src:url('assets/fonts/cormorant-cyrillic-variable.woff2') format('woff2'); font-style:normal; font-weight:300 700; font-display:swap; unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Cormorant'; src:url('assets/fonts/cormorant-latin-variable.woff2') format('woff2'); font-style:normal; font-weight:300 700; font-display:swap; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Montserrat'; src:url('assets/fonts/montserrat-cyrillic.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:swap; unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Montserrat'; src:url('assets/fonts/montserrat-latin.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:swap; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 
 :root { --ink:#241d19; --paper:#fcf9f7; --cream:#f3ebe4; --gold:#b0903d; --line:#dfd2c3; --muted:#766c64; }
 * { box-sizing:border-box; }
@@ -22,12 +22,10 @@ html { overflow-x:hidden; scroll-behavior:smooth; }
 body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:'Montserrat', Arial, sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 a { color:inherit; text-decoration:none; }
 img { display:block; max-width:100%; }
-.home > main { position:relative; }.home-decor { position:absolute; z-index:4; inset:0; overflow:hidden; pointer-events:none; }.home-decor i { position:absolute; display:block; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }.home-decor i:nth-child(1) { top:590px; right:0; width:275px; height:347.5px; background-image:url('assets/images/botanical-home-right.webp'); }.home-decor i:nth-child(2) { top:1280.640625px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-home-left.webp'); }.home-decor i:nth-child(3) { top:1831.640625px; right:0; width:212px; height:413px; background-image:url('assets/images/botanical-home-right-tall.webp'); }.home-decor i:nth-child(4) { top:2480.640625px; left:0; width:185px; height:366.65625px; background-image:url('assets/images/botanical-home-left-tall.webp'); }
-html.fonts-loading .shipping span,
-html.fonts-loading .nav-links,
-html.fonts-loading .hero h1,
-html.fonts-loading .hero p,
-html.fonts-loading .hero .button { visibility:hidden; }
+.home > main { position:relative; }.home-decor { position:absolute; z-index:4; inset:0; overflow:hidden; pointer-events:none; }.home-decor i { position:absolute; display:block; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }.home-decor i:nth-child(1) { top:590px; right:0; width:275px; height:347.5px; background-image:url('assets/images/botanical-home-right.webp'); }.home-decor i:nth-child(2) { top:1280.640625px; left:0; width:211px; height:284.390625px; }.home-decor i:nth-child(3) { top:1831.640625px; right:0; width:212px; height:413px; }.home-decor i:nth-child(4) { top:2480.640625px; left:0; width:185px; height:366.65625px; }
+.home-decor i:nth-child(2).is-loaded { background-image:url('assets/images/botanical-home-left.webp'); }
+.home-decor i:nth-child(3).is-loaded { background-image:url('assets/images/botanical-home-right-tall.webp'); }
+.home-decor i:nth-child(4).is-loaded { background-image:url('assets/images/botanical-home-left-tall.webp'); }
 .site-header { position:relative; z-index:20; height:51px; background:transparent; }
 .shipping { min-height:51px; position:relative; color:white; background:var(--gold); }
 .shipping img { position:absolute; top:10.234px; left:calc(50vw - 180.75px); width:30.719px; height:30.719px; object-fit:contain; }
@@ -72,7 +70,7 @@ html.fonts-loading .hero .button { visibility:hidden; }
 .floating-actions img { width:26px; height:22px; object-fit:contain; }.floating-actions a:last-child { padding-left:17px; gap:10px; }.floating-actions a:last-child img { width:22px; }.floating-actions a:last-child span { position:relative; top:2px; }
 .hero { min-height:650px; overflow:hidden; position:relative; background:#fff; }
 .hero::after { content:''; position:absolute; z-index:0; inset:0; background:url('assets/images/hero-bg-original.jpg') center/cover no-repeat; opacity:.3; }
-.hero::before { content:''; position:absolute; z-index:1; width:458px; height:573px; left:calc(50vw + 63px); top:77px; background:url('assets/images/hero-chocolate-original.webp') center/contain no-repeat; }
+.hero-chocolate { position:absolute; z-index:1; width:458px; height:573px; left:calc(50vw + 63px); top:77px; object-fit:contain; }
 .hero-inner { width:1160px; height:650px; margin:0; padding:0; position:relative; left:calc(50vw - 580px); z-index:2; }
 .eyebrow { color:var(--gold); font:700 11px/1 Arial,sans-serif; text-transform:uppercase; letter-spacing:.13em; }
 h1,h2,.value h3,.footer-grid h3,.review strong { color:#000; font-family:'Cormorant', Arial, sans-serif; }
@@ -604,7 +602,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cookie-notice { right:0; bottom:0; width:100%; padding:20px 10px; font-size:12px; line-height:18.6px; }
   .cookie-notice button { min-height:40px; margin-top:15px; padding-inline:15px; font-size:12px; line-height:16.8px; font-weight:500; }
 }
-@media (max-width:800px) { .nav { grid-template-columns:1fr auto; min-height:66px; padding:0 18px; } .nav-links { display:none; } .brand { font-size:31px; } .floating-actions { top:28px; }.floating-actions a { width:30px; height:30px; font-size:13px; }.floating-actions a span { display:none; }.floating-actions img { width:15px; height:15px; } .hero { min-height:590px; align-items:start; } .hero::before { width:85vw; height:210px; right:7%; top:auto; bottom:0; } .hero-inner { padding:58px 22px; top:auto; } .products { grid-template-columns:repeat(2,1fr); } .product-image { height:220px; } .feature { height:auto; } .about-stage { width:auto; height:auto; padding:45px 18px; } .about-award,.story,.values { position:static; width:auto; height:auto; } .about-award { width:190px; margin:0 auto 25px; } .story { padding:30px; } .values { margin-top:18px; grid-template-columns:1fr; gap:12px; } .value { height:auto; min-height:180px; } .reviews { height:auto; } .reviews-stage { width:auto; height:auto; padding:45px 18px; } .reviews .section-heading { height:auto; } .review-grid { height:auto; grid-template-columns:repeat(6,260px); overflow-x:auto; } .review { margin-top:25px; } .reviews-button { height:110px; } .site-footer { height:auto; padding:45px 18px; } .footer-shell { width:auto; height:auto; display:grid; grid-template-columns:1fr; gap:18px; } .footer-shell > * { position:static; width:auto; } .copyright { position:static; width:auto; transform:none; margin-top:30px; grid-template-columns:1fr; gap:18px; } }
+@media (max-width:800px) { .nav { grid-template-columns:1fr auto; min-height:66px; padding:0 18px; } .nav-links { display:none; } .brand { font-size:31px; } .floating-actions { top:28px; }.floating-actions a { width:30px; height:30px; font-size:13px; }.floating-actions a span { display:none; }.floating-actions img { width:15px; height:15px; } .hero { min-height:590px; align-items:start; } .hero-chocolate { width:85vw; height:210px; right:7%; top:auto; bottom:0; } .hero-inner { padding:58px 22px; top:auto; } .products { grid-template-columns:repeat(2,1fr); } .product-image { height:220px; } .feature { height:auto; } .about-stage { width:auto; height:auto; padding:45px 18px; } .about-award,.story,.values { position:static; width:auto; height:auto; } .about-award { width:190px; margin:0 auto 25px; } .story { padding:30px; } .values { margin-top:18px; grid-template-columns:1fr; gap:12px; } .value { height:auto; min-height:180px; } .reviews { height:auto; } .reviews-stage { width:auto; height:auto; padding:45px 18px; } .reviews .section-heading { height:auto; } .review-grid { height:auto; grid-template-columns:repeat(6,260px); overflow-x:auto; } .review { margin-top:25px; } .reviews-button { height:110px; } .site-footer { height:auto; padding:45px 18px; } .footer-shell { width:auto; height:auto; display:grid; grid-template-columns:1fr; gap:18px; } .footer-shell > * { position:static; width:auto; } .copyright { position:static; width:auto; transform:none; margin-top:30px; grid-template-columns:1fr; gap:18px; } }
 @media (min-width:461px) and (max-width:900px) {
   .mobile-menu::before { width:320px; }
   .mobile-menu nav { top:48px; left:40px; width:240px; }
@@ -637,7 +635,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .hero h1 span:nth-child(3) { transform:translateY(1px); }
   .hero p { top:356px; left:0; width:390px; font-size:14px; line-height:22px; }
   .hero .button { top:416px; left:0; width:220px; }
-  .hero::before { top:140px; right:calc((100vw - min(600px,calc(100vw - 80px)))/2 - 8px); left:auto; bottom:auto; width:320px; height:510px; transform:translate(7.5px,54px) scale(1.0304); transform-origin:center bottom; }
+  .hero-chocolate { top:140px; right:calc((100vw - min(600px,calc(100vw - 80px)))/2 - 8px); left:auto; bottom:auto; width:320px; height:510px; transform:translate(7.5px,54px) scale(1.0304); transform-origin:center bottom; }
 
   #catalog { height:1280px; padding:0; }
   #catalog .section-heading { left:0; width:min(600px,calc(100vw - 80px)); height:245px; margin:0 auto; padding:0; }
@@ -806,7 +804,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-product-grid img { width:100%; height:auto; aspect-ratio:360/268; }
 }
 
-@media (max-width:460px) { .hero { min-height:270px; } .hero::before { height:135px; right:13%; } .hero-inner { padding:35px 10px; } }
+@media (max-width:460px) { .hero { min-height:270px; } .hero-chocolate { height:135px; right:13%; } .hero-inner { padding:35px 10px; } }
 @media (max-width:460px) { .section { padding:52px 8px; } h1 { font-size:38px; } .section-heading { padding:0 8px; margin-bottom:20px; } .products { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } .product-image { height:205px; } .product h3 { margin:8px 0 4px; font-size:9px; } .product p { font-size:8px; } .price { margin-top:7px; font-size:11px; } .review-grid { grid-template-columns:repeat(4,170px); overflow-x:auto; padding:0 8px 10px; scroll-snap-type:x mandatory; } .review { min-height:230px; scroll-snap-align:start; } .form-grid { grid-template-columns:1fr; } .footer-shell { padding:0 8px; } }
 @media (max-width:460px) {
   .site-header { height:31px; }
@@ -833,7 +831,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   h1 span { width:320px; height:41.437px; transform:scale(1.219); transform-origin:center top; } h1 span:nth-child(2) { margin-left:0; }
   .hero p { position:relative; left:.625px; top:auto; width:252.328px; margin:14.719px auto 0; font-size:17.066px; line-height:24.375px; }
   .hero .button { position:relative; left:.64px; top:auto; width:213.312px; min-height:43.875px; margin-top:24.112px; font-size:17.066px; }
-  .hero::before { left:auto; width:260px; height:300px; right:64px; bottom:2.4px; }
+  .hero-chocolate { left:auto; width:260px; height:300px; right:64px; bottom:2.4px; }
   #catalog.section { height:1097.562px; padding:0 8px; }
   #catalog .section-heading { left:0; width:auto; height:209px; margin:0; padding:0 12px; position:relative; display:block; }
   #catalog .section-heading h2 { position:absolute; top:100.125px; left:50%; width:307px; transform:translateX(-50%); font:400 36.562px/36.562px 'Cormorant',Arial,sans-serif; white-space:normal; text-align:center; }
@@ -1127,7 +1125,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .floating-actions a:nth-child(3) span { display:none; }
 
   .hero { min-height:171.907051vw; }
-  .hero::before { width:66.666667vw; height:76.923077vw; right:16.410256vw; bottom:.615385vw; }
+  .hero-chocolate { width:66.666667vw; height:76.923077vw; right:16.410256vw; bottom:.615385vw; }
   .home-decor i:nth-child(1) { top:165.348837vw; width:33.72093vw; height:42.611047vw; }
   .hero-inner { padding-top:28.132267vw; }
   .hero h1 { left:0; width:84.215116vw; font-size:9.302326vw; line-height:9.302326vw; }

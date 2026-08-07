@@ -62,6 +62,28 @@
         sourceTextReveals.forEach((element) => revealObserver.observe(element));
     }
 
+    const deferredDecor = document.querySelectorAll('.home-decor i:nth-child(n+2)');
+    const observeDeferredDecor = () => {
+        if (deferredDecor.length && 'IntersectionObserver' in window) {
+            const decorObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-loaded');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '200px 0px', threshold: 0.01 });
+            deferredDecor.forEach((element) => decorObserver.observe(element));
+        } else {
+            deferredDecor.forEach((element) => element.classList.add('is-loaded'));
+        }
+    };
+    if (document.readyState === 'complete') {
+        observeDeferredDecor();
+    } else {
+        window.addEventListener('load', observeDeferredDecor, { once: true });
+    }
+
     const reviewGrid = document.querySelector('.review-grid');
     const reviewButtons = document.querySelectorAll('[data-review-direction]');
     let reviewOffset = 0;

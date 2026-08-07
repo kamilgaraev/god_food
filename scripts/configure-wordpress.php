@@ -16,6 +16,9 @@ $options = array(
     'uploads_use_yearmonth_folders' => 1,
     'woocommerce_currency' => 'RUB',
     'woocommerce_default_country' => 'RU',
+    'woocommerce_allowed_countries' => 'specific',
+    'woocommerce_specific_allowed_countries' => array('RU'),
+    'woocommerce_ship_to_countries' => '',
     'woocommerce_weight_unit' => 'kg',
     'woocommerce_dimension_unit' => 'cm',
     'woocommerce_enable_guest_checkout' => 'yes',
@@ -25,7 +28,7 @@ $options = array(
 
 foreach ($options as $name => $value) {
     update_option($name, $value);
-    echo $name . '=' . (string) $value . PHP_EOL;
+    echo $name . '=' . (is_array($value) ? wp_json_encode($value, JSON_UNESCAPED_UNICODE) : (string) $value) . PHP_EOL;
 }
 
 $page_slugs = array(
