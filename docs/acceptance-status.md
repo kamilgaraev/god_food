@@ -15,6 +15,7 @@
 | Корпоративные подарки | Реализована страница `/corporate-gifts/`, B2B-форма, сохранение заявки и уведомление через `wp_mail`. |
 | SEO | `scripts/verify-seo-runtime.js` подтверждает реальные ответы `robots.txt`, sitemap страниц/статей/товаров, canonical, description/OG, Product и Article JSON-LD, noindex приватных commerce-экранов и redirect пустого checkout. Карта пользователей отключена; публичные товары, статьи, страницы, рецепты и категории остаются в sitemap. Unit-тесты 8/8 и WordPress SEO smoke проходят. |
 | Антиспам | Все контактные формы используют nonce, honeypot и серверную задержку минимум 3 секунды. |
+| HTTP-безопасность | Apache отдаёт `nosniff`, `SAMEORIGIN`, `strict-origin-when-cross-origin` и запрет неиспользуемых camera/microphone/geolocation; `scripts/verify-security-headers.js` проверяет публичные и приватные маршруты. HSTS включается конфигурацией только на HTTPS; для TLS termination его должен выставлять production reverse proxy. |
 | Системные письма | SMTP-транспорт настраивается переменными среды. Локально Mailpit принял настоящее письмо WooCommerce покупателю; `scripts/verify-email-flow.php` подтвердил адресата, номер заказа и товар в теле письма. На production требуется SMTP-аккаунт домена. |
 | Ozon Доставка | **Не готово к live-приёмке:** `0/27` внешних SKU, нет merchant approval/token и подтверждённого live-теста. Реализация корректно не предлагает доставку до выполнения этих условий. |
 | СДЭК | **Не готово к live-приёмке:** необходимы договор, Client ID/secret, данные отправителя, тарифы и тестовый заказ. |

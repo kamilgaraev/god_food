@@ -10,6 +10,17 @@ RewriteRule . /index.php [L]
 </IfModule>
 # END WordPress
 
+# Baseline browser hardening. HSTS is emitted only for a direct HTTPS request;
+# when TLS terminates at a reverse proxy, configure HSTS at that proxy instead.
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header onsuccess unset X-Frame-Options
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(self)"
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
+</IfModule>
+
 # Long-lived browser caching for versioned theme/plugin assets. Dynamic HTML,
 # cart, checkout and account responses are intentionally not cached here.
 <IfModule mod_expires.c>

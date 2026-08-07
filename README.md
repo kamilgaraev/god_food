@@ -77,6 +77,8 @@ docker exec food-wordpress-1 php /opt/theobroma-scripts/verify-wordpress.php
 
 Для production рекомендуется ежедневная копия базы и uploads, хранение минимум 14 ежедневных, 8 еженедельных и 12 ежемесячных копий, а также перенос копий в отдельное зашифрованное хранилище. Планировщик должен запускать `backup-site.ps1` (или эквивалентный server-side wrapper) вне web-root; минимум раз в месяц нужно выполнять restore-test. Тема, плагины, Docker-конфигурация и скрипты синхронизации дополнительно сохраняются в Git.
 
+Production должен обслуживаться только по HTTPS. Образ WordPress собирается командой `docker compose build wordpress` и включает Apache-модули `headers`/`expires`. Базовые browser-security headers заданы в `docker/wordpress/.htaccess`; если TLS завершается на reverse proxy/CDN, именно там необходимо включить HTTP→HTTPS redirect и HSTS (`max-age=31536000; includeSubDomains`) после проверки HTTPS на всех поддоменах. Проверка локальных заголовков: `npm run audit:security`.
+
 ## Управление контейнерами
 
 ```powershell
