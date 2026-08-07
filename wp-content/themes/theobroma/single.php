@@ -7,6 +7,7 @@ if (!have_posts()) {
 the_post();
 $article_link = (string) get_post_meta(get_the_ID(), '_theobroma_article_link', true);
 $related_product_ids = array_values(array_filter(array_map('absint', (array) get_post_meta(get_the_ID(), '_theobroma_product_ids', true))));
+$related_articles = function_exists('theobroma_related_media_posts') ? theobroma_related_media_posts(get_the_ID(), 3) : array();
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -51,6 +52,22 @@ $related_product_ids = array_values(array_filter(array_map('absint', (array) get
                 </div>
             </section>
         <?php endif; ?>
+    <?php endif; ?>
+    <?php if ($related_articles) : ?>
+        <section class="media-article-related" aria-labelledby="media-article-related-title">
+            <h2 id="media-article-related-title">Похожие статьи</h2>
+            <div class="media-article-related-grid">
+                <?php foreach ($related_articles as $related_article) : ?>
+                    <article>
+                        <a class="media-article-related-image" href="<?php echo esc_url(get_permalink($related_article)); ?>">
+                            <?php echo get_the_post_thumbnail($related_article, 'theobroma-media-card', array('loading' => 'lazy', 'decoding' => 'async')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        </a>
+                        <h3><a href="<?php echo esc_url(get_permalink($related_article)); ?>"><?php echo esc_html(get_the_title($related_article)); ?></a></h3>
+                        <time datetime="<?php echo esc_attr(get_the_date('c', $related_article)); ?>"><?php echo esc_html(get_the_date('d.m.Y', $related_article)); ?></time>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
     <?php endif; ?>
 </main>
 <?php wp_footer(); ?>

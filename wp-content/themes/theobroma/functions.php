@@ -124,6 +124,33 @@ add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
 
 add_filter('show_admin_bar', '__return_false');
 
+/** @return WP_Post[] */
+function theobroma_related_media_posts(int $post_id, int $limit = 3): array {
+    $post = get_post($post_id);
+    if (!$post instanceof WP_Post || $post->post_type !== 'post' || $limit < 1) {
+        return array();
+    }
+
+    $category_ids = wp_get_post_categories($post_id, array('fields' => 'ids'));
+    $query = array(
+        'post_type' => 'post',
+        'post_status' => 'publish',
+        'post__not_in' => array($post_id),
+        'posts_per_page' => $limit,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'no_found_rows' => true,
+    );
+    if ($category_ids !== array()) {
+        $query['category__in'] = array_map('absint', $category_ids);
+    }
+
+    return array_values(array_filter(
+        get_posts($query),
+        static fn($related): bool => $related instanceof WP_Post
+    ));
+}
+
 function theobroma_content(string $key): string {
     $defaults = array(
         'shipping_text' => 'Бесплатная доставка от 2500 рублей',

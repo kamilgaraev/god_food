@@ -28,6 +28,10 @@ const closeEnough = (actual, expected, tolerance, label) => {
 
       assert.equal(await page.locator('.media-article-products').count(), 1, `${width}px: related products section is missing`);
       assert.equal(await page.locator('.media-article-products [data-product-modal-link]').count(), 9, `${width}px: every related product must have image, title and purchase modal links`);
+      assert.equal(await page.locator('.media-article-related').count(), 1, `${width}px: related articles section is missing`);
+      assert.equal(await page.locator('.media-article-related article').count(), 3, `${width}px: three related articles are required`);
+      assert.equal(await page.evaluate(() => [...document.querySelectorAll('.media-article-related a[href]')]
+        .some((link) => new URL(link.href).pathname === location.pathname)), false, `${width}px: current article must not be recommended`);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width, `${width}px: horizontal overflow detected`);
       assert.equal(await page.evaluate(() => {
         const source = document.querySelector('.media-article-source');

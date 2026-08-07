@@ -377,6 +377,14 @@ body.account-modal-open { overflow:hidden; }
 .media-article-products-grid h3 { margin:12px 0 7px; color:#191919; font:500 12px/17px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }
 .media-article-products-grid strong { display:block; color:#b0903d; font:500 15px/20px 'Montserrat',Arial,sans-serif; }
 .media-article-products-grid .button { min-width:0; width:100%; min-height:38px; margin-top:12px; padding:0 12px; font-size:12px; }
+.media-article-related { margin-top:52px; padding-top:32px; border-top:1px solid #ddd; }
+.media-article-related h2 { margin:0 0 24px; color:#191919; font:400 30px/36px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.media-article-related-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.media-article-related-grid article { min-width:0; }
+.media-article-related-image { display:block; aspect-ratio:4/3; overflow:hidden; background:#f3ebe4; }
+.media-article-related-image img { width:100%; height:100%; object-fit:cover; }
+.media-article-related-grid h3 { margin:12px 0 7px; color:#191919; font:500 12px/17px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }
+.media-article .media-article-related-grid time { margin:0; color:#999; font:400 9px/13px 'Montserrat',Arial,sans-serif; letter-spacing:.08em; }
 .media-article-source { display:inline-block; margin-top:45px; color:#ff8066; font:400 17px/22px 'Montserrat',Arial,sans-serif; }
 .media-article time { display:block; margin-top:62px; color:#999; font:400 7px/10px 'Montserrat',Arial,sans-serif; letter-spacing:.2em; }
 .corporate-gifts-page { background:#fcf9f7; color:#241d19; }
@@ -406,6 +414,13 @@ body.account-modal-open { overflow:hidden; }
   .media-article-products-grid article > a:first-child { grid-row:1 / span 3; }
   .media-article-products-grid h3 { margin:0 0 7px; }
   .media-article-products-grid .button { width:auto; min-width:120px; margin-top:12px; }
+  .media-article-related { margin-top:38px; padding-top:25px; }
+  .media-article-related h2 { margin-bottom:18px; font-size:26px; line-height:30px; }
+  .media-article-related-grid { grid-template-columns:1fr; gap:24px; }
+  .media-article-related-grid article { display:grid; grid-template-columns:112px minmax(0,1fr); grid-template-rows:auto 1fr; column-gap:16px; align-items:start; }
+  .media-article-related-image { grid-row:1 / span 2; width:112px; height:84px; }
+  .media-article-related-grid h3 { margin:0 0 7px; }
+  .media-article .media-article-related-grid time { align-self:start; }
   .media-article time { margin-top:30.59375px; }
 }
 @media (min-width:601px) and (max-width:900px) {

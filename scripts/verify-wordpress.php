@@ -81,6 +81,12 @@ $reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status' => '
 verify_value(count($reviews) === 7, '7 published homepage reviews', count($reviews));
 
 verify_value(function_exists('theobroma_content'), 'shared content settings available');
+verify_value(function_exists('theobroma_related_media_posts'), 'related media query available');
+foreach ($media_posts as $media_post) {
+    $related_media_posts = theobroma_related_media_posts($media_post->ID, 3);
+    verify_value(count($related_media_posts) === 3, $media_post->post_name . ' has 3 related articles', count($related_media_posts));
+    verify_value(!in_array($media_post->ID, wp_list_pluck($related_media_posts, 'ID'), true), $media_post->post_name . ' excludes itself');
+}
 verify_value(theobroma_content('shipping_text') !== '', 'shipping text configured');
 verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_recipe_box'), 'recipe editor available');
 verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_content_settings'), 'shared blocks editor available');
