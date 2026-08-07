@@ -61,6 +61,7 @@ function findSchema(documents, type) {
   assert.equal(canonical(home), `${baseUrl}/`);
   assert.ok(findSchema(schemas(home), 'Organization'));
   assert.ok(findSchema(schemas(home), 'WebSite'));
+  assert.doesNotMatch(home, /<meta[^>]+name=["']yandex-verification["']/i, 'Unconfigured Webmaster token must not render.');
 
   const productUrl = `${baseUrl}/product/theobroma-200-70/`;
   const productHtml = await get('/product/theobroma-200-70/');

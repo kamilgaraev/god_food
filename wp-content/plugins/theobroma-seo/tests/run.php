@@ -8,6 +8,7 @@ $productionFiles = [
     dirname(__DIR__) . '/src/SeoDocument.php',
     dirname(__DIR__) . '/src/MetadataRenderer.php',
     dirname(__DIR__) . '/src/SchemaFactory.php',
+    dirname(__DIR__) . '/src/SiteVerificationRenderer.php',
 ];
 
 foreach ($productionFiles as $file) {
@@ -20,10 +21,12 @@ foreach ($productionFiles as $file) {
 
 require __DIR__ . '/MetadataRendererTest.php';
 require __DIR__ . '/SchemaFactoryTest.php';
+require __DIR__ . '/SiteVerificationRendererTest.php';
 
 $tests = [
     new Theobroma\Seo\Tests\MetadataRendererTest(),
     new Theobroma\Seo\Tests\SchemaFactoryTest(),
+    new Theobroma\Seo\Tests\SiteVerificationRendererTest(),
 ];
 
 $failures = 0;

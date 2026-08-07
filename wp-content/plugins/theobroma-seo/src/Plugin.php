@@ -13,6 +13,7 @@ final class Plugin
         add_filter('wp_robots', [self::class, 'robots']);
         add_filter('wp_sitemaps_add_provider', [self::class, 'sitemapProvider'], 10, 2);
         (new SeoMetaBox())->register();
+        (new SiteVerificationSettings())->register();
     }
 
     public static function renderHead(): void
@@ -27,6 +28,9 @@ final class Plugin
                 printf("<link rel=\"canonical\" href=\"%s\">\n", esc_url($document->canonicalUrl));
             }
         }
+        echo (new SiteVerificationRenderer())->render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            get_option(SiteVerificationSettings::OPTION, '')
+        );
     }
 
     /** @param array<string, string> $parts

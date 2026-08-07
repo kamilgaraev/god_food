@@ -18,6 +18,8 @@ foreach ([
     'SeoDocument.php',
     'MetadataRenderer.php',
     'SchemaFactory.php',
+    'SiteVerificationRenderer.php',
+    'SiteVerificationSettings.php',
     'WordPressDocumentResolver.php',
     'SeoMetaBox.php',
     'Plugin.php',

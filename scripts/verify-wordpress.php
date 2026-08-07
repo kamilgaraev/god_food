@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once '/var/www/html/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
+require_once ABSPATH . 'wp-admin/includes/template.php';
 
 /** @param mixed $actual */
 function verify_value(bool $condition, string $label, $actual = null): void {
@@ -92,6 +93,8 @@ verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_recipe_box'), '
 verify_value(method_exists(Theobroma_Admin_Tools::class, 'render_content_settings'), 'shared blocks editor available');
 verify_value(class_exists(Theobroma\Seo\WordPressDocumentResolver::class), 'SEO resolver available');
 verify_value(class_exists(Theobroma\Seo\SeoMetaBox::class), 'SEO editor available');
+verify_value(class_exists(Theobroma\Seo\SiteVerificationSettings::class), 'Yandex Webmaster settings available');
+verify_value(class_exists(Theobroma\Seo\SiteVerificationRenderer::class), 'Yandex Webmaster renderer available');
 verify_value(class_exists(Theobroma\Analytics\SettingsPage::class), 'analytics settings available');
 verify_value(class_exists(Theobroma\Analytics\MetrikaRenderer::class), 'analytics renderer available');
 
@@ -103,6 +106,10 @@ verify_value(
 );
 
 wp_set_current_user(1);
+ob_start();
+(new Theobroma\Seo\SiteVerificationSettings())->render();
+$seo_settings = (string) ob_get_clean();
+verify_value(str_contains($seo_settings, 'theobroma-yandex-verification'), 'Yandex Webmaster settings render');
 ob_start();
 Theobroma_Admin_Tools::render_content_hub();
 $content_hub = (string) ob_get_clean();
