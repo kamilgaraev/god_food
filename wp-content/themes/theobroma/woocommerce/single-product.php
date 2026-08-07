@@ -64,7 +64,7 @@ get_header();
 ?>
 <div class="product-modal-underlay" aria-hidden="true"><i></i></div>
 <div class="product-modal-source" hidden>
-<main class="product-detail-page product-detail-sku-<?php echo esc_attr(sanitize_html_class($product->get_sku())); ?> product-detail-benefits-<?php echo esc_attr((string) count($product_benefits)); ?>">
+<main class="product-detail-page product-detail-type-<?php echo esc_attr(sanitize_html_class($product->get_type())); ?> product-detail-sku-<?php echo esc_attr(sanitize_html_class($product->get_sku())); ?> product-detail-benefits-<?php echo esc_attr((string) count($product_benefits)); ?>">
     <a class="product-detail-back" href="<?php echo esc_url($shop_url); ?>">← Назад</a>
     <a class="product-detail-close" href="<?php echo esc_url($shop_url); ?>" aria-label="Закрыть"></a>
     <section class="product-detail-hero">

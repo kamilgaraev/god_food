@@ -268,17 +268,47 @@
         if (!mainImage) {
             return;
         }
+        const defaultImage = {
+            src: mainImage.currentSrc || mainImage.src,
+            srcset: mainImage.srcset,
+            sizes: mainImage.sizes,
+        };
+        const showImage = ({ src = '', srcset = '', sizes = '' } = {}) => {
+            if (!src) {
+                return;
+            }
+            mainImage.src = src;
+            mainImage.srcset = srcset;
+            mainImage.sizes = sizes;
+            content.querySelectorAll('[data-product-gallery-image]').forEach((item) => item.classList.remove('is-active'));
+        };
         content.querySelectorAll('[data-product-gallery-image]').forEach((button) => {
             button.addEventListener('click', () => {
                 const source = button.dataset.productGalleryImage;
                 if (!source) {
                     return;
                 }
-                mainImage.src = source;
-                mainImage.srcset = '';
+                showImage({ src: source });
                 content.querySelectorAll('[data-product-gallery-image]').forEach((item) => item.classList.toggle('is-active', item === button));
             });
         });
+        const variationForm = content.querySelector('form.variations_form');
+        if (variationForm && window.jQuery) {
+            window.jQuery(variationForm)
+                .off('.theobromaGallery')
+                .on('found_variation.theobromaGallery', (_event, variation) => {
+                    const image = variation?.image || {};
+                    showImage({
+                        src: image.full_src || image.src || '',
+                        srcset: image.srcset || '',
+                        sizes: image.sizes || '',
+                    });
+                })
+                .on('reset_data.theobromaGallery hide_variation.theobromaGallery', () => {
+                    showImage(defaultImage);
+                    content.querySelector('[data-product-gallery-image]')?.classList.add('is-active');
+                });
+        }
     };
 
     const mountProduct = (product) => {
@@ -404,7 +434,8 @@
         button?.classList.add('loading');
         const payload = new URLSearchParams();
         formData.forEach((value, key) => payload.append(key, String(value)));
-        payload.set('product_id', String(productId));
+        const variationId = Number(formData.get('variation_id') || 0);
+        payload.set('product_id', String(variationId > 0 ? variationId : productId));
         try {
             const response = await window.fetch(config.wcAjaxUrl.replace('%%endpoint%%', 'add_to_cart'), {
                 method: 'POST',

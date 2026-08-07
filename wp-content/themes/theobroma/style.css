@@ -569,6 +569,7 @@ body.account-modal-open { overflow:hidden; }
 .product-detail-summary h1 { position:static; width:560px; height:auto; margin:0; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:none; }
 .product-detail-price { margin-top:17.984375px; color:#b0903d; font:500 18px/24.3px 'Montserrat',Arial,sans-serif; }.product-detail-price .amount { color:inherit; }
 .product-detail-buy { height:45px; margin-top:21.078125px; display:flex; align-items:center; gap:5px; }
+.product-detail-type-variable .product-detail-buy { height:auto; align-items:flex-start; }
 .product-detail-buy form.cart { margin:0; display:block; }.product-detail-buy .quantity { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }.product-detail-buy .single_add_to_cart_button { width:206.421875px; height:45px; min-height:45px; margin:0; padding:8.4px 15px; border:0; border-radius:35px; display:flex; align-items:center; justify-content:center; color:#fff; background:#b0903d; font:400 13px/18.2px 'Montserrat',Arial,sans-serif; white-space:nowrap; }
 body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button { width:206.421875px !important; height:45px !important; min-height:45px !important; margin:0 !important; padding:8.4px 15px !important; border:0 !important; border-radius:35px !important; display:flex !important; align-items:center !important; justify-content:center !important; color:#fff !important; background:#b0903d !important; font:400 13px/18.2px 'Montserrat',Arial,sans-serif !important; }
 .product-detail-favorite { width:45px; height:45px; padding:0; border:1px solid #e8ddca; border-radius:50%; color:#b0903d; background:#fff; font:400 25px/1 Arial,sans-serif; }
@@ -1683,6 +1684,8 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-product .product-detail-accordions details p { margin-bottom:18.6px; }
 @media (min-width:901px) {
   .commerce-modal-product .product-detail-page { padding-bottom:55px; }
+  .commerce-modal-product .product-detail-type-variable .product-detail-hero { position:relative; top:auto; left:auto; height:auto; margin:55px 0 0 40px; }
+  .commerce-modal-product .product-detail-type-variable .product-detail-accordions { margin:60px 0 0 40px; }
   .commerce-modal-product .product-detail-accordions details[open] > div { padding:2px 0 22px; }
   .commerce-modal-product .product-related { min-height:635.75px; }
 }
