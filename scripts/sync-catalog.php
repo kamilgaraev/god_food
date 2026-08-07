@@ -129,7 +129,7 @@ function fetch_source_product_content(string $url): ?array {
     $description_html = preg_replace('~<a\b[^>]*>.*?</a>~isu', '', $description_html) ?? $description_html;
     $description_text = preg_replace('~<br\s*/?>~iu', "\n", $description_html) ?? $description_html;
     $description_text = html_entity_decode(wp_strip_all_tags($description_text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    $copy = array_values(array_filter(array_map('trim', preg_split('~\n\s*\n~u', trim($description_text)) ?: array())));
+    $copy = theobroma_parse_detail_copy($description_text);
 
     $tab_html = static function (DOMNode $node) use ($document): string {
         $html = '';
@@ -192,7 +192,8 @@ foreach ($products as $order => $data) {
         $stored_copy = $product->get_meta('_theobroma_detail_copy', true);
         $stored_details = (string) $product->get_meta('_theobroma_product_details', true);
         $stored_benefits = $product->get_meta('_theobroma_product_benefits', true);
-        if ($stored_source !== $source_url || !is_array($stored_copy) || !$stored_copy || $stored_details === '' || !is_array($stored_benefits)) {
+        $stored_copy_format = (int) $product->get_meta('_theobroma_detail_copy_format', true);
+        if ($stored_source !== $source_url || !is_array($stored_copy) || !$stored_copy || $stored_details === '' || !is_array($stored_benefits) || $stored_copy_format < 3) {
             $source_content = fetch_source_product_content($source_url);
             if ($source_content !== null) {
                 $product->update_meta_data('_theobroma_detail_copy', $source_content['copy']);
@@ -202,6 +203,7 @@ foreach ($products as $order => $data) {
                 $product->update_meta_data('_theobroma_product_benefit', (string) ($source_content['benefits'][0]['content'] ?? ''));
                 $product->update_meta_data('_theobroma_marketplaces', $source_content['marketplaces']);
                 $product->update_meta_data('_theobroma_source_url', $source_url);
+                $product->update_meta_data('_theobroma_detail_copy_format', 3);
             } else {
                 fwrite(STDERR, $data['sku'] . ": source content unavailable\n");
             }

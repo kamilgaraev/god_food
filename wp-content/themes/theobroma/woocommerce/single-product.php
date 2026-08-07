@@ -86,11 +86,11 @@ get_header();
             <?php endif; ?>
         </div>
         <div class="product-detail-summary">
-            <h1><?php echo esc_html($product->get_name()); ?></h1>
+            <h1><?php echo esc_html(theobroma_product_modal_title($product)); ?></h1>
             <div class="product-detail-price"><?php echo esc_html(number_format((float) $product->get_price(), 0, '', ' ') . ' р.'); ?></div>
             <div class="product-detail-buy"><?php woocommerce_template_single_add_to_cart(); ?><button class="product-detail-favorite" type="button" data-wishlist-toggle data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>" aria-label="Добавить в избранное" aria-pressed="false">♡</button></div>
             <div class="product-detail-marketplaces"><a href="<?php echo esc_url($marketplaces['wb'] ?? 'https://www.wildberries.ru/'); ?>" rel="noopener">WB</a><a href="<?php echo esc_url($marketplaces['ozon'] ?? 'https://www.ozon.ru/'); ?>" rel="noopener">Ozon</a></div>
-            <div class="product-detail-copy"><?php foreach ($detail_copy as $paragraph) : ?><p><?php echo esc_html($paragraph); ?></p><?php endforeach; ?></div>
+            <div class="product-detail-copy"><?php foreach ($detail_copy as $paragraph) : ?><p><?php echo nl2br(esc_html($paragraph)); ?></p><?php endforeach; ?></div>
         </div>
     </section>
     <section class="product-detail-accordions">

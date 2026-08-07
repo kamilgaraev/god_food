@@ -137,21 +137,52 @@ async function main() {
     const localPrimaryButton = await local.locator('.commerce-modal.is-open .single_add_to_cart_button').boundingBox();
     const sourceFirstProse = await source.locator('.js-store-prod-all-text span').first().boundingBox();
     const localFirstProse = await local.locator('.commerce-modal.is-open .product-detail-copy p').first().boundingBox();
+    const sourceCopyParts = await source.locator('.js-store-prod-all-text span').evaluateAll((elements) => elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { text: element.textContent.replace(/\s+/g, ' ').trim(), y: rect.y, height: rect.height };
+    }).filter((item) => item.text && item.height > 0));
+    const localCopyParts = await local.locator('.commerce-modal.is-open .product-detail-copy p').evaluateAll((elements) => elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { text: element.textContent.replace(/\s+/g, ' ').trim(), y: rect.y, height: rect.height };
+    }).filter((item) => item.text && item.height > 0));
 
     const relatedVariant = viewportWidth <= 600 ? 'mobile' : (viewportWidth <= 900 ? 'tablet' : 'desktop');
     const sourceRelatedParts = {
       title: await source.locator('.t-store__relevants__title').boundingBox(),
       card: await source.locator('.js-product-relevant').first().boundingBox(),
+      cardTitle: await source.locator('.js-product-relevant .js-store-prod-name').first().evaluate((element) => ({ text: element.textContent.replace(/\s+/g, ' ').trim(), ...(() => { const rect = element.getBoundingClientRect(); return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }; })() })),
       button: await source.locator('.js-product-relevant .js-store-prod-btn2').first().boundingBox(),
     };
     const localRelatedParts = {
       title: await local.locator('.commerce-modal.is-open .product-related > h2').boundingBox(),
-      card: await local.locator(`.commerce-modal.is-open .product-related-grid-${relatedVariant} article`).first().boundingBox(),
+      card: await local.locator(`.commerce-modal.is-open .product-related-grid-${relatedVariant} article`).first().evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, flex: style.flex, flexBasis: style.flexBasis, minWidth: style.minWidth, maxWidth: style.maxWidth };
+      }),
+      cardTitle: await local.locator(`.commerce-modal.is-open .product-related-grid-${relatedVariant} h3`).first().evaluate((element) => ({ text: element.textContent.replace(/\s+/g, ' ').trim(), ...(() => { const rect = element.getBoundingClientRect(); return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }; })() })),
       button: await local.locator(`.commerce-modal.is-open .product-related-grid-${relatedVariant} .product-related-button`).first().boundingBox(),
     };
 
-    console.log(JSON.stringify({ source: sourceMetrics, local: localMetrics }));
+    if (!process.env.PRODUCT_QUIET) {
+      console.log(JSON.stringify({ source: sourceMetrics, local: localMetrics, sourceCopyParts, localCopyParts, sourceRelatedParts, localRelatedParts }));
+    }
 
+    const relatedProfile = viewportWidth <= 460
+      ? { baseHeight: 450.25, lineHeight: 18.890625, buttonBottomGap: 0 }
+      : (viewportWidth <= 900
+        ? { baseHeight: 463.25, lineHeight: 18.890625, buttonBottomGap: 8 }
+        : { baseHeight: 507.75, lineHeight: 18.890625, buttonBottomGap: 8 });
+    for (const [side, parts] of Object.entries({ source: sourceRelatedParts, local: localRelatedParts })) {
+      const lineSteps = (parts.card.height - relatedProfile.baseHeight) / relatedProfile.lineHeight;
+      if (lineSteps < -0.05 || Math.abs(lineSteps - Math.round(lineSteps)) > 0.05) {
+        throw new Error(`${side} related product card height ${parts.card.height} does not follow the source line-height grid`);
+      }
+      const bottomGap = parts.card.y + parts.card.height - parts.button.y - parts.button.height;
+      if (Math.abs(bottomGap - relatedProfile.buttonBottomGap) > 1) {
+        throw new Error(`${side} related product button bottom gap differs: expected ${relatedProfile.buttonBottomGap}, got ${bottomGap}`);
+      }
+    }
     if (sourceTitle.trim() !== localTitle.trim()) {
       throw new Error(`Product title differs: source "${sourceTitle.trim()}", local "${localTitle.trim()}"`);
     }
@@ -180,10 +211,12 @@ async function main() {
       throw new Error(`Mobile related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
     }
     if (viewportWidth <= 460) {
-      for (const key of ['x', 'y', 'width']) {
+      for (const key of ['x', 'y', 'width', 'height']) {
         if (Math.abs(sourceRelatedParts.title[key] - localRelatedParts.title[key]) > 1) {
           throw new Error(`Mobile related-products title ${key} differs: source ${sourceRelatedParts.title[key]}, local ${localRelatedParts.title[key]}`);
         }
+      }
+      for (const key of ['x', 'y', 'width']) {
         if (Math.abs(sourceRelatedParts.card[key] - localRelatedParts.card[key]) > 1) {
           throw new Error(`Mobile related product card ${key} differs: source ${sourceRelatedParts.card[key]}, local ${localRelatedParts.card[key]}`);
         }
@@ -216,6 +249,11 @@ async function main() {
           throw new Error(`Tablet related product card ${key} differs: source ${sourceRelatedParts.card[key]}, local ${localRelatedParts.card[key]}`);
         }
       }
+      for (const key of ['x', 'width', 'height']) {
+        if (Math.abs(sourceRelatedParts.button[key] - localRelatedParts.button[key]) > 1) {
+          throw new Error(`Tablet related product button ${key} differs: source ${sourceRelatedParts.button[key]}, local ${localRelatedParts.button[key]}`);
+        }
+      }
     }
     if (viewportWidth >= 901) {
       for (const key of ['x', 'y', 'width', 'height']) {
@@ -237,13 +275,27 @@ async function main() {
       if (Math.abs(sourceMetrics.related.y - localMetrics.related.y) > 3) {
         throw new Error(`Desktop related-products start differs: source ${sourceMetrics.related.y}, local ${localMetrics.related.y}`);
       }
-      if (Math.abs(sourceMetrics.related.height - localMetrics.related.height) > 0.5) {
-        throw new Error(`Desktop related-products height differs: source ${sourceMetrics.related.height}, local ${localMetrics.related.height}`);
+      for (const key of ['x', 'y', 'width']) {
+        if (Math.abs(sourceRelatedParts.title[key] - localRelatedParts.title[key]) > 1) {
+          throw new Error(`Desktop related-products title ${key} differs: source ${sourceRelatedParts.title[key]}, local ${localRelatedParts.title[key]}`);
+        }
+      }
+      for (const key of ['x', 'y', 'width']) {
+        if (Math.abs(sourceRelatedParts.card[key] - localRelatedParts.card[key]) > 1) {
+          throw new Error(`Desktop related product card ${key} differs: source ${sourceRelatedParts.card[key]}, local ${localRelatedParts.card[key]}`);
+        }
+      }
+      for (const key of ['x', 'width', 'height']) {
+        if (Math.abs(sourceRelatedParts.button[key] - localRelatedParts.button[key]) > 1) {
+          throw new Error(`Desktop related product button ${key} differs: source ${sourceRelatedParts.button[key]}, local ${localRelatedParts.button[key]}`);
+        }
       }
     }
 
-    console.log(`PASS product mobile top bar: ${localTopBar}`);
-    console.log(JSON.stringify({ sourceDetailsType, localDetailsType, sourceDetailsCopyType, localDetailsCopyType }));
+    if (!process.env.PRODUCT_QUIET) {
+      console.log(`PASS product mobile top bar: ${localTopBar}`);
+      console.log(JSON.stringify({ sourceDetailsType, localDetailsType, sourceDetailsCopyType, localDetailsCopyType }));
+    }
   } finally {
     await browser.close();
   }

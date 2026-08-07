@@ -8,6 +8,27 @@
 
 defined('ABSPATH') || exit;
 
+/** @return array<int,string> */
+function theobroma_parse_detail_copy(string $raw): array {
+    $raw = str_replace(array("\r\n", "\r"), "\n", $raw);
+    $segments = preg_split('~(\n{2,})~u', trim($raw), -1, PREG_SPLIT_DELIM_CAPTURE) ?: array();
+    $blocks = array();
+    $leading_breaks = 0;
+    for ($index = 0; $index < count($segments); $index += 2) {
+        $block = trim((string) ($segments[$index] ?? ''));
+        if ($block === '') {
+            continue;
+        }
+        if ($leading_breaks > 0) {
+            $block = str_repeat("\n", $leading_breaks) . $block;
+        }
+        $blocks[] = $block;
+        $separator_breaks = substr_count((string) ($segments[$index + 1] ?? ''), "\n");
+        $leading_breaks = max(0, $separator_breaks - 2);
+    }
+    return $blocks;
+}
+
 final class Theobroma_Admin_Tools {
     private const NONCE_ACTION = 'theobroma_save_fields';
     private const NONCE_NAME = 'theobroma_fields_nonce';
@@ -353,8 +374,9 @@ final class Theobroma_Admin_Tools {
         }
         update_post_meta($post_id, '_theobroma_product_detail_image_id', absint($_POST['theobroma_product_detail_image_id'] ?? 0));
         $copy_raw = isset($_POST['theobroma_detail_copy']) ? sanitize_textarea_field(wp_unslash($_POST['theobroma_detail_copy'])) : '';
-        $copy = array_values(array_filter(array_map('trim', preg_split('~\R\s*\R~u', $copy_raw) ?: array())));
+        $copy = theobroma_parse_detail_copy($copy_raw);
         update_post_meta($post_id, '_theobroma_detail_copy', $copy);
+        update_post_meta($post_id, '_theobroma_detail_copy_format', 3);
         update_post_meta($post_id, '_theobroma_product_details', wp_kses_post(wp_unslash($_POST['theobroma_product_details'] ?? '')));
         $benefits = array();
         $benefit_rows = isset($_POST['theobroma_product_benefits']) && is_array($_POST['theobroma_product_benefits'])

@@ -411,6 +411,15 @@ function theobroma_frontend_product_title(string $title, int $post_id): string {
 }
 add_filter('the_title', 'theobroma_frontend_product_title', 10, 2);
 
+function theobroma_product_modal_title(WC_Product $product): string {
+    $title = $product->get_name();
+    if (has_term(array('cacao', 'chia'), 'product_cat', $product->get_id())) {
+        return $title;
+    }
+
+    return theobroma_frontend_product_title($title, $product->get_id());
+}
+
 function theobroma_product_benefit_title(WC_Product $product): string {
     $title = trim((string) $product->get_meta('_theobroma_product_benefit_title', true));
     if ($title !== '') {
