@@ -13,6 +13,16 @@
     const price = panel ? panel.querySelector('.home-cacao__buy strong') : null;
     const link = panel ? panel.querySelector('.home-cacao__buy a') : null;
 
+    function revealSelectedTab(tab) {
+      if (!tab || !window.matchMedia('(max-width: 800px)').matches) return;
+      const rail = tab.parentElement;
+      if (!rail) return;
+      rail.scrollTo({
+        left: tab.offsetLeft - (rail.clientWidth - tab.offsetWidth) / 2,
+        behavior: 'auto',
+      });
+    }
+
     function selectTab(tab, focus) {
       if (!tab || !panel) return;
 
@@ -38,6 +48,7 @@
       }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 140);
 
       if (focus) tab.focus();
+      revealSelectedTab(tab);
     }
 
     tabs.forEach((tab, index) => {
@@ -53,6 +64,8 @@
         selectTab(tabs[targetIndex], true);
       });
     });
+
+    window.requestAnimationFrame(() => revealSelectedTab(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')));
   }
 
   function markAdded(button) {

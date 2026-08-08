@@ -32,6 +32,12 @@ async function box(page, selector) {
   return value;
 }
 
+function intersectionArea(first, second) {
+  const width = Math.max(0, Math.min(first.x + first.width, second.x + second.width) - Math.max(first.x, second.x));
+  const height = Math.max(0, Math.min(first.y + first.height, second.y + second.height) - Math.max(first.y, second.y));
+  return width * height;
+}
+
 async function run() {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
@@ -76,11 +82,96 @@ async function run() {
 
       if (viewport.width === 1200) {
         const catalogGrid = await box(page, '.home-product-grid');
+        const heroTitle = await box(page, '.home-hero h1');
+        const heroChocolate = await box(page, '.home-hero__chocolate');
+        const cacaoHeading = await box(page, '.home-cacao__selector h2');
+        const cacaoSection = await box(page, '.home-cacao');
+        const cacaoImage = await box(page, '.home-cacao__image-wrap');
+        const cacaoCopy = await box(page, '.home-cacao__copy');
+        const composition = await box(page, '.home-composition');
+        const promoGrid = await box(page, '.home-promo-grid');
+        const feature = await box(page, '.feature');
+        const heroLeadCopy = await box(page, '.home-hero__lead > p');
+        const heroActions = await box(page, '.home-hero__actions');
 
         if (catalogGrid) {
           const rightMargin = viewport.width - catalogGrid.x - catalogGrid.width;
           assert(catalogGrid.x >= 40 && rightMargin >= 40, '1200px catalog grid must keep balanced page margins');
         }
+
+        if (heroTitle) {
+          const heroTitleGlyphs = await page.locator('.home-hero h1').evaluate((title) => {
+            const range = document.createRange();
+            range.selectNodeContents(title);
+            const rect = range.getBoundingClientRect();
+            return { width: rect.width };
+          });
+          assert(heroTitleGlyphs.width >= viewport.width * .88, '1200px hero title glyphs must span at least 88% of the viewport like the reference');
+        }
+        if (heroTitle && heroChocolate) {
+          assert(intersectionArea(heroTitle, heroChocolate) <= heroTitle.width * heroTitle.height * .03, 'hero chocolate must not obscure the title');
+        }
+        if (heroLeadCopy && heroActions) {
+          const copyCenter = heroLeadCopy.y + heroLeadCopy.height / 2;
+          const actionsCenter = heroActions.y + heroActions.height / 2;
+          assert(Math.abs(copyCenter - actionsCenter) <= 20, 'hero copy and actions must share the reference bottom row');
+        }
+        if (cacaoHeading) {
+          const headingStyle = await page.locator('.home-cacao__selector h2').evaluate((element) => {
+            const style = getComputedStyle(element);
+            return { lineHeight: parseFloat(style.lineHeight) };
+          });
+          assert(cacaoHeading.height >= headingStyle.lineHeight * 1.75, '1200px cacao heading must use the reference two-line measure');
+          assert(cacaoHeading.height <= headingStyle.lineHeight * 2.15, '1200px cacao heading must stay within two lines');
+        }
+        if (cacaoImage && cacaoCopy) {
+          assert(cacaoCopy.y >= cacaoImage.y + cacaoImage.height - 2, 'cacao copy must sit below the product circle like the reference');
+          assert(Math.abs((cacaoCopy.x + cacaoCopy.width / 2) - (cacaoImage.x + cacaoImage.width / 2)) <= 24, 'cacao image and copy must share one centered column');
+        }
+
+        const sectionOrder = await page.evaluate(() => {
+          const top = (selector) => document.querySelector(selector)?.getBoundingClientRect().top + window.scrollY;
+          return {
+            cacao: top('.home-cacao'),
+            composition: top('.home-composition'),
+            promo: top('.home-promo-grid'),
+            feature: top('.feature'),
+            promoCards: document.querySelectorAll('.home-promo-card').length,
+          };
+        });
+
+        assert(sectionOrder.cacao < sectionOrder.composition, 'composition must follow the cacao selector');
+        assert(sectionOrder.composition < sectionOrder.promo, 'promo cards must follow composition');
+        assert(sectionOrder.promo < sectionOrder.feature, 'the legacy brand feature must come after the reference-visible promo cards');
+        assert(sectionOrder.promoCards === 2, 'the reference-visible area must contain two promo cards');
+        if (composition && promoGrid && feature) {
+          assert(promoGrid.y >= composition.y + composition.height - 2, 'promo cards must start immediately after composition');
+          assert(feature.y >= promoGrid.y + promoGrid.height - 2, 'brand feature must not interrupt the reference-visible section sequence');
+        }
+        if (cacaoSection && composition && promoGrid) {
+          assert(cacaoSection.height <= 660, '1200px cacao selector must stay compact enough to match the reference crop');
+          assert(composition.height <= 290, '1200px composition block must match the compact reference height');
+          assert(promoGrid.y - cacaoSection.y <= 950, 'promo cards must enter the 1222px reference crop below the cacao selector');
+        }
+
+        const referenceTypography = await page.evaluate(() => ({
+          catalogTextTransform: getComputedStyle(document.querySelector('.home-section-heading h2')).textTransform,
+          compositionTextTransform: getComputedStyle(document.querySelector('.home-composition h2')).textTransform,
+          giftHeadingColor: getComputedStyle(document.querySelector('.home-promo-card--gift h2')).color,
+        }));
+        const catalogSection = await box(page, '.home-catalog');
+        if (catalogSection) {
+          assert(catalogSection.y >= 470 && catalogSection.y <= 500, '1200px catalog must begin at the same vertical rhythm as the reference');
+          assert(catalogSection.height <= 620, '1200px catalog must end within the reference crop');
+        }
+        const catalogFooterDisplay = await page.locator('.home-catalog__footer').evaluate((element) => getComputedStyle(element).display);
+        assert(catalogFooterDisplay === 'none', 'desktop catalog must not duplicate the hero catalog call to action');
+        if (cacaoSection) {
+          assert(cacaoSection.y <= 1120, 'the cacao selector must enter the first 1222px reference crop');
+        }
+        assert(referenceTypography.catalogTextTransform === 'none', 'catalog heading must preserve reference title case');
+        assert(referenceTypography.compositionTextTransform === 'none', 'composition heading must preserve reference title case');
+        assert(referenceTypography.giftHeadingColor !== 'rgb(0, 0, 0)', 'gift card heading must remain legible on the dark card');
       }
 
       if (viewport.width === 390) {
@@ -94,6 +185,17 @@ async function run() {
 
         assert(heroTitleBounds.left >= 0, 'mobile hero title glyphs must not be clipped on the left');
         assert(heroTitleBounds.right <= viewport.width, 'mobile hero title glyphs must not be clipped on the right');
+
+        const heroActions = await page.locator('.home-hero__actions .home-button').evaluateAll((buttons) => buttons.map((button) => {
+          const rect = button.getBoundingClientRect();
+          return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+        }));
+        assert(heroActions.length === 2, 'mobile hero must render both calls to action');
+        assert(heroActions.every((action) => action.left >= 0 && action.right <= viewport.width), 'both mobile hero calls to action must fit the viewport');
+        assert(heroActions.every((action) => action.top >= 0 && action.bottom <= viewport.height), 'both mobile hero calls to action must be visible without scrolling');
+
+        const selectedCacaoTab = await page.locator('.home-cacao__tabs button[aria-selected="true"]').boundingBox();
+        assert(selectedCacaoTab && selectedCacaoTab.x >= 0 && selectedCacaoTab.x + selectedCacaoTab.width <= viewport.width, 'the selected mobile cacao tab must be fully visible on initial load');
       }
 
       await page.locator('.home-cacao').scrollIntoViewIfNeeded();

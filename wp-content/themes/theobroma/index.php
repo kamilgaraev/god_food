@@ -2,6 +2,9 @@
 get_header();
 
 $shop_url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/');
+$gift_url = theobroma_page_url('Корпоративные подарки');
+$where_url = theobroma_page_url('Где купить');
+$cooperation_url = theobroma_page_url('Сотрудничество');
 $homepage_products = theobroma_homepage_products();
 $cacao_groups = theobroma_home_cacao_groups();
 $cacao_profiles = theobroma_cacao_profiles();
@@ -133,6 +136,34 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         </div>
     </section>
 
+    <section class="home-composition" aria-labelledby="home-composition-title">
+        <div class="home-composition__intro"><p class="home-kicker">Состав</p><h2 id="home-composition-title">Читать этикетку приятно</h2><p>Какао-бобы, какао-масло, натуральный сахар и ваниль. Всё.</p></div>
+        <dl>
+            <div><dt>0%</dt><dd>белого сахара</dd></div>
+            <div><dt>0</dt><dd>заменителей какао-масла</dd></div>
+            <div><dt>35</dt><dd>гликемический индекс</dd></div>
+            <div><dt>4</dt><dd>ингредиента в плитке</dd></div>
+        </dl>
+    </section>
+
+    <section class="home-promo-grid" aria-label="Подарки и точки продаж">
+        <article class="home-promo-card home-promo-card--gift">
+            <h2>Подарок, который не стыдно вручить</h2>
+            <p>Наборы в крафтовой коробке с открыткой. Для компаний — от 20 штук с логотипом и своей вкладкой.</p>
+            <a class="home-button" href="<?php echo esc_url($gift_url); ?>">Собрать набор</a>
+        </article>
+        <article class="home-promo-card home-promo-card--where">
+            <h2>Где купить</h2>
+            <nav aria-label="Маркетплейсы Theobroma">
+                <a href="https://www.ozon.ru/brand/theobroma-100844204/" target="_blank" rel="noopener">Ozon</a>
+                <a href="https://www.wildberries.ru/brands/theobroma" target="_blank" rel="noopener">Wildberries</a>
+                <a href="<?php echo esc_url($where_url); ?>">Яндекс Маркет</a>
+                <a href="<?php echo esc_url($where_url); ?>">ВкусВилл</a>
+            </nav>
+            <p>Розничные партнёры в 14 городах и оптовые поставки с фабрики. <a href="<?php echo esc_url($cooperation_url); ?>">Запросить прайс</a></p>
+        </article>
+    </section>
+
     <section class="feature" id="about"><div class="about-stage">
         <img class="about-award" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/award.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt="Награда Theobroma">
         <?php $story_heading = theobroma_content('story_heading'); ?>
@@ -143,16 +174,6 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
             <article class="value"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/cube.svg'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""><div><h3><?php echo esc_html(theobroma_content('value_3_title')); ?></h3><p><?php echo esc_html(theobroma_content('value_3_text')); ?></p></div></article>
         </div>
     </div></section>
-
-    <section class="home-composition" aria-labelledby="home-composition-title">
-        <div class="home-composition__intro"><p class="home-kicker">Состав</p><h2 id="home-composition-title">Читать этикетку приятно</h2><p>Какао-бобы, какао-масло, натуральный сахар и ваниль. Всё.</p></div>
-        <dl>
-            <div><dt>0%</dt><dd>белого сахара</dd></div>
-            <div><dt>0</dt><dd>заменителей какао-масла</dd></div>
-            <div><dt>35</dt><dd>гликемический индекс</dd></div>
-            <div><dt>4</dt><dd>ингредиента в плитке</dd></div>
-        </dl>
-    </section>
 
     <section class="reviews" id="reviews"><div class="reviews-stage"><div class="section-heading"><h2 class="source-text-reveal"><span><em><?php echo esc_html(theobroma_content('reviews_accent')); ?></em> <?php echo esc_html(theobroma_content('reviews_heading')); ?></span></h2><div class="review-controls" aria-label="Навигация по отзывам"><button type="button" data-review-direction="-1" aria-label="Предыдущие отзывы">‹</button><button type="button" data-review-direction="1" aria-label="Следующие отзывы">›</button></div></div><div class="review-grid">
         <?php $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => array('menu_order' => 'ASC', 'date' => 'ASC'))); ?>
