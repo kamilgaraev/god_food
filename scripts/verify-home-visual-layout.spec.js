@@ -42,7 +42,9 @@ async function run() {
       { width: 1200, height: 1222 },
       { width: 1101, height: 1000 },
       { width: 768, height: 1024 },
+      { width: 440, height: 956 },
       { width: 390, height: 844 },
+      { width: 320, height: 720 },
     ]) {
       const page = await loadHomepage(browser, viewport);
       const { documentWidth, viewportWidth } = await page.evaluate(() => ({
@@ -76,8 +78,25 @@ async function run() {
 
       if (viewport.width <= 800) {
         const compactHero = await box(page, '.home-hero');
+        const heroTitle = await box(page, '.home-hero h1');
+        const heroTrust = await box(page, '.home-hero__trust');
+        const heroLead = await box(page, '.home-hero__lead');
+        const heroActions = await box(page, '.home-hero__actions');
+        const benefitStrip = await box(page, '.home-benefit-strip');
         if (compactHero) {
-          assert(compactHero.height >= 540 && compactHero.height <= 600, 'mobile and tablet hero must keep the reference air without an empty 700px canvas');
+          assert(compactHero.height >= 460 && compactHero.height <= 500, 'mobile and tablet hero must avoid an empty middle canvas');
+        }
+        if (heroTitle && heroTrust) {
+          assert(heroTrust.y >= heroTitle.y + heroTitle.height - 1, 'mobile trust metrics must follow the title');
+        }
+        if (heroTrust && heroLead) {
+          assert(heroLead.y >= heroTrust.y + heroTrust.height, 'mobile product copy must follow trust metrics');
+        }
+        if (heroActions) {
+          assert(heroActions.y + heroActions.height <= viewport.height, 'both mobile hero actions must be visible without scrolling');
+        }
+        if (compactHero && benefitStrip) {
+          assert(Math.abs(benefitStrip.y - (compactHero.y + compactHero.height)) <= 2, 'benefit strip must immediately follow the mobile hero');
         }
       }
 

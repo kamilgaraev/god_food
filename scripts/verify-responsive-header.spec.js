@@ -7,7 +7,7 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
-    for (const width of [1200, 1440, 1920, 2560]) {
+    for (const width of [1101, 1200, 1440, 2295]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await page.goto(url, { waitUntil: 'networkidle' });
 
@@ -15,6 +15,13 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
         const nav = document.querySelector('.nav');
         const brand = document.querySelector('.brand').getBoundingClientRect();
         const navBox = nav.getBoundingClientRect();
+        const study = document.querySelector('.nav-links-study').getBoundingClientRect();
+        const transactional = document.querySelector('.nav-links-transactional').getBoundingClientRect();
+        const headerCenter = navBox.top + navBox.height / 2;
+        const controlCenters = Array.from(nav.querySelectorAll('.nav-links a, .brand'), (element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.top + rect.height / 2;
+        });
         return {
           position: getComputedStyle(nav).position,
           top: navBox.top,
@@ -26,6 +33,11 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
           studyVisible: getComputedStyle(document.querySelector('.nav-links-study')).display !== 'none',
           transactionalCount: document.querySelectorAll('.nav-links-transactional > a').length,
           wishlistCount: document.querySelectorAll('.header-wishlist, [data-wishlist]').length,
+          studyRight: study.right,
+          transactionalLeft: transactional.left,
+          brandLeft: brand.left,
+          brandRight: brand.right,
+          maxControlAxisDrift: Math.max(...controlCenters.map((center) => Math.abs(center - headerCenter))),
         };
       });
 
@@ -36,16 +48,27 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
       assert.equal(metrics.studyVisible, true, `${width}px: desktop links must be visible`);
       assert.equal(metrics.transactionalCount, 3, `${width}px: where-to-buy, account and cart are required`);
       assert.equal(metrics.wishlistCount, 0, `${width}px: wishlist must be removed`);
+      assert.ok(metrics.studyRight <= metrics.brandLeft - 16, `${width}px: left navigation overlaps the logo`);
+      assert.ok(metrics.transactionalLeft >= metrics.brandRight + 16, `${width}px: right actions overlap the logo`);
+      assert.ok(metrics.maxControlAxisDrift <= 2, `${width}px: header controls do not share one vertical axis`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${width}px: horizontal overflow detected`);
       await page.close();
     }
 
-    for (const viewport of [{ width: 768, height: 1024 }, { width: 390, height: 844 }]) {
+    for (const viewport of [{ width: 768, height: 1024 }, { width: 440, height: 956 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
       const page = await browser.newPage({ viewport });
       await page.goto(url, { waitUntil: 'networkidle' });
 
-      const metrics = await page.evaluate(() => ({
-        headerHeight: document.querySelector('.nav').getBoundingClientRect().height,
+      const metrics = await page.evaluate(() => {
+        const nav = document.querySelector('.nav').getBoundingClientRect();
+        const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+        const brand = rect('.brand');
+        const account = rect('.header-account');
+        const cart = rect('.header-cart');
+        const menu = rect('.menu-toggle');
+        const centers = [brand, account, cart, menu].map((box) => box.top + box.height / 2);
+        return {
+        headerHeight: nav.height,
         brandVisible: document.querySelector('.brand').getBoundingClientRect().width > 0,
         cartVisible: document.querySelector('.header-cart').getBoundingClientRect().width > 0,
         menuVisible: document.querySelector('.menu-toggle').getBoundingClientRect().width > 0,
@@ -53,14 +76,18 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
         accountDisplay: getComputedStyle(document.querySelector('.header-account')).display,
         viewportWidth: document.documentElement.clientWidth,
         scrollWidth: document.documentElement.scrollWidth,
-      }));
+        cartHeight: cart.height,
+        maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
+      }});
 
       assert.ok(metrics.headerHeight >= 67 && metrics.headerHeight <= 69, `${viewport.width}px: unexpected mobile header height`);
       assert.equal(metrics.brandVisible, true, `${viewport.width}px: logo is hidden`);
       assert.equal(metrics.cartVisible, true, `${viewport.width}px: cart is hidden`);
       assert.equal(metrics.menuVisible, true, `${viewport.width}px: burger is hidden`);
       assert.equal(metrics.studyDisplay, 'none', `${viewport.width}px: desktop links are visible`);
-      assert.equal(metrics.accountDisplay, 'none', `${viewport.width}px: account must move into the menu`);
+      assert.notEqual(metrics.accountDisplay, 'none', `${viewport.width}px: account icon must be visible in the top header`);
+      assert.ok(metrics.cartHeight >= 37 && metrics.cartHeight <= 39, `${viewport.width}px: cart height is not stable`);
+      assert.ok(metrics.maxAxisDrift <= 2, `${viewport.width}px: mobile controls do not share one vertical axis`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${viewport.width}px: horizontal overflow detected`);
 
       await page.locator('.menu-toggle').focus();
