@@ -55,6 +55,48 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
       await page.close();
     }
 
+    for (const width of [801, 850, 900, 950, 1000, 1050, 1100]) {
+      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      await page.goto(url, { waitUntil: 'networkidle' });
+
+      const metrics = await page.evaluate(() => {
+        const nav = document.querySelector('.nav').getBoundingClientRect();
+        const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+        const display = (selector) => getComputedStyle(document.querySelector(selector)).display;
+        const brand = rect('.brand');
+        const account = rect('.header-account');
+        const cart = rect('.header-cart');
+        const menu = rect('.menu-toggle');
+        const heroActions = rect('.home-hero__actions');
+        const heroTrust = rect('.home-hero__trust');
+        const centers = [brand, account, cart, menu].map((box) => box.top + box.height / 2);
+
+        return {
+          studyDisplay: display('.nav-links-study'),
+          whereDisplay: display('.header-where'),
+          accountVisible: account.width > 0,
+          cartVisible: cart.width > 0,
+          menuVisible: menu.width > 0,
+          maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
+          controlsRight: Math.max(account.right, cart.right, menu.right),
+          heroActionTrustGap: heroTrust.left - heroActions.right,
+          viewportWidth: document.documentElement.clientWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+        };
+      });
+
+      assert.equal(metrics.studyDisplay, 'none', `${width}px: dense desktop navigation must collapse at the tablet breakpoint`);
+      assert.equal(metrics.whereDisplay, 'none', `${width}px: where-to-buy must move into the tablet menu`);
+      assert.equal(metrics.accountVisible, true, `${width}px: account icon must remain visible in the tablet header`);
+      assert.equal(metrics.cartVisible, true, `${width}px: cart must remain visible in the tablet header`);
+      assert.equal(metrics.menuVisible, true, `${width}px: tablet menu trigger is missing`);
+      assert.ok(metrics.maxAxisDrift <= 2, `${width}px: tablet header controls do not share one vertical axis`);
+      assert.ok(metrics.controlsRight <= metrics.viewportWidth, `${width}px: tablet actions are clipped by the viewport`);
+      assert.ok(metrics.heroActionTrustGap >= 10, `${width}px: hero actions collide with the trust metrics`);
+      assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${width}px: tablet header creates horizontal overflow`);
+      await page.close();
+    }
+
     for (const viewport of [{ width: 768, height: 1024 }, { width: 440, height: 956 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
       const page = await browser.newPage({ viewport });
       await page.goto(url, { waitUntil: 'networkidle' });
