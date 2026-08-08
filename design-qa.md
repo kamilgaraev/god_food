@@ -24,7 +24,7 @@
   - `wp-content/themes/theobroma/template-parts/home/product-card.php`;
   - `wp-content/themes/theobroma/assets/css/home-redesign.css`;
   - `wp-content/themes/theobroma/assets/js/homepage.js`.
-- Проверенные CSS viewport: 2295 × 1119, 1440 × 900, 1200 × 1222, 768 × 1024, 390 × 844.
+- Проверенные CSS viewport: 2295 × 1119, 1440 × 900, 1200 × 1222, переходный 1101 × 1000, 768 × 1024, 390 × 844.
 - Все implementation screenshots сняты в CSS-размере viewport при DPR 1; source 1200 × 1222 сравнивался с implementation 1200 × 1222 без масштабирования плотности.
 - Cookie notice перед финальными снимками закрыт штатной кнопкой, чтобы сравнивать основной интерфейс в одинаковом состоянии.
 
@@ -43,6 +43,7 @@
 - Полная страница desktop: `output/playwright/design-qa/home-full-1200x1222.png`.
 - Полная страница mobile: `output/playwright/design-qa/home-full-390x844.png`.
 - Для каждого viewport сохранены `home-top-*`, `catalog-*` и `cacao-*` в `output/playwright/design-qa/`.
+- Переходный desktop/tablet breakpoint: `output/playwright/design-qa/cacao-1101x1000.png`.
 - Runtime evidence: `output/playwright/design-qa/runtime-evidence.json`; горизонтальный overflow отсутствует на всех пяти viewport, browser console/page errors отсутствуют.
 
 Фокусные снимки нужны, потому что на полной странице невозможно надёжно оценить мелкую типографику, обрезку глифов, размер карточек, sticky-header и фактический масштаб круга picker.
@@ -84,9 +85,9 @@
 
 ### Иконки, состояния и доступность
 
-- Использованы существующие asset-иконки аккаунта/корзины; account target 42 px, cart 42 px desktop и 38 px mobile.
+- Использованы существующие asset-иконки аккаунта/корзины; account target 42 px, cart 42 px desktop и 38 px mobile. Белая исходная account-иконка получила тёмный scoped filter и читается на светлом header.
 - Проверены keyboard mobile menu, focus order, picker 70→80 без reload, add-to-cart и обновление счётчика, selected state, reduced motion, безопасный неизвестный `cacao_percentage`.
-- `prefers-reduced-motion` отключает переходы; document width равен viewport на всех пяти разрешениях.
+- `prefers-reduced-motion` отключает переходы; document width равен viewport на всех шести проверенных разрешениях.
 
 ## История итераций P0/P1/P2
 
@@ -95,8 +96,10 @@
 3. **P2 — picker circle оставался 279–301 px, каталог на 1200 имел нулевые поля.** Исправлено в `6838380`: фактический круг 403–420 px, catalog gutters 48 px, добавлены lower/upper geometry gates. Повторное независимое ревью — APPROVED.
 4. **P2 — mobile glyph clipping.** При 390 px range заголовка доходил до 456.6 px, хотя контейнер не создавал document overflow. Исправлено уменьшением mobile display-size до 19vw и отдельным glyph-range assertion; post-fix right=372.9 px.
 5. **P2 — legacy sticky-header возвращался после scroll.** Высота становилась 102–112 px, а на 768 px элементы переносились на две строки; account/cart targets визуально схлопывались до 20–22 px. Добавлен scoped `.nav-sticky .nav` reset и специфичные правила действий; post-fix header 78/68 px, controls 42/38 px, единый ряд.
+6. **P2 — белая account-иконка была почти невидима на светлом header.** Добавлен scoped dark filter с opacity 0.72 и автоматическая проверка, что filter не сброшен в `none`; post-fix: `home-top-1440x900.png`.
+7. **P3 — узкий desktop 1101 px обрезал правый край picker и сжимал sticky-navigation.** Breakpoint picker поднят до 1168 px, legacy gaps/transforms/orders навигации сброшены специфичными правилами. Panel теперь x=44…804 px при viewport 1101, крайняя левая ссылка заканчивается на x=395 при logo x=471; post-fix: `cacao-1101x1000.png`.
 
-После исправлений повторно сняты все пять viewport и совмещённые сравнения. Actionable P0/P1/P2 различий не осталось.
+После исправлений повторно сняты основные пять viewport, переходный 1101 px и совмещённые сравнения. Actionable P0/P1/P2 различий не осталось.
 
 ## Проверки
 
