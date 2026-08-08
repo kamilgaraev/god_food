@@ -42,7 +42,10 @@
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('account-modal-open');
     window.setTimeout(() => { modal.hidden = true; }, 200);
-    previousFocus?.focus?.();
+    const focusTarget = previousFocus?.getClientRects?.().length
+      ? previousFocus
+      : document.querySelector('.menu-toggle');
+    focusTarget?.focus?.();
   };
 
   const continueWithEmail = () => {

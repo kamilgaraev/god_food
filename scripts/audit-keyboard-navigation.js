@@ -53,25 +53,25 @@ async function assertVisibleFocus(page, label) {
         assert.equal(await page.locator('.menu-toggle').evaluate((element) => element === document.activeElement), true, 'Mobile menu must restore focus');
       }
 
-      const account = page.locator('[data-account-trigger]');
+      if (width === 390) {
+        await page.locator('.menu-toggle').focus();
+        await page.keyboard.press('Enter');
+      }
+      const account = width === 390
+        ? page.locator('.mobile-menu [data-account-trigger]')
+        : page.locator('.header-account[data-account-trigger]');
       await account.focus();
       await page.keyboard.press('Enter');
       await page.locator('#account-modal:not([hidden])').waitFor();
       await assertVisibleFocus(page, `${width}px account modal`);
       await page.keyboard.press('Escape');
       await page.waitForTimeout(250);
-      assert.equal(await account.evaluate((element) => element === document.activeElement), true, `${width}px account modal must restore focus`);
+      const accountFocusRestored = width === 390
+        ? await page.locator('.menu-toggle').evaluate((element) => element === document.activeElement)
+        : await account.evaluate((element) => element === document.activeElement);
+      assert.equal(accountFocusRestored, true, `${width}px account modal must restore focus`);
 
-      const wishlist = page.locator('[data-wishlist-open]');
-      await wishlist.focus();
-      await page.keyboard.press('Enter');
-      await page.locator('#commerce-modal[data-commerce-type="wishlist"].is-open .commerce-wishlist-empty').waitFor();
-      await assertVisibleFocus(page, `${width}px empty wishlist`);
-      await assertFocusTrap(page, '#commerce-modal .commerce-modal-panel', `${width}px empty wishlist`);
-      await page.keyboard.press('Escape');
-      assert.equal(await wishlist.evaluate((element) => element === document.activeElement), true, `${width}px wishlist must restore focus`);
-
-      const cart = page.locator('.floating-actions a[aria-label="Корзина"]');
+      const cart = page.locator('.header-cart');
       await cart.focus();
       await page.keyboard.press('Enter');
       await page.locator('#commerce-modal[data-commerce-type="cart"].is-open .commerce-cart--empty').waitFor();

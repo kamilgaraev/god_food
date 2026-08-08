@@ -31,9 +31,29 @@
 
     const setCartCount = (count) => {
         document.querySelectorAll('.cart-count').forEach((element) => {
-            element.textContent = `(${Number(count) || 0})`;
+            const normalizedCount = Number(count) || 0;
+            element.textContent = String(normalizedCount);
+            element.closest('[data-commerce-cart-open]')?.setAttribute('aria-label', `Корзина, товаров: ${normalizedCount}`);
         });
     };
+
+    const syncCartAccessibleName = () => {
+        document.querySelectorAll('[data-commerce-cart-open]').forEach((link) => {
+            const count = Number(link.querySelector('.cart-count')?.textContent) || 0;
+            link.setAttribute('aria-label', `Корзина, товаров: ${count}`);
+        });
+    };
+    const cartCountObserver = new MutationObserver(syncCartAccessibleName);
+    document.querySelectorAll('[data-commerce-cart-open]').forEach((link) => {
+        cartCountObserver.observe(link, { childList: true, subtree: true, characterData: true });
+    });
+
+    if (window.jQuery) {
+        window.jQuery(document.body).on('added_to_cart.theobromaCartCount', () => {
+            setCartCount(document.querySelector('.cart-count')?.textContent || 0);
+            window.requestAnimationFrame(syncCartAccessibleName);
+        });
+    }
 
     const focusFirstModalControl = () => {
         const focusable = Array.from(panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'))
@@ -491,7 +511,7 @@
             return;
         }
 
-        const cartLink = event.target.closest('.floating-actions a:first-child');
+        const cartLink = event.target.closest('[data-commerce-cart-open],.floating-actions a:first-child');
         if (cartLink && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
             event.preventDefault();
             openCart(cartLink);

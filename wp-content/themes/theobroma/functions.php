@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once get_template_directory() . '/inc/homepage.php';
+
 function theobroma_setup(): void {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
@@ -11,6 +13,13 @@ function theobroma_setup(): void {
     register_nav_menus(array('primary' => __('Главное меню', 'theobroma')));
 }
 add_action('after_setup_theme', 'theobroma_setup');
+
+function theobroma_disable_emoji_assets(): void {
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('wp_enqueue_scripts', 'wp_enqueue_emoji_styles');
+}
+add_action('init', 'theobroma_disable_emoji_assets');
 
 function theobroma_redirect_legacy_wordpress_routes(): void {
     if (is_admin() || wp_doing_ajax()) {
@@ -55,6 +64,12 @@ add_action('template_redirect', 'theobroma_redirect_legacy_wordpress_routes');
 function theobroma_assets(): void {
     $theme_dir = get_stylesheet_directory();
     wp_enqueue_style('theobroma-style', get_stylesheet_uri(), array(), (string) filemtime($theme_dir . '/style.css'));
+    wp_enqueue_style(
+        'theobroma-home-redesign',
+        get_template_directory_uri() . '/assets/css/home-redesign.css',
+        array('theobroma-style'),
+        (string) filemtime($theme_dir . '/assets/css/home-redesign.css')
+    );
     wp_enqueue_script(
         'theobroma-site-header',
         get_template_directory_uri() . '/assets/js/site-header.js',
@@ -62,6 +77,16 @@ function theobroma_assets(): void {
         (string) filemtime($theme_dir . '/assets/js/site-header.js'),
         array('strategy' => 'defer', 'in_footer' => true)
     );
+
+    if (is_front_page()) {
+        wp_enqueue_script(
+            'theobroma-homepage',
+            get_template_directory_uri() . '/assets/js/homepage.js',
+            class_exists('WooCommerce') ? array('jquery', 'wc-add-to-cart') : array(),
+            (string) filemtime($theme_dir . '/assets/js/homepage.js'),
+            array('strategy' => 'defer', 'in_footer' => true)
+        );
+    }
 
     if (is_page('buy')) {
         wp_enqueue_script(
@@ -76,6 +101,9 @@ function theobroma_assets(): void {
     if (class_exists('WooCommerce')) {
         foreach (array('wc-add-to-cart', 'wc-country-select', 'wc-address-i18n', 'wc-checkout') as $handle) {
             wp_enqueue_script($handle);
+            if (is_front_page() && $handle !== 'wc-add-to-cart') {
+                wp_script_add_data($handle, 'strategy', 'defer');
+            }
         }
 
         wp_enqueue_script(
@@ -109,6 +137,30 @@ function theobroma_assets(): void {
 }
 add_action('wp_enqueue_scripts', 'theobroma_assets');
 
+function theobroma_defer_home_dependency_scripts(): void {
+    if (!is_front_page()) {
+        return;
+    }
+
+    foreach (array('jquery-core', 'jquery-migrate', 'sourcebuster-js', 'wc-order-attribution') as $handle) {
+        wp_script_add_data($handle, 'strategy', 'defer');
+    }
+}
+add_action('wp_enqueue_scripts', 'theobroma_defer_home_dependency_scripts', 100);
+
+function theobroma_noncritical_script_priority(string $tag, string $handle): string {
+    $noncritical = array(
+        'wc-jquery-blockui', 'wc-js-cookie', 'woocommerce', 'wc-country-select',
+        'wc-address-i18n', 'wc-checkout', 'theobroma-homepage',
+        'theobroma-commerce-modals', 'theobroma-account-modal',
+    );
+    if (!is_front_page() || !in_array($handle, $noncritical, true) || str_contains($tag, 'fetchpriority=')) {
+        return $tag;
+    }
+    return preg_replace('/^<script\s/', '<script fetchpriority="low" ', $tag, 1) ?: $tag;
+}
+add_filter('script_loader_tag', 'theobroma_noncritical_script_priority', 10, 2);
+
 function theobroma_preload_critical_fonts(): void {
     $font_base = get_template_directory_uri() . '/assets/fonts/';
     printf(
@@ -122,12 +174,12 @@ function theobroma_preload_critical_fonts(): void {
         );
     }
     if (is_front_page()) {
-        foreach (array('hero-bg-original.jpg', 'hero-chocolate-original.webp') as $image) {
-            printf(
-                '<link rel="preload" href="%s" as="image" fetchpriority="high">' . "\n",
-                esc_url(get_template_directory_uri() . '/assets/images/' . $image)
-            );
-        }
+        $image_base = get_template_directory_uri() . '/assets/images/';
+        printf(
+            '<link rel="preload" href="%1$s" as="image" imagesrcset="%2$s 240w, %1$s 360w" imagesizes="(max-width: 800px) 240px, 360px" fetchpriority="high">' . "\n",
+            esc_url($image_base . 'hero-chocolate-360.webp'),
+            esc_url($image_base . 'hero-chocolate-240.webp')
+        );
     }
 }
 add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
@@ -316,6 +368,14 @@ add_action('wp', 'theobroma_catalog_layout');
 
 function theobroma_catalog_products(WP_Query $query): void {
     if (!is_admin() && $query->is_main_query() && function_exists('is_shop') && is_shop()) {
+        $requested_percentage = theobroma_requested_cacao_percentage();
+        if ($requested_percentage !== null) {
+            $query->set('theobroma_cacao_percentages', array($requested_percentage));
+            $query->set('posts_per_page', 12);
+            $query->set('orderby', 'menu_order');
+            $query->set('order', 'ASC');
+            return;
+        }
         $groups = array('chocolate-200g', 'chocolate-100g', 'chocolate-30g', 'cacao', 'chia');
         $requested_group = sanitize_key(wp_unslash($_GET['product_group'] ?? 'chocolate-200g'));
         $query->set('product_cat', in_array($requested_group, $groups, true) ? $requested_group : 'chocolate-200g');
@@ -428,7 +488,7 @@ add_action('woocommerce_review_order_after_submit', 'theobroma_checkout_afterwor
 
 function theobroma_cart_count_fragment(array $fragments): array {
     $count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
-    $fragments['.floating-actions .cart-count'] = '<span class="cart-count">(' . esc_html((string) $count) . ')</span>';
+    $fragments['.floating-actions .cart-count'] = '<span class="cart-count" aria-hidden="true">' . esc_html((string) $count) . '</span>';
     return $fragments;
 }
 add_filter('woocommerce_add_to_cart_fragments', 'theobroma_cart_count_fragment');

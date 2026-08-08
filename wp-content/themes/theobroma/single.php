@@ -9,7 +9,7 @@ $article_link = (string) get_post_meta(get_the_ID(), '_theobroma_article_link', 
 $related_product_ids = array_values(array_filter(array_map('absint', (array) get_post_meta(get_the_ID(), '_theobroma_product_ids', true))));
 $related_articles = function_exists('theobroma_related_media_posts') ? theobroma_related_media_posts(get_the_ID(), 3) : array();
 ?><!doctype html>
-<html <?php language_attributes(); ?>>
+<html lang="ru-RU">
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">

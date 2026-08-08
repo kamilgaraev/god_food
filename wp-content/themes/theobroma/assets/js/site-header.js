@@ -9,6 +9,7 @@
     const menuToggle = document.querySelector('.menu-toggle');
     const mobileMenu = document.querySelector('.mobile-menu');
     const menuClose = document.querySelector('.mobile-menu-close');
+    const menuBackground = document.querySelectorAll('.site-header, main, .site-footer, .cookie-notice');
 
     const setMenuOpen = (open) => {
         if (!menuToggle || !mobileMenu) {
@@ -17,6 +18,7 @@
         document.body.classList.toggle('mobile-menu-open', open);
         menuToggle.setAttribute('aria-expanded', String(open));
         mobileMenu.setAttribute('aria-hidden', String(!open));
+        menuBackground.forEach((element) => { element.inert = open; });
         (open ? menuClose : menuToggle)?.focus({ preventScroll: true });
     };
 
@@ -28,8 +30,25 @@
         }
     });
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && document.body.classList.contains('mobile-menu-open')) {
+        if (!document.body.classList.contains('mobile-menu-open')) {
+            return;
+        }
+        if (event.key === 'Escape') {
             setMenuOpen(false);
+            return;
+        }
+        if (event.key === 'Tab' && mobileMenu) {
+            const focusable = Array.from(mobileMenu.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+                .filter((element) => element.getClientRects().length > 0);
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus();
+            }
         }
     });
 
