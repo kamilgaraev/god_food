@@ -67,11 +67,15 @@ const compactDesktopWidths = [1200, 1221, 1280, 1319, 1320];
         return {
           left: brand.left - leftAnchor.right,
           right: rightAnchor.left - brand.right,
+          floatingTop: document.querySelector('.floating-actions').getBoundingClientRect().top,
         };
       });
 
       assert.ok(gaps.left >= 8, `${width}px: left navigation overlaps logo (${gaps.left}px gap)`);
       assert.ok(gaps.right >= 8, `${width}px: right navigation overlaps logo (${gaps.right}px gap)`);
+      if (width <= 1319) {
+        assert.ok(Math.abs(gaps.floatingTop - 140) <= 1, `${width}px: floating actions start at ${gaps.floatingTop}px instead of 140px`);
+      }
       await page.close();
     }
 
