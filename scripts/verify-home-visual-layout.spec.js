@@ -64,20 +64,34 @@ async function run() {
         }
       }
 
+      if (viewport.width >= 1200) {
+        const cacaoCircle = await box(page, '.home-cacao__image-wrap');
+
+        if (cacaoCircle) {
+          assert(cacaoCircle.width >= 380, `${viewport.width}px cacao image circle must be at least 380px`);
+          assert(cacaoCircle.width <= 420, `${viewport.width}px cacao image circle must not exceed 420px`);
+        }
+      }
+
+      if (viewport.width === 1200) {
+        const catalogGrid = await box(page, '.home-product-grid');
+
+        if (catalogGrid) {
+          const rightMargin = viewport.width - catalogGrid.x - catalogGrid.width;
+          assert(catalogGrid.x >= 40 && rightMargin >= 40, '1200px catalog grid must keep balanced page margins');
+        }
+      }
+
       if (viewport.width === 2295) {
         const wideGrid = await box(page, '.home-product-grid');
         const wideCard = await box(page, '.home-product-grid .home-product-card');
         await box(page, '.home-cacao');
-        const cacaoCircle = await box(page, '.home-cacao__image-wrap');
 
         if (wideCard) {
           assert(wideCard.width <= 340, 'ultrawide product cards must not exceed 340px');
         }
         if (wideGrid) {
           assert(wideGrid.width <= 1440, 'catalog grid must be capped at 1440px');
-        }
-        if (cacaoCircle) {
-          assert(cacaoCircle.width <= 440, 'desktop cacao image circle must be capped at 440px');
         }
       }
 
