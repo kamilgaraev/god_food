@@ -1,7 +1,9 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 
 const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
+const cssFile = process.env.THEOBROMA_CSS_FILE || '';
 const widths = [1440, 1920, 2048, 2560, 3840];
 
 (async () => {
@@ -10,7 +12,12 @@ const widths = [1440, 1920, 2048, 2560, 3840];
   try {
     for (const width of widths) {
       const page = await browser.newPage({ viewport: { width, height: 1200 } });
-      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+      await page.locator('.site-header').waitFor({ state: 'attached' });
+      await page.evaluate(() => document.fonts.ready);
+      if (cssFile) {
+        await page.addStyleTag({ content: fs.readFileSync(cssFile, 'utf8') });
+      }
 
       const metrics = await page.locator('.site-header').evaluate((header) => {
         const shipping = header.querySelector('.shipping');
@@ -43,7 +50,12 @@ const widths = [1440, 1920, 2048, 2560, 3840];
     }
 
     const mobile = await browser.newPage({ viewport: { width: 430, height: 932 } });
-    await mobile.goto(url, { waitUntil: 'networkidle' });
+    await mobile.goto(url, { waitUntil: 'domcontentloaded' });
+    await mobile.locator('.site-header').waitFor({ state: 'attached' });
+    await mobile.evaluate(() => document.fonts.ready);
+    if (cssFile) {
+      await mobile.addStyleTag({ content: fs.readFileSync(cssFile, 'utf8') });
+    }
     await mobile.waitForTimeout(3000);
     assert.equal(
       await mobile.locator('.hero h1').evaluate((title) => getComputedStyle(title).visibility),

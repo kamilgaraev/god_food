@@ -17,7 +17,7 @@
             get_template_part('template-parts/home/product-card', null, array('product' => $homepage_product));
         }
         ?>
-    </div><p style="text-align:center"><a class="button" href="#contacts">Купить</a></p></section>
+    </div><p style="text-align:center"><a class="button" href="#contact-form">Купить</a></p></section>
     <section class="feature" id="about"><div class="about-stage">
         <img class="about-award" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/award.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt="Награда Theobroma">
         <?php $story_heading = theobroma_content('story_heading'); ?>

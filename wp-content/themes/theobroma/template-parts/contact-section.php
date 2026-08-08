@@ -1,4 +1,4 @@
-<section class="contact" id="contacts">
+<section class="contact" id="contact-form">
     <div class="section">
         <div class="contact-card">
             <h2 class="source-text-reveal"><span><?php echo esc_html(theobroma_content('contact_heading')); ?> <em><?php echo esc_html(theobroma_content('contact_accent')); ?></em></span></h2>

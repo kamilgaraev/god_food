@@ -472,7 +472,7 @@ function theobroma_handle_contact_request(): void {
         true
     );
     if (is_wp_error($request_id)) {
-        wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')) . '#contacts');
+        wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')) . '#contact-form');
         exit;
     }
     if ($request_type === 'corporate_gift') {
@@ -487,7 +487,7 @@ function theobroma_handle_contact_request(): void {
         wp_update_post(array('ID' => (int) $request_id, 'post_content' => trim(implode("\n", $details) . "\n\n" . $message)));
         wp_mail(get_option('admin_email'), 'Корпоративная заявка Theobroma', implode("\n", array_merge(array('Имя: ' . $name, 'Телефон: ' . $phone, 'E-mail: ' . $email), $details, array('Комментарий: ' . $message))));
     }
-    wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contacts');
+    wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contact-form');
     exit;
 }
 

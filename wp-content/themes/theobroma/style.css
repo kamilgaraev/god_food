@@ -287,7 +287,7 @@ body.account-modal-open { overflow:hidden; }
 .theobroma-bonus-entry > span.is-positive { color:#6d7d51; }
 .theobroma-bonus-pagination { margin-top:20px; display:flex; justify-content:space-between; }
 
-@media (max-width:900px) {
+@media (max-width:1199px) {
   .account-modal-body { top:calc(50% - 103.5px); }
   .logged-in.woocommerce-account .shop-shell { width:min(600px,calc(100vw - 80px)); padding:148px 0 80px; }
   .logged-in.woocommerce-account .shop-shell > .woocommerce { grid-template-columns:1fr; gap:20px; }
@@ -295,7 +295,7 @@ body.account-modal-open { overflow:hidden; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { min-height:52px; padding:0 10px; justify-content:center; border-right:1px solid rgba(176,144,61,.22); border-bottom:0; font-size:12px; }
 }
 
-@media (min-width:601px) and (max-width:900px) {
+@media (min-width:601px) and (max-width:1199px) {
   .account-modal-body,.account-email-step input,.account-auth-form input[type="email"],.account-auth-form input[type="password"] { width:335px; }
 }
 
@@ -396,7 +396,7 @@ body.account-modal-open { overflow:hidden; }
 .corporate-gifts-benefits { width:min(1160px,calc(100% - 56px)); margin:80px auto; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }.corporate-gifts-benefits article { min-height:210px; padding:31px; background:#f3ebe4; }.corporate-gifts-benefits h2 { margin:0 0 14px; font:400 29px/32px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }.corporate-gifts-benefits p { margin:0; font:400 14px/21px 'Montserrat',Arial,sans-serif; }
 .corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases,.corporate-gifts-minimum { width:min(1160px,calc(100% - 56px)); margin:80px auto; }.corporate-gifts-showcase header,.corporate-gifts-branding header,.corporate-gifts-cases header { max-width:720px; margin-bottom:34px; }.corporate-gifts-showcase h2,.corporate-gifts-branding h2,.corporate-gifts-cases h2,.corporate-gifts-minimum h2 { margin:0; font:400 46px/46px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }.corporate-gifts-showcase header > p:last-child { font:400 15px/23px 'Montserrat',Arial,sans-serif; }.corporate-gifts-showcase-grid,.corporate-gifts-branding > div,.corporate-gifts-cases > div { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }.corporate-gifts-showcase-grid article { min-width:0; padding:22px; background:#fff; }.corporate-gifts-showcase-grid article > a:first-child { display:block; aspect-ratio:1/1.1; overflow:hidden; background:#f3ebe4; }.corporate-gifts-showcase-grid img { width:100%; height:100%; object-fit:contain; }.corporate-gifts-showcase-grid h3 { min-height:50px; margin:18px 0 0; font:500 15px/22px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }.corporate-gifts-showcase-grid .button { margin-top:12px; }.corporate-gifts-branding article,.corporate-gifts-cases article { min-height:220px; padding:30px; background:#f3ebe4; }.corporate-gifts-branding article > span { color:#b0903d; font:500 13px/18px 'Montserrat',Arial,sans-serif; }.corporate-gifts-branding h3,.corporate-gifts-cases h3 { margin:28px 0 12px; font:400 27px/31px 'Cormorant',Arial,sans-serif; text-transform:uppercase; }.corporate-gifts-branding p,.corporate-gifts-cases p,.corporate-gifts-minimum > p { margin:0; font:400 14px/22px 'Montserrat',Arial,sans-serif; }.corporate-gifts-cases article { background:#fff; border:1px solid #dfd2c3; }.corporate-gifts-cases h3 { margin-top:0; }.corporate-gifts-minimum { padding:42px 48px; display:grid; grid-template-columns:.8fr 1.2fr auto; gap:36px; align-items:center; background:#b0903d; color:#fff; }.corporate-gifts-minimum .corporate-gifts-eyebrow,.corporate-gifts-minimum h2 { color:#fff; }.corporate-gifts-minimum .button { margin:0; background:#241d19; white-space:nowrap; }
 .corporate-gifts-request { width:min(1160px,calc(100% - 56px)); margin:0 auto; padding:55px; display:grid; grid-template-columns:.85fr 1.15fr; gap:70px; background:#fff; }.corporate-gifts-request h2 { font-size:46px; line-height:44px; }.corporate-gifts-request > div > p:last-child { font:400 15px/23px 'Montserrat',Arial,sans-serif; }.corporate-gifts-request form { display:grid; grid-template-columns:1fr 1fr; gap:13px; }.corporate-gifts-request input:not([type="checkbox"]),.corporate-gifts-request select,.corporate-gifts-request textarea { width:100%; min-height:48px; padding:12px 14px; border:1px solid #dfd2c3; background:#fcf9f7; font:400 13px/18px 'Montserrat',Arial,sans-serif; }.corporate-gifts-request textarea,.corporate-gifts-request label,.corporate-gifts-request button { grid-column:1/-1; }.corporate-gifts-request textarea { min-height:90px; resize:vertical; }.corporate-gifts-request label { font:400 12px/18px 'Montserrat',Arial,sans-serif; }.corporate-gifts-request .button { justify-self:start; margin:6px 0 0; font-size:13px; }
-@media (max-width:900px) { .corporate-gifts-benefits,.corporate-gifts-showcase-grid,.corporate-gifts-branding > div,.corporate-gifts-cases > div { grid-template-columns:1fr; }.corporate-gifts-showcase-grid article { display:grid; grid-template-columns:180px 1fr; gap:0 24px; }.corporate-gifts-showcase-grid article > a:first-child { grid-row:1/4; }.corporate-gifts-minimum { grid-template-columns:1fr; }.corporate-gifts-minimum .button { justify-self:start; } }
+@media (max-width:1199px) { .corporate-gifts-benefits,.corporate-gifts-showcase-grid,.corporate-gifts-branding > div,.corporate-gifts-cases > div { grid-template-columns:1fr; }.corporate-gifts-showcase-grid article { display:grid; grid-template-columns:180px 1fr; gap:0 24px; }.corporate-gifts-showcase-grid article > a:first-child { grid-row:1/4; }.corporate-gifts-minimum { grid-template-columns:1fr; }.corporate-gifts-minimum .button { justify-self:start; } }
 @media (max-width:700px) { .corporate-gifts-hero { min-height:0; padding:115px 20px 65px; }.corporate-gifts-hero h1 { font-size:43px; line-height:41px; }.corporate-gifts-benefits,.corporate-gifts-request,.corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases,.corporate-gifts-minimum { width:calc(100% - 32px); }.corporate-gifts-benefits,.corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases { margin:42px auto; }.corporate-gifts-benefits { grid-template-columns:1fr; }.corporate-gifts-showcase h2,.corporate-gifts-branding h2,.corporate-gifts-cases h2,.corporate-gifts-minimum h2 { font-size:36px; line-height:35px; }.corporate-gifts-showcase-grid article { display:block; }.corporate-gifts-showcase-grid article > a:first-child { aspect-ratio:1/1; }.corporate-gifts-minimum { padding:30px 20px; }.corporate-gifts-request { padding:30px 20px; grid-template-columns:1fr; gap:30px; }.corporate-gifts-request h2 { font-size:36px; line-height:35px; }.corporate-gifts-request form { grid-template-columns:1fr; }.corporate-gifts-request textarea,.corporate-gifts-request label,.corporate-gifts-request button { grid-column:auto; } }
 @media (max-width:600px) {
   .media-article { width:calc(100% - 40px); padding:20px 0 56px; }
@@ -423,7 +423,7 @@ body.account-modal-open { overflow:hidden; }
   .media-article .media-article-related-grid time { align-self:start; }
   .media-article time { margin-top:30.59375px; }
 }
-@media (min-width:601px) and (max-width:900px) {
+@media (min-width:601px) and (max-width:1199px) {
   .media-article { width:640px; }
   .media-article h1 { margin-bottom:30px; line-height:39.359375px; }
   .media-article figure { margin-bottom:30px; }
@@ -599,7 +599,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 .product-related-image { width:270px; height:337.5px; display:block; position:relative; overflow:hidden; background:#f3ebe4; }.product-related-image img { width:270px; height:337.5px; object-fit:cover; }.product-related-image span { position:absolute; top:10px; right:10px; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:#b0903d; background:#fff; font:24px/1 Arial,sans-serif; }
 .product-related-grid h3 { margin:20px 0 8px; color:#343434; font:500 14px/18.9px 'Montserrat',Arial,sans-serif; text-transform:uppercase; }.product-related-grid h3 a { color:inherit; }.product-related-grid p { height:22px; margin:0; overflow:hidden; color:#343434; font:400 14px/21px 'Montserrat',Arial,sans-serif; white-space:nowrap; text-overflow:ellipsis; }.product-related-price { margin-top:13px; color:#b0903d; font:400 14px/21px 'Montserrat',Arial,sans-serif; }.product-related-price .amount { color:inherit; }
 .product-related-button { position:absolute; left:0; top:464.75px; width:165.96875px; height:35px; display:flex; align-items:center; justify-content:center; border-radius:999px; color:#fff; background:#b0903d; font:500 13px/18px 'Montserrat',Arial,sans-serif; }
-@media (max-width:900px) {
+@media (max-width:1199px) {
   body.mobile-menu-open { overflow:hidden; }
   .mobile-menu { position:fixed; z-index:1000; inset:0; display:block; visibility:hidden; background:rgba(20,18,17,.66); opacity:0; transition:opacity .25s ease,visibility 0s linear .25s; }
   .mobile-menu::before { content:''; position:absolute; inset:0 auto 0 0; width:min(82.051vw,320px); background:#f3ebe4; transform:translateX(-100%); transition:transform .25s ease; }
@@ -618,7 +618,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cookie-notice button { min-height:40px; margin-top:15px; padding-inline:15px; font-size:12px; line-height:16.8px; font-weight:500; }
 }
 @media (max-width:800px) { .nav { grid-template-columns:1fr auto; min-height:66px; padding:0 18px; } .nav-links { display:none; } .brand { font-size:31px; } .floating-actions { top:28px; }.floating-actions a { width:30px; height:30px; font-size:13px; }.floating-actions a span { display:none; }.floating-actions img { width:15px; height:15px; } .hero { min-height:590px; align-items:start; } .hero-chocolate { width:85vw; height:210px; right:7%; top:auto; bottom:0; } .hero-inner { padding:58px 22px; top:auto; } .products { grid-template-columns:repeat(2,1fr); } .product-image { height:220px; } .feature { height:auto; } .about-stage { width:auto; height:auto; padding:45px 18px; } .about-award,.story,.values { position:static; width:auto; height:auto; } .about-award { width:190px; margin:0 auto 25px; } .story { padding:30px; } .values { margin-top:18px; grid-template-columns:1fr; gap:12px; } .value { height:auto; min-height:180px; } .reviews { height:auto; } .reviews-stage { width:auto; height:auto; padding:45px 18px; } .reviews .section-heading { height:auto; } .review-grid { height:auto; grid-template-columns:repeat(6,260px); overflow-x:auto; } .review { margin-top:25px; } .reviews-button { height:110px; } .site-footer { height:auto; padding:45px 18px; } .footer-shell { width:auto; height:auto; display:grid; grid-template-columns:1fr; gap:18px; } .footer-shell > * { position:static; width:auto; } .copyright { position:static; width:auto; transform:none; margin-top:30px; grid-template-columns:1fr; gap:18px; } }
-@media (min-width:461px) and (max-width:900px) {
+@media (min-width:461px) and (max-width:1199px) {
   .mobile-menu::before { width:320px; }
   .mobile-menu nav { top:48px; left:40px; width:240px; }
   .mobile-menu li + li { margin-top:15px; }
@@ -1362,7 +1362,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 }
 
 /* Tablet inner-page calibration against the original 768px composition. */
-@media (min-width:461px) and (max-width:900px) {
+@media (min-width:461px) and (max-width:1199px) {
   .floating-actions,.nav-sticky .floating-actions {
     right:calc((100vw - min(600px,calc(100vw - 80px)))/2 + 65px);
     gap:16px;
@@ -1695,7 +1695,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-product .product-detail-accordions summary { height:60px; font:500 14px/18.9px 'Cormorant',Arial,sans-serif; }
 .commerce-modal-product .product-detail-accordions details div { font:400 12px/18.6px 'Cormorant',Arial,sans-serif; }
 .commerce-modal-product .product-detail-accordions details p { margin-bottom:18.6px; }
-@media (min-width:901px) {
+@media (min-width:1200px) {
   .commerce-modal-product .product-detail-page { padding-bottom:55px; }
   .commerce-modal-product .product-detail-type-variable .product-detail-hero { position:relative; top:auto; left:auto; height:auto; margin:55px 0 0 40px; }
   .commerce-modal-product .product-detail-type-variable .product-detail-accordions { margin:60px 0 0 40px; }
@@ -1721,7 +1721,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .product-modal-underlay i { position:absolute; top:115px; right:0; width:212px; height:413px; background:url('assets/images/botanical-home-right-tall.webp') center/contain no-repeat; opacity:.6; }
 
 /* Tilda proportionally scales its desktop delivery record from a 1200px artboard. */
-@media (min-width:901px) {
+@media (min-width:1200px) {
   .site-header { height:min(calc(2.5vw - .2px),51px); }
   .shipping { min-height:min(calc(2.5vw - .2px),51px); }
   .shipping img { width:min(1.5vw,30.72px); height:min(1.5vw,30.72px); position:absolute; top:min(.5vw,10.24px); left:calc(50% - min(8.833333vw,180.906667px)); object-fit:contain; zoom:1; }
@@ -1841,13 +1841,13 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-notes { margin-top:-2px; }
   .commerce-cart-checkout { margin-top:48.59375px; }
 }
-@media (min-width:901px) {
+@media (min-width:1200px) {
   .commerce-cart-header { height:60.6875px; }
   .commerce-cart-header h2 { font-size:20px; line-height:29.6875px; }
   .commerce-cart-checkout { margin-top:51.296875px; }
 }
 
-@media (max-width:900px) {
+@media (max-width:1199px) {
   .commerce-modal-panel { width:100%; }
   .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { min-height:0; margin:50px auto 0; }
   .commerce-modal-product .product-detail-page { width:100%; min-height:0; }
@@ -1951,7 +1951,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
     margin-top:calc(18.6640625px - .546875vw);
   }
 }
-@media (min-width:601px) and (max-width:900px) {
+@media (min-width:601px) and (max-width:1199px) {
   .commerce-modal-wishlist:has(.commerce-wishlist--empty) { width:460px; height:121px; }
   .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { width:640px; min-height:2021px; margin:65px auto; }
   .commerce-modal-product .product-detail-page { width:640px; min-height:2021px; padding:55px 0; }
@@ -2005,7 +2005,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .theobroma-loyalty-control .button { width:100%; }
 }
 
-@media (max-width:900px) {
+@media (max-width:1199px) {
   .commerce-modal[data-commerce-type="wishlist"]:not(:has(.commerce-wishlist--empty))::before { content:none; }
   .commerce-modal[data-commerce-type="wishlist"]:not(:has(.commerce-wishlist--empty)) > .commerce-modal-panel { width:100%; height:100%; }
   .commerce-modal-wishlist:not(:has(.commerce-wishlist--empty)) { width:100%; min-height:100dvh; margin:0; padding:0; }
