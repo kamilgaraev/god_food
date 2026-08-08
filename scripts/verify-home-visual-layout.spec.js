@@ -32,12 +32,6 @@ async function box(page, selector) {
   return value;
 }
 
-function intersectionArea(first, second) {
-  const width = Math.max(0, Math.min(first.x + first.width, second.x + second.width) - Math.max(first.x, second.x));
-  const height = Math.max(0, Math.min(first.y + first.height, second.y + second.height) - Math.max(first.y, second.y));
-  return width * height;
-}
-
 async function run() {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
@@ -80,10 +74,16 @@ async function run() {
         }
       }
 
+      if (viewport.width <= 800) {
+        const compactHero = await box(page, '.home-hero');
+        if (compactHero) {
+          assert(compactHero.height >= 540 && compactHero.height <= 600, 'mobile and tablet hero must keep the reference air without an empty 700px canvas');
+        }
+      }
+
       if (viewport.width === 1200) {
         const catalogGrid = await box(page, '.home-product-grid');
         const heroTitle = await box(page, '.home-hero h1');
-        const heroChocolate = await box(page, '.home-hero__chocolate');
         const cacaoHeading = await box(page, '.home-cacao__selector h2');
         const cacaoSection = await box(page, '.home-cacao');
         const cacaoImage = await box(page, '.home-cacao__image-wrap');
@@ -93,6 +93,25 @@ async function run() {
         const feature = await box(page, '.feature');
         const heroLeadCopy = await box(page, '.home-hero__lead > p');
         const heroActions = await box(page, '.home-hero__actions');
+
+        const referenceContent = await page.evaluate(() => ({
+          heroChocolateCount: document.querySelectorAll('.home-hero__chocolate').length,
+          heroChocolatePreloadCount: document.querySelectorAll('link[rel="preload"][href*="hero-chocolate"]').length,
+          heroCopy: document.querySelector('.home-hero__lead > p')?.textContent.trim(),
+          secondCta: document.querySelector('.home-hero__actions a:nth-child(2)')?.textContent.trim(),
+          trust: document.querySelector('.home-hero__trust')?.textContent.replace(/\s+/g, ' ').trim(),
+          cacaoLabels: Array.from(document.querySelectorAll('.home-cacao__tabs button strong'), (node) => node.textContent.trim()),
+          selectedCacao: document.querySelector('.home-cacao__tabs button[aria-selected="true"] strong')?.textContent.trim(),
+        }));
+
+        assert(referenceContent.heroChocolateCount === 0, 'reference hero must not contain a chocolate image');
+        assert(referenceContent.heroChocolatePreloadCount === 0, 'removed hero chocolate must not retain a high-priority preload');
+        assert(referenceContent.heroCopy === 'Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.', 'hero copy must match the reference');
+        assert(referenceContent.secondCta === 'Подарочные наборы', 'secondary hero action must match the reference');
+        assert(referenceContent.trust.includes('ГИ 35') && referenceContent.trust.includes('вместо 70'), 'hero trust block must include the reference glycemic comparison');
+        assert(referenceContent.trust.includes('4,9') && referenceContent.trust.includes('1 200 отзывов'), 'hero trust block must include the reference rating');
+        assert(JSON.stringify(referenceContent.cacaoLabels) === JSON.stringify(['55%', '72%', '85%', '92%', '99%']), 'cacao labels must match the reference scale');
+        assert(referenceContent.selectedCacao === '72%', '72% must be selected by default in the reference scale');
 
         if (catalogGrid) {
           const rightMargin = viewport.width - catalogGrid.x - catalogGrid.width;
@@ -107,9 +126,6 @@ async function run() {
             return { width: rect.width };
           });
           assert(heroTitleGlyphs.width >= viewport.width * .88, '1200px hero title glyphs must span at least 88% of the viewport like the reference');
-        }
-        if (heroTitle && heroChocolate) {
-          assert(intersectionArea(heroTitle, heroChocolate) <= heroTitle.width * heroTitle.height * .03, 'hero chocolate must not obscure the title');
         }
         if (heroLeadCopy && heroActions) {
           const copyCenter = heroLeadCopy.y + heroLeadCopy.height / 2;
@@ -147,6 +163,8 @@ async function run() {
         if (composition && promoGrid && feature) {
           assert(promoGrid.y >= composition.y + composition.height - 2, 'promo cards must start immediately after composition');
           assert(feature.y >= promoGrid.y + promoGrid.height - 2, 'brand feature must not interrupt the reference-visible section sequence');
+          assert(composition.height >= 265 && composition.height <= 285, 'composition section must preserve the 270px reference rhythm');
+          assert(promoGrid.height >= 325 && promoGrid.height <= 345, 'promo section must preserve the reference outer breathing room');
         }
         if (cacaoSection && composition && promoGrid) {
           assert(cacaoSection.height <= 660, '1200px cacao selector must stay compact enough to match the reference crop');

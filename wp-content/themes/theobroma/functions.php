@@ -173,14 +173,6 @@ function theobroma_preload_critical_fonts(): void {
             esc_url($font_base . $font)
         );
     }
-    if (is_front_page()) {
-        $image_base = get_template_directory_uri() . '/assets/images/';
-        printf(
-            '<link rel="preload" href="%1$s" as="image" imagesrcset="%2$s 240w, %1$s 360w" imagesizes="(max-width: 800px) 240px, 360px" fetchpriority="high">' . "\n",
-            esc_url($image_base . 'hero-chocolate-360.webp'),
-            esc_url($image_base . 'hero-chocolate-240.webp')
-        );
-    }
 }
 add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
 

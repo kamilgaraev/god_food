@@ -8,10 +8,24 @@ $cooperation_url = theobroma_page_url('Сотрудничество');
 $homepage_products = theobroma_homepage_products();
 $cacao_groups = theobroma_home_cacao_groups();
 $cacao_profiles = theobroma_cacao_profiles();
+$cacao_scale = array(
+    59 => array('percentage' => 55, 'label' => 'мягкий'),
+    70 => array('percentage' => 72, 'label' => 'классический'),
+    80 => array('percentage' => 85, 'label' => 'глубокий'),
+    68 => array('percentage' => 92, 'label' => 'строгий'),
+    65 => array('percentage' => 99, 'label' => 'чистый'),
+);
+$cacao_options = array();
+foreach ($cacao_scale as $actual_percentage => $display) {
+    if (isset($cacao_groups[$actual_percentage])) {
+        $cacao_options[$actual_percentage] = array_merge($display, array('group' => $cacao_groups[$actual_percentage]));
+    }
+}
 $default_percentage = isset($cacao_groups[70]) ? 70 : (int) (array_key_first($cacao_groups) ?? 0);
 $default_group = $default_percentage > 0 ? $cacao_groups[$default_percentage] : null;
 $default_product = is_array($default_group) ? $default_group['representative'] : null;
 $default_profile = $cacao_profiles[$default_percentage] ?? array('label' => '', 'description' => '');
+$default_display = $cacao_scale[$default_percentage] ?? array('percentage' => $default_percentage, 'label' => $default_profile['label']);
 $default_image_id = $default_product instanceof WC_Product
     ? (int) ($default_product->get_meta('_theobroma_product_detail_image_id', true) ?: $default_product->get_image_id())
     : 0;
@@ -22,24 +36,22 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         <div class="home-hero__shell">
             <p class="home-eyebrow">Абсолютно натуральный</p>
             <h1 id="home-hero-title">ШОКОЛАД</h1>
-            <picture>
-                <source
-                    media="(max-width: 800px)"
-                    srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-240.webp'); ?> 240w, <?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-360.webp'); ?> 360w"
-                    sizes="240px"
-                >
-                <img class="home-hero__chocolate" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-360.webp'); ?>" width="360" height="450" fetchpriority="high" alt="Пористые куски натурального шоколада Theobroma">
-            </picture>
             <div class="home-hero__lead">
-                <p>Необычный кусковой пористый шоколад. Четыре ингредиента. Текстура, которой нет ни у одной плитки в магазине.</p>
+                <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
                 <div class="home-hero__actions">
                     <a class="home-button home-button--primary" href="#cacao-selector">Выберите свой вкус</a>
-                    <a class="home-button home-button--secondary" href="<?php echo esc_url($shop_url); ?>">Перейти в каталог</a>
+                    <a class="home-button home-button--secondary" href="<?php echo esc_url($gift_url); ?>">Подарочные наборы</a>
                 </div>
             </div>
-            <div class="home-hero__trust" aria-label="Гликемический индекс продукта 35">
-                <strong>ГИ 35</strong>
-                <span>гликемический индекс</span>
+            <div class="home-hero__trust" aria-label="Гликемический индекс 35 вместо 70, рейтинг 4,9 по 1 200 отзывам">
+                <div>
+                    <strong>ГИ 35</strong>
+                    <span>вместо 70</span>
+                </div>
+                <div>
+                    <strong>4,9</strong>
+                    <span>1 200 отзывов</span>
+                </div>
             </div>
         </div>
     </section>
@@ -75,11 +87,12 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
             <div class="home-cacao__selector">
                 <p class="home-kicker">Дегустационная шкала — выберите процент</p>
                 <h2 id="home-cacao-title">Ваш процент какао</h2>
-                <p class="home-cacao__intro">От мягких 59% до глубоких 80%. Выберите крепость — покажем вкус и доступные варианты.</p>
-                <?php if ($cacao_groups) : ?>
+                <p class="home-cacao__intro">От мягких 55% до чистых 99%. Выберите крепость — покажем вкус, сахар и повод.</p>
+                <?php if ($cacao_options) : ?>
                     <div class="home-cacao__tabs" role="tablist" aria-label="Процент какао">
-                        <?php foreach ($cacao_groups as $percentage => $group) : ?>
+                        <?php foreach ($cacao_options as $percentage => $option) : ?>
                             <?php
+                            $group = $option['group'];
                             $product = $group['representative'];
                             $profile = $cacao_profiles[$percentage] ?? array('label' => '', 'description' => '');
                             $image_id = (int) ($product->get_meta('_theobroma_product_detail_image_id', true) ?: $product->get_image_id());
@@ -95,14 +108,14 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                                 tabindex="<?php echo $selected ? '0' : '-1'; ?>"
                                 data-cacao-option="<?php echo esc_attr((string) $percentage); ?>"
                                 data-percent="<?php echo esc_attr((string) $percentage); ?>"
-                                data-title="<?php echo esc_attr(mb_convert_case($profile['label'], MB_CASE_TITLE, 'UTF-8') . ' ' . $percentage . '%'); ?>"
+                                data-title="<?php echo esc_attr(mb_convert_case($option['label'], MB_CASE_TITLE, 'UTF-8') . ' ' . $option['percentage'] . '%'); ?>"
                                 data-description="<?php echo esc_attr($profile['description']); ?>"
                                 data-fact="<?php echo esc_attr(wp_strip_all_tags($product->get_short_description())); ?>"
                                 data-price="<?php echo esc_attr('от ' . wp_strip_all_tags(wc_price($group['minimum_price']))); ?>"
                                 data-url="<?php echo esc_url(theobroma_cacao_catalog_url($percentage)); ?>"
                                 data-image="<?php echo esc_url($image_url); ?>"
                                 data-image-alt="<?php echo esc_attr($product->get_name()); ?>"
-                            ><strong><?php echo esc_html((string) $percentage); ?>%</strong><span><?php echo esc_html($profile['label']); ?></span></button>
+                            ><strong><?php echo esc_html((string) $option['percentage']); ?>%</strong><span><?php echo esc_html($option['label']); ?></span></button>
                         <?php endforeach; ?>
                     </div>
                 <?php else : ?>
@@ -116,7 +129,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                         <img src="<?php echo esc_url($default_image_url); ?>" alt="<?php echo esc_attr($default_product->get_name()); ?>" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="home-cacao__copy">
-                        <h3 data-cacao-title><?php echo esc_html(mb_convert_case($default_profile['label'], MB_CASE_TITLE, 'UTF-8') . ' ' . $default_percentage . '%'); ?></h3>
+                        <h3 data-cacao-title><?php echo esc_html(mb_convert_case($default_display['label'], MB_CASE_TITLE, 'UTF-8') . ' ' . $default_display['percentage'] . '%'); ?></h3>
                         <p class="home-cacao__description" data-cacao-description><?php echo esc_html($default_profile['description']); ?></p>
                         <p class="home-cacao__fact" data-cacao-fact><?php echo esc_html(wp_strip_all_tags($default_product->get_short_description())); ?></p>
                         <div class="home-cacao__buy">
@@ -127,8 +140,8 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                 </div>
                 <noscript>
                     <ul class="home-cacao__noscript">
-                        <?php foreach ($cacao_groups as $percentage => $group) : ?>
-                            <li><a href="<?php echo esc_url(theobroma_cacao_catalog_url($percentage)); ?>"><?php echo esc_html($percentage . '% — ' . ($cacao_profiles[$percentage]['label'] ?? 'шоколад')); ?></a></li>
+                        <?php foreach ($cacao_options as $percentage => $option) : ?>
+                            <li><a href="<?php echo esc_url(theobroma_cacao_catalog_url($percentage)); ?>"><?php echo esc_html($option['percentage'] . '% — ' . $option['label']); ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </noscript>
