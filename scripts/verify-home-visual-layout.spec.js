@@ -82,6 +82,75 @@ async function run() {
         }
       }
 
+      if (viewport.width === 390) {
+        const heroTitleBounds = await page.locator('.home-hero h1').evaluate((title) => {
+          const range = document.createRange();
+          range.selectNodeContents(title);
+          const rect = range.getBoundingClientRect();
+
+          return { left: rect.left, right: rect.right };
+        });
+
+        assert(heroTitleBounds.left >= 0, 'mobile hero title glyphs must not be clipped on the left');
+        assert(heroTitleBounds.right <= viewport.width, 'mobile hero title glyphs must not be clipped on the right');
+      }
+
+      await page.locator('.home-cacao').scrollIntoViewIfNeeded();
+      await page.waitForTimeout(100);
+
+      const stickyNav = await box(page, '.nav');
+
+      if (stickyNav) {
+        assert(stickyNav.width <= viewport.width, `${viewport.width}px sticky header must fit the viewport`);
+        assert(stickyNav.height <= 80, `${viewport.width}px sticky header must remain compact after scroll`);
+      }
+
+      if (viewport.width <= 800) {
+        const mobileHeaderCenters = await page.evaluate(() => {
+          const centerY = (selector) => {
+            const rect = document.querySelector(selector)?.getBoundingClientRect();
+            return rect ? rect.top + rect.height / 2 : null;
+          };
+
+          return {
+            brand: centerY('.nav .brand'),
+            cart: centerY('.nav .header-cart'),
+            menu: centerY('.nav .menu-toggle'),
+          };
+        });
+
+        const centers = Object.values(mobileHeaderCenters);
+        assert(centers.every(Number.isFinite), `${viewport.width}px mobile header controls must be present`);
+        assert(Math.max(...centers) - Math.min(...centers) <= 8, `${viewport.width}px mobile header controls must stay on one row after scroll`);
+      }
+
+      const headerActionMetrics = await page.evaluate(() => {
+        const metric = (selector) => {
+          const element = document.querySelector(selector);
+          const rect = element?.getBoundingClientRect();
+          const style = element ? getComputedStyle(element) : null;
+
+          return rect && style ? {
+            width: rect.width,
+            height: rect.height,
+            background: style.backgroundColor,
+          } : null;
+        };
+
+        return {
+          account: metric('.header-account'),
+          cart: metric('.header-cart'),
+        };
+      });
+
+      if (viewport.width > 800) {
+        assert(headerActionMetrics.account?.width >= 40, `${viewport.width}px account control must remain a visible 40px target`);
+        assert(headerActionMetrics.account?.height >= 40, `${viewport.width}px account control must remain a visible 40px target`);
+      }
+
+      assert(headerActionMetrics.cart?.height >= 36, `${viewport.width}px cart control must remain a visible tap target`);
+      assert(headerActionMetrics.cart?.background !== 'rgba(0, 0, 0, 0)', `${viewport.width}px cart control must retain its filled treatment`);
+
       if (viewport.width === 2295) {
         const wideGrid = await box(page, '.home-product-grid');
         const wideCard = await box(page, '.home-product-grid .home-product-card');
