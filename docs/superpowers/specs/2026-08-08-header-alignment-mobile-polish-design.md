@@ -29,7 +29,7 @@ Preserve the current light Theobroma header and homepage aesthetic while removin
 
 - Replace the large empty middle area with a deliberate vertical sequence: eyebrow, title, trust metrics, flexible breathing room, product copy, CTAs.
 - The mobile hero shell becomes a grid rather than relying on absolute top/bottom offsets.
-- Target hero height is 460–500 px, depending on viewport height, with both CTAs visible without scrolling at 390 × 844 and 440 × 956.
+- Target hero height is 420–450 px, depending on viewport height, with both CTAs visible without scrolling at 390 × 844 and 440 × 956. This tighter range was selected after visual QA showed that 460–500 px still left an overly large gap between trust and product copy.
 - Preserve all current copy, colors, typography, buttons, and trust values. No decorative image is reintroduced.
 - The benefit strip follows immediately after the hero without a visually dead gap.
 

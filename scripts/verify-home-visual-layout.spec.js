@@ -84,7 +84,7 @@ async function run() {
         const heroActions = await box(page, '.home-hero__actions');
         const benefitStrip = await box(page, '.home-benefit-strip');
         if (compactHero) {
-          assert(compactHero.height >= 460 && compactHero.height <= 500, 'mobile and tablet hero must avoid an empty middle canvas');
+          assert(compactHero.height >= 420 && compactHero.height <= 450, 'mobile and tablet hero must keep the trust and product copy visually connected');
         }
         if (heroTitle && heroTrust) {
           assert(heroTrust.y >= heroTitle.y + heroTitle.height - 1, 'mobile trust metrics must follow the title');

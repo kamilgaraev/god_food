@@ -34,7 +34,7 @@ Extend desktop viewports to `[1101, 1200, 1440, 2295]`; measure centers for the 
 
 - [ ] **Step 2: Write failing mobile hero assertions**
 
-In `verify-home-visual-layout.spec.js`, replace the old 540–600 px mobile hero contract with 460–500 px. Assert both hero CTAs are within the viewport at 390 × 844 and 440 × 956, trust is below the title, lead is below trust, and the benefit strip begins within 2 px of the hero bottom.
+In `verify-home-visual-layout.spec.js`, replace the old 540–600 px mobile hero contract with 420–450 px. Assert both hero CTAs are within the viewport at 390 × 844 and 440 × 956, trust is below the title, lead is below trust, and the benefit strip begins within 2 px of the hero bottom.
 
 - [ ] **Step 3: Run tests and verify the expected failure**
 
@@ -91,11 +91,11 @@ git commit -m "fix: align responsive header controls"
 
 **Interfaces:**
 - Consumes: existing hero DOM and content.
-- Produces: mobile grid order `eyebrow → title → trust → flexible space → lead` with a 460–500 px hero.
+- Produces: mobile grid order `eyebrow → title → trust → flexible space → lead` with a 420–450 px hero.
 
 - [ ] **Step 1: Replace mobile absolute offsets with grid placement**
 
-At `max-width: 800px`, set `.home-hero__shell` to a five-row grid and target `height: clamp(460px, 58svh, 500px)`. Reset `.home-hero__trust` and `.home-hero__lead` to static positioning, assign their grid rows, and keep trust right-aligned and lead bottom-aligned. Preserve the current two-column CTA layout and exact copy.
+At `max-width: 800px`, set `.home-hero__shell` to a five-row grid and target `height: clamp(420px, 48svh, 450px)`. Reset `.home-hero__trust` and `.home-hero__lead` to static positioning, assign their grid rows, and keep trust right-aligned and lead bottom-aligned. Preserve the current two-column CTA layout and exact copy.
 
 - [ ] **Step 2: Add the narrow-width adjustment**
 
