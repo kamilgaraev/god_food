@@ -113,8 +113,8 @@
 - `node scripts/audit-accessibility.js` — 104/104 PASS.
 - PHP syntax — PASS для восьми PHP-файлов redesign; homepage data contract — PASS.
 - Core Web Vitals home:
-  - desktop: LCP 1028 ms, CLS 0.01, INP 0 ms, TTFB 467.9 ms;
-  - mobile fast 4G: LCP 2184 ms, CLS 0, INP 104 ms, TTFB 341.1 ms.
+  - desktop: LCP 680 ms, CLS 0, INP 0 ms, TTFB 318.9 ms;
+  - mobile fast 4G: LCP 1924 ms, CLS 0, INP 64 ms, TTFB 260.9 ms.
 
 ## Findings
 
