@@ -18,9 +18,17 @@ async function loadHomepage(browser, viewport) {
 
 async function box(page, selector) {
   const element = page.locator(selector);
-  assert(await element.count(), `${selector} is missing`);
+  if (!await element.count()) {
+    failures.push(`${selector} is missing`);
+    return null;
+  }
+
   const value = await element.first().boundingBox();
-  assert(value, `${selector} must have a layout box`);
+  if (!value) {
+    failures.push(`${selector} must have a layout box`);
+    return null;
+  }
+
   return value;
 }
 
@@ -28,30 +36,53 @@ async function run() {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
-    const desktop = await loadHomepage(browser, { width: 1440, height: 900 });
-    const hero = await box(desktop, '.home-hero');
-    const benefitStrip = await box(desktop, '.home-benefit-strip');
-    const catalog = await box(desktop, '.home-catalog');
+    for (const viewport of [
+      { width: 2295, height: 1119 },
+      { width: 1440, height: 900 },
+      { width: 1200, height: 1222 },
+      { width: 768, height: 1024 },
+      { width: 390, height: 844 },
+    ]) {
+      const page = await loadHomepage(browser, viewport);
+      const { documentWidth, viewportWidth } = await page.evaluate(() => ({
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: document.documentElement.clientWidth,
+      }));
 
-    assert(hero.height >= 400 && hero.height <= 500, 'desktop hero must stay within 400–500px');
-    assert(catalog.y <= 570, 'catalog must enter the first 570px of the page');
-    await desktop.close();
+      assert(documentWidth === viewportWidth, 'document must not overflow horizontally');
 
-    const ultrawide = await loadHomepage(browser, { width: 2295, height: 1119 });
-    const wideGrid = await box(ultrawide, '.home-product-grid');
-    const wideCard = await box(ultrawide, '.home-product-grid .home-product-card');
-    const cacao = await box(ultrawide, '.home-cacao');
-    const cacaoCircle = await box(ultrawide, '.home-cacao__image-wrap');
-    const { documentWidth, viewportWidth } = await ultrawide.evaluate(() => ({
-      documentWidth: document.documentElement.scrollWidth,
-      viewportWidth: document.documentElement.clientWidth,
-    }));
+      if (viewport.width === 1440) {
+        const hero = await box(page, '.home-hero');
+        await box(page, '.home-benefit-strip');
+        const catalog = await box(page, '.home-catalog');
 
-    assert(wideCard.width <= 340, 'ultrawide product cards must not exceed 340px');
-    assert(wideGrid.width <= 1440, 'catalog grid must be capped at 1440px');
-    assert(cacaoCircle.width <= 440, 'desktop cacao image circle must be capped at 440px');
-    assert(documentWidth === viewportWidth, 'document must not overflow horizontally');
-    await ultrawide.close();
+        if (hero) {
+          assert(hero.height >= 400 && hero.height <= 500, 'desktop hero must stay within 400–500px');
+        }
+        if (catalog) {
+          assert(catalog.y <= 570, 'catalog must enter the first 570px of the page');
+        }
+      }
+
+      if (viewport.width === 2295) {
+        const wideGrid = await box(page, '.home-product-grid');
+        const wideCard = await box(page, '.home-product-grid .home-product-card');
+        await box(page, '.home-cacao');
+        const cacaoCircle = await box(page, '.home-cacao__image-wrap');
+
+        if (wideCard) {
+          assert(wideCard.width <= 340, 'ultrawide product cards must not exceed 340px');
+        }
+        if (wideGrid) {
+          assert(wideGrid.width <= 1440, 'catalog grid must be capped at 1440px');
+        }
+        if (cacaoCircle) {
+          assert(cacaoCircle.width <= 440, 'desktop cacao image circle must be capped at 440px');
+        }
+      }
+
+      await page.close();
+    }
 
     if (failures.length) {
       throw new Error(failures.join('\n'));
