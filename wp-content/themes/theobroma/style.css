@@ -1730,6 +1730,14 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .floating-actions { top:min(calc(2.5vw + 22.8px),74px); }
 }
 
+/* Keep compact desktop navigation clear of the centered logo. */
+@media (min-width:1200px) and (max-width:1319px) {
+  .nav-links:first-child { transform:translate(0,-9.5px); }
+  .nav-links:last-of-type { transform:translate(0,-8.5px); }
+  .nav-sticky .nav-links:first-child { transform:translate(0,-7px); }
+  .nav-sticky .nav-links:last-of-type { transform:translate(0,-6px); }
+}
+
 .commerce-modal-cart { width:560px; margin:65px auto 60px; padding:40px; background:#fff; color:#343434; }
 .commerce-modal-wishlist { width:560px; margin:65px auto 60px; padding:40px; background:#fff; color:#343434; }
 .commerce-wishlist header { min-height:44px; padding-bottom:24px; display:flex; justify-content:space-between; align-items:start; border-bottom:1px solid #ddd; }

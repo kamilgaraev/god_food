@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
 const cssFile = process.env.THEOBROMA_CSS_FILE || '';
 const widths = [1440, 1920, 2048, 2560, 3840];
+const compactDesktopWidths = [1200, 1221, 1280, 1319, 1320];
 
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
@@ -46,6 +47,31 @@ const widths = [1440, 1920, 2048, 2560, 3840];
       assert.ok(metrics.floatingTop <= 74.1, `${width}px: floating actions begin at ${metrics.floatingTop}px`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${width}px: horizontal overflow detected`);
 
+      await page.close();
+    }
+
+    for (const width of compactDesktopWidths) {
+      const page = await browser.newPage({ viewport: { width, height: 1000 } });
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+      await page.locator('.site-header').waitFor({ state: 'attached' });
+      await page.evaluate(() => document.fonts.ready);
+      if (cssFile) {
+        await page.addStyleTag({ content: fs.readFileSync(cssFile, 'utf8') });
+      }
+
+      const gaps = await page.evaluate(() => {
+        const groups = document.querySelectorAll('.nav-links');
+        const leftAnchor = groups[0].querySelector('a:last-child').getBoundingClientRect();
+        const brand = document.querySelector('.brand').getBoundingClientRect();
+        const rightAnchor = groups[1].querySelector('a:first-child').getBoundingClientRect();
+        return {
+          left: brand.left - leftAnchor.right,
+          right: rightAnchor.left - brand.right,
+        };
+      });
+
+      assert.ok(gaps.left >= 8, `${width}px: left navigation overlaps logo (${gaps.left}px gap)`);
+      assert.ok(gaps.right >= 8, `${width}px: right navigation overlaps logo (${gaps.right}px gap)`);
       await page.close();
     }
 
