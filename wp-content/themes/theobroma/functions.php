@@ -63,6 +63,16 @@ function theobroma_assets(): void {
         array('strategy' => 'defer', 'in_footer' => true)
     );
 
+    if (is_page('buy')) {
+        wp_enqueue_script(
+            'theobroma-buy-tabs',
+            get_template_directory_uri() . '/assets/js/buy-tabs.js',
+            array(),
+            (string) filemtime($theme_dir . '/assets/js/buy-tabs.js'),
+            array('strategy' => 'defer', 'in_footer' => true)
+        );
+    }
+
     if (class_exists('WooCommerce')) {
         foreach (array('wc-add-to-cart', 'wc-country-select', 'wc-address-i18n', 'wc-checkout') as $handle) {
             wp_enqueue_script($handle);

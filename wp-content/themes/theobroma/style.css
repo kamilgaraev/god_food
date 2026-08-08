@@ -468,13 +468,23 @@ body.account-modal-open { overflow:hidden; }
 .buy-intro > h1 em { color:#b0903d; font-weight:500; }
 .buy-lead { margin:20px 0 0; text-align:center; color:#343434; font:400 18px/23px 'Montserrat',Arial,sans-serif; }
 .buy-tabs { width:500px; height:58px; margin:29px auto 0; display:grid; grid-template-columns:repeat(3,1fr); align-items:start; border-bottom:1px solid #e0cfb8; }
-.buy-tabs a { height:58px; padding-top:21px; text-align:center; color:#000; font:400 14px/22px 'Montserrat',Arial,sans-serif; text-decoration:none; }
-.buy-tabs a.is-active { border-bottom:1px solid #b0903d; }
+.buy-tabs button { height:58px; padding:21px 0 0; border:0; border-bottom:1px solid transparent; color:#000; background:transparent; text-align:center; font:400 14px/22px 'Montserrat',Arial,sans-serif; cursor:pointer; }
+.buy-tabs button[aria-selected="true"] { border-bottom-color:#b0903d; }
+.buy-tabs button:focus-visible { outline:2px solid #b0903d; outline-offset:2px; }
+.buy-panel[hidden] { display:none; }
 .buy-location { width:560px; height:350px; margin:50px 0 0 calc(50vw - 580px); padding:20px; position:relative; background:#f3ebe4; }
 .buy-location img { width:520px; height:240px; object-fit:cover; object-position:50% 85.168%; transform:translateX(-1px); }
 .buy-location h2 { margin:10px 0 0; color:#000; font:500 26px/30px 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
 .buy-location p { margin:12px 0 0; color:#343434; font:400 14px/18px 'Montserrat',Arial,sans-serif; }
 .buy-location .button { position:absolute; right:20px; bottom:32px; width:200px; min-height:36px; height:36px; margin:0; font:500 14px/21.7px 'Montserrat',Arial,sans-serif; }
+.buy-partner-grid { width:1160px; margin:50px auto 0; display:grid; gap:20px; justify-content:center; }
+.buy-marketplace-grid { grid-template-columns:repeat(2,206px); }
+.buy-russia-grid { grid-template-columns:repeat(6,175px); }
+.buy-partner-card { height:142px; padding:24px 12px 12px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; color:#343434; background:#f3ebe4; text-align:center; }
+.buy-partner-card strong { margin:auto 0; font:600 20px/1.1 'Montserrat',Arial,sans-serif; }
+.buy-partner-card span { color:rgba(52,52,52,.55); font:400 12px/18px 'Montserrat',Arial,sans-serif; }
+.buy-partner-ozon strong { color:#0565ff; font-size:28px; }
+.buy-partner-wb strong { color:#c51b8a; font-size:17px; }
 .buy-decor { position:absolute; z-index:2; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }
 .buy-decor-left { top:120px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-buy-left.webp'); }
 .buy-decor-right { top:659px; right:0; width:250px; height:329.15625px; background-image:url('assets/images/botanical-page-right.webp'); }
@@ -996,12 +1006,16 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-intro > h1 { width:350px; margin:20px auto 0; font-size:36.562px; line-height:36.562px; }
   .buy-lead { width:350px; margin:14px auto 0; font-size:14px; line-height:19px; }
   .buy-tabs { width:350px; height:auto; margin-top:25px; }
-  .buy-tabs a { height:50px; padding-top:16px; font-size:13px; }
+  .buy-tabs button { height:50px; padding-top:16px; font-size:13px; }
   .buy-location { width:368px; height:auto; min-height:360px; margin:35px auto 0; padding:14px; }
   .buy-location img { width:100%; height:auto; aspect-ratio:520/240; transform:none; }
   .buy-location h2 { font-size:23px; line-height:27px; }
   .buy-location p { width:190px; font-size:12px; line-height:17px; }
   .buy-location .button { right:14px; bottom:22px; width:150px; }
+  .buy-partner-grid { width:368px; margin-top:35px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .buy-partner-card { height:125px; padding:18px 8px 10px; }
+  .buy-russia-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .buy-intro:has(#bulletcities3:not([hidden])) { min-height:1300px; }
 
   .cooperation-page { height:auto; min-height:0; padding:105px 0 90px; overflow:hidden; display:flex; flex-direction:column; }
   .cooperation-breadcrumb,.cooperation-page > h1,.cooperation-lead,.cooperation-chocolate,.cooperation-form,.cooperation-benefits { position:relative; top:auto; left:auto; width:368px; margin-left:auto; margin-right:auto; }
@@ -1235,10 +1249,10 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-intro > h1 { width:382.765625px; transform:translateY(2.90625px); }
   .buy-lead { width:294.984375px; font-size:14.625px; line-height:19.5px; transform:translateY(1.109375px); }
   .buy-tabs { width:353.5px; transform:translateY(-3.84375px); }
-  .buy-tabs a { font-size:13.40625px; line-height:20.71875px; }
-  .buy-tabs a:nth-child(1) { transform:translateX(.03125px); }
-  .buy-tabs a:nth-child(2) { transform:translateX(.046875px); }
-  .buy-tabs a:nth-child(3) { transform:translateX(-.203125px); }
+  .buy-tabs button { font-size:13.40625px; line-height:20.71875px; }
+  .buy-tabs button:nth-child(1) { transform:translateX(.03125px); }
+  .buy-tabs button:nth-child(2) { transform:translateX(.046875px); }
+  .buy-tabs button:nth-child(3) { transform:translateX(-.203125px); }
   .buy-decor-left { top:217px; width:103px; height:135px; }
   .buy-intro { padding-bottom:72px; }
   .buy-location { left:.03125px; width:353.5px; height:349.84375px; min-height:349.84375px; margin-top:31.859375px; padding:24.375px; }
@@ -1247,6 +1261,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-location p { width:174.15625px; margin-top:8.546875px; font-size:14.625px; line-height:19.5px; }
   .buy-location .button { right:auto; left:24.375px; bottom:24.375px; width:213.3125px; min-height:43.875px; height:43.875px; }
   .buy-intro { width:390px; height:813.359375px; margin-inline:auto; }
+  .buy-intro:has(#bulletcities3:not([hidden])) { height:1450px; }
 
   .media-page { padding-top:121px; }
   .media-page::before { top:69px; width:107px; height:144.217391px; }
