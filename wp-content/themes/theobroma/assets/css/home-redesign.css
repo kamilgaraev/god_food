@@ -69,7 +69,8 @@ body { overflow-x: clip; background: var(--home-paper); }
   background: transparent;
 }
 .floating-actions a:hover { background: transparent; }
-.floating-actions .header-icon { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+.floating-actions .header-icon,
+.floating-actions a:nth-child(n).header-icon { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
 .floating-actions .header-account,
 .floating-actions a:nth-child(n).header-account { width: 42px; height: 42px; border: 1px solid var(--home-line); border-radius: 50%; transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease; }
 .floating-actions .header-cart,
@@ -229,8 +230,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   }
   .nav .brand { width: 140px; height: 60px; justify-self: start; }
   .nav .brand img { width: 140px; height: 60px; }
-  .nav-links-study,
-  .header-where { display: none !important; }
+  .nav-links-study { display: none !important; }
   .nav-links-transactional,
   .floating-actions { position: static; display: flex; justify-self: end; gap: 10px; }
   .floating-actions .header-account,

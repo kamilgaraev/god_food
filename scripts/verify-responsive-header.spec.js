@@ -65,6 +65,7 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
         const display = (selector) => getComputedStyle(document.querySelector(selector)).display;
         const brand = rect('.brand');
         const account = rect('.header-account');
+        const accountIcon = rect('.header-account img');
         const cart = rect('.header-cart');
         const menu = rect('.menu-toggle');
         const heroActions = rect('.home-hero__actions');
@@ -74,6 +75,10 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
         return {
           studyDisplay: display('.nav-links-study'),
           whereDisplay: display('.header-where'),
+          accountIconCenterDrift: Math.max(
+            Math.abs((accountIcon.left + accountIcon.width / 2) - (account.left + account.width / 2)),
+            Math.abs((accountIcon.top + accountIcon.height / 2) - (account.top + account.height / 2)),
+          ),
           accountVisible: account.width > 0,
           cartVisible: cart.width > 0,
           menuVisible: menu.width > 0,
@@ -86,8 +91,9 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
       });
 
       assert.equal(metrics.studyDisplay, 'none', `${width}px: dense desktop navigation must collapse at the tablet breakpoint`);
-      assert.equal(metrics.whereDisplay, 'none', `${width}px: where-to-buy must move into the tablet menu`);
+      assert.notEqual(metrics.whereDisplay, 'none', `${width}px: where-to-buy must remain visible in the tablet header`);
       assert.equal(metrics.accountVisible, true, `${width}px: account icon must remain visible in the tablet header`);
+      assert.ok(metrics.accountIconCenterDrift <= 1, `${width}px: account glyph is not centered inside its circular control`);
       assert.equal(metrics.cartVisible, true, `${width}px: cart must remain visible in the tablet header`);
       assert.equal(metrics.menuVisible, true, `${width}px: tablet menu trigger is missing`);
       assert.ok(metrics.maxAxisDrift <= 2, `${width}px: tablet header controls do not share one vertical axis`);
