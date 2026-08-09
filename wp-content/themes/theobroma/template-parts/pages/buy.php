@@ -24,30 +24,30 @@
 
             <section class="buy-panel" id="bulletcities2" role="tabpanel" aria-labelledby="buy-tab-2" hidden>
                 <div class="buy-partner-grid buy-marketplace-grid">
-                    <a class="buy-partner-card buy-partner-ozon" href="https://www.ozon.ru/brand/theobroma-100844204/" target="_blank" rel="noopener"><strong>OZON</strong><span>· Москва ·</span></a>
-                    <a class="buy-partner-card buy-partner-wb" href="https://www.wildberries.ru/brands/theobroma" target="_blank" rel="noopener"><strong>WILDBERRIES</strong><span>· Москва ·</span></a>
+                    <a class="buy-partner-card" href="https://www.ozon.ru/seller/theobroma-pishcha-bogov/produkty-pitaniya-9200/?miniapp=seller_60476" target="_blank" rel="noopener"><img class="buy-partner-logo" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/partners/ozon.png'); ?>" width="160" height="80" alt="Ozon"><span>· Москва ·</span></a>
+                    <a class="buy-partner-card" href="https://www.wildberries.ru/seller/260547" target="_blank" rel="noopener"><img class="buy-partner-logo" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/partners/wildberries.png'); ?>" width="160" height="80" alt="Wildberries"><span>· Москва ·</span></a>
                 </div>
             </section>
 
             <section class="buy-panel" id="bulletcities3" role="tabpanel" aria-labelledby="buy-tab-3" hidden>
                 <?php
                 $partners = array(
-                    array('ASHANTI', 'Москва'),
-                    array('ДЖАГАННАТ', 'Москва'),
-                    array('БЕЛЫЕ ОБЛАКА', 'Москва'),
-                    array('ВИДЖАЙ', 'Москва'),
-                    array('GREEN Cardamon', 'Москва'),
-                    array('SATTVA', 'Москва'),
-                    array('Деликатеска', 'Москва'),
-                    array('Naturalista', 'Самара'),
-                    array('Укроп', 'Челябинск'),
-                    array('КУНЖУТ', 'Челябинск'),
-                    array('Мишкин гостинец', 'Нижний Тагил'),
+                    array('ashanti.png', 'Ashanti', 'Москва'),
+                    array('jagannath.png', 'Джаганнат', 'Москва'),
+                    array('white-clouds.png', 'Белые облака', 'Москва'),
+                    array('vidzhai.png', 'Виджай', 'Москва'),
+                    array('green-cardamon.png', 'Green Cardamon', 'Москва'),
+                    array('sattva.png', 'Sattva', 'Москва'),
+                    array('delikateska.png', 'Деликатеска', 'Москва'),
+                    array('naturalista.png', 'Naturalista', 'Самара'),
+                    array('ukrop.png', 'Укроп', 'Челябинск'),
+                    array('kunzhut.png', 'Кунжут', 'Челябинск'),
+                    array('mishkin-gostinets.png', 'Мишкин гостинец', 'Нижний Тагил'),
                 );
                 ?>
                 <div class="buy-partner-grid buy-russia-grid">
                     <?php foreach ($partners as $partner) : ?>
-                        <article class="buy-partner-card"><strong><?php echo esc_html($partner[0]); ?></strong><span>· <?php echo esc_html($partner[1]); ?> ·</span></article>
+                        <article class="buy-partner-card"><img class="buy-partner-logo" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/partners/' . $partner[0]); ?>" width="160" height="80" loading="lazy" decoding="async" alt="<?php echo esc_attr($partner[1]); ?>"><span>· <?php echo esc_html($partner[2]); ?> ·</span></article>
                     <?php endforeach; ?>
                 </div>
             </section>

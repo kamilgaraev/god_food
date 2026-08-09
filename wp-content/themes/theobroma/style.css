@@ -60,12 +60,19 @@ img { display:block; max-width:100%; }
 @media (prefers-reduced-motion:reduce) {
   .source-text-reveal > span,.source-text-reveal > i { opacity:1 !important; transform:none !important; animation:none !important; }
   .about-award { animation:none !important; }
+  .nav-sticky .nav { animation:none !important; }
 }
-.nav-sticky .nav { position:fixed; top:0; left:0; width:100%; min-height:107px; transform:none; padding-inline:max(75px,calc((100vw - 1280px)/2)); background:#f3ebe4; }
+@keyframes theobroma-sticky-nav-in {
+  from { translate:0 -105%; opacity:.35; }
+  to { translate:0 0; opacity:1; }
+}
+.nav-sticky .nav { position:fixed; top:0; left:0; width:100%; min-height:107px; transform:none; padding-inline:max(75px,calc((100vw - 1280px)/2)); background:#f3ebe4; animation:theobroma-sticky-nav-in 480ms cubic-bezier(.22,.61,.36,1) both; }
 .nav-sticky .nav-links:first-child { transform:translate(60px,-7px); }
 .nav-sticky .nav-links:last-of-type { transform:translate(-60px,-6px); }
 .nav-sticky .brand { transform:translateY(.672px); }
 .nav-sticky .floating-actions { top:110px; }
+.nav-links,.brand { transition:transform 480ms cubic-bezier(.22,.61,.36,1); }
+.floating-actions { transition:top 480ms cubic-bezier(.22,.61,.36,1); }
 .floating-actions { position:fixed; z-index:30; top:74px; right:0; display:grid; gap:6px; }.floating-actions a { width:87px; height:50px; padding-left:15px; display:flex; align-items:center; justify-content:flex-start; gap:9px; color:white; background:var(--gold); font:400 14px/14px 'Montserrat',Arial,sans-serif; }.floating-actions a:hover { background:#99741e; }
 .floating-actions img { width:26px; height:22px; object-fit:contain; }.floating-actions a:last-child { padding-left:17px; gap:10px; }.floating-actions a:last-child img { width:22px; }.floating-actions a:last-child span { position:relative; top:2px; }
 .hero { min-height:650px; overflow:hidden; position:relative; background:#fff; }
@@ -479,12 +486,12 @@ body.account-modal-open { overflow:hidden; }
 .buy-location .button { position:absolute; right:20px; bottom:32px; width:200px; min-height:36px; height:36px; margin:0; font:500 14px/21.7px 'Montserrat',Arial,sans-serif; }
 .buy-partner-grid { width:1160px; margin:50px auto 0; display:grid; gap:20px; justify-content:center; }
 .buy-marketplace-grid { grid-template-columns:repeat(2,206px); }
-.buy-russia-grid { grid-template-columns:repeat(6,175px); }
+.buy-russia-grid { display:flex; flex-wrap:wrap; }
+.buy-russia-grid .buy-partner-card { flex:0 0 206px; }
+.buy-russia-grid .buy-partner-card:nth-child(n+6) { flex-basis:176.666667px; }
 .buy-partner-card { height:142px; padding:24px 12px 12px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; color:#343434; background:#f3ebe4; text-align:center; }
-.buy-partner-card strong { margin:auto 0; font:600 20px/1.1 'Montserrat',Arial,sans-serif; }
+.buy-partner-logo { width:160px; max-width:100%; height:80px; margin:auto 0; object-fit:contain; }
 .buy-partner-card span { color:rgba(52,52,52,.55); font:400 12px/18px 'Montserrat',Arial,sans-serif; }
-.buy-partner-ozon strong { color:#0565ff; font-size:28px; }
-.buy-partner-wb strong { color:#c51b8a; font-size:17px; }
 .buy-decor { position:absolute; z-index:2; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }
 .buy-decor-left { top:120px; left:0; width:211px; height:284.390625px; background-image:url('assets/images/botanical-buy-left.webp'); }
 .buy-decor-right { top:659px; right:0; width:250px; height:329.15625px; background-image:url('assets/images/botanical-page-right.webp'); }
@@ -1014,7 +1021,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-location .button { right:14px; bottom:22px; width:150px; }
   .buy-partner-grid { width:368px; margin-top:35px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
   .buy-partner-card { height:125px; padding:18px 8px 10px; }
-  .buy-russia-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .buy-russia-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
   .buy-intro:has(#bulletcities3:not([hidden])) { min-height:1300px; }
 
   .cooperation-page { height:auto; min-height:0; padding:105px 0 90px; overflow:hidden; display:flex; flex-direction:column; }

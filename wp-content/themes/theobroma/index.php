@@ -168,8 +168,8 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         <article class="home-promo-card home-promo-card--where">
             <h2>Где купить</h2>
             <nav aria-label="Маркетплейсы Theobroma">
-                <a href="https://www.ozon.ru/brand/theobroma-100844204/" target="_blank" rel="noopener">Ozon</a>
-                <a href="https://www.wildberries.ru/brands/theobroma" target="_blank" rel="noopener">Wildberries</a>
+                <a href="https://www.ozon.ru/seller/theobroma-pishcha-bogov/produkty-pitaniya-9200/?miniapp=seller_60476" target="_blank" rel="noopener">Ozon</a>
+                <a href="https://www.wildberries.ru/seller/260547" target="_blank" rel="noopener">Wildberries</a>
                 <a href="<?php echo esc_url($where_url); ?>">Яндекс Маркет</a>
                 <a href="<?php echo esc_url($where_url); ?>">ВкусВилл</a>
             </nav>

@@ -9,7 +9,7 @@
             <article class="market-product"><span class="market-image market-cinnamon"></span><h2>65% горький шоколад (100г)</h2><p>На кокосовом сахаре с корицей</p><strong>670р</strong></article>
             <article class="market-product"><span class="market-image market-milk"></span><h2>Молочный шоколад (30г)</h2><p>На козьем молоке</p><strong>300р</strong></article>
         </div>
-        <div class="market-buttons"><a class="market-wb" href="https://www.wildberries.ru/brands/theobroma" target="_blank" rel="noopener">Купить на Wildberries</a><a class="market-ozon" href="https://www.ozon.ru/brand/theobroma-100844204/" target="_blank" rel="noopener">Купить на Ozon</a></div>
+        <div class="market-buttons"><a class="market-wb" href="https://www.wildberries.ru/seller/260547" target="_blank" rel="noopener">Купить на Wildberries</a><a class="market-ozon" href="https://www.ozon.ru/seller/theobroma-pishcha-bogov/produkty-pitaniya-9200/?miniapp=seller_60476" target="_blank" rel="noopener">Купить на Ozon</a></div>
     </section>
     <?php get_template_part('template-parts/contact-section'); ?>
 </main>
