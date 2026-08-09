@@ -905,28 +905,28 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .contact .form-submit { margin-top:30.48px; }
   .contact .button { width:213.312px; min-height:43.875px; font-size:16px; }
   .site-footer { height:1314px; padding:0; background:#fcf9f7; }
-  .footer-shell { left:0; width:375px; height:1011px; margin:0 auto; position:relative; display:block; padding:0; }
+  .footer-shell { left:0; width:100%; height:1011px; margin:0 auto; position:relative; display:block; padding:0; }
   .footer-shell > * { position:absolute; }
-  .footer-logo { top:73.125px; left:10.781px; width:121.89px; }
+  .footer-logo { top:73.125px; left:20px; width:121.89px; }
   .footer-logo img { width:121.89px; }
-  .footer-media { top:75px; left:182.656px; width:181.625px; }
+  .footer-media { top:75px; right:20px; left:auto; width:181.625px; }
   .footer-media .social-icons { gap:7px; }
   .footer-media .social-icons a,.footer-media .social-icons img { width:38px; height:38px; }
   .site-footer .footer-media-button { width:181.625px; height:39px; margin-top:11px; font-size:12px; line-height:18px; }
-  .footer-map { top:192.609px; left:10.781px; width:353.5px; }
-  .footer-phones { top:340.109px; left:10.781px; width:353.5px; height:121.891px; gap:14px; border-radius:20px; }
+  .footer-map { top:192.609px; left:20px; width:calc(100% - 40px); }
+  .footer-phones { top:340.109px; left:20px; width:calc(100% - 40px); height:121.891px; gap:14px; border-radius:20px; }
   .footer-phones img { width:185px; height:20px; }
-  .footer-address { top:481.5px; left:10.781px; width:353.5px; height:121.891px; border-radius:20px; }
-  .footer-mail:nth-of-type(6) { top:621.688px; left:10.781px; width:353.5px; height:121.891px; border-radius:20px; }
-  .footer-mail:nth-of-type(7) { top:763.094px; left:10.781px; width:353.5px; height:106.047px; border-radius:20px; }
-  .footer-mail:nth-of-type(8) { top:888.641px; left:10.781px; width:353.5px; height:106.047px; border-radius:20px; }
+  .footer-address { top:481.5px; left:20px; width:calc(100% - 40px); height:121.891px; border-radius:20px; }
+  .footer-mail:nth-of-type(6) { top:621.688px; left:20px; width:calc(100% - 40px); height:121.891px; border-radius:20px; }
+  .footer-mail:nth-of-type(7) { top:763.094px; left:20px; width:calc(100% - 40px); height:106.047px; border-radius:20px; }
+  .footer-mail:nth-of-type(8) { top:888.641px; left:20px; width:calc(100% - 40px); height:106.047px; border-radius:20px; }
   .footer-address { padding:9px 24px; font:400 22px/26px 'Cormorant',Arial,sans-serif; }
   .footer-mail strong { font:400 24px/30px 'Cormorant',Arial,sans-serif; }
   .footer-mail small,
   .footer-mail:nth-of-type(6) small,
   .footer-mail:nth-of-type(7) small,
   .footer-mail:nth-of-type(8) small { top:76px; margin:0; font-size:11px; line-height:16px; }
-  .copyright { position:absolute; top:1022px; left:18px; width:339px; height:240px; transform:none; display:block; margin:0; }
+  .copyright { position:absolute; top:1022px; left:20px; width:calc(100% - 40px); height:240px; transform:none; display:block; margin:0; }
   .copyright span { position:absolute; left:0; width:300px; }
   .copyright span:nth-child(1) { top:-2px; }
   .copyright span:nth-child(2) { top:145px; }
@@ -955,9 +955,9 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .contact .section { padding-top:37.504103vw; }
   .contact-card { left:4.679487vw; margin:0; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
 
-  .site-footer { height:336.923077vw; }
-  .footer-shell { left:1.923077vw; margin:0; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
-  .copyright { top:262.051282vw; left:4.615385vw; transform:scale(var(--mobile-home-scale)); transform-origin:top left; }
+  .site-footer { height:1314px; }
+  .footer-shell { left:0; margin:0; transform:none; }
+  .copyright { top:1022px; left:20px; transform:none; }
 
   .catalog-page,.catalog-page.catalog-group-chocolate-30g,.catalog-page.catalog-group-cacao,.catalog-page.catalog-group-chia { min-height:0; }
   .catalog-page::before { top:78px; width:175px; height:230px; }
@@ -1603,17 +1603,17 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .recipe-detail .contact .section { padding-top:140px; }
 
   .site-footer { height:799px; padding:0; }
-  .footer-shell { width:600px; height:799px; margin:0 auto; padding:0; position:relative; top:0; left:0; display:block; }
+  .footer-shell { width:calc(100% - 80px); max-width:1160px; height:799px; margin:0 auto; padding:0; position:relative; top:0; left:0; display:block; }
   .footer-shell > * { position:absolute; top:auto !important; left:auto !important; width:auto; }
-  .footer-logo { top:78px !important; left:0 !important; width:290px; height:72px; }
+  .footer-logo { top:78px !important; left:0 !important; width:calc((100% - 20px)/2); height:72px; }
   .footer-logo img { width:160px; height:auto; margin:0; }
-  .footer-media { top:92px !important; left:337px !important; width:280px; height:98px; }
-  .footer-map { top:185px !important; left:0 !important; width:290px; height:150px; }
-  .footer-phones { top:220px !important; left:310px !important; width:290px; height:117px; }
-  .footer-mail:nth-of-type(6) { top:373px !important; left:0 !important; width:290px; height:117px; }
-  .footer-mail:nth-of-type(7) { top:373px !important; left:310px !important; width:290px; height:117px; }
-  .footer-mail:nth-of-type(8) { top:510px !important; left:0 !important; width:290px; height:117px; }
-  .footer-address { top:509px !important; left:310px !important; width:290px; height:117px; padding:8px 18px; font:400 22px/26px 'Cormorant',Arial,sans-serif; }
+  .footer-media { top:92px !important; left:calc(50% + 10px) !important; width:calc((100% - 20px)/2); height:98px; }
+  .footer-map { top:185px !important; left:0 !important; width:calc((100% - 20px)/2); height:150px; }
+  .footer-phones { top:220px !important; left:calc(50% + 10px) !important; width:calc((100% - 20px)/2); height:117px; }
+  .footer-mail:nth-of-type(6) { top:373px !important; left:0 !important; width:calc((100% - 20px)/2); height:117px; }
+  .footer-mail:nth-of-type(7) { top:373px !important; left:calc(50% + 10px) !important; width:calc((100% - 20px)/2); height:117px; }
+  .footer-mail:nth-of-type(8) { top:510px !important; left:0 !important; width:calc((100% - 20px)/2); height:117px; }
+  .footer-address { top:509px !important; left:calc(50% + 10px) !important; width:calc((100% - 20px)/2); height:117px; padding:8px 18px; font:400 22px/26px 'Cormorant',Arial,sans-serif; }
   .footer-mail::before,
   .footer-mail:nth-of-type(7)::before,
   .footer-mail:nth-of-type(8)::before { top:auto; right:12px; bottom:11px; left:auto; width:16px; height:16px; }
@@ -1625,11 +1625,11 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .footer-mail:nth-of-type(6) small { left:20px; width:229px; text-align:left; }
   .footer-mail:nth-of-type(7) small { top:61px; left:30px; width:180px; text-align:left; }
   .footer-mail:nth-of-type(8) small { top:61px; left:20px; width:208px; text-align:left; }
-  .copyright { position:absolute; top:0; left:calc(50% - 300px); width:600px; height:799px; margin:0; display:block; font:400 10px/16px 'Montserrat',Arial,sans-serif; }
-  .copyright span { position:absolute; width:290px; }
-  .copyright span:nth-child(1) { top:642px; left:310px; }
+  .copyright { position:absolute; top:0; left:40px; width:calc(100% - 80px); max-width:1160px; height:799px; margin:0; display:block; font:400 10px/16px 'Montserrat',Arial,sans-serif; }
+  .copyright span { position:absolute; width:calc((100% - 20px)/2); }
+  .copyright span:nth-child(1) { top:642px; left:calc(50% + 10px); }
   .copyright span:nth-child(2) { top:647px; left:0; }
-  .copyright span:nth-child(3) { top:705px; left:310px; }
+  .copyright span:nth-child(3) { top:705px; left:calc(50% + 10px); }
 
   .legal-page { padding:328px 0 6px; }
   .legal-page-oferta { padding-top:284px; }
@@ -1653,15 +1653,15 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 /* Preserve the 390px composition without clipping narrower phones. */
 @media (max-width:374px) {
   .footer-shell { width:100vw; }
-  .footer-media { right:10.781px; left:auto; }
+  .footer-media { right:20px; left:auto; }
   .site-footer .footer-media-button { width:181.625px; height:39px; margin-top:11px; }
   .footer-map,
   .footer-phones,
   .footer-address,
   .footer-mail:nth-of-type(6),
   .footer-mail:nth-of-type(7),
-  .footer-mail:nth-of-type(8) { width:calc(100vw - 21.562px); }
-  .copyright { width:calc(100vw - 36px); }
+  .footer-mail:nth-of-type(8) { width:calc(100vw - 40px); }
+  .copyright { width:calc(100vw - 40px); }
   .legal-page > h1 { left:50%; transform:translateX(-50%); }
 }
 
