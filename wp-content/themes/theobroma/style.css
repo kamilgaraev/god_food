@@ -1707,7 +1707,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .product-image-lightbox-close::after { transform:rotate(-45deg); }
 .product-image-lightbox-close:focus-visible { outline:2px solid #b0903d; outline-offset:3px; }
 .commerce-modal[data-commerce-type="product"] .commerce-modal-panel { min-height:1651px; margin:65px auto; }
-.commerce-modal[data-commerce-type="product"] { background:#fcf9f7; }
+.commerce-modal[data-commerce-type="product"] { background:rgba(74,74,74,.8); }
 .commerce-modal[data-commerce-type="product"] .commerce-modal-back { display:block; }
 .commerce-modal[data-commerce-type="product"] .commerce-modal-close::before,
 .commerce-modal[data-commerce-type="product"] .commerce-modal-close::after { background:#fff; }
