@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Theobroma\Commerce;
 
 use Theobroma\Commerce\Admin\SettingsPage;
+use Theobroma\Commerce\Admin\OzonConnectionAction;
 use Theobroma\Commerce\Catalog\ProductWeightBackfill;
 use Theobroma\Commerce\Checkout\PickupPointFields;
 use Theobroma\Commerce\Checkout\DeliveryAddressFields;
@@ -34,6 +35,7 @@ final class Plugin
 
         add_filter('woocommerce_shipping_methods', [self::class, 'shippingMethods']);
         (new SettingsPage())->register();
+        (new OzonConnectionAction())->register();
         (new PickupPointFields())->register();
         (new DeliveryAddressFields())->register();
         (new CdekPointsController())->register();

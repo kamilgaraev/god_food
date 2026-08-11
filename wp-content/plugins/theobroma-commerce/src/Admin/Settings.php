@@ -16,11 +16,8 @@ final class Settings
             'cdek_sender_city_code' => 0,
             'cdek_sender_address' => '',
             'cdek_order_status' => 'processing',
-            'ozon_enabled' => 'no',
-            'ozon_approved' => 'no',
-            'ozon_access_token' => '',
-            'ozon_products_mapped' => 'no',
-            'ozon_live_test_completed' => 'no',
+            'ozon_client_id' => '',
+            'ozon_client_secret' => '',
         ];
     }
 
@@ -31,20 +28,28 @@ final class Settings
     public function sanitize(array $input, array $existing = []): array
     {
         $result = $this->defaults();
-        foreach (['cdek_enabled', 'ozon_enabled', 'ozon_approved', 'ozon_products_mapped', 'ozon_live_test_completed'] as $flag) {
+        foreach (['cdek_enabled'] as $flag) {
             $result[$flag] = in_array((string) ($input[$flag] ?? ''), ['1', 'yes', 'on', 'true'], true) ? 'yes' : 'no';
         }
 
         $result['cdek_client_id'] = trim((string) ($input['cdek_client_id'] ?? ''));
+        $result['ozon_client_id'] = trim((string) ($input['ozon_client_id'] ?? ''));
         $result['cdek_sender_city_code'] = max(0, (int) ($input['cdek_sender_city_code'] ?? 0));
         $result['cdek_sender_address'] = trim((string) ($input['cdek_sender_address'] ?? ''));
         $result['cdek_order_status'] = preg_replace('/[^a-z0-9_-]/', '', (string) ($input['cdek_order_status'] ?? 'processing')) ?: 'processing';
 
-        foreach (['cdek_client_secret', 'ozon_access_token'] as $secret) {
+        foreach (['cdek_client_secret', 'ozon_client_secret'] as $secret) {
             $newValue = trim((string) ($input[$secret] ?? ''));
             $result[$secret] = $newValue !== '' ? $newValue : (string) ($existing[$secret] ?? '');
         }
 
         return $result;
+    }
+
+    /** @param array<string,mixed> $existing @param array<string,mixed> $next */
+    public function ozonCredentialsChanged(array $existing, array $next): bool
+    {
+        return (string) ($existing['ozon_client_id'] ?? '') !== (string) ($next['ozon_client_id'] ?? '')
+            || (string) ($existing['ozon_client_secret'] ?? '') !== (string) ($next['ozon_client_secret'] ?? '');
     }
 }
