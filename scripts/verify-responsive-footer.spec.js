@@ -19,14 +19,14 @@ async function footerMetrics(browser, viewportWidth) {
     <style>${stylesheet}</style>
     <footer class="site-footer">
       <div class="footer-shell">
-        <div class="footer-map"></div>
+        <div class="footer-map"><h3>Карта сайта</h3><ul><li>Каталог</li><li>Где купить</li></ul></div>
         <div class="footer-logo"></div>
-        <div class="footer-phones"></div>
-        <div class="footer-card footer-address"></div>
+        <div class="footer-phones"><span>+7 499 755 54 90</span><span>+7 800 444 70 54</span></div>
+        <div class="footer-card footer-address">Адрес фабрики:<br>Московская обл., Наро-Фоминский г.о.</div>
         <div class="footer-media"></div>
-        <div class="footer-card footer-mail"></div>
-        <div class="footer-card footer-mail"></div>
-        <div class="footer-card footer-mail"></div>
+        <div class="footer-card footer-mail"><strong>info@theobroma.msk.ru</strong><small>Коммерческие предложения и любые другие вопросы</small></div>
+        <div class="footer-card footer-mail"><strong>opt@theobroma.msk.ru</strong><small>Запросы по оптовым покупкам</small></div>
+        <div class="footer-card footer-mail"><strong>press@theobroma.msk.ru</strong><small>По вопросам сотрудничества со СМИ</small></div>
       </div>
       <div class="copyright"></div>
     </footer>
@@ -42,6 +42,14 @@ async function footerMetrics(browser, viewportWidth) {
       shell: bounds('.footer-shell'),
       map: bounds('.footer-map'),
       phones: bounds('.footer-phones'),
+      contentOverflow: Array.from(document.querySelectorAll('.footer-card')).some((card) => {
+        const cardRect = card.getBoundingClientRect();
+        return Array.from(card.children).some((child) => {
+          const childRect = child.getBoundingClientRect();
+          return childRect.left < cardRect.left - 1 || childRect.right > cardRect.right + 1
+            || childRect.top < cardRect.top - 1 || childRect.bottom > cardRect.bottom + 1;
+        });
+      }),
     };
   });
 
@@ -64,6 +72,23 @@ async function run() {
     assertClose(tablet.shell.right, 728, '768px footer shell must keep a 40px right inset');
     assertClose(tablet.map.width, tablet.phones.width, 'tablet footer columns must have equal widths');
     assertClose(tablet.map.left - tablet.shell.left, tablet.shell.right - tablet.phones.right, 'tablet footer outer insets must be equal');
+
+    for (const width of [461, 509, 550, 599]) {
+      const narrow = await footerMetrics(browser, width);
+      assertClose(narrow.map.left, narrow.phones.left, `${width}px footer cards must use the mobile single-column composition`);
+      assertClose(narrow.map.width, narrow.phones.width, `${width}px footer cards must keep one shared content width`);
+      if (narrow.map.left < 20 || narrow.map.right > width - 20) {
+        throw new Error(`${width}px footer content must stay inside 20px viewport insets`);
+      }
+      if (narrow.contentOverflow) {
+        throw new Error(`${width}px footer text must stay inside its cards`);
+      }
+    }
+
+    const tabletBoundary = await footerMetrics(browser, 600);
+    if (Math.abs(tabletBoundary.map.left - tabletBoundary.phones.left) <= 1) {
+      throw new Error('600px footer must switch to the tablet two-column composition');
+    }
   } finally {
     await browser.close();
   }

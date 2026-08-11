@@ -1710,6 +1710,37 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .contact-card { left:0; width:calc(100% - 2.5rem); margin-inline:auto; transform:none; }
 }
 
+/* Keep narrow landscape phones in the mobile footer composition. */
+@media (min-width:461px) and (max-width:599px) {
+  .site-footer { height:82.125rem; padding:0; background:#fcf9f7; }
+  .footer-shell { top:0; left:0; width:100%; max-width:none; height:63.1875rem; margin:0 auto; padding:0; position:relative; display:block; }
+  .footer-shell > * { position:absolute; }
+  .footer-logo { top:4.5703125rem !important; left:1.25rem !important; width:7.618125rem; height:auto; }
+  .footer-logo img { width:7.618125rem; height:auto; }
+  .footer-media { top:4.6875rem !important; right:1.25rem; left:auto !important; width:11.3515625rem; height:auto; }
+  .footer-media .social-icons { gap:0.4375rem; }
+  .footer-media .social-icons a,
+  .footer-media .social-icons img { width:2.375rem; height:2.375rem; }
+  .site-footer .footer-media-button { width:11.3515625rem; height:2.4375rem; margin-top:0.6875rem; font-size:0.75rem; line-height:1.125rem; }
+  .footer-map { top:12.0380625rem !important; left:1.25rem !important; width:calc(100% - 2.5rem); height:auto; }
+  .footer-phones { top:21.2568125rem !important; left:1.25rem !important; width:calc(100% - 2.5rem); height:7.6181875rem; gap:0.875rem; border-radius:1.25rem; }
+  .footer-phones img { width:11.5625rem; height:1.25rem; }
+  .footer-address { top:30.09375rem !important; left:1.25rem !important; width:calc(100% - 2.5rem); height:7.6181875rem; padding:0.5625rem 1.5rem; border-radius:1.25rem; font:400 1.375rem/1.625rem 'Cormorant',Arial,sans-serif; }
+  .footer-mail:nth-of-type(6) { top:38.8555rem !important; left:1.25rem !important; width:calc(100% - 2.5rem); height:7.6181875rem; border-radius:1.25rem; }
+  .footer-mail:nth-of-type(7) { top:47.693375rem !important; left:1.25rem !important; width:calc(100% - 2.5rem); height:6.6279375rem; border-radius:1.25rem; }
+  .footer-mail:nth-of-type(8) { top:55.5400625rem !important; left:1.25rem !important; width:calc(100% - 2.5rem); height:6.6279375rem; border-radius:1.25rem; }
+  .footer-mail strong { font:400 1.5rem/1.875rem 'Cormorant',Arial,sans-serif; }
+  .footer-mail small,
+  .footer-mail:nth-of-type(6) small,
+  .footer-mail:nth-of-type(7) small,
+  .footer-mail:nth-of-type(8) small { top:4.75rem; margin:0; font-size:0.6875rem; line-height:1rem; }
+  .copyright { position:absolute; top:63.875rem; left:1.25rem; width:calc(100% - 2.5rem); max-width:none; height:15rem; margin:0; transform:none; display:block; font:400 0.625rem/1rem 'Montserrat',Arial,sans-serif; }
+  .copyright span { position:absolute; left:0; width:18.75rem; }
+  .copyright span:nth-child(1) { top:-2px; left:0; }
+  .copyright span:nth-child(2) { top:9.0625rem; left:0; }
+  .copyright span:nth-child(3) { top:4.25rem; left:0; }
+}
+
 /* WooCommerce overlays: standalone product/cart URLs remain as no-JS fallbacks. */
 html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; }
 .commerce-modal[hidden] { display:none; }

@@ -11,6 +11,16 @@ function assert(condition, message) {
 
 async function loadHomepage(browser, viewport) {
   const page = await browser.newPage({ viewport });
+  if (new URL(BASE_URL).port !== '8080') {
+    await page.route('http://localhost:8080/**', async (route) => {
+      const target = new URL(route.request().url());
+      const local = new URL(BASE_URL);
+      target.protocol = local.protocol;
+      target.hostname = local.hostname;
+      target.port = local.port;
+      await route.continue({ url: target.href });
+    });
+  }
   await page.goto(BASE_URL, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: '.cookie-notice { display: none !important; }' });
   return page;
@@ -73,6 +83,14 @@ async function run() {
         if (cacaoCircle) {
           assert(cacaoCircle.width >= 380, `${viewport.width}px cacao image circle must be at least 380px`);
           assert(cacaoCircle.width <= 420, `${viewport.width}px cacao image circle must not exceed 420px`);
+        }
+
+        const promoGrid = await box(page, '.home-promo-grid');
+        if (promoGrid && viewport.width > 1440) {
+          const leftMargin = promoGrid.x;
+          const rightMargin = viewport.width - promoGrid.x - promoGrid.width;
+          assert(promoGrid.width <= 1460, `${viewport.width}px promo cards must stay inside the shared layout-content container`);
+          assert(Math.abs(leftMargin - rightMargin) <= 2, `${viewport.width}px promo cards must remain centered in the page container`);
         }
       }
 

@@ -189,7 +189,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-composition dt { color: var(--home-peach); font: 400 2.125rem/1 'Cormorant', Georgia, serif; }
 .home-composition dd { margin: 0.625rem 0 0; color: var(--home-muted); font: 400 0.6875rem/1.45 'Montserrat', Arial, sans-serif; }
 
-.home-promo-grid { padding: 2.9375rem clamp(1.75rem, 4vw, 4rem) 3.6875rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; background: var(--home-paper); }
+.home-promo-grid { width: 100%; max-width: var(--layout-content); margin-inline: auto; padding: 2.9375rem clamp(1.75rem, 4vw, 4rem) 3.6875rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; background: var(--home-paper); }
 .home-promo-card { min-height: 13.5rem; padding: 2.25rem; border: 1px solid var(--home-line); border-radius: 0.3125rem; }
 .home-promo-card h2 { margin: 0; font: 400 clamp(1.875rem, 2.6vw, 2.5rem)/1.05 'Cormorant', Georgia, serif; letter-spacing: -.02em; }
 .home-promo-card > p { max-width: 37.5rem; margin: 1rem 0 0; color: var(--home-muted); font: 400 0.75rem/1.55 'Montserrat', Arial, sans-serif; }
