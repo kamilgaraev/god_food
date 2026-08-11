@@ -21,7 +21,7 @@ final class OzonClientFactory
     }
 
     /** @param array<string,mixed> $settings */
-    public function authenticatorFromSettings(array $settings): AccessTokenProvider
+    public function authenticatorFromSettings(array $settings): OzonAuthenticator
     {
         $clientId = defined('THEOBROMA_OZON_CLIENT_ID')
             ? (string) constant('THEOBROMA_OZON_CLIENT_ID')

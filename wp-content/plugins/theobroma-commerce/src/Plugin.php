@@ -6,11 +6,13 @@ namespace Theobroma\Commerce;
 
 use Theobroma\Commerce\Admin\SettingsPage;
 use Theobroma\Commerce\Admin\OzonConnectionAction;
+use Theobroma\Commerce\Admin\OzonAuthorizationAction;
 use Theobroma\Commerce\Catalog\ProductWeightBackfill;
 use Theobroma\Commerce\Checkout\PickupPointFields;
 use Theobroma\Commerce\Checkout\DeliveryAddressFields;
 use Theobroma\Commerce\Rest\CdekPointsController;
 use Theobroma\Commerce\Rest\CdekWebhookController;
+use Theobroma\Commerce\Rest\OzonOAuthCallbackController;
 use Theobroma\Commerce\Orders\CdekOrderLifecycle;
 use Theobroma\Commerce\Orders\OzonOrderLifecycle;
 use Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle;
@@ -36,10 +38,12 @@ final class Plugin
         add_filter('woocommerce_shipping_methods', [self::class, 'shippingMethods']);
         (new SettingsPage())->register();
         (new OzonConnectionAction())->register();
+        (new OzonAuthorizationAction())->register();
         (new PickupPointFields())->register();
         (new DeliveryAddressFields())->register();
         (new CdekPointsController())->register();
         (new CdekWebhookController())->register();
+        (new OzonOAuthCallbackController())->register();
         (new CdekOrderLifecycle())->register();
         (new OzonOrderLifecycle())->register();
         (new WooLoyaltyLifecycle())->register();

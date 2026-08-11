@@ -13,7 +13,6 @@ final class OzonConnectionChecker
     public function check(AccessTokenProvider $tokens): array
     {
         try {
-            $tokens->forget();
             $tokens->token();
             return ['status' => 'success', 'message' => 'Подключение к Ozon установлено.'];
         } catch (ProviderException $exception) {

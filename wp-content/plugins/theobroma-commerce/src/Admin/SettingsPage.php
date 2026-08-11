@@ -61,6 +61,8 @@ final class SettingsPage
         if (is_array($notice)) {
             delete_transient(OzonConnectionAction::NOTICE_PREFIX . get_current_user_id());
         }
+        $ozonTokens = (new WordPressTokenStore())->get();
+        $ozonAuthorized = is_array($ozonTokens) && !empty($ozonTokens['refresh_token']);
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Доставка Theobroma', 'theobroma-commerce'); ?></h1>
@@ -88,13 +90,37 @@ final class SettingsPage
                 <?php $this->secret('ozon_client_secret', __('Secret частного приложения', 'theobroma-commerce'), $values, defined('THEOBROMA_OZON_CLIENT_SECRET')); ?>
                 <?php submit_button(); ?>
             </form>
+            <p>
+                <?php if ($ozonAuthorized) : ?>
+                    <strong style="color:#008a20"><?php esc_html_e('Авторизация продавца Ozon получена.', 'theobroma-commerce'); ?></strong>
+                <?php else : ?>
+                    <strong><?php esc_html_e('Требуется авторизация продавца в Ozon.', 'theobroma-commerce'); ?></strong>
+                <?php endif; ?>
+            </p>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block;margin-right:8px">
+                <input type="hidden" name="action" value="<?php echo esc_attr(OzonAuthorizationAction::ACTION); ?>">
+                <?php wp_nonce_field(OzonAuthorizationAction::ACTION); ?>
+                <?php submit_button(
+                    $ozonAuthorized ? __('Повторно авторизовать в Ozon', 'theobroma-commerce') : __('Авторизовать в Ozon', 'theobroma-commerce'),
+                    'primary',
+                    'submit',
+                    false
+                ); ?>
+            </form>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="<?php echo esc_attr(OzonConnectionAction::ACTION); ?>">
                 <?php wp_nonce_field(OzonConnectionAction::ACTION); ?>
                 <?php submit_button(__('Проверить подключение Ozon', 'theobroma-commerce'), 'secondary', 'submit', false); ?>
             </form>
             <h2><?php esc_html_e('Callback URLs', 'theobroma-commerce'); ?></h2>
-            <code><?php echo esc_html(rest_url('theobroma-commerce/v1/cdek/webhook')); ?></code>
+            <p>
+                <strong>CDEK:</strong><br>
+                <code><?php echo esc_html(rest_url('theobroma-commerce/v1/cdek/webhook')); ?></code>
+            </p>
+            <p>
+                <strong>Ozon redirect URL:</strong><br>
+                <code><?php echo esc_html(\Theobroma\Commerce\Rest\OzonOAuthCallbackController::redirectUri()); ?></code>
+            </p>
         </div>
         <?php
     }

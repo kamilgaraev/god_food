@@ -55,6 +55,13 @@ if ($ozonCatalog['total'] < 1 || $ozonCatalog['mapped'] > $ozonCatalog['total'])
 if (!has_action('admin_post_' . Theobroma\Commerce\Admin\OzonConnectionAction::ACTION)) {
     throw new RuntimeException('Ozon connection check action is not registered');
 }
+if (!has_action('admin_post_' . Theobroma\Commerce\Admin\OzonAuthorizationAction::ACTION)) {
+    throw new RuntimeException('Ozon authorization action is not registered');
+}
+$restRoutes = rest_get_server()->get_routes();
+if (!isset($restRoutes['/theobroma-commerce/v1/ozon/oauth/callback'])) {
+    throw new RuntimeException('Ozon OAuth callback route is not registered');
+}
 
 printf(
     "WordPress commerce smoke passed; Ozon SKU mapped %d/%d\n",

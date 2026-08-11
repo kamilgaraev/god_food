@@ -14,7 +14,7 @@ final class OzonAuthenticator implements AccessTokenProvider
         private readonly TokenStore $tokens,
         private readonly string $clientId,
         private readonly string $clientSecret,
-        private readonly string $baseUrl = 'https://api-seller.ozon.ru'
+        private readonly string $baseUrl = 'https://xapi.ozon.ru'
     ) {
     }
 
@@ -25,38 +25,73 @@ final class OzonAuthenticator implements AccessTokenProvider
             return $cached['token'];
         }
 
-        if (trim($this->clientId) === '' || trim($this->clientSecret) === '') {
-            throw ProviderException::fromResponse('Ozon credentials are not configured', 0);
+        $refreshToken = is_array($cached) ? (string) ($cached['refresh_token'] ?? '') : '';
+        if ($refreshToken === '') {
+            throw ProviderException::fromResponse('Ozon seller authorization is required', 401);
         }
 
+        $this->assertCredentials();
+
+        return $this->requestToken([
+            'grant_type' => 'refresh_token',
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+            'refresh_token' => $refreshToken,
+        ], $refreshToken, false);
+    }
+
+    public function authorize(string $code, string $redirectUri): void
+    {
+        $this->assertCredentials();
+        if (trim($code) === '' || trim($redirectUri) === '') {
+            throw ProviderException::fromResponse('Ozon authorization response is incomplete', 400);
+        }
+
+        $this->requestToken([
+            'grant_type' => 'authorization_code',
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+            'redirect_uri' => $redirectUri,
+            'code' => $code,
+        ], null, true);
+    }
+
+    public function forget(): void
+    {
+        $this->tokens->forgetAccessToken();
+    }
+
+    /** @param array<string,string> $payload */
+    private function requestToken(array $payload, ?string $fallbackRefreshToken, bool $requireRefreshToken): string
+    {
         $response = $this->transport->request('POST', rtrim($this->baseUrl, '/') . '/oauth/token', [
             'headers' => ['Accept' => 'application/json'],
-            'json' => [
-                'grant_type' => 'client_credentials',
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-            ],
+            'json' => $payload,
         ]);
         $token = $response['body']['access_token'] ?? null;
         $expiresIn = $response['body']['expires_in'] ?? null;
+        $refreshToken = $response['body']['refresh_token'] ?? $fallbackRefreshToken;
         if (
             $response['status'] !== 200
             || !is_string($token)
             || trim($token) === ''
             || !is_numeric($expiresIn)
             || (int) $expiresIn <= 0
+            || ($requireRefreshToken && (!is_string($refreshToken) || trim($refreshToken) === ''))
         ) {
-            $this->tokens->forget();
-            throw ProviderException::fromResponse('Ozon authentication failed', $response['status']);
+            throw ProviderException::fromResponse('Ozon OAuth token exchange failed', $response['status']);
         }
 
-        $this->tokens->put($token, time() + (int) $expiresIn);
+        $refreshToken = is_string($refreshToken) && trim($refreshToken) !== '' ? $refreshToken : null;
+        $this->tokens->put($token, time() + (int) $expiresIn, $refreshToken);
 
         return $token;
     }
 
-    public function forget(): void
+    private function assertCredentials(): void
     {
-        $this->tokens->forget();
+        if (trim($this->clientId) === '' || trim($this->clientSecret) === '') {
+            throw ProviderException::fromResponse('Ozon credentials are not configured', 0);
+        }
     }
 }
