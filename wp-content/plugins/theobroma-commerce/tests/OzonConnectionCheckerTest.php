@@ -38,6 +38,7 @@ final class OzonConnectionCheckerTest extends TestCase
         $result = (new OzonConnectionChecker())->check($authenticator);
 
         $this->assertSame('error', $result['status']);
+        $this->assertSame(true, str_contains($result['message'], 'HTTP 401'));
         $this->assertSame(false, str_contains($result['message'], 'secret-42'));
     }
 }
