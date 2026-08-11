@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Theobroma\Commerce\Orders;
 
 use Theobroma\Commerce\Infrastructure\WpTransport;
-use Theobroma\Commerce\Integrations\Ozon\OzonClient;
-use Theobroma\Commerce\Integrations\Ozon\OzonReadinessFactory;
+use Theobroma\Commerce\Integrations\Ozon\OzonClientFactory;
+use Theobroma\Commerce\Integrations\Ozon\WordPressTokenStore;
+use Theobroma\Commerce\Support\ProviderException;
 
 final class OzonOrderLifecycle
 {
@@ -23,18 +24,6 @@ final class OzonOrderLifecycle
         }
 
         $settings = (array) get_option('theobroma_commerce_settings', []);
-        $token = defined('THEOBROMA_OZON_ACCESS_TOKEN')
-            ? (string) constant('THEOBROMA_OZON_ACCESS_TOKEN')
-            : (string) ($settings['ozon_access_token'] ?? '');
-        $capabilities = (new OzonReadinessFactory())->build(
-            $settings,
-            $token !== '',
-            wc_get_products(['status' => 'publish', 'limit' => -1, 'return' => 'objects'])
-        );
-        if (($settings['ozon_enabled'] ?? 'no') !== 'yes' || !$capabilities->canOfferDelivery()) {
-            return;
-        }
-
         $payload = $order->get_meta('_theobroma_ozon_create_payload', true);
         if (!is_array($payload) || $payload === []) {
             $order->add_order_note('Заказ Ozon Доставки не создан: отсутствует подтверждённый результат расчёта доставки.');
@@ -42,11 +31,15 @@ final class OzonOrderLifecycle
         }
 
         try {
-            $client = new OzonClient(new WpTransport(), $token);
+            $client = (new OzonClientFactory(new WpTransport(), new WordPressTokenStore()))->clientFromSettings($settings);
             (new OzonOrderService($client))->create(new WooShipmentOrder($order), true, $payload);
         } catch (\Throwable $exception) {
-            $order->add_order_note('Не удалось создать заказ Ozon Доставки: ' . sanitize_text_field($exception->getMessage()));
-            wc_get_logger()->error($exception->getMessage(), ['source' => 'theobroma-ozon', 'order_id' => $orderId]);
+            $order->add_order_note('Не удалось создать заказ Ozon Доставки. Проверьте журнал интеграции.');
+            wc_get_logger()->error('Ozon order creation failed', [
+                'source' => 'theobroma-ozon',
+                'order_id' => $orderId,
+                'status' => $exception instanceof ProviderException ? $exception->statusCode() : 0,
+            ]);
         }
     }
 
