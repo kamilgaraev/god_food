@@ -23,7 +23,7 @@ final class OzonClientFactoryTest extends TestCase
         ])->token();
 
         $this->assertSame('factory-token', $token);
-        $this->assertSame('client-from-settings', $transport->requests[0]['options']['body']['client_id']);
-        $this->assertSame('secret-from-settings', $transport->requests[0]['options']['body']['client_secret']);
+        $this->assertSame('client-from-settings', $transport->requests[0]['options']['json']['client_id']);
+        $this->assertSame('secret-from-settings', $transport->requests[0]['options']['json']['client_secret']);
     }
 }

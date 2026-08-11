@@ -31,7 +31,7 @@ final class OzonAuthenticator implements AccessTokenProvider
 
         $response = $this->transport->request('POST', rtrim($this->baseUrl, '/') . '/oauth/token', [
             'headers' => ['Accept' => 'application/json'],
-            'body' => [
+            'json' => [
                 'grant_type' => 'client_credentials',
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,

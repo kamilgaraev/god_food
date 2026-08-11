@@ -28,7 +28,7 @@ final class OzonAuthenticatorTest extends TestCase
             'grant_type' => 'client_credentials',
             'client_id' => 'client-42',
             'client_secret' => 'secret-42',
-        ], $transport->requests[0]['options']['body']);
+        ], $transport->requests[0]['options']['json']);
         $this->assertSame('application/json', $transport->requests[0]['options']['headers']['Accept']);
         $this->assertTrue(($tokens->value['expires_at'] ?? 0) >= $before + 3600);
     }
