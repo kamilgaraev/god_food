@@ -105,7 +105,6 @@
 
     const reviewGrid = document.querySelector('.review-grid');
     const reviewButtons = document.querySelectorAll('[data-review-direction]');
-    let reviewOffset = 0;
 
     reviewButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -114,9 +113,13 @@
             }
 
             const direction = Number(button.dataset.reviewDirection);
-            const maxOffset = Math.max(0, reviewGrid.scrollWidth - reviewGrid.clientWidth);
-            reviewOffset = Math.min(maxOffset, Math.max(0, reviewOffset + direction * 300));
-            reviewGrid.style.transform = `translateX(${-reviewOffset}px)`;
+            const firstReview = reviewGrid.querySelector('.review');
+            const columnGap = Number.parseFloat(getComputedStyle(reviewGrid).columnGap) || 0;
+            const step = (firstReview?.getBoundingClientRect().width || reviewGrid.clientWidth) + columnGap;
+            reviewGrid.scrollBy({
+                left: direction * step,
+                behavior: reduceMotion.matches ? 'auto' : 'smooth',
+            });
         });
     });
 

@@ -181,7 +181,8 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-cacao__buy { display: flex; align-items: center; justify-content: center; gap: 1.25rem; }
 .home-cacao__buy strong { font: 400 1.5625rem/1 'Cormorant', Georgia, serif; }
 
-.home-composition { padding: 2.9375rem clamp(1.75rem, 4vw, 4rem); display: grid; grid-template-columns: minmax(18.75rem, .9fr) minmax(31.25rem, 1.6fr); gap: clamp(2.5rem, 6vw, 5.5rem); align-items: center; background: var(--home-sand); }
+.home-composition { padding: 2.9375rem clamp(1.75rem, 4vw, 4rem); background: var(--home-sand); }
+.home-composition__shell { width: 100%; max-width: var(--layout-content); margin-inline: auto; display: grid; grid-template-columns: minmax(18.75rem, .9fr) minmax(31.25rem, 1.6fr); gap: clamp(2.5rem, 6vw, 5.5rem); align-items: center; }
 .home-composition h2 { max-width: 20.625rem; font-size: clamp(2.375rem, 3.5vw, 2.75rem); line-height: .96; }
 .home-composition__intro > p:last-child { max-width: 24.375rem; margin: 1.25rem 0 0; color: var(--home-muted); font: 400 0.8125rem/1.6 'Montserrat', Arial, sans-serif; }
 .home-composition dl { margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); }
@@ -189,7 +190,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-composition dt { color: var(--home-peach); font: 400 2.125rem/1 'Cormorant', Georgia, serif; }
 .home-composition dd { margin: 0.625rem 0 0; color: var(--home-muted); font: 400 0.6875rem/1.45 'Montserrat', Arial, sans-serif; }
 
-.home-promo-grid { width: 100%; max-width: var(--layout-content); margin-inline: auto; padding: 2.9375rem clamp(1.75rem, 4vw, 4rem) 3.6875rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; background: var(--home-paper); }
+.home-promo-grid { width: 100%; max-width: var(--layout-wide); margin-inline: auto; padding: 2.9375rem clamp(1.75rem, 4vw, 4rem) 3.6875rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; background: var(--home-paper); }
 .home-promo-card { min-height: 13.5rem; padding: 2.25rem; border: 1px solid var(--home-line); border-radius: 0.3125rem; }
 .home-promo-card h2 { margin: 0; font: 400 clamp(1.875rem, 2.6vw, 2.5rem)/1.05 'Cormorant', Georgia, serif; letter-spacing: -.02em; }
 .home-promo-card > p { max-width: 37.5rem; margin: 1rem 0 0; color: var(--home-muted); font: 400 0.75rem/1.55 'Montserrat', Arial, sans-serif; }
@@ -217,7 +218,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .header-account { display: none !important; }
   .home-hero h1 { font-size: clamp(7rem, 14vw, 12.25rem); }
   .home-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.625rem 1.5rem; }
-  .home-composition { grid-template-columns: 1fr; }
+  .home-composition__shell { grid-template-columns: 1fr; }
 }
 
 @media (min-width: 801px) and (max-width: 1100px) {
@@ -330,7 +331,8 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-cacao__fact { min-height: 0; }
   .home-cacao__buy { justify-content: center; }
 
-  .home-composition { padding: 4.125rem 1.125rem; gap: 2.25rem; }
+  .home-composition { padding: 4.125rem 1.125rem; }
+  .home-composition__shell { gap: 2.25rem; }
   .home-composition dl { grid-template-columns: repeat(2, 1fr); }
   .home-composition dl > div { padding: 1.125rem 0.875rem; border-top: 1px solid var(--home-line); }
   .home-promo-grid { padding: 2.25rem 1.125rem 3rem; grid-template-columns: 1fr; gap: 0.75rem; }
