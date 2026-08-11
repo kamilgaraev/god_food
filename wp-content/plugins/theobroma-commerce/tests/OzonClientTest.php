@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Theobroma\Commerce\Tests;
 
 use Theobroma\Commerce\Integrations\Ozon\OzonClient;
+use Theobroma\Commerce\Support\ProviderException;
 use Theobroma\Commerce\Tests\Fakes\RecordingTransport;
+use Theobroma\Commerce\Tests\Fakes\StaticAccessTokenProvider;
 
 final class OzonClientTest extends TestCase
 {
@@ -16,7 +18,8 @@ final class OzonClientTest extends TestCase
             ['status' => 200, 'body' => ['result' => ['points' => [['id' => 10]]]]],
             ['status' => 200, 'body' => ['result' => ['available' => true, 'postings' => []]]],
         ]);
-        $client = new OzonClient($transport, 'private-oauth-token');
+        $tokens = new StaticAccessTokenProvider(['private-oauth-token']);
+        $client = new OzonClient($transport, $tokens);
 
         $client->deliveryCheck(['client_phone' => '79990000000']);
         $client->deliveryPointList(['limit' => 100]);
@@ -29,6 +32,7 @@ final class OzonClientTest extends TestCase
             $this->assertSame('POST', $request['method']);
             $this->assertSame('Bearer private-oauth-token', $request['options']['headers']['Authorization']);
         }
+        $this->assertSame(3, $tokens->tokenCalls);
     }
 
     public function testSupportsMapPointInfoAndPaidOrderEndpoints(): void
@@ -38,7 +42,7 @@ final class OzonClientTest extends TestCase
             ['status' => 200, 'body' => ['result' => ['id' => 10]]],
             ['status' => 200, 'body' => ['result' => ['order_number' => 'OZ-77', 'postings' => ['P1']]]],
         ]);
-        $client = new OzonClient($transport, 'private-oauth-token');
+        $client = new OzonClient($transport, new StaticAccessTokenProvider(['private-oauth-token']));
 
         $map = $client->deliveryMap(['client_phone' => '79990000000']);
         $point = $client->deliveryPointInfo(['id' => 10]);
@@ -53,7 +57,7 @@ final class OzonClientTest extends TestCase
     {
         $responses = array_fill(0, 16, ['status' => 200, 'body' => ['result' => ['ok' => true]]]);
         $transport = new RecordingTransport($responses);
-        $client = new OzonClient($transport, 'private-oauth-token');
+        $client = new OzonClient($transport, new StaticAccessTokenProvider(['private-oauth-token']));
 
         $client->cancelReasons([]);
         $client->cancelReasonsByOrder(['order_id' => 77]);
@@ -91,5 +95,42 @@ final class OzonClientTest extends TestCase
             '/v3/posting/fbs/get',
             '/v1/posting/marks',
         ], $paths);
+    }
+
+    public function testRefreshesTokenAndRetriesOnceAfterUnauthorizedResponse(): void
+    {
+        $transport = new RecordingTransport([
+            ['status' => 401, 'body' => ['message' => 'expired']],
+            ['status' => 200, 'body' => ['result' => ['available' => true]]],
+        ]);
+        $tokens = new StaticAccessTokenProvider(['expired-token', 'fresh-token']);
+        $client = new OzonClient($transport, $tokens);
+
+        $result = $client->deliveryCheck(['client_phone' => '79990000000']);
+
+        $this->assertSame(true, $result['available']);
+        $this->assertSame(1, $tokens->forgetCalls);
+        $this->assertSame(2, $tokens->tokenCalls);
+        $this->assertSame('Bearer expired-token', $transport->requests[0]['options']['headers']['Authorization']);
+        $this->assertSame('Bearer fresh-token', $transport->requests[1]['options']['headers']['Authorization']);
+    }
+
+    public function testDoesNotRetryUnauthorizedResponseTwice(): void
+    {
+        $transport = new RecordingTransport([
+            ['status' => 401, 'body' => ['message' => 'expired']],
+            ['status' => 401, 'body' => ['message' => 'denied']],
+        ]);
+        $tokens = new StaticAccessTokenProvider(['expired-token', 'rejected-token']);
+        $client = new OzonClient($transport, $tokens);
+
+        $exception = $this->assertThrows(
+            static fn (): array => $client->deliveryCheck(['client_phone' => '79990000000']),
+            ProviderException::class
+        );
+
+        $this->assertSame(2, count($transport->requests));
+        $this->assertSame(1, $tokens->forgetCalls);
+        $this->assertSame([], $exception->context());
     }
 }

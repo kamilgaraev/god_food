@@ -11,7 +11,7 @@ final class OzonClient implements OzonOrderApi
 {
     public function __construct(
         private readonly Transport $transport,
-        private readonly string $accessToken,
+        private readonly AccessTokenProvider $tokens,
         private readonly string $baseUrl = 'https://api-seller.ozon.ru'
     ) {
     }
@@ -151,19 +151,22 @@ final class OzonClient implements OzonOrderApi
     /** @param array<mixed> $payload @return array<mixed> */
     private function post(string $path, array $payload): array
     {
-        if ($this->accessToken === '') {
-            throw ProviderException::fromResponse('Ozon private application token is not configured', 0);
+        $response = [];
+        for ($attempt = 0; $attempt < 2; $attempt++) {
+            $response = $this->transport->request('POST', rtrim($this->baseUrl, '/') . $path, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->tokens->token(),
+                    'Accept' => 'application/json',
+                ],
+                'json' => $payload,
+            ]);
+            if ($response['status'] !== 401 || $attempt === 1) {
+                break;
+            }
+            $this->tokens->forget();
         }
-
-        $response = $this->transport->request('POST', rtrim($this->baseUrl, '/') . $path, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-            ],
-            'json' => $payload,
-        ]);
         if ($response['status'] !== 200) {
-            throw ProviderException::fromResponse('Ozon request failed', $response['status'], ['response' => $response['body']]);
+            throw ProviderException::fromResponse('Ozon request failed', $response['status']);
         }
 
         $result = $response['body']['result'] ?? null;
