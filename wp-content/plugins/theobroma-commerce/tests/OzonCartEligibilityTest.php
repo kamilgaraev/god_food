@@ -68,6 +68,21 @@ final class OzonCartEligibilityTest extends TestCase
         $this->assertSame(false, $eligibility->allItemsMapped(['contents' => []]));
         $this->assertSame(false, $eligibility->allItemsMapped(['contents' => [['product_id' => 10]]]));
     }
+
+    public function testChecksFullCartContentsInsteadOfOnlyCurrentShippingPackage(): void
+    {
+        $eligibility = new OzonCartEligibility(static fn (int $id): ?object => null);
+        $currentPackage = [
+            ['data' => new OzonCartProduct('1001'), 'product_id' => 10, 'variation_id' => 0],
+        ];
+        $fullCart = [
+            ...$currentPackage,
+            ['data' => new OzonCartProduct(''), 'product_id' => 20, 'variation_id' => 0],
+        ];
+
+        $this->assertSame(true, $eligibility->allContentsMapped($currentPackage));
+        $this->assertSame(false, $eligibility->allContentsMapped($fullCart));
+    }
 }
 
 final class OzonCartProduct

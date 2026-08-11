@@ -24,7 +24,10 @@ final class OzonOrderLifecycle
         }
 
         $settings = (array) get_option('theobroma_commerce_settings', []);
-        $payload = $order->get_meta('_theobroma_ozon_create_payload', true);
+        $payload = (new OzonOrderPayloadResolver())->resolve(
+            $order->get_meta('_theobroma_ozon_create_payload', true),
+            $order->get_items('shipping')
+        );
         if (!is_array($payload) || $payload === []) {
             $order->add_order_note('Заказ Ozon Доставки не создан: отсутствует подтверждённый результат расчёта доставки.');
             return;

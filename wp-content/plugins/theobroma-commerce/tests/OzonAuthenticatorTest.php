@@ -84,4 +84,24 @@ final class OzonAuthenticatorTest extends TestCase
 
         $this->assertSame(null, $tokens->value);
     }
+
+    public function testRejectsTokenWithoutPositiveExpiry(): void
+    {
+        foreach ([null, 0, -10, 'invalid'] as $expiresIn) {
+            $body = ['access_token' => 'token-with-bad-expiry'];
+            if ($expiresIn !== null) {
+                $body['expires_in'] = $expiresIn;
+            }
+            $tokens = new MemoryOzonTokenStore();
+            $authenticator = new OzonAuthenticator(
+                new RecordingTransport([['status' => 200, 'body' => $body]]),
+                $tokens,
+                'client-42',
+                'secret-42'
+            );
+
+            $this->assertThrows(static fn (): string => $authenticator->token(), ProviderException::class);
+            $this->assertSame(null, $tokens->value);
+        }
+    }
 }

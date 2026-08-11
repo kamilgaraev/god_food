@@ -169,7 +169,8 @@ final class OzonClient implements OzonOrderApi
             throw ProviderException::fromResponse('Ozon request failed', $response['status']);
         }
 
-        $result = $response['body']['result'] ?? null;
+        $body = $response['body'];
+        $result = is_array($body['result'] ?? null) ? $body['result'] : $body;
         if (!is_array($result)) {
             throw ProviderException::fromResponse('Ozon returned an invalid response', 502, ['response' => $response['body']]);
         }

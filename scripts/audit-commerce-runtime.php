@@ -7,6 +7,11 @@ require_once '/var/www/html/wp-load.php';
 $settings = (array) get_option('theobroma_commerce_settings', []);
 $analytics = (array) get_option('theobroma_analytics_settings', []);
 $gateways = WC()->payment_gateways()->payment_gateways();
+$ozonCatalog = (new Theobroma\Commerce\Products\OzonCatalogAudit())->audit(wc_get_products([
+    'status' => 'publish',
+    'limit' => -1,
+    'return' => 'objects',
+]));
 
 $gatewayStatuses = [];
 foreach ($gateways as $id => $gateway) {
@@ -25,12 +30,12 @@ $output = [
         'sender_city_code_set' => (int) ($settings['cdek_sender_city_code'] ?? 0) > 0,
     ],
     'ozon' => [
-        'enabled' => ($settings['ozon_enabled'] ?? 'no') === 'yes',
-        'approved' => ($settings['ozon_approved'] ?? 'no') === 'yes',
-        'token_set' => defined('THEOBROMA_OZON_ACCESS_TOKEN')
-            || trim((string) ($settings['ozon_access_token'] ?? '')) !== '',
-        'products_mapped_confirmed' => ($settings['ozon_products_mapped'] ?? 'no') === 'yes',
-        'live_test_completed' => ($settings['ozon_live_test_completed'] ?? 'no') === 'yes',
+        'client_id_set' => defined('THEOBROMA_OZON_CLIENT_ID')
+            || trim((string) ($settings['ozon_client_id'] ?? '')) !== '',
+        'secret_set' => defined('THEOBROMA_OZON_CLIENT_SECRET')
+            || trim((string) ($settings['ozon_client_secret'] ?? '')) !== '',
+        'products_total' => $ozonCatalog['total'],
+        'products_mapped' => $ozonCatalog['mapped'],
     ],
     'payment_gateways' => $gatewayStatuses,
     'analytics' => [

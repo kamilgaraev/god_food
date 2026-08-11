@@ -38,13 +38,19 @@ final class OzonAuthenticator implements AccessTokenProvider
             ],
         ]);
         $token = $response['body']['access_token'] ?? null;
-        if ($response['status'] !== 200 || !is_string($token) || trim($token) === '') {
+        $expiresIn = $response['body']['expires_in'] ?? null;
+        if (
+            $response['status'] !== 200
+            || !is_string($token)
+            || trim($token) === ''
+            || !is_numeric($expiresIn)
+            || (int) $expiresIn <= 0
+        ) {
             $this->tokens->forget();
             throw ProviderException::fromResponse('Ozon authentication failed', $response['status']);
         }
 
-        $expiresIn = max(60, (int) ($response['body']['expires_in'] ?? 3600));
-        $this->tokens->put($token, time() + $expiresIn);
+        $this->tokens->put($token, time() + (int) $expiresIn);
 
         return $token;
     }

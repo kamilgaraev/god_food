@@ -14,9 +14,9 @@ final class OzonClientTest extends TestCase
     public function testUsesPrivateApplicationBearerTokenForDeliveryMethods(): void
     {
         $transport = new RecordingTransport([
-            ['status' => 200, 'body' => ['result' => ['available' => true]]],
-            ['status' => 200, 'body' => ['result' => ['points' => [['id' => 10]]]]],
-            ['status' => 200, 'body' => ['result' => ['available' => true, 'postings' => []]]],
+            ['status' => 200, 'body' => ['is_possible' => true]],
+            ['status' => 200, 'body' => ['points' => [['id' => 10]]]],
+            ['status' => 200, 'body' => ['delivery_schema' => 'MIX', 'splits' => []]],
         ]);
         $tokens = new StaticAccessTokenProvider(['private-oauth-token']);
         $client = new OzonClient($transport, $tokens);
@@ -38,9 +38,9 @@ final class OzonClientTest extends TestCase
     public function testSupportsMapPointInfoAndPaidOrderEndpoints(): void
     {
         $transport = new RecordingTransport([
-            ['status' => 200, 'body' => ['result' => ['map_url' => 'https://example.test/map']]],
-            ['status' => 200, 'body' => ['result' => ['id' => 10]]],
-            ['status' => 200, 'body' => ['result' => ['order_number' => 'OZ-77', 'postings' => ['P1']]]],
+            ['status' => 200, 'body' => ['map_url' => 'https://example.test/map']],
+            ['status' => 200, 'body' => ['id' => 10]],
+            ['status' => 200, 'body' => ['order_number' => 'OZ-77', 'postings' => ['P1']]],
         ]);
         $client = new OzonClient($transport, new StaticAccessTokenProvider(['private-oauth-token']));
 
@@ -55,7 +55,7 @@ final class OzonClientTest extends TestCase
 
     public function testSupportsDocumentedCancellationTrackingReturnsAndStocksEndpoints(): void
     {
-        $responses = array_fill(0, 16, ['status' => 200, 'body' => ['result' => ['ok' => true]]]);
+        $responses = array_fill(0, 16, ['status' => 200, 'body' => ['ok' => true]]);
         $transport = new RecordingTransport($responses);
         $client = new OzonClient($transport, new StaticAccessTokenProvider(['private-oauth-token']));
 
@@ -101,14 +101,14 @@ final class OzonClientTest extends TestCase
     {
         $transport = new RecordingTransport([
             ['status' => 401, 'body' => ['message' => 'expired']],
-            ['status' => 200, 'body' => ['result' => ['available' => true]]],
+            ['status' => 200, 'body' => ['is_possible' => true]],
         ]);
         $tokens = new StaticAccessTokenProvider(['expired-token', 'fresh-token']);
         $client = new OzonClient($transport, $tokens);
 
         $result = $client->deliveryCheck(['client_phone' => '79990000000']);
 
-        $this->assertSame(true, $result['available']);
+        $this->assertSame(true, $result['is_possible']);
         $this->assertSame(1, $tokens->forgetCalls);
         $this->assertSame(2, $tokens->tokenCalls);
         $this->assertSame('Bearer expired-token', $transport->requests[0]['options']['headers']['Authorization']);

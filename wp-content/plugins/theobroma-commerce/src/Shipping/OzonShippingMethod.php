@@ -27,7 +27,11 @@ final class OzonShippingMethod extends \WC_Shipping_Method
     public function calculate_shipping($package = []): void
     {
         $settings = (array) get_option('theobroma_commerce_settings', []);
-        if (!(new OzonCartEligibility())->allItemsMapped(is_array($package) ? $package : [])) {
+        $cart = function_exists('WC') ? WC()->cart : null;
+        $contents = is_object($cart) && method_exists($cart, 'get_cart')
+            ? $cart->get_cart()
+            : (is_array($package) && is_array($package['contents'] ?? null) ? $package['contents'] : []);
+        if (!(new OzonCartEligibility())->allContentsMapped(is_array($contents) ? $contents : [])) {
             return;
         }
 

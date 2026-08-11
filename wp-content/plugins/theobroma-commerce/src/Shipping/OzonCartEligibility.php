@@ -19,7 +19,13 @@ final class OzonCartEligibility
     public function allItemsMapped(array $package): bool
     {
         $contents = $package['contents'] ?? null;
-        if (!is_array($contents) || $contents === []) {
+        return is_array($contents) && $this->allContentsMapped($contents);
+    }
+
+    /** @param array<mixed> $contents */
+    public function allContentsMapped(array $contents): bool
+    {
+        if ($contents === []) {
             return false;
         }
 
