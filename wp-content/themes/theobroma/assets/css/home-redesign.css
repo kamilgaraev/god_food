@@ -128,7 +128,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-benefit-strip span { color: #988c7f; font: 500 0.5625rem/1.3 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
 .home-benefit-strip i { width: 0.25rem; height: 0.25rem; flex: 0 0 0.25rem; transform: rotate(45deg); background: var(--home-line); }
 
-#catalog.home-catalog { height: auto; min-height: 0; padding: clamp(4rem, 5.5vw, 5.125rem) clamp(1.75rem, 4vw, 4rem) 0; background: var(--home-paper); }
+#catalog.home-catalog { height: auto; min-height: 0; padding: clamp(4rem, 5.5vw, 5.125rem) clamp(1.75rem, 4vw, 4rem) clamp(3rem, 4.25vw, 4rem); background: var(--home-paper); }
 .home-section-heading { width: 100%; max-width: 90rem; margin: 0 auto 2rem; display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; }
 .home-section-heading h2,
 .home-cacao h2,

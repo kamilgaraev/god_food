@@ -2088,3 +2088,10 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-wishlist:not(.commerce-wishlist--empty) .commerce-wishlist-product strong { margin:0; }
   .commerce-wishlist:not(.commerce-wishlist--empty) .commerce-wishlist-product > button { top:2.1875rem; right:1.25rem; }
 }
+
+/* Keep product-description typography on the same fluid rem scale as the rest of the product card. */
+.commerce-modal-product .product-detail-accordions summary,
+.commerce-modal-product .product-detail-accordions details > div {
+  font-size:1rem;
+  line-height:1.5rem;
+}
