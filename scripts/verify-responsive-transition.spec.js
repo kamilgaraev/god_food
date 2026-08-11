@@ -12,8 +12,11 @@ const routes = [
     selectors: [
       '.nav',
       '.brand',
-      '.hero-inner',
-      '#catalog .section-heading',
+      '.home-hero__shell',
+      '.home-catalog',
+      '.home-cacao__shell',
+      '.home-composition',
+      '.home-promo-grid',
       '.about-stage',
       '.reviews-stage',
       '.contact-card',
