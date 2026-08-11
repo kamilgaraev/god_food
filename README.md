@@ -80,6 +80,14 @@ docker exec food-wordpress-1 php /opt/theobroma-scripts/verify-wordpress.php
 
 Production должен обслуживаться только по HTTPS. Образ WordPress собирается командой `docker compose build wordpress` и включает Apache-модули `headers`/`expires`. Базовые browser-security headers заданы в `docker/wordpress/.htaccess`; если TLS завершается на reverse proxy/CDN, именно там необходимо включить HTTP→HTTPS redirect и HSTS (`max-age=31536000; includeSubDomains`) после проверки HTTPS на всех поддоменах. Проверка локальных заголовков: `npm run audit:security`.
 
+## Адаптивные единицы
+
+- При ширине 390–1440 px `1rem = 16px`, поэтому контрольные макеты сохраняют исходные размеры.
+- При ширине 320–390 px корневой размер плавно уменьшается с 16 до 15 px.
+- При ширине 1440–2560 px корневой размер плавно увеличивается с 16 до 20 px.
+- Выше 2560 px корневой размер остаётся равным 20 px, поэтому интерфейс больше не растёт.
+- Структурные media query и тонкие границы задаются в `px`; масштабируемая геометрия и типографика — в `rem`.
+
 ## Управление контейнерами
 
 ```powershell

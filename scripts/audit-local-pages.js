@@ -26,6 +26,16 @@ function routeId(route) {
       fs.mkdirSync(outputDir, { recursive: true });
       for (const route of config.localOnly) {
         const context = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+        const local = new URL(baseUrl);
+        if (local.port !== '8080') {
+          await context.route('http://localhost:8080/**', async (routeRequest) => {
+            const target = new URL(routeRequest.request().url());
+            target.protocol = local.protocol;
+            target.hostname = local.hostname;
+            target.port = local.port;
+            await routeRequest.continue({ url: target.href });
+          });
+        }
         const page = await context.newPage();
         const consoleErrors = [];
         const pageErrors = [];

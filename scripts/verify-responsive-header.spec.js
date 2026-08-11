@@ -3,12 +3,25 @@ const assert = require('node:assert/strict');
 
 const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
 
+async function routeLocalAssets(page) {
+  const local = new URL(url);
+  if (local.port === '8080') return;
+  await page.route('http://localhost:8080/**', async (route) => {
+    const target = new URL(route.request().url());
+    target.protocol = local.protocol;
+    target.hostname = local.hostname;
+    target.port = local.port;
+    await route.continue({ url: target.href });
+  });
+}
+
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
     for (const width of [1101, 1200, 1440, 2295]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
+      await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
 
       const metrics = await page.evaluate(() => {
@@ -38,12 +51,13 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
           brandLeft: brand.left,
           brandRight: brand.right,
           maxControlAxisDrift: Math.max(...controlCenters.map((center) => Math.abs(center - headerCenter))),
+          rootScale: parseFloat(getComputedStyle(document.documentElement).fontSize) / 16,
         };
       });
 
       assert.equal(metrics.position, 'fixed', `${width}px: navigation must be fixed`);
       assert.ok(Math.abs(metrics.top) <= 1, `${width}px: navigation must stay at the top`);
-      assert.ok(metrics.height >= 77 && metrics.height <= 79, `${width}px: unexpected header height ${metrics.height}`);
+      assert.ok(Math.abs(metrics.height - 78 * metrics.rootScale) <= 1.5, `${width}px: unexpected header height ${metrics.height}`);
       assert.ok(Math.abs(metrics.brandCenter - metrics.viewportCenter) <= 1, `${width}px: logo is not centered`);
       assert.equal(metrics.studyVisible, true, `${width}px: desktop links must be visible`);
       assert.equal(metrics.transactionalCount, 3, `${width}px: where-to-buy, account and cart are required`);
@@ -57,6 +71,7 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
 
     for (const width of [801, 850, 900, 950, 1000, 1050, 1100]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
+      await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
 
       const metrics = await page.evaluate(() => {
@@ -105,6 +120,7 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
 
     for (const viewport of [{ width: 768, height: 1024 }, { width: 440, height: 956 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
       const page = await browser.newPage({ viewport });
+      await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
 
       const metrics = await page.evaluate(() => {
@@ -125,16 +141,17 @@ const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
         viewportWidth: document.documentElement.clientWidth,
         scrollWidth: document.documentElement.scrollWidth,
         cartHeight: cart.height,
+        rootScale: parseFloat(getComputedStyle(document.documentElement).fontSize) / 16,
         maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
       }});
 
-      assert.ok(metrics.headerHeight >= 67 && metrics.headerHeight <= 69, `${viewport.width}px: unexpected mobile header height`);
+      assert.ok(Math.abs(metrics.headerHeight - 68 * metrics.rootScale) <= 1.5, `${viewport.width}px: unexpected mobile header height`);
       assert.equal(metrics.brandVisible, true, `${viewport.width}px: logo is hidden`);
       assert.equal(metrics.cartVisible, true, `${viewport.width}px: cart is hidden`);
       assert.equal(metrics.menuVisible, true, `${viewport.width}px: burger is hidden`);
       assert.equal(metrics.studyDisplay, 'none', `${viewport.width}px: desktop links are visible`);
       assert.notEqual(metrics.accountDisplay, 'none', `${viewport.width}px: account icon must be visible in the top header`);
-      assert.ok(metrics.cartHeight >= 37 && metrics.cartHeight <= 39, `${viewport.width}px: cart height is not stable`);
+      assert.ok(Math.abs(metrics.cartHeight - 38 * metrics.rootScale) <= 1.5, `${viewport.width}px: cart height is not stable`);
       assert.ok(metrics.maxAxisDrift <= 2, `${viewport.width}px: mobile controls do not share one vertical axis`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${viewport.width}px: horizontal overflow detected`);
 

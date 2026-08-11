@@ -224,6 +224,7 @@ git commit -m "refactor: scale shared site shell with rem"
 
 **Files:**
 - Modify: `wp-content/themes/theobroma/style.css` selectors `.hero*`, `.home-*`, `#catalog`, `.feature`, `.about-*`, `.reviews-*`, `.contact*`, `.recipes-*`, `.recipe-*`, `.media-*`, `.article-*`, `.delivery-*`, `.marketplace-*`, `.buy-*`, `.cooperation-*`, `.corporate-gifts-*`, `.legal-*`
+- Modify: `wp-content/themes/theobroma/assets/css/home-redesign.css`
 - Modify: `scripts/verify-responsive-transition.spec.js`
 - Test: existing responsive scripts for each template.
 
