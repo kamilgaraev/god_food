@@ -512,6 +512,15 @@ body.account-modal-open { overflow:hidden; }
 .cooperation-page > h1 { top:11.0625rem; left:0; width:100%; text-align:center; font:500 3.25rem/3.25rem 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
 .cooperation-lead { position:absolute; top:15.5625rem; left:0; width:100%; margin:0; text-align:center; color:#343434; font:400 1.125rem/1.4375rem 'Montserrat',Arial,sans-serif; }
 .cooperation-chocolate { position:absolute; top:27.5rem; left:calc(50vw - 28.125rem); width:20.0625rem; height:19.64550781rem; object-fit:contain; }
+[data-pointer-parallax].is-pointer-parallax-ready {
+  transform:translate3d(var(--pointer-parallax-x,0),var(--pointer-parallax-y,0),0) rotateX(var(--pointer-parallax-rotate-x,0)) rotateY(var(--pointer-parallax-rotate-y,0));
+  transform-style:preserve-3d;
+  transform-origin:center;
+  will-change:transform;
+}
+@media (prefers-reduced-motion:reduce) {
+  [data-pointer-parallax] { transform:none !important; }
+}
 .cooperation-form { position:absolute; top:23rem; left:calc(50vw + 1.25rem); width:35rem; height:28.625rem; }
 .cooperation-form::before { content:''; position:absolute; inset:0; background:url('assets/images/cooperation-form-bg.jpg') 42.192% 0/111.436% auto no-repeat; opacity:.3; }
 .cooperation-form > * { position:relative; z-index:1; }

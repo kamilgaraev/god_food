@@ -77,6 +77,13 @@ function theobroma_assets(): void {
         (string) filemtime($theme_dir . '/assets/js/site-header.js'),
         array('strategy' => 'defer', 'in_footer' => true)
     );
+    wp_enqueue_script(
+        'theobroma-decorative-motion',
+        get_template_directory_uri() . '/assets/js/decorative-motion.js',
+        array(),
+        (string) filemtime($theme_dir . '/assets/js/decorative-motion.js'),
+        array('strategy' => 'defer', 'in_footer' => true)
+    );
 
     if (is_front_page()) {
         wp_enqueue_script(
@@ -151,7 +158,7 @@ add_action('wp_enqueue_scripts', 'theobroma_defer_home_dependency_scripts', 100)
 function theobroma_noncritical_script_priority(string $tag, string $handle): string {
     $noncritical = array(
         'wc-jquery-blockui', 'wc-js-cookie', 'woocommerce', 'wc-country-select',
-        'wc-address-i18n', 'wc-checkout', 'theobroma-homepage',
+        'wc-address-i18n', 'wc-checkout', 'theobroma-homepage', 'theobroma-decorative-motion',
         'theobroma-commerce-modals', 'theobroma-account-modal',
     );
     if (!is_front_page() || !in_array($handle, $noncritical, true) || str_contains($tag, 'fetchpriority=')) {
