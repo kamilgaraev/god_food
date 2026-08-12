@@ -52,6 +52,10 @@ final class SettingsPage
             return;
         }
         $values = array_merge((new Settings())->defaults(), (array) get_option('theobroma_commerce_settings', []));
+        $cdekNotice = get_transient(CdekConnectionAction::NOTICE_PREFIX . get_current_user_id());
+        if (is_array($cdekNotice)) {
+            delete_transient(CdekConnectionAction::NOTICE_PREFIX . get_current_user_id());
+        }
         $catalogAudit = (new OzonCatalogAudit())->audit(wc_get_products([
             'status' => 'publish',
             'limit' => -1,
@@ -75,6 +79,10 @@ final class SettingsPage
                 <?php $this->secret('cdek_client_secret', __('Secure password / Client secret', 'theobroma-commerce'), $values, defined('THEOBROMA_CDEK_CLIENT_SECRET')); ?>
                 <?php $this->number('cdek_sender_city_code', __('Код города отправителя СДЭК', 'theobroma-commerce'), $values); ?>
                 <?php $this->text('cdek_sender_address', __('Адрес отправителя', 'theobroma-commerce'), $values); ?>
+                <?php if (is_array($cdekNotice) && isset($cdekNotice['status'], $cdekNotice['message'])) : ?>
+                    <div class="notice notice-<?php echo $cdekNotice['status'] === 'success' ? 'success' : 'error'; ?> inline"><p><?php echo esc_html((string) $cdekNotice['message']); ?></p></div>
+                <?php endif; ?>
+                <p><button type="submit" class="button" form="theobroma-cdek-connection-check"><?php esc_html_e('Проверить подключение СДЭК', 'theobroma-commerce'); ?></button></p>
 
                 <h2><?php esc_html_e('Ozon Доставка (частное Seller API приложение)', 'theobroma-commerce'); ?></h2>
                 <?php if (is_array($notice) && isset($notice['status'], $notice['message'])) : ?>
@@ -89,6 +97,10 @@ final class SettingsPage
                 <?php $this->text('ozon_client_id', __('Client ID частного приложения', 'theobroma-commerce'), $values); ?>
                 <?php $this->secret('ozon_client_secret', __('Secret частного приложения', 'theobroma-commerce'), $values, defined('THEOBROMA_OZON_CLIENT_SECRET')); ?>
                 <?php submit_button(); ?>
+            </form>
+            <form id="theobroma-cdek-connection-check" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:none">
+                <input type="hidden" name="action" value="<?php echo esc_attr(CdekConnectionAction::ACTION); ?>">
+                <?php wp_nonce_field(CdekConnectionAction::ACTION); ?>
             </form>
             <p>
                 <?php if ($ozonAuthorized) : ?>

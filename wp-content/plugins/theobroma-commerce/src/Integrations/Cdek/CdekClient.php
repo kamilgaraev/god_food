@@ -18,6 +18,16 @@ final class CdekClient implements CdekOrderApi
     ) {
     }
 
+    public function verifyCredentials(): void
+    {
+        if (trim($this->clientId) === '' || trim($this->clientSecret) === '') {
+            throw new \InvalidArgumentException('CDEK credentials are missing');
+        }
+
+        $this->tokens->forget();
+        $this->accessToken();
+    }
+
     /** @param array<mixed> $payload
      *  @return list<array<mixed>>
      */
