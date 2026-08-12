@@ -14,14 +14,16 @@ final class OzonAuthorizationGrant
     ) {
     }
 
-    public function complete(string $state, string $code, int $userId, string $redirectUri): void
+    public function complete(string $state, string $code, string $redirectUri): int
     {
         $initiatorId = $this->states->consume($state);
-        if ($initiatorId === null || $initiatorId !== $userId) {
+        if ($initiatorId === null) {
             throw ProviderException::fromResponse('Ozon OAuth state is invalid', 403);
         }
 
         $this->authenticator->authorize($code, $redirectUri);
+
+        return $initiatorId;
     }
 }
 

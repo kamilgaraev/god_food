@@ -13,7 +13,7 @@ use Theobroma\Commerce\Tests\Fakes\RecordingTransport;
 
 final class OzonAuthorizationGrantTest extends TestCase
 {
-    public function testConsumesMatchingStateAndAuthorizesSeller(): void
+    public function testConsumesValidStateWithoutCurrentWordPressUserAndReturnsInitiator(): void
     {
         $states = new MemoryOAuthStateStore();
         $state = $states->issue(42);
@@ -31,28 +31,11 @@ final class OzonAuthorizationGrantTest extends TestCase
             new OzonAuthenticator($transport, $tokens, 'client-id', 'client-secret')
         );
 
-        $grant->complete($state, 'authorization-code', 42, 'https://shop.test/ozon/callback');
+        $initiatorId = $grant->complete($state, 'authorization-code', 'https://shop.test/ozon/callback');
 
+        $this->assertSame(42, $initiatorId);
         $this->assertSame('access-token', $tokens->value['token'] ?? null);
         $this->assertSame(null, $states->consume($state));
-    }
-
-    public function testRejectsStateIssuedForAnotherUserBeforeTokenExchange(): void
-    {
-        $states = new MemoryOAuthStateStore();
-        $state = $states->issue(42);
-        $transport = new RecordingTransport([]);
-        $grant = new OzonAuthorizationGrant(
-            $states,
-            new OzonAuthenticator($transport, new MemoryOzonTokenStore(), 'client-id', 'client-secret')
-        );
-
-        $this->assertThrows(
-            static fn () => $grant->complete($state, 'authorization-code', 77, 'https://shop.test/ozon/callback'),
-            ProviderException::class
-        );
-
-        $this->assertSame(0, count($transport->requests));
     }
 
     public function testRejectsReplayedState(): void
@@ -71,10 +54,10 @@ final class OzonAuthorizationGrantTest extends TestCase
             $states,
             new OzonAuthenticator($transport, new MemoryOzonTokenStore(), 'client-id', 'client-secret')
         );
-        $grant->complete($state, 'authorization-code', 42, 'https://shop.test/ozon/callback');
+        $grant->complete($state, 'authorization-code', 'https://shop.test/ozon/callback');
 
         $this->assertThrows(
-            static fn () => $grant->complete($state, 'replayed-code', 42, 'https://shop.test/ozon/callback'),
+            static fn () => $grant->complete($state, 'replayed-code', 'https://shop.test/ozon/callback'),
             ProviderException::class
         );
 
