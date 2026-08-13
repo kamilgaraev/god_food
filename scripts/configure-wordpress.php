@@ -67,7 +67,10 @@ $required_plugins = array(
     'theobroma-seo/theobroma-seo.php',
 );
 if (is_plugin_active('e-commerce-data-interchange/e-commerce-data-interchange.php')) {
-    deactivate_plugins('e-commerce-data-interchange/e-commerce-data-interchange.php');
+    // The legacy plugin's deactivation hook performs filesystem cleanup and
+    // fatals with the ftpsockets transport. WordPress supports silent
+    // deactivation specifically for cases where hooks must not be executed.
+    deactivate_plugins('e-commerce-data-interchange/e-commerce-data-interchange.php', true);
     echo 'plugin-deactivated=e-commerce-data-interchange/e-commerce-data-interchange.php' . PHP_EOL;
 }
 foreach ($required_plugins as $plugin) {
