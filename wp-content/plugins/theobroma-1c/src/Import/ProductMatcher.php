@@ -1,0 +1,3 @@
+<?php
+declare(strict_types=1); namespace Theobroma\OneC\Import;
+final class ProductMatcher {private \Closure$lookup;private const ALLOWED=['1c_guid','1c_article','woo_sku','client_article','ozon_product_id','ozon_sku','ean'];public function __construct(callable$lookup){$this->lookup=$lookup(...);} /** @param array<string,string> $identifiers */public function match(array$identifiers):ProductMatch{$ids=[];foreach(self::ALLOWED as$field){$value=trim((string)($identifiers[$field]??''));if($value==='')continue;foreach(($this->lookup)($field,$value)as$id)$ids[(int)$id]=true;}if(count($ids)===1)return new ProductMatch('matched',(int)array_key_first($ids));return new ProductMatch($ids===[]?'missing':'ambiguous');}}

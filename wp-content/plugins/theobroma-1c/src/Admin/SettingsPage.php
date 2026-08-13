@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Theobroma\OneC\Admin;
 
-use Theobroma\OneC\Settings\Settings;
+use Theobroma\OneC\Settings\{ExchangeOptions, Settings};
 
 final class SettingsPage
 {
@@ -27,6 +27,7 @@ final class SettingsPage
             return;
         }
         wp_enqueue_style('theobroma-1c-admin', plugins_url('assets/admin.css', THEOBROMA_1C_FILE), [], '0.2.0');
+        wp_enqueue_style('theobroma-1c-directions', plugins_url('assets/directions.css', THEOBROMA_1C_FILE), ['theobroma-1c-admin'], '0.3.0');
     }
 
     public function settings(): void
@@ -44,6 +45,7 @@ final class SettingsPage
             'username' => sanitize_user((string) ($input['username'] ?? ''), true),
             'password_hash' => $password !== '' ? wp_hash_password($password) : $old['password_hash'],
             'batch_size' => min(100, max(1, (int) ($input['batch_size'] ?? 50))),
+            ...ExchangeOptions::fromArray($input)->toArray(),
         ];
     }
 
@@ -74,16 +76,22 @@ final class SettingsPage
         echo '</div>';
     }
 
-    /** @param array{enabled:bool,username:string,password_hash:string,batch_size:int} $settings */
+    /** @param array<string,mixed> $settings */
     private function connection(array $settings): void
     {
         echo '<section class="theobroma-1c-card"><div class="theobroma-1c-card__head"><span class="dashicons dashicons-admin-network" aria-hidden="true"></span><div><h2>Подключение к 1С</h2><p>Создайте отдельные учётные данные только для обмена.</p></div></div>';
         echo '<form method="post" action="options.php" class="theobroma-1c-form">';
         settings_fields('theobroma_1c');
         echo '<label class="theobroma-1c-switch"><input type="checkbox" name="' . Settings::OPTION . '[enabled]" value="1" ' . checked($settings['enabled'], true, false) . '><span aria-hidden="true"></span><strong>Включить обмен заказами</strong></label>';
+        echo '<fieldset class="theobroma-1c-directions"><legend>Направления обмена</legend>';
+        foreach (['export_orders'=>['Экспорт оплаченных заказов в 1С','Состав, доставка, оплата, скидки и возвраты.'],'import_order_statuses'=>['Импорт статусов заказов из 1С','Только для существующих заказов WC-ORDER-ID.'],'import_stock'=>['Импорт остатков из 1С','Только для однозначно сопоставленных товаров.'],'import_prices'=>['Импорт цен из 1С','Не изменяет SKU, название, описание и изображения.']] as $key=>[$title,$hint]) {
+            echo '<label class="theobroma-1c-option"><input type="hidden" name="'.Settings::OPTION.'['.$key.']" value="0"><input type="checkbox" name="'.Settings::OPTION.'['.$key.']" value="1" '.checked(!empty($settings[$key]),true,false).'><span><strong>'.esc_html($title).'</strong><small>'.esc_html($hint).'</small></span></label>';
+        }
+        echo '</fieldset>';
         echo '<label><span>Логин</span><input type="text" name="' . Settings::OPTION . '[username]" value="' . esc_attr($settings['username']) . '" autocomplete="username" placeholder="Например, exchange_1c"></label>';
         echo '<label><span>Новый пароль</span><input type="password" autocomplete="new-password" name="' . Settings::OPTION . '[password]" placeholder="' . ($settings['password_hash'] !== '' ? 'Пароль уже установлен' : 'Задайте надёжный пароль') . '"><small>Оставьте пустым, чтобы не менять установленный пароль.</small></label>';
         echo '<label class="theobroma-1c-form__short"><span>Заказов в одном пакете</span><input type="number" min="1" max="100" name="' . Settings::OPTION . '[batch_size]" value="' . (int) $settings['batch_size'] . '"><small>Обычно достаточно 50.</small></label>';
+        echo '<label class="theobroma-1c-form__short"><span>Максимальный XML-файл, МБ</span><input type="number" min="1" max="20" name="'.Settings::OPTION.'[upload_limit_mb]" value="'.(int)$settings['upload_limit_mb'].'"><small>Жёсткий предел — 20 МБ.</small></label>';
         submit_button('Сохранить настройки', 'primary', 'submit', false);
         echo '</form></section>';
     }
