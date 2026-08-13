@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Theobroma 1C
  * Description: Safe CommerceML order exchange for WooCommerce and 1C.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Requires at least: 6.8
  * Requires PHP: 8.1
  * Requires Plugins: woocommerce
