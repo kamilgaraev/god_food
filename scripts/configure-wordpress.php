@@ -63,8 +63,13 @@ $required_plugins = array(
     'theobroma-admin-tools/theobroma-admin-tools.php',
     'theobroma-analytics/theobroma-analytics.php',
     'theobroma-commerce/theobroma-commerce.php',
+    'theobroma-1c/theobroma-1c.php',
     'theobroma-seo/theobroma-seo.php',
 );
+if (is_plugin_active('e-commerce-data-interchange/e-commerce-data-interchange.php')) {
+    deactivate_plugins('e-commerce-data-interchange/e-commerce-data-interchange.php');
+    echo 'plugin-deactivated=e-commerce-data-interchange/e-commerce-data-interchange.php' . PHP_EOL;
+}
 foreach ($required_plugins as $plugin) {
     if (!is_plugin_active($plugin)) {
         $result = activate_plugin($plugin);

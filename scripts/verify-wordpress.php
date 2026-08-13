@@ -19,11 +19,11 @@ verify_value(is_plugin_active('theobroma-analytics/theobroma-analytics.php'), 'a
 verify_value(is_plugin_active('theobroma-commerce/theobroma-commerce.php'), 'commerce integrations active');
 verify_value(is_plugin_active('theobroma-seo/theobroma-seo.php'), 'SEO active');
 verify_value(is_plugin_active('yookassa/yookassa.php'), 'YooKassa active');
-verify_value(is_plugin_active('e-commerce-data-interchange/e-commerce-data-interchange.php'), '1C EDI active');
+verify_value(is_plugin_active('theobroma-1c/theobroma-1c.php'), 'Theobroma 1C active');
 $active_plugins = (array) get_option('active_plugins', array());
 sort($active_plugins);
 verify_value($active_plugins === array(
-    'e-commerce-data-interchange/e-commerce-data-interchange.php',
+    'theobroma-1c/theobroma-1c.php',
     'theobroma-admin-tools/theobroma-admin-tools.php',
     'theobroma-analytics/theobroma-analytics.php',
     'theobroma-commerce/theobroma-commerce.php',

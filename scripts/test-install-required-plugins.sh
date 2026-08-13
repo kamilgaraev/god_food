@@ -44,11 +44,9 @@ PATH="$fake_bin:$PATH" DOCKER_LOG="$docker_log" \
 grep -Fq \
   "compose exec -T -e HTTP_HOST=localhost wordpress php /tmp/wp-cli.phar plugin install yookassa --version=2.16.3 --activate --allow-root" \
   "$docker_log"
-grep -Fq \
-  "compose exec -T -e HTTP_HOST=localhost wordpress php /tmp/wp-cli.phar plugin install e-commerce-data-interchange --version=5.1.1 --activate --allow-root" \
-  "$docker_log"
-grep -Fq \
-  "compose exec -T -e HTTP_HOST=localhost wordpress php /tmp/wp-cli.phar plugin get e-commerce-data-interchange --fields=name,status,version --format=table --allow-root" \
-  "$docker_log"
+if grep -Fq "e-commerce-data-interchange" "$docker_log"; then
+  echo "Third-party EDI must not be installed" >&2
+  exit 1
+fi
 
 echo "install-required-plugins behavior verified"

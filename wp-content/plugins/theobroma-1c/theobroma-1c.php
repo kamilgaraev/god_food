@@ -25,3 +25,4 @@ add_action('before_woocommerce_init', static function (): void {
     }
 });
 add_action('plugins_loaded', [Theobroma\OneC\Plugin::class, 'boot'], 20);
+register_activation_hook(__FILE__, [Theobroma\OneC\Plugin::class, 'activate']);
