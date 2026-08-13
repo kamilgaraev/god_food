@@ -39,6 +39,7 @@ async function footerMetrics(browser, viewportWidth) {
     };
 
     return {
+      rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
       shell: bounds('.footer-shell'),
       map: bounds('.footer-map'),
       phones: bounds('.footer-phones'),
@@ -68,8 +69,9 @@ async function run() {
     assertClose(mobile.map.right, 370, '390px footer content must keep a 20px right inset');
 
     const tablet = await footerMetrics(browser, 768);
-    assertClose(tablet.shell.left, 40, '768px footer shell must keep a 40px left inset');
-    assertClose(tablet.shell.right, 728, '768px footer shell must keep a 40px right inset');
+    const tabletInset = 2.5 * tablet.rootFontSize;
+    assertClose(tablet.shell.left, tabletInset, '768px footer shell must keep a fluid 2.5rem left inset');
+    assertClose(tablet.shell.right, 768 - tabletInset, '768px footer shell must keep a fluid 2.5rem right inset');
     assertClose(tablet.map.width, tablet.phones.width, 'tablet footer columns must have equal widths');
     assertClose(tablet.map.left - tablet.shell.left, tablet.shell.right - tablet.phones.right, 'tablet footer outer insets must be equal');
 

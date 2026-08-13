@@ -5,7 +5,12 @@ const baseUrl = (process.env.THEOBROMA_URL || 'http://localhost:8080').replace(/
 const profiles = [
   { width: 320, expectedRoot: 15 },
   { width: 390, expectedRoot: 16 },
-  { width: 768, expectedRoot: 16 },
+  { width: 600, expectedRoot: 16 },
+  { width: 768, expectedRoot: 16.5609 },
+  { width: 900, expectedRoot: 17.0017 },
+  { width: 1199, expectedRoot: 18 },
+  { width: 1200, expectedRoot: 15 },
+  { width: 1320, expectedRoot: 15.5 },
   { width: 1440, expectedRoot: 16 },
   { width: 1920, expectedRoot: 17.7143 },
   { width: 2560, expectedRoot: 20 },
