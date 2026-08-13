@@ -1,0 +1,4 @@
+<?php
+declare(strict_types=1); namespace Theobroma\OneC\Tests;
+use Theobroma\OneC\Ozon\OzonTableParser;
+final class OzonTableParserTest {public function testParsesProvidedRussianTsvHeaderAndBom():void{$text="\xEF\xBB\xBFАртикул\tOzon Product ID\tSKU\tШтрихкод (Серийный номер / EAN)\tНазвание товара\nГШ70100\t1036906413\t1560950169\t4603759697130\tШоколад";$rows=(new OzonTableParser())->parse($text);if(count($rows)!==1||$rows[0]->clientArticle!=='ГШ70100'||$rows[0]->ozonSku!=='1560950169')throw new \RuntimeException('TSV parse mismatch');}public function testRejectsMalformedNumericIdentifiers():void{$text="Артикул,Ozon Product ID,SKU,Штрихкод (Серийный номер / EAN),Название товара\nA,no,12x,123,X";$r=(new OzonTableParser())->parse($text)[0];if($r->valid)throw new \RuntimeException('Malformed row accepted');}}

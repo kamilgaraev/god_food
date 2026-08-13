@@ -1,0 +1,3 @@
+<?php
+declare(strict_types=1); namespace Theobroma\OneC\Ozon;
+final class OzonMatchService {private \Closure $lookup;public function __construct(callable $lookup){$this->lookup=$lookup(...);}public function match(OzonRow $row):OzonMatchResult{if(!$row->valid)return new OzonMatchResult('invalid');foreach(['ozon_sku'=>$row->ozonSku,'ozon_product_id'=>$row->ozonProductId,'ean'=>$row->ean]as$field=>$value){if($value==='')continue;$ids=array_values(array_unique(array_map('intval',($this->lookup)($field,$value))));if(count($ids)===1)return new OzonMatchResult('matched',$ids[0]);if(count($ids)>1)return new OzonMatchResult('ambiguous');}return new OzonMatchResult('missing');}}
