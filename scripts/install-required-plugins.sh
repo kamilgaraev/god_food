@@ -17,7 +17,19 @@ docker compose exec -T -e HTTP_HOST=localhost wordpress \
   --allow-root
 
 docker compose exec -T -e HTTP_HOST=localhost wordpress \
+  php /tmp/wp-cli.phar plugin install e-commerce-data-interchange \
+  --version=5.1.1 \
+  --activate \
+  --allow-root
+
+docker compose exec -T -e HTTP_HOST=localhost wordpress \
   php /tmp/wp-cli.phar plugin get yookassa \
+  --fields=name,status,version \
+  --format=table \
+  --allow-root
+
+docker compose exec -T -e HTTP_HOST=localhost wordpress \
+  php /tmp/wp-cli.phar plugin get e-commerce-data-interchange \
   --fields=name,status,version \
   --format=table \
   --allow-root
