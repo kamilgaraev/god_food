@@ -57,7 +57,8 @@ final class SettingsPage
 
         $settings = (new Settings())->get();
         $configured = $settings['username'] !== '' && $settings['password_hash'] !== '';
-        $ready = $settings['enabled'] && $configured;
+        $directionsEnabled = $settings['export_orders'] || $settings['import_order_statuses'] || $settings['import_stock'] || $settings['import_prices'];
+        $ready = $settings['enabled'] && $configured && $directionsEnabled;
         $url = home_url('/theobroma-1c/exchange');
 
         echo '<div class="wrap theobroma-1c">';
@@ -82,7 +83,7 @@ final class SettingsPage
         echo '<section class="theobroma-1c-card"><div class="theobroma-1c-card__head"><span class="dashicons dashicons-admin-network" aria-hidden="true"></span><div><h2>Подключение к 1С</h2><p>Создайте отдельные учётные данные только для обмена.</p></div></div>';
         echo '<form method="post" action="options.php" class="theobroma-1c-form">';
         settings_fields('theobroma_1c');
-        echo '<label class="theobroma-1c-switch"><input type="checkbox" name="' . Settings::OPTION . '[enabled]" value="1" ' . checked($settings['enabled'], true, false) . '><span aria-hidden="true"></span><strong>Включить обмен заказами</strong></label>';
+        echo '<label class="theobroma-1c-switch"><input type="checkbox" name="' . Settings::OPTION . '[enabled]" value="1" ' . checked($settings['enabled'], true, false) . '><span aria-hidden="true"></span><strong>Включить интеграцию с 1С</strong></label>';
         echo '<fieldset class="theobroma-1c-directions"><legend>Направления обмена</legend>';
         foreach (['export_orders'=>['Экспорт оплаченных заказов в 1С','Состав, доставка, оплата, скидки и возвраты.'],'import_order_statuses'=>['Импорт статусов заказов из 1С','Только для существующих заказов WC-ORDER-ID.'],'import_stock'=>['Импорт остатков из 1С','Только для однозначно сопоставленных товаров.'],'import_prices'=>['Импорт цен из 1С','Не изменяет SKU, название, описание и изображения.']] as $key=>[$title,$hint]) {
             echo '<label class="theobroma-1c-option"><input type="hidden" name="'.Settings::OPTION.'['.$key.']" value="0"><input type="checkbox" name="'.Settings::OPTION.'['.$key.']" value="1" '.checked(!empty($settings[$key]),true,false).'><span><strong>'.esc_html($title).'</strong><small>'.esc_html($hint).'</small></span></label>';
@@ -113,9 +114,9 @@ final class SettingsPage
             echo '<div class="theobroma-1c-empty"><span class="dashicons dashicons-clock" aria-hidden="true"></span><strong>Обменов пока не было</strong><p>Записи появятся после первого обращения 1С к URL обмена.</p></div></section>';
             return;
         }
-        echo '<div class="theobroma-1c-table-wrap"><table><thead><tr><th>Время (UTC)</th><th>Событие</th><th>Результат</th><th>Заказов</th></tr></thead><tbody>';
+        echo '<div class="theobroma-1c-table-wrap"><table><thead><tr><th>Время (UTC)</th><th>Событие</th><th>Результат</th><th>Применено</th><th>Пропущено</th></tr></thead><tbody>';
         foreach ($entries as $entry) {
-            echo '<tr><td>' . esc_html((string) ($entry['time'] ?? '')) . '</td><td>' . esc_html((string) ($entry['event'] ?? '')) . '</td><td>' . esc_html((string) ($entry['result'] ?? '')) . '</td><td>' . (int) ($entry['order_count'] ?? 0) . '</td></tr>';
+            echo '<tr><td>' . esc_html((string) ($entry['time'] ?? '')) . '</td><td>' . esc_html((string) ($entry['event'] ?? '')) . '</td><td>' . esc_html((string) ($entry['result'] ?? '')) . '</td><td>' . (int) ($entry['applied'] ?? $entry['order_count'] ?? 0) . '</td><td>' . (int) (($entry['skipped'] ?? 0) + ($entry['ambiguous'] ?? 0) + ($entry['errors'] ?? 0)) . '</td></tr>';
         }
         echo '</tbody></table></div></section>';
     }

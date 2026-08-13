@@ -8,7 +8,7 @@ final class ExchangeLogger
     /** @param array<string, int|string|bool> $context */
     public function info(string $event, array $context = []): void
     {
-        $safe = array_intersect_key($context, array_flip(['mode', 'result', 'order_count']));
+        $safe = array_intersect_key($context, array_flip(['mode', 'type', 'result', 'order_count', 'applied', 'skipped', 'ambiguous', 'errors']));
         wc_get_logger()->info($event, ['source' => 'theobroma-1c'] + $safe);
 
         $entries = (array) get_option('theobroma_1c_recent_log', []);
