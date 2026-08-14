@@ -68,6 +68,16 @@ async function run() {
       const mail = document.querySelector('.footer-mail:nth-of-type(6)');
       const mailCards = Array.from(document.querySelectorAll('.footer-mail'));
       const mailStyle = getComputedStyle(mail, '::before');
+      const phoneText = document.querySelector('.footer-phones span:first-child');
+      const footerContent = [phoneText, document.querySelector('.footer-address'), mail.querySelector('strong')].filter(Boolean).map((element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        return {
+          left: range.getBoundingClientRect().left - element.closest('.footer-card, .footer-phones').getBoundingClientRect().left,
+          textAlign: getComputedStyle(element).textAlign,
+          fontSize: parseFloat(getComputedStyle(element).fontSize),
+        };
+      });
       const firstProduct = document.querySelector('.home-product-card');
       const productGrid = document.querySelector('.home-product-grid');
       const gridStyle = getComputedStyle(productGrid);
@@ -83,6 +93,8 @@ async function run() {
           strongAlign: getComputedStyle(mail.querySelector('strong')).textAlign,
           firstGap: rect(mailCards[1]).top - rect(mailCards[0]).bottom,
         },
+        footerContent,
+        phonesUseText: Boolean(phoneText) && !document.querySelector('.footer-phones img'),
         catalog: {
           cardWidth: rect(firstProduct).width,
           availableWidth: rect(productGrid).width - parseFloat(gridStyle.paddingLeft) - parseFloat(gridStyle.paddingRight),
@@ -96,6 +108,8 @@ async function run() {
     const contactInsets = homeMetrics.controls.map((control) => ({ left: control.left - homeMetrics.contactRect.left, right: homeMetrics.contactRect.right - control.right }));
     check(contactInsets.every(({ left, right }) => left >= 20 && right >= 20 && Math.abs(left - right) <= 2), '2. Contact fields must keep equal inner insets', failures);
     check(parseFloat(homeMetrics.mail.iconBottom) <= 12 && parseFloat(homeMetrics.mail.iconRight) <= 12 && homeMetrics.mail.strongAlign === 'left' && homeMetrics.mail.height <= 112 && homeMetrics.mail.firstGap >= 12 && homeMetrics.mail.firstGap <= 24, '3. Mobile footer mail cards must be compact with a bottom-right icon', failures);
+    const footerLefts = homeMetrics.footerContent.map(({ left }) => left);
+    check(homeMetrics.phonesUseText && homeMetrics.footerContent.length === 3 && homeMetrics.footerContent.every(({ textAlign }) => textAlign === 'left') && Math.max(...footerLefts) - Math.min(...footerLefts) <= 2 && homeMetrics.footerContent[0].fontSize === homeMetrics.footerContent[2].fontSize, '3a. Mobile footer card content must share one left-aligned typography grid', failures);
     check(homeMetrics.catalog.cardWidth >= homeMetrics.catalog.availableWidth - 2, '6. Mobile catalog must show one complete card inside its viewport', failures);
     check(homeMetrics.ctaBackground === 'rgb(176, 144, 61)', '7. Primary home CTA must use the brand gold color', failures);
 
@@ -126,8 +140,37 @@ async function run() {
     const wideContactRight = Math.min(...wideMetrics.controls.map(({ right }) => right));
     check(wideContactLeft >= 20 && wideContactRight >= 20 && Math.abs(wideContactLeft - wideContactRight) <= 2, '2. Contact fields must stay aligned at 509px', failures);
     check(wideMetrics.mailHeight <= 112 && wideMetrics.mailIconBottom <= 12 && wideMetrics.mailIconRight <= 12, '3. Footer cards must stay compact at 509px', failures);
-    check(wideMetrics.catalogCardWidth >= wideMetrics.catalogAvailableWidth - 2, '6. Catalog must show a complete card at 509px', failures);
+    check(wideMetrics.catalogCardWidth <= Math.min(384.5, wideMetrics.catalogAvailableWidth + 1), '6. Catalog must show a restrained complete card at 509px', failures);
     check(!wideMetrics.overflow, 'Mobile homepage must not overflow horizontally at 509px', failures);
+
+    const transition = await pageFor(browser, '/', 521);
+    const transitionMetrics = await transition.evaluate(() => {
+      const viewportWidth = document.documentElement.clientWidth;
+      const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+      const contained = (element) => {
+        const box = element.getBoundingClientRect();
+        return box.left >= -1 && box.right <= viewportWidth + 1;
+      };
+      const contact = rect('.contact-card');
+      const products = Array.from(document.querySelectorAll('.home-product-card'));
+      return {
+        aboutContained: [document.querySelector('.story'), ...document.querySelectorAll('.value')].every(contained),
+        contactHeadingContained: contained(document.querySelector('.contact-card h2')),
+        contactControlsContained: Array.from(document.querySelectorAll('.contact-card .form-grid > input, .contact-card .form-grid > textarea, .contact-card .phone-field')).every((element) => {
+          const box = element.getBoundingClientRect();
+          return box.left >= contact.left - 1 && box.right <= contact.right + 1;
+        }),
+        catalogCardWidth: products[0].getBoundingClientRect().width,
+        firstCardLeft: products[0].getBoundingClientRect().left,
+        firstCardRight: products[0].getBoundingClientRect().right,
+        secondCardLeft: products[1].getBoundingClientRect().left,
+        viewportWidth,
+      };
+    });
+    await transition.close();
+    check(transitionMetrics.aboutContained, '8. The complete about composition must fit at 521px', failures);
+    check(transitionMetrics.contactHeadingContained && transitionMetrics.contactControlsContained, '8. Contact heading and fields must fit at 521px', failures);
+    check(transitionMetrics.catalogCardWidth <= 384.5 && transitionMetrics.firstCardLeft >= -1 && transitionMetrics.firstCardRight <= transitionMetrics.viewportWidth + 1 && transitionMetrics.secondCardLeft >= transitionMetrics.firstCardRight, '8. Catalog must show one restrained complete card at 521px', failures);
 
     const cooperation = await pageFor(browser, '/cooperation/', 390);
     const benefitMetrics = await cooperation.evaluate(() => Array.from(document.querySelectorAll('.cooperation-benefit-grid article'), (card) => {

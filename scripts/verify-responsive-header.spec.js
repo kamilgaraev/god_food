@@ -19,7 +19,7 @@ async function routeLocalAssets(page) {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
-    for (const width of [1101, 1200, 1440, 2295]) {
+    for (const width of [1200, 1440, 2295]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
@@ -69,7 +69,7 @@ async function routeLocalAssets(page) {
       await page.close();
     }
 
-    for (const width of [801, 850, 900, 950, 1000, 1050, 1100]) {
+    for (const width of [601, 768, 801, 900, 1100, 1199]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
@@ -99,7 +99,7 @@ async function routeLocalAssets(page) {
           menuVisible: menu.width > 0,
           maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
           controlsRight: Math.max(account.right, cart.right, menu.right),
-          heroActionTrustGap: heroTrust.left - heroActions.right,
+          heroContentOrdered: heroTrust.bottom <= heroActions.top + 1,
           viewportWidth: document.documentElement.clientWidth,
           scrollWidth: document.documentElement.scrollWidth,
         };
@@ -113,12 +113,12 @@ async function routeLocalAssets(page) {
       assert.equal(metrics.menuVisible, true, `${width}px: tablet menu trigger is missing`);
       assert.ok(metrics.maxAxisDrift <= 2, `${width}px: tablet header controls do not share one vertical axis`);
       assert.ok(metrics.controlsRight <= metrics.viewportWidth, `${width}px: tablet actions are clipped by the viewport`);
-      assert.ok(metrics.heroActionTrustGap >= 10, `${width}px: hero actions collide with the trust metrics`);
+      assert.equal(metrics.heroContentOrdered, true, `${width}px: tablet hero actions collide with the trust metrics`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${width}px: tablet header creates horizontal overflow`);
       await page.close();
     }
 
-    for (const viewport of [{ width: 768, height: 1024 }, { width: 440, height: 956 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
+    for (const viewport of [{ width: 600, height: 1024 }, { width: 521, height: 956 }, { width: 440, height: 956 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
       const page = await browser.newPage({ viewport });
       await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });

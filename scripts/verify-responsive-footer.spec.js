@@ -75,7 +75,7 @@ async function run() {
     assertClose(tablet.map.width, tablet.phones.width, 'tablet footer columns must have equal widths');
     assertClose(tablet.map.left - tablet.shell.left, tablet.shell.right - tablet.phones.right, 'tablet footer outer insets must be equal');
 
-    for (const width of [461, 509, 550, 599]) {
+    for (const width of [461, 509, 550, 599, 600]) {
       const narrow = await footerMetrics(browser, width);
       assertClose(narrow.map.left, narrow.phones.left, `${width}px footer cards must use the mobile single-column composition`);
       assertClose(narrow.map.width, narrow.phones.width, `${width}px footer cards must keep one shared content width`);
@@ -87,9 +87,9 @@ async function run() {
       }
     }
 
-    const tabletBoundary = await footerMetrics(browser, 600);
+    const tabletBoundary = await footerMetrics(browser, 601);
     if (Math.abs(tabletBoundary.map.left - tabletBoundary.phones.left) <= 1) {
-      throw new Error('600px footer must switch to the tablet two-column composition');
+      throw new Error('601px footer must switch to the tablet two-column composition');
     }
   } finally {
     await browser.close();

@@ -44,7 +44,7 @@ async function run() {
 
   try {
     const html = await fetchHomepage();
-    for (const width of [1440, 2048]) {
+    for (const width of [2048, 2560]) {
       const page = await openHomepage(browser, width, html);
       const metrics = await page.evaluate(() => {
         const bounds = (element) => {
@@ -52,12 +52,18 @@ async function run() {
           return { left: rect.left, right: rect.right, width: rect.width };
         };
         const composition = document.querySelector('.home-composition');
-        const shell = document.querySelector('.home-composition__shell');
+        const containerSelectors = [
+          '.home-section-heading',
+          '.home-product-grid',
+          '.home-cacao__shell',
+          '.home-composition__shell',
+        ];
+        const containers = containerSelectors.map((selector) => ({ selector, ...bounds(document.querySelector(selector)) }));
         const cards = Array.from(document.querySelectorAll('.home-promo-card'));
         return {
           viewport: innerWidth,
           composition: composition ? bounds(composition) : null,
-          shell: shell ? bounds(shell) : null,
+          containers,
           promoCards: cards.length === 2
             ? { left: bounds(cards[0]).left, right: bounds(cards[1]).right }
             : null,
@@ -66,10 +72,14 @@ async function run() {
 
       assert(metrics.composition, `${width}px composition section must exist`);
       assert.equal(metrics.composition.width, metrics.viewport, `${width}px composition background must remain full width`);
-      assert(metrics.shell, `${width}px composition copy and facts must have a shared inner container`);
+      const containerLefts = metrics.containers.map(({ left }) => left);
+      const containerRights = metrics.containers.map(({ right }) => right);
+      assert(Math.max(...containerLefts) - Math.min(...containerLefts) <= 2, `${width}px homepage sections must share one left container edge`);
+      assert(Math.max(...containerRights) - Math.min(...containerRights) <= 2, `${width}px homepage sections must share one right container edge`);
       assert(metrics.promoCards, `${width}px promo section must contain two cards`);
-      assert(Math.abs(metrics.shell.left - metrics.promoCards.left) <= 12, `${width}px composition and promo content must share the left container edge`);
-      assert(Math.abs(metrics.shell.right - metrics.promoCards.right) <= 12, `${width}px composition and promo content must share the right container edge`);
+      const compositionShell = metrics.containers.find(({ selector }) => selector === '.home-composition__shell');
+      assert(Math.abs(compositionShell.left - metrics.promoCards.left) <= 12, `${width}px composition and promo content must share the left container edge`);
+      assert(Math.abs(compositionShell.right - metrics.promoCards.right) <= 12, `${width}px composition and promo content must share the right container edge`);
       await page.close();
     }
   } finally {
