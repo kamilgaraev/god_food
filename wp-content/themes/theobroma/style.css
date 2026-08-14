@@ -19,7 +19,7 @@ Text Domain: theobroma
   --gold:#b0903d;
   --line:#dfd2c3;
   --muted:#766c64;
-  --layout-container:90rem;
+  --layout-container:72.5rem;
   --layout-wide:var(--layout-container);
   --layout-content:72.5rem;
   --layout-gutter:clamp(1.125rem,4vw,4rem);
@@ -1725,6 +1725,25 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .contact-card { left:0; width:calc(100% - 2.5rem); margin-inline:auto; transform:none; }
 }
 
+@media (max-width:600px) {
+  .recipes-intro,.marketplace-intro,.buy-intro,.cooperation-page,.recipe-detail-intro {
+    width:100vw;
+    max-width:100vw;
+    margin-left:0;
+    margin-right:0;
+    margin-bottom:0;
+    transform:none;
+  }
+  .recipe-detail-intro { height:auto; min-height:0; }
+  .recipe-grid,.market-grid,.recipe-detail-columns,.recipe-product-promo {
+    width:var(--layout-container);
+    max-width:var(--layout-container);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .market-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:2.125rem .75rem; }
+}
+
 /* Mobile layout refinements shared by the complete 0-600px range. */
 @media (max-width:600px) {
   .value:nth-child(1) img,
@@ -2151,4 +2170,64 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-product .product-detail-accordions details > div {
   font-size:1rem;
   line-height:1.5rem;
+}
+
+/* Shared three-mode layout system. Full-bleed sections own backgrounds only;
+   readable and interactive content uses one centered measure. */
+@media (min-width:1200px) { :root { --layout-container:72.5rem; --layout-gutter:clamp(2.5rem,4vw,4rem); } }
+@media (min-width:601px) and (max-width:1199px) { :root { --layout-container:37.5rem; --layout-gutter:2.5rem; } }
+@media (max-width:600px) { :root { --layout-container:calc(100vw - 2 * var(--layout-gutter)); --layout-gutter:1.125rem; } }
+
+:where(.shop-shell,.legal-content,.recipe-grid,.market-grid,.buy-tabs,.buy-location,.buy-partner-grid,.delivery-accordion,.media-grid,.product-detail-hero,.product-detail-accordions,.product-related,.recipe-detail-columns,.recipe-product-promo,.corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases,.corporate-gifts-minimum,.corporate-gifts-benefits,.corporate-gifts-request) {
+  width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter)));
+  max-width:var(--layout-container);
+  margin-inline:auto;
+}
+
+.phone-field {
+  padding-inline:1.25rem;
+  display:grid;
+  grid-template-columns:1.125rem .5rem auto minmax(0,1fr);
+  align-items:center;
+  column-gap:.625rem;
+}
+.phone-field :where(.phone-flag,.phone-triangle,.phone-code,input) { position:static; inset:auto; }
+.phone-field .phone-triangle { justify-self:center; }
+.phone-field .phone-code { white-space:nowrap; }
+.phone-field input { position:static; inset:auto; width:100%; min-width:0; padding:0; }
+
+@media (max-width:1199px) {
+  :where(.recipes-intro,.marketplace-intro,.buy-intro,.cooperation-page,.recipe-detail-intro) { width:100%; margin-inline:0; }
+  :where(.recipes-intro,.marketplace-intro,.buy-intro,.cooperation-page,.delivery-page,.media-page,.recipe-detail-intro) > :where(h1,.recipes-lead,.marketplace-lead,.buy-lead,.cooperation-lead,.delivery-lead,.media-lead,.recipe-detail-lead) {
+    width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter)));
+    max-width:var(--layout-container);
+    margin-inline:auto;
+  }
+  .cooperation-form,.cooperation-benefits {
+    width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter)));
+    max-width:var(--layout-container);
+    margin-inline:auto;
+  }
+}
+
+@media (max-width:600px) {
+  .home-hero__shell { padding-inline:var(--layout-gutter); }
+  #catalog.home-catalog { padding-inline:0; }
+  .home-section-heading,.home-catalog__footer { padding-inline:var(--layout-gutter); }
+  .home-product-grid { width:calc(100% - 2 * var(--layout-gutter)); padding-inline:0; grid-auto-columns:100%; }
+  .home-cacao,.home-composition,.home-promo-grid { padding-inline:var(--layout-gutter); }
+  .buy-panels { padding-inline:var(--layout-gutter); }
+  .buy-location,.buy-partner-grid { width:100%; }
+  .catalog-page .shop-shell,
+  .catalog-page ul.products { width:calc(100% - 2 * var(--layout-gutter)); margin-inline:auto; }
+  .shop-page .shop-shell,
+  .product-detail-hero,
+  .recipe-detail-columns,
+  .media-grid { width:var(--layout-container); margin-inline:auto; }
+}
+
+@media (min-width:601px) and (max-width:1199px) {
+  .corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases,.corporate-gifts-minimum,.corporate-gifts-benefits,.corporate-gifts-request {
+    width:calc(100% - 2 * var(--layout-gutter));
+  }
 }
