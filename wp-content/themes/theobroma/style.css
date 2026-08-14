@@ -2224,6 +2224,28 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .product-detail-hero,
   .recipe-detail-columns,
   .media-grid { width:var(--layout-container); margin-inline:auto; }
+
+  /* Home sections share the same mobile shell. Their legacy 390px artboards
+     used independent widths and transforms, which produced different edges
+     at every interpolated mobile width. */
+  .reviews-stage {
+    left:var(--layout-gutter);
+    width:23.4375rem;
+    max-width:none;
+    margin:0;
+    transform:scale(calc(var(--layout-container) / 23.4375rem));
+    transform-origin:top left;
+  }
+  .contact .section { padding-inline:0; }
+  .contact-card {
+    left:var(--layout-gutter);
+    width:22.09375rem;
+    max-width:none;
+    margin:0;
+    padding-inline:1.5rem;
+    transform:scale(calc(var(--layout-container) / 22.09375rem));
+    transform-origin:top left;
+  }
 }
 
 @media (min-width:601px) and (max-width:1199px) {
