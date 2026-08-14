@@ -15,7 +15,7 @@ const viewports = [
 ];
 
 const pages = [
-  { path: '/', exact: ['.home-product-grid', '.home-cacao__shell', '.home-composition__shell'], mobileExact: ['.reviews-stage', '.contact-card'], contained: ['.home-hero__lead > p', '.home-hero__actions', '.home-section-heading h2', '.home-section-heading > a', '.home-promo-card:first-child', '.home-promo-card:last-child'] },
+  { path: '/', exact: ['.home-product-grid', '.home-cacao__shell', '.home-composition__shell'], mobileExact: ['.home-cacao__tabs', '.story', '.value:first-child', '.reviews-stage', '.contact-card', '.form-grid'], mobileLeft: ['.review:first-child'], contained: ['.home-hero__lead > p', '.home-hero__actions', '.home-section-heading h2', '.home-section-heading > a', '.home-promo-card:first-child', '.home-promo-card:last-child'] },
   { path: '/catalog/', exact: ['.catalog-page .shop-shell'], contained: ['.catalog-page ul.products'] },
   { path: '/recipes/', exact: ['.recipe-grid'] },
   { path: '/recipe/classic/', exact: ['.recipe-detail-columns', '.recipe-product-promo'] },
@@ -41,8 +41,9 @@ async function run() {
         await page.goto(`${baseUrl}${entry.path}`, { waitUntil: 'domcontentloaded' });
         await page.evaluate(() => document.fonts.ready);
         const mobileExact = viewport.width <= 600 ? (entry.mobileExact || []) : [];
+        const mobileLeft = viewport.width <= 600 ? (entry.mobileLeft || []) : [];
         const exactSelectors = [...(entry.exact || []), ...mobileExact];
-        const selectors = [...exactSelectors, ...(entry.contained || [])];
+        const selectors = [...exactSelectors, ...mobileLeft, ...(entry.contained || [])];
         const metrics = await page.evaluate((selectors) => {
           const root = document.documentElement;
           const probe = document.createElement('div');
@@ -84,6 +85,9 @@ async function run() {
           }
           if (exactSelectors.includes(box.selector) && (Math.abs(box.left - metrics.expectedLeft) > 2 || Math.abs(box.right - metrics.expectedRight) > 2)) {
             failures.push(`${viewport.name} ${entry.path} ${box.selector} does not use the shared container exactly: ${box.left.toFixed(1)}..${box.right.toFixed(1)} vs ${metrics.expectedLeft.toFixed(1)}..${metrics.expectedRight.toFixed(1)}`);
+          }
+          if (mobileLeft.includes(box.selector) && Math.abs(box.left - metrics.expectedLeft) > 2) {
+            failures.push(`${viewport.name} ${entry.path} ${box.selector} does not start on the shared container: ${box.left.toFixed(1)} vs ${metrics.expectedLeft.toFixed(1)}`);
           }
         }
         if (metrics.overflow > 1) failures.push(`${viewport.name} ${entry.path} horizontal overflow ${metrics.overflow}px`);

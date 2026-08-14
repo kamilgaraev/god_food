@@ -2228,6 +2228,21 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   /* Home sections share the same mobile shell. Their legacy 390px artboards
      used independent widths and transforms, which produced different edges
      at every interpolated mobile width. */
+  .about-stage {
+    left:var(--layout-gutter);
+    width:23.4375rem;
+    max-width:none;
+    margin:0;
+    transform:scale(calc(var(--layout-container) / 23.4375rem));
+    transform-origin:top left;
+  }
+  .story,
+  .values {
+    width:23.4375rem;
+    margin-inline:0;
+  }
+  .values { margin-top:.75rem; }
+  .value { width:100%; }
   .reviews-stage {
     left:var(--layout-gutter);
     width:23.4375rem;
@@ -2242,7 +2257,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
     width:22.09375rem;
     max-width:none;
     margin:0;
-    padding-inline:1.5rem;
+    padding-inline:0;
     transform:scale(calc(var(--layout-container) / 22.09375rem));
     transform-origin:top left;
   }

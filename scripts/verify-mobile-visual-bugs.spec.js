@@ -106,7 +106,7 @@ async function run() {
 
     check(homeMetrics.values.every(({ card, icon }) => icon.left >= card.left - 1 && icon.right <= card.right + 1 && icon.top >= card.top - 1 && icon.bottom <= card.bottom + 1), '1. Home value icons must stay inside their cards', failures);
     const contactInsets = homeMetrics.controls.map((control) => ({ left: control.left - homeMetrics.contactRect.left, right: homeMetrics.contactRect.right - control.right }));
-    check(contactInsets.every(({ left, right }) => left >= 20 && right >= 20 && Math.abs(left - right) <= 2), '2. Contact fields must keep equal inner insets', failures);
+    check(contactInsets.every(({ left, right }) => Math.abs(left) <= 2 && Math.abs(right) <= 2), '2. Contact fields must use the shared visible container', failures);
     check(parseFloat(homeMetrics.mail.iconBottom) <= 12 && parseFloat(homeMetrics.mail.iconRight) <= 12 && homeMetrics.mail.strongAlign === 'left' && homeMetrics.mail.height <= 112 && homeMetrics.mail.firstGap >= 12 && homeMetrics.mail.firstGap <= 24, '3. Mobile footer mail cards must be compact with a bottom-right icon', failures);
     const footerLefts = homeMetrics.footerContent.map(({ left }) => left);
     check(homeMetrics.phonesUseText && homeMetrics.footerContent.length === 3 && homeMetrics.footerContent.every(({ textAlign }) => textAlign === 'left') && Math.max(...footerLefts) - Math.min(...footerLefts) <= 2 && homeMetrics.footerContent[0].fontSize === homeMetrics.footerContent[2].fontSize, '3a. Mobile footer card content must share one left-aligned typography grid', failures);
@@ -138,7 +138,7 @@ async function run() {
     await wideMobile.close();
     const wideContactLeft = Math.min(...wideMetrics.controls.map(({ left }) => left));
     const wideContactRight = Math.min(...wideMetrics.controls.map(({ right }) => right));
-    check(wideContactLeft >= 20 && wideContactRight >= 20 && Math.abs(wideContactLeft - wideContactRight) <= 2, '2. Contact fields must stay aligned at 509px', failures);
+    check(Math.abs(wideContactLeft) <= 2 && Math.abs(wideContactRight) <= 2, '2. Contact fields must stay on the shared visible container at 509px', failures);
     check(wideMetrics.mailHeight <= 112 && wideMetrics.mailIconBottom <= 12 && wideMetrics.mailIconRight <= 12, '3. Footer cards must stay compact at 509px', failures);
     check(wideMetrics.catalogCardWidth <= Math.min(384.5, wideMetrics.catalogAvailableWidth + 1), '6. Catalog must show a restrained complete card at 509px', failures);
     check(!wideMetrics.overflow, 'Mobile homepage must not overflow horizontally at 509px', failures);
