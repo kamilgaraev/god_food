@@ -8,6 +8,7 @@
     "audit:security": "node scripts/verify-security-headers.js",
     "test:fluid-rem": "node scripts/verify-fluid-rem-responsive.spec.js",
     "test:text-scaling": "node scripts/verify-global-text-scaling.spec.js",
+    "test:mobile-visual": "node scripts/verify-mobile-visual-bugs.spec.js",
     "test:home-containers": "node scripts/verify-home-containers.spec.js",
     "test:home-visual": "node scripts/verify-home-visual-layout.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",
