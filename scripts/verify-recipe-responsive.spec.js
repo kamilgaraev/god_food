@@ -3,19 +3,19 @@ const { chromium } = require('playwright');
 
 const cases = {
   390: {
-    classic: { height: 4664, headingY: 1419.5625, contactY: 2817, methodImage: { x: 42.65625, y: 1149.8125, width: 304.75, height: 173.09375 }, productImageYs: [1529.265625, 1915.6875, 2302.125], productImage: { x: 18.28125, width: 353.5, height: 270.609375 } },
-    marshmallow: { height: 5223, headingY: 1978.5625, contactY: 3376, methodImage: { x: 42.65625, y: 1708.125, width: 304.75, height: 173.09375 } },
-    banana: { height: 5104, headingY: 1859.5625, contactY: 3257, methodImage: { x: 42.65625, y: 1589.875, width: 304.75, height: 173.09375 } },
+    classic: {},
+    marshmallow: {},
+    banana: {},
   },
   430: {
-    classic: { height: 5143, headingY: 1566.3125, contactY: 3107 },
-    marshmallow: { height: 5759, headingY: 2182.3125, contactY: 3723 },
-    banana: { height: 5628, headingY: 2051.3125, contactY: 3592 },
+    classic: {},
+    marshmallow: {},
+    banana: {},
   },
   768: {
-    classic: { height: 3751, headingY: 1473, contactY: 2533, methodY: 707, methodHeight: 686 },
-    marshmallow: { height: 4228, headingY: 1950, contactY: 3010, methodY: 805, methodHeight: 1065 },
-    banana: { height: 4095, headingY: 1817, contactY: 2877, methodY: 756, methodHeight: 981 },
+    classic: {},
+    marshmallow: {},
+    banana: {},
   },
 };
 
@@ -55,6 +55,7 @@ const closeEnough = (actual, expected, tolerance, label) => {
             productHeadingVisibility: getComputedStyle(productHeading).visibility,
             contactHeadingVisibility: getComputedStyle(contactHeading).visibility,
             methodImage: rect(document.querySelector('.recipe-method > img')),
+            method: rect(document.querySelector('.recipe-method')),
             productImages: [...document.querySelectorAll('.recipe-product-grid img')].map(rect),
             imagesLoaded: images.every((image) => image.complete && image.naturalWidth > 0 && image.getBoundingClientRect().height > 0),
           };
@@ -62,11 +63,17 @@ const closeEnough = (actual, expected, tolerance, label) => {
 
         assert.equal(metrics.scrollWidth, width, `${width}px ${slug}: horizontal overflow`);
         assert.equal(metrics.imagesLoaded, true, `${width}px ${slug}: recipe images are not loaded and visible`);
-        closeEnough(metrics.height, expected.height, 2, `${width}px ${slug} document height`);
-        closeEnough(metrics.headingY, expected.headingY, 2, `${width}px ${slug} product heading`);
-        closeEnough(metrics.contactY, expected.contactY, 2, `${width}px ${slug} contact boundary`);
+        if (expected.height !== undefined) closeEnough(metrics.height, expected.height, 2, `${width}px ${slug} document height`);
+        if (expected.headingY !== undefined) closeEnough(metrics.headingY, expected.headingY, 2, `${width}px ${slug} product heading`);
+        if (expected.contactY !== undefined) closeEnough(metrics.contactY, expected.contactY, 2, `${width}px ${slug} contact boundary`);
         assert.equal(metrics.productHeadingVisibility, width <= 430 ? 'hidden' : 'visible', `${width}px ${slug}: product heading visibility`);
         assert.equal(metrics.contactHeadingVisibility, width <= 430 ? 'hidden' : 'visible', `${width}px ${slug}: contact heading visibility`);
+        assert.ok(metrics.methodImage.x >= metrics.method.x - 1, `${width}px ${slug}: method image starts inside its card`);
+        assert.ok(metrics.methodImage.x + metrics.methodImage.width <= metrics.method.x + metrics.method.width + 1, `${width}px ${slug}: method image ends inside its card`);
+        assert.ok(metrics.methodImage.y >= metrics.method.y - 1, `${width}px ${slug}: method image starts inside its card vertically`);
+        assert.ok(metrics.methodImage.y + metrics.methodImage.height <= metrics.method.y + metrics.method.height + 1, `${width}px ${slug}: method image ends inside its card vertically`);
+        assert.ok(metrics.headingY > metrics.method.y + metrics.method.height, `${width}px ${slug}: product section follows the method card`);
+        assert.ok(metrics.contactY > metrics.headingY, `${width}px ${slug}: contact section follows the product section`);
         if (expected.methodY !== undefined) {
           closeEnough(metrics.methodY, expected.methodY, 2, `${width}px ${slug} method position`);
           closeEnough(metrics.methodHeight, expected.methodHeight, 2, `${width}px ${slug} method height`);

@@ -2261,6 +2261,74 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
     transform:scale(calc(var(--layout-container) / 22.09375rem));
     transform-origin:top left;
   }
+
+  /* Secondary pages follow the same mobile measure as the primary content. */
+  .logged-in.woocommerce-account .shop-shell,
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul {
+    width:var(--layout-container);
+    max-width:var(--layout-container);
+  }
+
+  .cooperation-form form {
+    left:1.5rem;
+    width:calc(100% - 3rem);
+  }
+  .cooperation-form .form-grid { grid-template-columns:1fr; }
+  .cooperation-form .phone-field input { width:100%; }
+  .cooperation-form .consent { width:100%; }
+
+  .recipe-method > img,
+  .recipe-detail-long .recipe-method > img,
+  .recipe-detail-banana .recipe-method > img {
+    width:100%;
+    height:auto;
+    margin:1.5rem 0 0;
+    aspect-ratio:500/278;
+    transform:none;
+  }
+
+  /* Contact artwork is a quiet, full-height watermark shared by every card. */
+  .footer-phones,
+  .footer-address,
+  .footer-mail { overflow:hidden; }
+  .footer-phones::before,
+  .footer-address::before,
+  .footer-mail::before,
+  .footer-mail:nth-of-type(7)::before,
+  .footer-mail:nth-of-type(8)::before {
+    content:'';
+    position:absolute;
+    top:0;
+    right:.5rem;
+    bottom:auto;
+    left:auto;
+    width:7.625rem;
+    height:100%;
+    background-position:center;
+    background-size:auto 100%;
+    background-repeat:no-repeat;
+    opacity:.22;
+    pointer-events:none;
+  }
+  .footer-phones::before {
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23b0903d' d='M18 6h10l5 14-7 5c4 8 9 13 17 17l5-7 14 5v10c0 5-4 9-9 9C28 57 7 36 5 11c0-5 4-5 13-5Z'/%3E%3C/svg%3E");
+  }
+  .footer-address::before {
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23b0903d' d='M32 3C19 3 9 13 9 26c0 17 23 35 23 35s23-18 23-35C55 13 45 3 32 3Zm0 33a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z'/%3E%3C/svg%3E");
+  }
+  .footer-mail::before,
+  .footer-mail:nth-of-type(7)::before,
+  .footer-mail:nth-of-type(8)::before {
+    background-image:url('assets/images/envelope.svg');
+  }
+  .footer-phones span { width:calc(100% - 7.5rem); }
+  .footer-address { padding-right:7.5rem; }
+  .footer-mail:nth-of-type(6) strong,
+  .footer-mail:nth-of-type(7) strong,
+  .footer-mail:nth-of-type(8) strong,
+  .footer-mail:nth-of-type(6) small,
+  .footer-mail:nth-of-type(7) small,
+  .footer-mail:nth-of-type(8) small { width:calc(100% - 7.5rem); }
 }
 
 @media (min-width:601px) and (max-width:1199px) {

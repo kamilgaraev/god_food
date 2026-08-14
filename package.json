@@ -14,7 +14,8 @@
     "test:home-visual": "node scripts/verify-home-visual-layout.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",
     "test:footer": "node scripts/verify-responsive-footer.spec.js",
-    "test:reviews": "node scripts/verify-review-carousel.spec.js"
+    "test:reviews": "node scripts/verify-review-carousel.spec.js",
+    "test:mobile-secondary": "node scripts/verify-mobile-secondary-content.spec.js"
   },
   "devDependencies": {
     "pixelmatch": "7.1.0",
