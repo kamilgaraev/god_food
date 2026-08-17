@@ -80,6 +80,7 @@ async function metricsAt(browser, width) {
     const layout = await trust.evaluate((element) => ({
       fontSizes: Array.from(element.querySelectorAll(':scope > div > strong'), (item) => parseFloat(getComputedStyle(item).fontSize)),
       labelTops: Array.from(element.querySelectorAll(':scope > div > span'), (item) => item.getBoundingClientRect().top),
+      labelTextTransforms: Array.from(element.querySelectorAll(':scope > div > span'), (item) => getComputedStyle(item).textTransform),
     }));
     const image = PNG.sync.read(await trust.screenshot());
     return {
@@ -116,6 +117,11 @@ async function metricsAt(browser, width) {
       assert.ok(
         Math.abs(layout.labelTops[0] - layout.labelTops[1]) <= 0.5,
         `${width}px: trust labels must align vertically; received ${JSON.stringify(layout.labelTops)}`,
+      );
+      assert.deepEqual(
+        layout.labelTextTransforms,
+        ['none', 'none'],
+        `${width}px: trust labels must preserve their sentence case`,
       );
     }
   } finally {
