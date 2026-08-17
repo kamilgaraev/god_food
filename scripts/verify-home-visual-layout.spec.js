@@ -57,6 +57,8 @@ async function metricsFor(page) {
       title: rect('.home-hero h1'),
       trust: rect('.home-hero__trust'),
       lead: rect('.home-hero__lead'),
+      leadText: rect('.home-hero__lead > p'),
+      heroActions: rect('.home-hero__actions'),
       productGrid: rect('.home-product-grid'),
       productCards,
       productColumns: style('.home-product-grid').gridTemplateColumns.split(' ').filter(Boolean).length,
@@ -93,6 +95,8 @@ async function run() {
         check(metrics.productColumns === 2, `${width}px tablet catalog must use two columns`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px tablet content sections must use one column`);
         check(metrics.title.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px tablet hero content must keep title, trust and actions in order`);
+        check(metrics.lead.bottom <= metrics.hero.bottom - metrics.rootFontSize + 1, `${width}px tablet hero actions must keep a 1rem bottom inset`);
+        check(metrics.leadText.right <= metrics.heroActions.left - metrics.rootFontSize + 1, `${width}px tablet hero copy and actions must keep a 1rem gap`);
       } else {
         check(metrics.productColumns === 4, `${width}px desktop catalog must use four columns`);
         check(metrics.cacaoColumns === 2 && metrics.compositionColumns === 2, `${width}px desktop content sections must use two columns`);
