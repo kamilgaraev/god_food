@@ -1,5 +1,5 @@
 (() => {
-    const elements = Array.from(document.querySelectorAll('img[src*="cooperation-chocolate.webp"], [data-pointer-parallax]'));
+    const elements = Array.from(document.querySelectorAll('.about-award, img[src*="cooperation-chocolate.webp"], [data-pointer-parallax]'));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const precisePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 

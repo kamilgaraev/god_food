@@ -64,14 +64,7 @@ img { display:block; max-width:100%; }
   from { opacity:0; transform:perspective(62.5rem) translate3d(0,-12.5rem,0) rotate3d(-100,0,0,0deg); }
   to { opacity:1; transform:perspective(31.25rem) translate3d(0,0,0); }
 }
-@keyframes theobroma-source-chocolate-float {
-  0% { transform:translateX(0) translateY(0) rotate(0deg); animation-timing-function:ease-in-out; }
-  25% { transform:translateX(0.875rem) translateY(0.625rem) rotate(18deg); animation-timing-function:ease-in-out; }
-  50% { transform:translateX(-0.625rem) translateY(-0.625rem) rotate(-16deg); animation-timing-function:ease-in-out; }
-  75% { transform:translateX(-1.5625rem) translateY(0) rotate(-2deg); animation-timing-function:ease-in-out; }
-  100% { transform:translateX(0) translateY(0) rotate(0deg); }
-}
-.about-award { animation:theobroma-source-chocolate-float 4s infinite linear alternate; backface-visibility:hidden; }
+.about-award { animation:none; backface-visibility:hidden; }
 @media (prefers-reduced-motion:reduce) {
   .source-text-reveal > span,.source-text-reveal > i { opacity:1 !important; transform:none !important; animation:none !important; }
   .about-award { animation:none !important; }

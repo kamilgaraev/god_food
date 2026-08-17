@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
 const baseUrl = (process.env.THEOBROMA_URL || 'http://localhost:8080').replace(/\/$/, '');
 const themeDir = process.env.THEOBROMA_THEME_DIR;
 
-async function openPage(browser, options = {}) {
+async function openPage(browser, pathname, options = {}) {
   const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
     reducedMotion: options.reducedMotion || 'no-preference',
@@ -25,7 +25,7 @@ async function openPage(browser, options = {}) {
     });
   }
 
-  await page.goto(`${baseUrl}/cooperation/`, { waitUntil: 'networkidle', timeout: 45_000 });
+  await page.goto(`${baseUrl}${pathname}`, { waitUntil: 'networkidle', timeout: 45_000 });
   await page.evaluate(() => document.fonts.ready);
 
   if (themeDir) {
@@ -35,6 +35,11 @@ async function openPage(browser, options = {}) {
 
   return { context, page };
 }
+
+const cases = [
+  { pathname: '/', selector: '.about-award', label: 'homepage chocolate' },
+  { pathname: '/cooperation/', selector: 'img[src*="cooperation-chocolate.webp"]', label: 'cooperation chocolate' },
+];
 
 function translation(transform) {
   if (!transform || transform === 'none') return { x: 0, y: 0 };
@@ -48,47 +53,54 @@ function translation(transform) {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
-    const { context, page } = await openPage(browser);
-    const matchingImages = page.locator('img[src*="cooperation-chocolate.webp"]');
-    const animatedImages = page.locator('[data-pointer-parallax]');
+    for (const testCase of cases) {
+      const { context, page } = await openPage(browser, testCase.pathname);
+      const matchingImages = page.locator(testCase.selector);
+      const animatedImages = page.locator(`${testCase.selector}[data-pointer-parallax]`);
 
-    assert.ok(await matchingImages.count() > 0, 'cooperation chocolate asset is missing');
-    assert.equal(
-      await animatedImages.count(),
-      await matchingImages.count(),
-      'every cooperation chocolate image must opt into pointer parallax',
-    );
+      assert.ok(await matchingImages.count() > 0, `${testCase.label} asset is missing`);
+      assert.equal(
+        await animatedImages.count(),
+        await matchingImages.count(),
+        `${testCase.label} must opt into pointer parallax`,
+      );
+      assert.equal(
+        await animatedImages.first().evaluate((element) => getComputedStyle(element).animationName),
+        'none',
+        `${testCase.label} must not animate without pointer input`,
+      );
 
-    await page.mouse.move(1430, 990);
-    await page.waitForTimeout(500);
-    const movedTransform = await animatedImages.first().evaluate((element) => getComputedStyle(element).transform);
-    const moved = translation(movedTransform);
-    assert.ok(moved.x >= 8 && moved.x <= 12.5, `horizontal parallax must stay light, got ${moved.x}px`);
-    assert.ok(moved.y >= 5 && moved.y <= 8.5, `vertical parallax must stay light, got ${moved.y}px`);
+      await page.mouse.move(1430, 990);
+      await page.waitForTimeout(500);
+      const movedTransform = await animatedImages.first().evaluate((element) => getComputedStyle(element).transform);
+      const moved = translation(movedTransform);
+      assert.ok(moved.x >= 8 && moved.x <= 12.5, `${testCase.label} horizontal parallax must stay light, got ${moved.x}px`);
+      assert.ok(moved.y >= 5 && moved.y <= 8.5, `${testCase.label} vertical parallax must stay light, got ${moved.y}px`);
 
-    await page.mouse.move(720, 500);
-    await page.waitForTimeout(500);
-    const centered = translation(await animatedImages.first().evaluate((element) => getComputedStyle(element).transform));
-    assert.ok(Math.abs(centered.x) < 1 && Math.abs(centered.y) < 1, 'parallax must settle near its origin at viewport center');
-    await context.close();
+      await page.mouse.move(720, 500);
+      await page.waitForTimeout(500);
+      const centered = translation(await animatedImages.first().evaluate((element) => getComputedStyle(element).transform));
+      assert.ok(Math.abs(centered.x) < 1 && Math.abs(centered.y) < 1, `${testCase.label} parallax must settle near its origin at viewport center`);
+      await context.close();
 
-    const reduced = await openPage(browser, { reducedMotion: 'reduce' });
-    await reduced.page.mouse.move(1430, 990);
-    await reduced.page.waitForTimeout(100);
-    assert.equal(
-      await reduced.page.locator('[data-pointer-parallax]').first().evaluate((element) => getComputedStyle(element).transform),
-      'none',
-      'reduced-motion users must not receive pointer parallax',
-    );
-    await reduced.context.close();
+      const reduced = await openPage(browser, testCase.pathname, { reducedMotion: 'reduce' });
+      await reduced.page.mouse.move(1430, 990);
+      await reduced.page.waitForTimeout(100);
+      assert.equal(
+        await reduced.page.locator(`${testCase.selector}[data-pointer-parallax]`).first().evaluate((element) => getComputedStyle(element).transform),
+        'none',
+        `${testCase.label} must stay static for reduced-motion users`,
+      );
+      await reduced.context.close();
 
-    const touch = await openPage(browser, { hasTouch: true });
-    assert.equal(
-      await touch.page.locator('[data-pointer-parallax]').first().evaluate((element) => getComputedStyle(element).transform),
-      'none',
-      'touch devices must keep the decorative chocolate static',
-    );
-    await touch.context.close();
+      const touch = await openPage(browser, testCase.pathname, { hasTouch: true });
+      assert.equal(
+        await touch.page.locator(`${testCase.selector}[data-pointer-parallax]`).first().evaluate((element) => getComputedStyle(element).transform),
+        'none',
+        `${testCase.label} must stay static on touch devices`,
+      );
+      await touch.context.close();
+    }
   } finally {
     await browser.close();
   }
