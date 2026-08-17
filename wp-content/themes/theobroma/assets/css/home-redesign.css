@@ -110,7 +110,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-layout-shell,
 .home-hero__shell { width: 100%; max-width: none; margin-inline: auto; }
 .home-hero__shell { position: relative; height: clamp(24.4375rem, 29vw, 26.125rem); min-height: clamp(24.4375rem, 29vw, 26.125rem); padding: clamp(2.625rem, 3.85vw, 3.25rem) clamp(1.75rem, 4vw, 4rem) 1.5rem; overflow: hidden; }
-.home-eyebrow { position: relative; z-index: 3; margin: 0; color: var(--home-peach); text-align: center; font: italic 400 clamp(1.5625rem, 2.2vw, 2.375rem)/1 'Cormorant', Georgia, serif; }
+.home-eyebrow { position: relative; z-index: 3; margin: 0; color: var(--home-gold); text-align: center; font: italic 400 clamp(1.5625rem, 2.2vw, 2.375rem)/1 'Cormorant', Georgia, serif; }
 .home-hero h1 { --home-chocolate-texture-size: auto 250%; position: relative; z-index: 1; top: auto; left: auto; width: auto; margin: clamp(1.875rem, 2.8vw, 2.375rem) -0.015em 0; color: #8e857d; font: 400 clamp(9.625rem, 18.2vw, 15.5rem)/.66 'Cormorant', Georgia, serif; letter-spacing: -.035em; text-align: center; white-space: nowrap; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .home-hero h1 {

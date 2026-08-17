@@ -12,6 +12,7 @@
     "test:home-containers": "node scripts/verify-home-containers.spec.js",
     "test:site-layout": "node scripts/verify-site-layout-system.spec.js",
     "test:home-visual": "node scripts/verify-home-visual-layout.spec.js",
+    "test:home-eyebrow-color": "node scripts/verify-home-eyebrow-color.spec.js",
     "test:home-chocolate-texture": "node scripts/verify-home-chocolate-texture.spec.js",
     "test:home-bestseller": "node scripts/verify-home-bestseller-badge.spec.js",
     "test:home-trust": "node scripts/verify-home-trust-alignment.spec.js",

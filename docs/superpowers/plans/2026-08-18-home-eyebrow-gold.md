@@ -27,22 +27,22 @@
 - Consumes: `.home-eyebrow`, `.home-button--primary`, and `--home-gold`
 - Produces: identical computed colors for the eyebrow text and primary button background
 
-- [ ] **Step 1: Add a browser regression test**
+- [x] **Step 1: Add a browser regression test**
 
 At 1440px and 390px viewports, read `getComputedStyle(document.querySelector('.home-eyebrow')).color` and `getComputedStyle(document.querySelector('.home-button--primary')).backgroundColor`, then fail when they differ.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `npm run test:home-eyebrow-color` and confirm it fails because the eyebrow uses the peach token while the button uses the gold token.
 
-- [ ] **Step 3: Implement the minimal change**
+- [x] **Step 3: Implement the minimal change**
 
 Change only `.home-eyebrow` from `color: var(--home-peach)` to `color: var(--home-gold)`.
 
-- [ ] **Step 4: Verify GREEN and layout**
+- [x] **Step 4: Verify GREEN and layout**
 
 Run `npm run test:home-eyebrow-color`, `npm run test:home-visual`, and `git diff --check`; all must exit with code 0.
 
-- [ ] **Step 5: Commit and publish**
+- [x] **Step 5: Commit and publish**
 
 Commit only the spec, plan, test, package script, and CSS change. Rebase on the latest `origin/main` if necessary and push `HEAD:main` without force.
