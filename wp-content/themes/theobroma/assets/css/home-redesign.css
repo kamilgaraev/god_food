@@ -111,7 +111,26 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero__shell { width: 100%; max-width: none; margin-inline: auto; }
 .home-hero__shell { position: relative; height: clamp(24.4375rem, 29vw, 26.125rem); min-height: clamp(24.4375rem, 29vw, 26.125rem); padding: clamp(2.625rem, 3.85vw, 3.25rem) clamp(1.75rem, 4vw, 4rem) 1.5rem; overflow: hidden; }
 .home-eyebrow { position: relative; z-index: 3; margin: 0; color: var(--home-peach); text-align: center; font: italic 400 clamp(1.5625rem, 2.2vw, 2.375rem)/1 'Cormorant', Georgia, serif; }
-.home-hero h1 { position: relative; z-index: 1; top: auto; left: auto; width: auto; margin: clamp(1.875rem, 2.8vw, 2.375rem) -0.015em 0; color: #8e857d; font: 400 clamp(9.625rem, 18.2vw, 15.5rem)/.66 'Cormorant', Georgia, serif; letter-spacing: -.035em; text-align: center; white-space: nowrap; }
+.home-hero h1 { --home-chocolate-texture-size: auto 250%; position: relative; z-index: 1; top: auto; left: auto; width: auto; margin: clamp(1.875rem, 2.8vw, 2.375rem) -0.015em 0; color: #8e857d; font: 400 clamp(9.625rem, 18.2vw, 15.5rem)/.66 'Cormorant', Georgia, serif; letter-spacing: -.035em; text-align: center; white-space: nowrap; }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .home-hero h1 {
+    background-color: #542719;
+    background-image:
+      linear-gradient(112deg, rgba(255, 221, 184, .42) 0%, rgba(137, 64, 38, .08) 38%, rgba(31, 10, 5, .48) 100%),
+      radial-gradient(ellipse at 48% 8%, rgba(255, 191, 132, .28), transparent 52%),
+      url('../images/chocolate-texture.webp');
+    background-position: center, center, center 46%;
+    background-size: 100% 100%, 100% 100%, var(--home-chocolate-texture-size);
+    background-repeat: no-repeat, no-repeat, repeat-x;
+    background-blend-mode: soft-light, screen, normal;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: .5px rgba(55, 24, 14, .22);
+    filter: drop-shadow(0 .012em .008em rgba(68, 34, 23, .18));
+  }
+}
 .home-hero__lead { position: absolute; z-index: 3; right: max(calc((100% - var(--home-container)) / 2 + 15.625rem), calc(var(--home-gutter) + 15.625rem)); bottom: 1.5rem; left: max(calc((100% - var(--home-container)) / 2), var(--home-gutter)); width: auto; display: grid; grid-template-columns: minmax(15.625rem, 19.375rem) auto; gap: clamp(2.125rem, 4vw, 3.625rem); align-items: center; }
 .home-hero__lead > p { width: 100%; margin: 0; color: var(--home-muted); font: 400 0.75rem/1.55 'Montserrat', Arial, sans-serif; }
 .home-hero__actions { display: flex; gap: 0.75rem; flex-wrap: nowrap; }
@@ -298,7 +317,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-hero { margin-top: 0; }
   .home-hero__shell { padding: 1.125rem 1.125rem 1.5rem; display: grid; grid-template-rows: auto auto auto minmax(1.25rem, 1fr) auto; }
   .home-eyebrow { font-size: 1.375rem; text-align: left; }
-  .home-hero h1 { z-index: 1; margin-top: clamp(1.5rem, 3.8vw, 1.75rem); font-size: clamp(4.625rem, 19vw, 7rem); line-height: .75; letter-spacing: -.06em; }
+  .home-hero h1 { --home-chocolate-texture-size: auto 330%; z-index: 1; margin-top: clamp(1.5rem, 3.8vw, 1.75rem); font-size: clamp(4.625rem, 19vw, 7rem); line-height: .75; letter-spacing: -.06em; }
   .home-hero__lead { position: static; width: auto; display: block; grid-row: 5; align-self: end; }
   .home-hero__lead > p { width: 100%; margin-bottom: 1rem; font-size: 0.75rem; line-height: 1.5; }
   .home-hero__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }

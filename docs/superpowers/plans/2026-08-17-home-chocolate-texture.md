@@ -28,26 +28,26 @@
 - Consumes: `.home-hero h1` rendered by `wp-content/themes/theobroma/index.php`
 - Produces: a CSS-only textured text treatment with a solid-color fallback
 
-- [ ] **Step 1: Establish the baseline**
+- [x] **Step 1: Establish the baseline**
 
 Capture the current homepage at desktop and mobile widths so heading placement and readability can be compared after the change.
 
-- [ ] **Step 2: Optimize the supplied texture**
+- [x] **Step 2: Optimize the supplied texture**
 
 Convert the supplied PNG to a visually lossless, resized WebP suitable for a text fill. Keep enough source detail for high-density desktop displays while avoiding the original PNG payload.
 
-- [ ] **Step 3: Add the progressive CSS enhancement**
+- [x] **Step 3: Add the progressive CSS enhancement**
 
 Keep `color: #8e857d` as the base declaration. Under `@supports ((-webkit-background-clip: text) or (background-clip: text))`, apply the texture plus warm lighting gradients, blend the layers, clip them to the glyphs, make the text fill transparent, and add restrained edge definition.
 
-- [ ] **Step 4: Tune mobile texture scale**
+- [x] **Step 4: Tune mobile texture scale**
 
 Within the existing `max-width: 600px` media query, use a larger texture scale so the porous detail remains legible and does not become noisy in smaller glyphs.
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run the relevant static checks and capture desktop/mobile screenshots. Confirm that the heading retains the same box geometry, remains readable, and uses the optimized asset without console or network errors.
 
-- [ ] **Step 6: Commit and publish**
+- [x] **Step 6: Commit and publish**
 
 Commit only the texture asset, CSS, design spec, and plan. Merge the feature branch into `main` without overwriting unrelated working-tree changes, then push `main` to `origin`.
