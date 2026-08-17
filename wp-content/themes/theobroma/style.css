@@ -570,7 +570,8 @@ body.account-modal-open { overflow:hidden; }
 .delivery-answer p,.delivery-answer ol { margin:0; }.delivery-answer ol { padding-left:1.25rem; }
 .delivery-decor { position:absolute; z-index:2; top:5.8125rem; left:0; width:13.1875rem; height:17.77441406rem; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
 .recipe-detail { background:var(--paper); }
-.recipe-detail-intro { height:107.5625rem; position:relative; overflow:hidden; }
+body:has(.recipe-detail) { overflow-x:clip; }
+.recipe-detail-intro { height:107.5625rem; position:relative; overflow:clip; }
 .recipe-detail-long .recipe-detail-intro { height:132.3125rem; }
 .recipe-detail-banana .recipe-detail-intro { height:127.0625rem; }
 .recipe-detail-breadcrumb { position:absolute; top:8.5625rem; left:0; width:100%; text-align:center; color:#b0903d; font:400 0.875rem/1.375rem 'Montserrat',Arial,sans-serif; }
@@ -586,6 +587,9 @@ body.account-modal-open { overflow:hidden; }
 .recipe-ingredients dl div:last-child { border-bottom:0; }
 .recipe-ingredients dt,.recipe-ingredients dd { margin:0; }
 .recipe-ingredients dd { text-align:right; white-space:nowrap; }
+@media (min-width:1200px) {
+  .recipe-ingredients { position:sticky; top:8rem; }
+}
 .recipe-method { height:41.125rem; position:relative; }
 .recipe-detail-long .recipe-method { height:65.875rem; }
 .recipe-detail-banana .recipe-method { height:60.625rem; }

@@ -1,5 +1,12 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const { chromium } = require('playwright');
+
+const stylesheet = fs.readFileSync(
+  path.join(__dirname, '..', 'wp-content', 'themes', 'theobroma', 'style.css'),
+  'utf8',
+);
 
 const cases = {
   390: {
@@ -23,9 +30,39 @@ const closeEnough = (actual, expected, tolerance, label) => {
   assert.ok(Math.abs(actual - expected) <= tolerance, `${label}: expected ${expected}px, got ${actual}px`);
 };
 
+async function assertDesktopIngredientCardSticks(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto('http://localhost:8080/recipe/classic/', { waitUntil: 'networkidle' });
+  await page.addStyleTag({ content: stylesheet });
+  await page.evaluate(async () => document.fonts?.ready);
+
+  const ingredientCard = page.locator('.recipe-ingredients');
+  const styles = await ingredientCard.evaluate((element) => ({
+    position: getComputedStyle(element).position,
+    top: getComputedStyle(element).top,
+    introOverflow: getComputedStyle(element.closest('.recipe-detail-intro')).overflow,
+  }));
+  await page.evaluate(() => window.scrollTo(0, 500));
+  const firstTop = await ingredientCard.evaluate((element) => element.getBoundingClientRect().top);
+  await page.evaluate(() => window.scrollTo(0, 550));
+  const secondTop = await ingredientCard.evaluate((element) => element.getBoundingClientRect().top);
+
+  assert.ok(firstTop >= 0, `desktop ingredient card must remain visible while scrolling, got top ${firstTop}px with ${JSON.stringify(styles)}`);
+  closeEnough(secondTop, firstTop, 1, 'desktop ingredient card must stay fixed while the method column scrolls');
+
+  await page.setViewportSize({ width: 768, height: 1024 });
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.addStyleTag({ content: stylesheet });
+  const tabletPosition = await page.locator('.recipe-ingredients').evaluate((element) => getComputedStyle(element).position);
+  assert.equal(tabletPosition, 'static', 'single-column tablet ingredient card must scroll normally');
+  await page.close();
+}
+
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
+    await assertDesktopIngredientCardSticks(browser);
+
     for (const [widthKey, recipes] of Object.entries(cases)) {
       const width = Number(widthKey);
       for (const [slug, expected] of Object.entries(recipes)) {
