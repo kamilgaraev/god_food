@@ -423,6 +423,6 @@ body { overflow-x: clip; background: var(--home-paper); }
 }
 
 @media (min-width:601px) and (max-width:1199px) {
-  .home-hero__shell { width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter))); max-width:var(--layout-container); padding-inline:0; grid-template-columns:minmax(0,1fr); }
-  .home-hero h1 { width:100vw; max-width:none; margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); }
+  .home-hero__shell { width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter))); max-width:var(--layout-container); padding-inline:0; grid-template-columns:minmax(0,1fr); container-type:inline-size; }
+  .home-hero h1 { width:100%; max-width:100%; min-height:18.8cqi; margin-left:0; margin-right:0; font-size:clamp(6.125rem,18.5cqi,9rem); }
 }

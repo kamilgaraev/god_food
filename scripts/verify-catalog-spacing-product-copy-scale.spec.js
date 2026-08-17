@@ -49,14 +49,27 @@ async function openPage(browser, path, width) {
       const container = await narrowTablet.page.evaluate(() => {
         const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
         const shell = document.querySelector('.home-hero__shell').getBoundingClientRect();
+        const titleElement = document.querySelector('.home-hero h1');
+        const title = titleElement.getBoundingClientRect();
+        const titleText = document.createRange();
+        titleText.selectNodeContents(titleElement);
+        const titleTextRect = titleText.getBoundingClientRect();
         return {
           leftGutterRem: shell.left / rootSize,
           rightGutterRem: (innerWidth - shell.right) / rootSize,
+          titleLeftDeltaPx: Math.abs(title.left - shell.left),
+          titleRightDeltaPx: Math.abs(title.right - shell.right),
+          titleTextLeftInsetRem: (titleTextRect.left - shell.left) / rootSize,
+          titleTextRightInsetRem: (shell.right - titleTextRect.right) / rootSize,
         };
       });
 
       assert.ok(container.leftGutterRem >= 2.4, `605px: hero left gutter collapsed to ${container.leftGutterRem.toFixed(2)}rem`);
       assert.ok(container.rightGutterRem >= 2.4, `605px: hero right gutter collapsed to ${container.rightGutterRem.toFixed(2)}rem`);
+      assert.ok(container.titleLeftDeltaPx <= 1, `605px: hero title starts ${container.titleLeftDeltaPx.toFixed(1)}px outside its container`);
+      assert.ok(container.titleRightDeltaPx <= 1, `605px: hero title ends ${container.titleRightDeltaPx.toFixed(1)}px outside its container`);
+      assert.ok(container.titleTextLeftInsetRem >= 0.75, `605px: hero title has only ${container.titleTextLeftInsetRem.toFixed(2)}rem of inner space on the left`);
+      assert.ok(container.titleTextRightInsetRem >= 0.75, `605px: hero title has only ${container.titleTextRightInsetRem.toFixed(2)}rem of inner space on the right`);
       await narrowTablet.context.close();
     }
 
