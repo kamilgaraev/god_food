@@ -1,9 +1,16 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const url = process.env.THEOBROMA_URL || 'http://localhost:8080/';
+const homeCss = fs.readFileSync(
+  path.resolve(__dirname, '../wp-content/themes/theobroma/assets/css/home-redesign.css'),
+  'utf8',
+);
 
 async function routeLocalAssets(page) {
+  await page.route('**/home-redesign.css*', (route) => route.fulfill({ contentType: 'text/css', body: homeCss }));
   const local = new URL(url);
   if (local.port === '8080') return;
   await page.route('http://localhost:8080/**', async (route) => {
@@ -30,6 +37,8 @@ async function routeLocalAssets(page) {
         const navBox = nav.getBoundingClientRect();
         const study = document.querySelector('.nav-links-study').getBoundingClientRect();
         const transactional = document.querySelector('.nav-links-transactional').getBoundingClientRect();
+        const heroLead = document.querySelector('.home-hero__lead').getBoundingClientRect();
+        const heroTrust = document.querySelector('.home-hero__trust').getBoundingClientRect();
         const headerCenter = navBox.top + navBox.height / 2;
         const controlCenters = Array.from(nav.querySelectorAll('.nav-links a, .brand'), (element) => {
           const rect = element.getBoundingClientRect();
@@ -47,7 +56,11 @@ async function routeLocalAssets(page) {
           transactionalCount: document.querySelectorAll('.nav-links-transactional > a').length,
           wishlistCount: document.querySelectorAll('.header-wishlist, [data-wishlist]').length,
           studyRight: study.right,
+          studyLeft: study.left,
           transactionalLeft: transactional.left,
+          transactionalRight: transactional.right,
+          heroLeft: heroLead.left,
+          heroRight: heroTrust.right,
           brandLeft: brand.left,
           brandRight: brand.right,
           maxControlAxisDrift: Math.max(...controlCenters.map((center) => Math.abs(center - headerCenter))),
@@ -64,6 +77,8 @@ async function routeLocalAssets(page) {
       assert.equal(metrics.wishlistCount, 0, `${width}px: wishlist must be removed`);
       assert.ok(metrics.studyRight <= metrics.brandLeft - 16, `${width}px: left navigation overlaps the logo`);
       assert.ok(metrics.transactionalLeft >= metrics.brandRight + 16, `${width}px: right actions overlap the logo`);
+      assert.ok(Math.abs(metrics.studyLeft - metrics.heroLeft) <= 2, `${width}px: header and hero left insets differ`);
+      assert.ok(Math.abs(metrics.transactionalRight - metrics.heroRight) <= 2, `${width}px: header and hero right insets differ`);
       assert.ok(metrics.maxControlAxisDrift <= 2, `${width}px: header controls do not share one vertical axis`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${width}px: horizontal overflow detected`);
       await page.close();

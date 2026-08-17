@@ -19,7 +19,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   inset: 0 0 auto;
   width: 100%;
   min-height: 4.875rem;
-  padding: 0 clamp(1.5rem, 3.35vw, 4rem);
+  padding-inline: max(var(--home-gutter), calc((100% - var(--home-container)) / 2));
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
@@ -35,7 +35,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   inset: 0 0 auto;
   width: 100%;
   min-height: 4.875rem;
-  padding: 0 clamp(1.5rem, 3.35vw, 4rem);
+  padding-inline: max(var(--home-gutter), calc((100% - var(--home-container)) / 2));
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
