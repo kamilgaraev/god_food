@@ -6,6 +6,7 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
 const headerSource = fs.readFileSync(path.join(root, 'wp-content/themes/theobroma/header.php'), 'utf8');
+const baseStyles = fs.readFileSync(path.join(root, 'wp-content/themes/theobroma/style.css'), 'utf8');
 const homeStyles = fs.readFileSync(path.join(root, 'wp-content/themes/theobroma/assets/css/home-redesign.css'), 'utf8');
 const headerMarkup = headerSource
   .match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0]
@@ -13,11 +14,11 @@ const headerMarkup = headerSource
 
 assert.ok(headerMarkup, 'The site header markup must be available to the layout test');
 
-async function withRenderedHeader(callback) {
+async function withRenderedHeader(callback, viewportWidth = 1440) {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
-    const page = await browser.newPage({ viewport: { width: 1440, height: 320 } });
-    await page.setContent(`<style>${homeStyles}</style>${headerMarkup}`);
+    const page = await browser.newPage({ viewport: { width: viewportWidth, height: 320 } });
+    await page.setContent(`<style>${baseStyles}\n${homeStyles}</style>${headerMarkup}`);
     return await callback(page);
   } finally {
     await browser.close();
@@ -46,4 +47,22 @@ test('cart and account controls use no more than half a spacing unit', async () 
     metrics.gap >= 0 && metrics.gap <= metrics.rootFontSize * 0.5 + 0.5,
     `Expected cart/account gap at most 0.5rem, received ${metrics.gap}px`,
   );
+});
+
+test('cart has the same dimensions as the account control', async () => {
+  for (const viewportWidth of [1440, 768, 390]) {
+    const metrics = await withRenderedHeader((page) => page.evaluate(() => {
+      const cart = document.querySelector('.header-cart').getBoundingClientRect();
+      const account = document.querySelector('.header-account').getBoundingClientRect();
+      return {
+        cartWidth: cart.width,
+        cartHeight: cart.height,
+        accountWidth: account.width,
+        accountHeight: account.height,
+      };
+    }), viewportWidth);
+
+    assert.ok(Math.abs(metrics.cartWidth - metrics.accountWidth) <= 0.5, `${viewportWidth}px: cart width ${metrics.cartWidth}px must match account width ${metrics.accountWidth}px`);
+    assert.ok(Math.abs(metrics.cartHeight - metrics.accountHeight) <= 0.5, `${viewportWidth}px: cart height ${metrics.cartHeight}px must match account height ${metrics.accountHeight}px`);
+  }
 });
