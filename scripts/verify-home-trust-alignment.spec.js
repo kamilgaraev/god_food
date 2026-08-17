@@ -80,6 +80,7 @@ async function metricsAt(browser, width) {
     const layout = await trust.evaluate((element) => ({
       fontSizes: Array.from(element.querySelectorAll(':scope > div > strong'), (item) => parseFloat(getComputedStyle(item).fontSize)),
       labelTops: Array.from(element.querySelectorAll(':scope > div > span'), (item) => item.getBoundingClientRect().top),
+      labelFontSizes: Array.from(element.querySelectorAll(':scope > div > span'), (item) => parseFloat(getComputedStyle(item).fontSize)),
       labelTextTransforms: Array.from(element.querySelectorAll(':scope > div > span'), (item) => getComputedStyle(item).textTransform),
     }));
     const image = PNG.sync.read(await trust.screenshot());
@@ -120,10 +121,20 @@ async function metricsAt(browser, width) {
       );
       assert.deepEqual(
         layout.labelTextTransforms,
-        ['none', 'none'],
-        `${width}px: trust labels must preserve their sentence case`,
+        ['uppercase', 'uppercase'],
+        `${width}px: trust labels must use uppercase styling`,
+      );
+      assert.ok(
+        Math.abs(layout.labelFontSizes[0] - layout.labelFontSizes[1]) <= 0.01 && layout.labelFontSizes[0] >= 8.5,
+        `${width}px: trust labels must share a readable responsive size; received ${JSON.stringify(layout.labelFontSizes)}`,
       );
     }
+    const responsiveLabelSizes = results.map(({ layout }) => layout.labelFontSizes[0]);
+    assert.ok(
+      responsiveLabelSizes[1] >= responsiveLabelSizes[0] + 0.5
+        && responsiveLabelSizes[2] >= responsiveLabelSizes[1] + 0.5,
+      `Trust labels must scale from mobile to desktop; received ${JSON.stringify(responsiveLabelSizes)}`,
+    );
   } finally {
     await browser.close();
   }

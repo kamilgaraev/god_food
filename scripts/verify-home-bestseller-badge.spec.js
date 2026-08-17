@@ -77,6 +77,11 @@ function contrast(first, second) {
       const badgeBackground = parseColor(metric.backgroundColor);
       const imageBackground = parseColor(metric.imageBackgroundColor);
       const effectiveBackground = composite(badgeBackground, imageBackground);
+      assert.deepEqual(
+        [badgeBackground.red, badgeBackground.green, badgeBackground.blue],
+        [176, 144, 61],
+        'Bestseller badge must use the primary button gold',
+      );
       assert.ok(
         contrast(foreground, effectiveBackground) >= 4.5,
         `Bestseller badge contrast must be at least 4.5:1; received ${contrast(foreground, effectiveBackground).toFixed(2)}:1`,
