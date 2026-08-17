@@ -42,8 +42,22 @@ async function openPage(browser, path, width) {
         };
       });
 
-      assert.ok(hero.trustLeadGapRem <= 4.5, `1115px: hero trust and CTA groups are split by ${hero.trustLeadGapRem.toFixed(2)}rem of empty space`);
+      assert.ok(hero.trustLeadGapRem <= 2.5, `1115px: hero trust and CTA groups are split by ${hero.trustLeadGapRem.toFixed(2)}rem of empty space`);
       await context.close();
+
+      const narrowTablet = await openPage(browser, '/', 605);
+      const container = await narrowTablet.page.evaluate(() => {
+        const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const shell = document.querySelector('.home-hero__shell').getBoundingClientRect();
+        return {
+          leftGutterRem: shell.left / rootSize,
+          rightGutterRem: (innerWidth - shell.right) / rootSize,
+        };
+      });
+
+      assert.ok(container.leftGutterRem >= 2.4, `605px: hero left gutter collapsed to ${container.leftGutterRem.toFixed(2)}rem`);
+      assert.ok(container.rightGutterRem >= 2.4, `605px: hero right gutter collapsed to ${container.rightGutterRem.toFixed(2)}rem`);
+      await narrowTablet.context.close();
     }
 
     for (const width of scope === 'all' || scope === 'spacing' ? [1440, 2560, 3200] : []) {
@@ -88,6 +102,29 @@ async function openPage(browser, path, width) {
       assert.match(typography.copyFamily, /Montserrat/i, `${width}px: product accordion copy must use the readable Montserrat text face`);
 
       if (width === 1440) {
+        const controls = await page.evaluate(() => {
+          const favorite = document.querySelector('#commerce-modal .product-detail-favorite');
+          const favoriteIcon = favorite.querySelector('svg');
+          const addToCart = document.querySelector('#commerce-modal .single_add_to_cart_button');
+          const favoriteRect = favorite.getBoundingClientRect();
+          const iconRect = favoriteIcon?.getBoundingClientRect();
+          return {
+            addToCartCursor: getComputedStyle(addToCart).cursor,
+            favoriteCursor: getComputedStyle(favorite).cursor,
+            hasSvgIcon: Boolean(favoriteIcon),
+            iconWidth: iconRect?.width || 0,
+            iconHeight: iconRect?.height || 0,
+            centerDeltaX: iconRect ? Math.abs((favoriteRect.left + favoriteRect.width / 2) - (iconRect.left + iconRect.width / 2)) : Infinity,
+            centerDeltaY: iconRect ? Math.abs((favoriteRect.top + favoriteRect.height / 2) - (iconRect.top + iconRect.height / 2)) : Infinity,
+          };
+        });
+
+        assert.equal(controls.addToCartCursor, 'pointer', 'Add-to-cart button must show the pointer cursor');
+        assert.equal(controls.favoriteCursor, 'pointer', 'Favorite button must show the pointer cursor');
+        assert.ok(controls.hasSvgIcon, 'Favorite control must use the source-shaped SVG heart instead of a font glyph');
+        assert.ok(controls.iconWidth >= 24 && controls.iconHeight >= 21, `Favorite heart is too small: ${controls.iconWidth}x${controls.iconHeight}px`);
+        assert.ok(controls.centerDeltaX <= 1 && controls.centerDeltaY <= 1, `Favorite heart is not centered: delta ${controls.centerDeltaX}/${controls.centerDeltaY}px`);
+
         const hoverCases = [
           { selector: '.single_add_to_cart_button', background: 'rgb(226, 217, 210)', color: 'rgb(0, 0, 0)' },
           { selector: '.product-detail-marketplaces a:first-child', background: 'rgb(143, 24, 237)', color: 'rgb(255, 255, 255)' },

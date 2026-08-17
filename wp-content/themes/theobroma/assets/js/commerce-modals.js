@@ -90,7 +90,6 @@
             button.classList.toggle('is-active', active);
             button.setAttribute('aria-pressed', String(active));
             button.setAttribute('aria-label', active ? 'Удалить из избранного' : 'Добавить в избранное');
-            button.textContent = active ? '♥' : '♡';
         });
     };
 
