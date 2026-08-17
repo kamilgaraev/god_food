@@ -15,7 +15,7 @@ const stylesheet = fs.readFileSync(
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await page.setContent('<a class="home-button home-button--secondary" href="#gifts">Подарочные наборы</a>');
     await page.addStyleTag({ content: stylesheet });
-    await page.waitForTimeout(300);
+    await page.addStyleTag({ content: '.home-button { transition: none !important; }' });
 
     const button = page.locator('.home-button--secondary');
     const defaultState = await button.evaluate((element) => {
@@ -32,7 +32,6 @@ const stylesheet = fs.readFileSync(
     assert.equal(defaultState.backgroundColor, 'rgba(0, 0, 0, 0)', 'Gift button background must be transparent by default');
 
     await button.hover();
-    await page.waitForTimeout(300);
 
     const hoverState = await button.evaluate((element) => {
       const style = getComputedStyle(element);
