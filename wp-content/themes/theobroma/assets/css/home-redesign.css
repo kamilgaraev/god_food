@@ -74,7 +74,8 @@ body { overflow-x: clip; background: var(--home-paper); }
 .nav-links a:not(.header-icon):hover::after,
 .nav-links a:not(.header-icon):focus-visible::after { opacity: 1; transform: scaleX(1); }
 .floating-actions,
-.nav-sticky .floating-actions { position: static; display: flex; gap: 1rem; }
+.nav-sticky .floating-actions,
+.nav .nav-links:last-of-type.floating-actions { position: static; display: flex; gap: 0.5rem; }
 .floating-actions a,
 .floating-actions a:nth-child(n) {
   position: static;
@@ -279,7 +280,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .nav .brand img { width: 8.75rem; height: 3.75rem; }
   .nav-links-study { display: none !important; }
   .nav-links-transactional,
-  .floating-actions { position: static; display: flex; justify-self: end; gap: 0.625rem; }
+  .floating-actions { position: static; display: flex; justify-self: end; gap: 0.5rem; }
   .floating-actions .header-account,
   .floating-actions a:nth-child(n).header-account { width: 2.625rem; height: 2.625rem; display: inline-flex !important; }
   .floating-actions .header-cart,
