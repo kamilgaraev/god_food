@@ -66,3 +66,21 @@ test('cart has the same dimensions as the account control', async () => {
     assert.ok(Math.abs(metrics.cartHeight - metrics.accountHeight) <= 0.5, `${viewportWidth}px: cart height ${metrics.cartHeight}px must match account height ${metrics.accountHeight}px`);
   }
 });
+
+test('cart count replaces the icon only on hover', async () => {
+  await withRenderedHeader(async (page) => {
+    const cart = page.locator('.header-cart');
+    const icon = cart.locator('img');
+    const count = cart.locator('.cart-count');
+    const opacity = async (locator) => Number(await locator.evaluate((element) => getComputedStyle(element).opacity));
+
+    assert.equal(await opacity(icon), 1, 'Cart icon must be visible before hover');
+    assert.equal(await opacity(count), 0, 'Cart count must be hidden before hover');
+
+    await cart.hover();
+    await page.waitForTimeout(250);
+
+    assert.equal(await opacity(icon), 0, 'Cart icon must hide on hover');
+    assert.equal(await opacity(count), 1, 'Cart count must appear on hover');
+  });
+});
