@@ -58,10 +58,33 @@ async function footerMetrics(browser, viewportWidth) {
   return metrics;
 }
 
+async function footerMediaButtonColors(browser) {
+  const page = await browser.newPage({ viewport: { width: 390, height: 300 } });
+  await page.setContent(`
+    <style>${stylesheet}</style>
+    <footer class="site-footer">
+      <a class="footer-media-button" href="#media">Медиа о нас</a>
+    </footer>
+  `);
+
+  const button = page.locator('.footer-media-button');
+  const defaultBackground = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
+  await button.hover();
+  const hoverBackground = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
+
+  await page.close();
+  return { defaultBackground, hoverBackground };
+}
+
 async function run() {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
+    const buttonColors = await footerMediaButtonColors(browser);
+    if (buttonColors.hoverBackground !== buttonColors.defaultBackground) {
+      throw new Error(`footer media button must keep its background on hover: expected ${buttonColors.defaultBackground}, received ${buttonColors.hoverBackground}`);
+    }
+
     const mobile = await footerMetrics(browser, 390);
     assertClose(mobile.shell.left, 0, '390px footer shell must reach the left viewport edge');
     assertClose(mobile.shell.right, 390, '390px footer shell must reach the right viewport edge');

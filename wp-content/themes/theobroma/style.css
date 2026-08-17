@@ -206,7 +206,7 @@ h2 { margin:0; font-size:clamp(1.9375rem,4vw,3.375rem); line-height:.94; font-we
 .footer-address { padding:0.875rem 1.625rem 0.8125rem 1.5625rem; color:#000; font:500 1.5625rem/1.875rem 'Cormorant',Arial,sans-serif; opacity:.9; }
 .footer-media { text-align:center; font:0.6875rem 'Montserrat',Arial,sans-serif; color:var(--gold); }.social-icons { display:flex; justify-content:center; gap:0.625rem; }.social-icons a,.social-icons img { width:2.5rem; height:2.5rem; }
 .site-footer .footer-media-button { width:11.875rem; height:2.375rem; margin:1.25rem auto 0; padding:0 1.5rem; display:flex; align-items:center; justify-content:center; border:0; border-radius:62.4375rem; color:#fff; background:#b0903d; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; text-decoration:none; }
-.site-footer .footer-media-button:hover,.site-footer .footer-media-button:focus-visible { color:#fff; background:#98731d; }
+.site-footer .footer-media-button:focus-visible { color:#fff; background:#98731d; }
 .footer-mail::before { content:''; position:absolute; top:0.75rem; left:10.625rem; width:1.25rem; height:1.25rem; background:url('assets/images/envelope.svg') center/contain no-repeat; opacity:.5; }
 .footer-mail strong { position:absolute; top:2.4375rem; display:block; width:max-content; color:#000; font:500 1.625rem/1.9375rem 'Cormorant',Arial,sans-serif; text-align:left; opacity:.9; }.footer-mail small { position:absolute; top:5.1875rem; display:block; color:#343434; font:0.875rem/1.125rem 'Montserrat',Arial,sans-serif; text-align:left; opacity:.7; }
 .footer-mail:nth-of-type(6) strong { left:3.75rem; }.footer-mail:nth-of-type(6) small { left:4.4375rem; width:14.3125rem; }
