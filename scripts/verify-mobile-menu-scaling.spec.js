@@ -5,12 +5,12 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
 const viewportCases = [
-  { width: 744, height: 1133, panelWidth: 654.72 },
-  { width: 320, panelWidth: 281.6 },
-  { width: 390, panelWidth: 343.2 },
-  { width: 600, panelWidth: 528 },
-  { width: 601, panelWidth: 528.88 },
-  { width: 1199, panelWidth: 1055.12 },
+  { width: 744, height: 1133, panelWidth: 654.72, linkScale: 2 },
+  { width: 320, panelWidth: 281.6, linkScale: 1.5 },
+  { width: 390, panelWidth: 343.2, linkScale: 1.5 },
+  { width: 600, panelWidth: 528, linkScale: 1.5 },
+  { width: 601, panelWidth: 528.88, linkScale: 2 },
+  { width: 1199, panelWidth: 1055.12, linkScale: 2 },
 ];
 
 const markup = `
@@ -89,8 +89,8 @@ const markup = `
       assert.ok(metrics.labelLetterSpacing >= 1.5, `${expected.width}px: section label tracking is missing`);
       assert.equal(metrics.linkTransform, 'none', `${expected.width}px: drawer links must remain title case`);
       assert.ok(
-        Math.abs(metrics.linkSize - metrics.rootSize * 1.5) <= 1,
-        `${expected.width}px: drawer link typography must remain on the approved 1.5rem scale`,
+        Math.abs(metrics.linkSize - metrics.rootSize * expected.linkScale) <= 1,
+        `${expected.width}px: drawer links must render at ${expected.linkScale}rem`,
       );
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${expected.width}px: drawer creates horizontal overflow`);
       if (expected.width === 744) {

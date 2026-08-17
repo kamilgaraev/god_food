@@ -294,6 +294,10 @@ body { overflow-x: clip; background: var(--home-paper); }
   .mobile-menu-close { top: 0.875rem; left: calc(88vw - 3rem); }
 }
 
+@media (min-width: 601px) and (max-width: 1199px) {
+  .mobile-menu a { font-size: 2rem; }
+}
+
 @media (max-width: 600px) {
   html { scroll-behavior: auto; }
   .site-header { height: 4.25rem; }
