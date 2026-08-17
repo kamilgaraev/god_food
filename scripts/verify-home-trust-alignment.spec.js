@@ -48,7 +48,7 @@ async function metricsAt(browser, width) {
   try {
     await page.setContent(`
       <div class="home-hero__trust">
-        <div><strong>ГИ 35</strong><span>вместо 70</span></div>
+        <div><strong><b data-metric-part>ГИ</b> <b data-metric-part>35</b></strong><span>вместо 70</span></div>
         <div><strong>4,9</strong><span>1 200 отзывов</span></div>
       </div>
     `);
@@ -58,6 +58,7 @@ async function metricsAt(browser, width) {
       html, body { margin: 0; background: #fff; }
       .home-hero__trust { position: static !important; width: max-content; }
       .home-hero__trust span { color: transparent !important; }
+      .home-hero__trust [data-metric-part] { font: inherit; }
     ` });
     await page.evaluate(() => document.fonts.ready);
 
@@ -69,8 +70,23 @@ async function metricsAt(browser, width) {
         return { left: box.left - parent.left, right: box.right - parent.left };
       });
     });
+    const partRegions = await trust.locator('[data-metric-part]').evaluateAll((items) => {
+      const parent = items[0].closest('.home-hero__trust').getBoundingClientRect();
+      return items.map((item) => {
+        const box = item.getBoundingClientRect();
+        return { left: box.left - parent.left, right: box.right - parent.left };
+      });
+    });
+    const layout = await trust.evaluate((element) => ({
+      fontSizes: Array.from(element.querySelectorAll(':scope > div > strong'), (item) => parseFloat(getComputedStyle(item).fontSize)),
+      labelTops: Array.from(element.querySelectorAll(':scope > div > span'), (item) => item.getBoundingClientRect().top),
+    }));
     const image = PNG.sync.read(await trust.screenshot());
-    return regions.map((region) => inkBounds(image, region));
+    return {
+      groups: regions.map((region) => inkBounds(image, region)),
+      firstParts: partRegions.map((region) => inkBounds(image, region)),
+      layout,
+    };
   } finally {
     await page.close();
   }
@@ -81,21 +97,25 @@ async function metricsAt(browser, width) {
   const results = [];
   try {
     for (const width of viewports) {
-      const [first, second] = await metricsAt(browser, width);
-      results.push({ width, first, second });
+      const { groups: [first, second], firstParts: [letters, digits], layout } = await metricsAt(browser, width);
+      results.push({ width, first, second, letters, digits, layout });
     }
-    for (const { width, first, second } of results) {
+    for (const { width, first, second, letters, digits, layout } of results) {
       assert.ok(
-        Math.abs(first.height - second.height) <= 1,
-        `${width}px: visible trust values must have equal heights; received ${JSON.stringify({ first, second })}`,
+        Math.abs(letters.top - digits.top) <= 1 && Math.abs(letters.bottom - digits.bottom) <= 1,
+        `${width}px: 35 must share the letter cap line and baseline; received ${JSON.stringify({ letters, digits })}`,
+      );
+      assert.ok(
+        Math.abs(layout.fontSizes[0] - layout.fontSizes[1]) <= 0.01,
+        `${width}px: trust values must use the same font size; received ${JSON.stringify(layout.fontSizes)}`,
       );
       assert.ok(
         Math.abs(first.top - second.top) <= 1,
         `${width}px: visible trust values must align vertically; received ${JSON.stringify({ first, second })}`,
       );
       assert.ok(
-        Math.abs(first.bottom - second.bottom) <= 1,
-        `${width}px: visible trust values must share a bottom edge; received ${JSON.stringify({ first, second })}`,
+        Math.abs(layout.labelTops[0] - layout.labelTops[1]) <= 0.5,
+        `${width}px: trust labels must align vertically; received ${JSON.stringify(layout.labelTops)}`,
       );
     }
   } finally {
