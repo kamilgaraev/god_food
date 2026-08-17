@@ -105,6 +105,8 @@ async function routeLocalAssets(page) {
         return {
           studyDisplay: display('.nav-links-study'),
           whereDisplay: display('.header-where'),
+          whereMenuCount: Array.from(document.querySelectorAll('.mobile-menu a'))
+            .filter((link) => link.textContent.trim() === 'Где купить').length,
           accountIconCenterDrift: Math.max(
             Math.abs((accountIcon.left + accountIcon.width / 2) - (account.left + account.width / 2)),
             Math.abs((accountIcon.top + accountIcon.height / 2) - (account.top + account.height / 2)),
@@ -121,7 +123,8 @@ async function routeLocalAssets(page) {
       });
 
       assert.equal(metrics.studyDisplay, 'none', `${width}px: dense desktop navigation must collapse at the tablet breakpoint`);
-      assert.notEqual(metrics.whereDisplay, 'none', `${width}px: where-to-buy must remain visible in the tablet header`);
+      assert.equal(metrics.whereDisplay, 'none', `${width}px: where-to-buy must collapse into the tablet menu`);
+      assert.equal(metrics.whereMenuCount, 1, `${width}px: where-to-buy must remain available inside the tablet menu`);
       assert.equal(metrics.accountVisible, true, `${width}px: account icon must remain visible in the tablet header`);
       assert.ok(metrics.accountIconCenterDrift <= 1, `${width}px: account glyph is not centered inside its circular control`);
       assert.equal(metrics.cartVisible, true, `${width}px: cart must remain visible in the tablet header`);

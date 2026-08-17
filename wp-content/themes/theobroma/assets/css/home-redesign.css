@@ -302,6 +302,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 }
 
 @media (max-width: 1199px) {
+  .header-where { display: none !important; }
   .mobile-menu::before { width: 88vw; background: var(--home-paper); }
   .mobile-menu nav { top: 4.25rem; left: 1.75rem; width: calc(88vw - 3.5rem); }
   .mobile-menu-label { margin: 1.625rem 0 0.875rem; color: var(--home-peach); font: 500 0.5625rem/1.2 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
@@ -321,8 +322,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .nav-sticky .nav { min-height: 4.25rem; padding: 0 clamp(0.75rem, 4.6vw, 1.125rem); grid-template-columns: auto 1fr auto; gap: clamp(0.375rem, 2vw, 0.8125rem); }
   .nav .brand { width: clamp(6.5rem, 31vw, 7.75rem); height: 3.375rem; justify-self: start; }
   .nav .brand img { width: clamp(6.5rem, 31vw, 7.75rem); height: 3.375rem; }
-  .nav-links-study,
-  .header-where { display: none !important; }
+  .nav-links-study { display: none !important; }
   .nav-links-transactional,
   .floating-actions { position: static; display: flex; justify-self: end; gap: 0.5rem; }
   .floating-actions .header-account,
