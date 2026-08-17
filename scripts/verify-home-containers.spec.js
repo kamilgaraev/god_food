@@ -59,12 +59,23 @@ async function run() {
           '.home-composition__shell',
         ];
         const containers = containerSelectors.map((selector) => ({ selector, ...bounds(document.querySelector(selector)) }));
+        const legacyTabletSelectors = [
+          '.about-stage',
+          '.story',
+          '.values',
+          '.reviews-stage',
+          '.review-grid',
+          '.contact-card',
+          '.form-grid',
+        ];
+        const legacyTabletContainers = legacyTabletSelectors.map((selector) => ({ selector, ...bounds(document.querySelector(selector)) }));
         const cards = Array.from(document.querySelectorAll('.home-promo-card'));
         return {
           viewport: innerWidth,
           rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
           composition: composition ? bounds(composition) : null,
           containers,
+          legacyTabletContainers,
           promoCards: cards.length === 2
             ? { left: bounds(cards[0]).left, right: bounds(cards[1]).right }
             : null,
@@ -85,6 +96,10 @@ async function run() {
         const expectedGutter = 2.5 * metrics.rootFontSize;
         assert(Math.abs(compositionShell.left - expectedGutter) <= 2, `${width}px tablet content must use the shared ${expectedGutter.toFixed(1)}px side gutter instead of a narrow fixed measure`);
         assert(Math.abs(metrics.viewport - compositionShell.right - expectedGutter) <= 2, `${width}px tablet content must use the shared ${expectedGutter.toFixed(1)}px side gutter on both sides`);
+        for (const container of metrics.legacyTabletContainers) {
+          assert(Math.abs(container.left - compositionShell.left) <= 2, `${width}px ${container.selector} must share the homepage left container edge`);
+          assert(Math.abs(container.right - compositionShell.right) <= 2, `${width}px ${container.selector} must share the homepage right container edge`);
+        }
       }
       await page.close();
     }
