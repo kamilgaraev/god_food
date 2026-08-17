@@ -114,6 +114,8 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero h1 { --home-chocolate-texture-size: auto 250%; position: relative; z-index: 1; top: auto; left: auto; width: auto; margin: clamp(1.875rem, 2.8vw, 2.375rem) -0.015em 0; color: #8e857d; font: 400 clamp(9.625rem, 18.2vw, 15.5rem)/.66 'Cormorant', Georgia, serif; letter-spacing: -.035em; text-align: center; white-space: nowrap; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .home-hero h1 {
+    padding-bottom: .08em;
+    margin-bottom: -.08em;
     background-color: #542719;
     background-image:
       linear-gradient(112deg, rgba(255, 221, 184, .42) 0%, rgba(137, 64, 38, .08) 38%, rgba(31, 10, 5, .48) 100%),
