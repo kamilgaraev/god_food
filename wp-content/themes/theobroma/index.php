@@ -56,12 +56,18 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         </div>
     </section>
 
-    <div class="home-benefit-strip" aria-label="Преимущества Theobroma">
-        <div>
-            <span>Без белого сахара</span><i aria-hidden="true"></i>
-            <span>Без заменителей какао-масла</span><i aria-hidden="true"></i>
-            <span>Своя фабрика</span><i aria-hidden="true"></i>
-            <span>Бесплатная доставка от 2 500 ₽</span>
+    <?php $home_benefits = array('Без белого сахара', 'Без заменителей какао-масла', 'Своя фабрика', 'Бесплатная доставка от 2 500 ₽'); ?>
+    <div class="home-benefit-strip" role="group" aria-label="Преимущества Theobroma: <?php echo esc_attr(implode(', ', $home_benefits)); ?>">
+        <div class="home-benefit-strip__track" aria-hidden="true">
+            <?php for ($group_index = 0; $group_index < 2; $group_index++) : ?>
+                <div class="home-benefit-strip__group">
+                    <?php for ($repeat_index = 0; $repeat_index < 3; $repeat_index++) : ?>
+                        <?php foreach ($home_benefits as $home_benefit) : ?>
+                            <span><?php echo esc_html($home_benefit); ?></span><i></i>
+                        <?php endforeach; ?>
+                    <?php endfor; ?>
+                </div>
+            <?php endfor; ?>
         </div>
     </div>
 
