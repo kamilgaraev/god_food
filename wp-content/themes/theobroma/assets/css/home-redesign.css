@@ -138,10 +138,10 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero__actions { display: flex; gap: 0.75rem; flex-wrap: nowrap; }
 .home-button { min-height: 3rem; padding: 0 1.75rem; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--home-ink); border-radius: 62.4375rem; font: 500 0.8125rem/1.2 'Montserrat', Arial, sans-serif; transition: color .25s ease, background-color .25s ease, transform .25s ease; }
 .home-button--primary { color: #fff; border-color: var(--home-gold); background: var(--home-gold); }
-.home-button--secondary { color: var(--home-ink); background: transparent; }
+.home-button--secondary { color: var(--home-gold); border-color: var(--home-gold); background: transparent; }
 .home-button:hover { transform: translateY(-2px); }
 .home-button--primary:hover { color: #fff; border-color: #98731d; background: #98731d; }
-.home-button--secondary:hover { color: #fff; background: var(--home-ink); }
+.home-button--secondary:hover { color: #fff; background: var(--home-gold); }
 .home-hero__trust { position: absolute; z-index: 3; right: max(calc((100% - var(--home-container)) / 2), var(--home-gutter)); bottom: 2.125rem; display: flex; align-items: end; gap: clamp(1.75rem, 3vw, 2.875rem); text-align: center; }
 .home-hero__trust > div { display: grid; }
 .home-hero__trust strong { font: 400 clamp(2.125rem, 2.75vw, 2.625rem)/.9 'Cormorant', Georgia, serif; font-variant-numeric: lining-nums; }
