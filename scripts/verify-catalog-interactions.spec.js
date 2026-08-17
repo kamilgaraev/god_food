@@ -38,6 +38,8 @@ function scaleFromTransform(transform) {
   try {
     page = await browser.newPage({ viewport: { width: 1510, height: 900 } });
     page.setDefaultTimeout(5000);
+    let delayNextCatalogFetch = false;
+    let releaseCatalogFetch = () => {};
     await page.route('https://example.test/catalog/**', async (route) => {
       if (!['document', 'fetch'].includes(route.request().resourceType())) {
         await route.abort('blockedbyclient');
@@ -46,6 +48,10 @@ function scaleFromTransform(transform) {
       const url = new URL(route.request().url());
       const group = url.searchParams.get('product_group') || 'chocolate-200g';
       const label = group === 'chocolate-100g' ? 'Товар 100г' : 'Товар 200г';
+      if (delayNextCatalogFetch && route.request().resourceType() === 'fetch') {
+        delayNextCatalogFetch = false;
+        await new Promise((resolve) => { releaseCatalogFetch = resolve; });
+      }
       await route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: catalogHtml(group, label) });
     });
 
@@ -75,12 +81,34 @@ function scaleFromTransform(transform) {
     assert.equal(await page.evaluate(() => window.__catalogDocumentMarker), 'same-document');
     assert.equal(page.url(), 'https://example.test/catalog/?product_group=chocolate-100g');
     assert.equal(await page.locator('.catalog-filters .is-active').textContent(), 'Шоколад 100г');
+    assert.equal(await page.locator('.catalog-filters .is-active').getAttribute('aria-current'), 'page');
 
     await page.evaluate(() => history.back());
     await page.getByText('Товар 200г').waitFor();
     assert.equal(navigationRequests, 0, 'browser history must restore the catalog without a document navigation request');
     assert.equal(await page.evaluate(() => window.__catalogDocumentMarker), 'same-document');
     assert.equal(page.url(), 'https://example.test/catalog/');
+
+    delayNextCatalogFetch = true;
+    await page.getByRole('link', { name: 'Шоколад 100г' }).click();
+    await page.locator('.catalog-page[aria-busy="true"]').waitFor();
+    await page.evaluate(() => {
+      window.history.pushState({ theobromaModal: 'product' }, '', '/product/chocolate-200g');
+      const dialog = document.createElement('div');
+      dialog.className = 'commerce-modal is-open';
+      dialog.setAttribute('role', 'dialog');
+      dialog.tabIndex = -1;
+      dialog.textContent = 'Карточка товара';
+      document.body.append(dialog);
+      dialog.focus();
+    });
+    releaseCatalogFetch();
+    await page.locator('.catalog-page[aria-busy="true"]').waitFor({ state: 'detached' });
+
+    assert.equal(page.url(), 'https://example.test/product/chocolate-200g');
+    assert.deepEqual(await page.evaluate(() => window.history.state), { theobromaModal: 'product' });
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('role')), 'dialog');
+    assert.equal(await page.getByText('Товар 200г').isVisible(), true, 'late catalog response must not replace content behind a product modal');
 
   } finally {
     if (page) await page.close();

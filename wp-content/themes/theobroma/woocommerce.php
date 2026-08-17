@@ -13,7 +13,13 @@ $cacao_percentage = $is_catalog ? theobroma_requested_cacao_percentage() : null;
     <?php if ($is_catalog) : ?>
         <nav class="catalog-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Каталог</strong></nav>
         <h1 class="catalog-title">Каталог</h1>
-        <nav class="catalog-filters" aria-label="Категории товаров"><a class="<?php echo $catalog_group === 'chocolate-200g' ? 'is-active' : ''; ?>" href="<?php echo esc_url($shop_url); ?>">Шоколад 200г</a><a class="<?php echo $catalog_group === 'chocolate-100g' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('product_group', 'chocolate-100g', $shop_url)); ?>">Шоколад 100г</a><a class="<?php echo $catalog_group === 'chocolate-30g' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('product_group', 'chocolate-30g', $shop_url)); ?>">Шоколад 30г</a><a class="<?php echo $catalog_group === 'cacao' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('product_group', 'cacao', $shop_url)); ?>">Какао-порошок</a><a class="<?php echo $catalog_group === 'chia' ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('product_group', 'chia', $shop_url)); ?>">Семена чиа</a></nav>
+        <nav class="catalog-filters" aria-label="Категории товаров">
+            <a class="<?php echo $catalog_group === 'chocolate-200g' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'chocolate-200g' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url($shop_url); ?>">Шоколад 200г</a>
+            <a class="<?php echo $catalog_group === 'chocolate-100g' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'chocolate-100g' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url(add_query_arg('product_group', 'chocolate-100g', $shop_url)); ?>">Шоколад 100г</a>
+            <a class="<?php echo $catalog_group === 'chocolate-30g' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'chocolate-30g' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url(add_query_arg('product_group', 'chocolate-30g', $shop_url)); ?>">Шоколад 30г</a>
+            <a class="<?php echo $catalog_group === 'cacao' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'cacao' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url(add_query_arg('product_group', 'cacao', $shop_url)); ?>">Какао-порошок</a>
+            <a class="<?php echo $catalog_group === 'chia' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'chia' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url(add_query_arg('product_group', 'chia', $shop_url)); ?>">Семена чиа</a>
+        </nav>
         <?php if ($cacao_percentage !== null) : ?>
             <div class="catalog-cacao-filter" role="status"><span>Какао: <strong><?php echo esc_html((string) $cacao_percentage); ?>%</strong></span><a href="<?php echo esc_url($shop_url); ?>">Сбросить фильтр</a></div>
         <?php endif; ?>

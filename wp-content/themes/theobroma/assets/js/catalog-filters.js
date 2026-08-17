@@ -5,8 +5,18 @@
   const catalogPaths = new Set([window.location.pathname]);
   let activeRequest = null;
 
+  function syncActiveFilter() {
+    catalogPage.querySelectorAll('.catalog-filters a').forEach((link) => {
+      if (link.classList.contains('is-active')) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  syncActiveFilter();
+
   async function loadCatalog(url, { push = false, focusFilter = false } = {}) {
     const nextUrl = new URL(url, window.location.href);
+    const startingUrl = window.location.href;
     activeRequest?.abort();
 
     const request = new AbortController();
@@ -24,17 +34,18 @@
       const responseDocument = new DOMParser().parseFromString(await response.text(), 'text/html');
       const nextCatalogPage = responseDocument.querySelector('.catalog-page');
       if (!nextCatalogPage) throw new Error('Catalog response is missing .catalog-page');
-      if (activeRequest !== request) return;
+      if (activeRequest !== request || window.location.href !== startingUrl) return;
 
       catalogPage.className = nextCatalogPage.className;
       catalogPage.innerHTML = nextCatalogPage.innerHTML;
+      syncActiveFilter();
       catalogPaths.add(nextUrl.pathname);
 
       if (push) window.history.pushState({ theobromaCatalog: true }, '', nextUrl.href);
       if (focusFilter) catalogPage.querySelector('.catalog-filters .is-active')?.focus({ preventScroll: true });
       document.dispatchEvent(new CustomEvent('theobroma:catalog-updated'));
     } catch (error) {
-      if (error.name !== 'AbortError') window.location.assign(nextUrl.href);
+      if (error.name !== 'AbortError' && window.location.href === startingUrl) window.location.assign(nextUrl.href);
     } finally {
       if (activeRequest === request) {
         activeRequest = null;
