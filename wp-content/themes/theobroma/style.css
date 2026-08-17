@@ -2209,7 +2209,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 /* Shared three-mode layout system. Full-bleed sections own backgrounds only;
    readable and interactive content uses one centered measure. */
 @media (min-width:1200px) { :root { --layout-container:72.5rem; --layout-gutter:clamp(2.5rem,4vw,4rem); } }
-@media (min-width:601px) and (max-width:1199px) { :root { --layout-container:37.5rem; --layout-gutter:2.5rem; } }
+@media (min-width:601px) and (max-width:1199px) { :root { --layout-gutter:2.5rem; } }
 @media (max-width:600px) { :root { --layout-container:calc(100vw - 2 * var(--layout-gutter)); --layout-gutter:1.125rem; } }
 
 :where(.shop-shell,.legal-content,.recipe-grid,.market-grid,.buy-tabs,.buy-location,.buy-partner-grid,.delivery-accordion,.media-grid,.product-detail-hero,.product-detail-accordions,.product-related,.recipe-detail-columns,.recipe-product-promo,.corporate-gifts-showcase,.corporate-gifts-branding,.corporate-gifts-cases,.corporate-gifts-minimum,.corporate-gifts-benefits,.corporate-gifts-request) {

@@ -44,7 +44,7 @@ async function run() {
 
   try {
     const html = await fetchHomepage();
-    for (const width of [2048, 2560]) {
+    for (const width of [1100, 2048, 2560]) {
       const page = await openHomepage(browser, width, html);
       const metrics = await page.evaluate(() => {
         const bounds = (element) => {
@@ -62,6 +62,7 @@ async function run() {
         const cards = Array.from(document.querySelectorAll('.home-promo-card'));
         return {
           viewport: innerWidth,
+          rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
           composition: composition ? bounds(composition) : null,
           containers,
           promoCards: cards.length === 2
@@ -80,6 +81,11 @@ async function run() {
       const compositionShell = metrics.containers.find(({ selector }) => selector === '.home-composition__shell');
       assert(Math.abs(compositionShell.left - metrics.promoCards.left) <= 12, `${width}px composition and promo content must share the left container edge`);
       assert(Math.abs(compositionShell.right - metrics.promoCards.right) <= 12, `${width}px composition and promo content must share the right container edge`);
+      if (width === 1100) {
+        const expectedGutter = 2.5 * metrics.rootFontSize;
+        assert(Math.abs(compositionShell.left - expectedGutter) <= 2, `${width}px tablet content must use the shared ${expectedGutter.toFixed(1)}px side gutter instead of a narrow fixed measure`);
+        assert(Math.abs(metrics.viewport - compositionShell.right - expectedGutter) <= 2, `${width}px tablet content must use the shared ${expectedGutter.toFixed(1)}px side gutter on both sides`);
+      }
       await page.close();
     }
   } finally {
