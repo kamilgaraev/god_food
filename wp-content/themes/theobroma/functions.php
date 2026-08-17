@@ -106,6 +106,16 @@ function theobroma_assets(): void {
     }
 
     if (class_exists('WooCommerce')) {
+        if (is_shop() || is_product_category()) {
+            wp_enqueue_script(
+                'theobroma-catalog-filters',
+                get_template_directory_uri() . '/assets/js/catalog-filters.js',
+                array(),
+                (string) filemtime($theme_dir . '/assets/js/catalog-filters.js'),
+                array('strategy' => 'defer', 'in_footer' => true)
+            );
+        }
+
         foreach (array('wc-add-to-cart', 'wc-country-select', 'wc-address-i18n', 'wc-checkout') as $handle) {
             wp_enqueue_script($handle);
             if (is_front_page() && $handle !== 'wc-add-to-cart') {

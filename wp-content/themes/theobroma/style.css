@@ -357,11 +357,12 @@ body.account-modal-open { overflow:hidden; }
 .catalog-page.catalog-group-chia { min-height:57.18261719rem; }
 .catalog-page ul.products li.product .woocommerce-loop-product__link { display:block; position:relative; }
 .catalog-page ul.products li.product .woocommerce-loop-product__link::before { content:""; position:absolute; z-index:2; top:0.625rem; right:0.625rem; width:2.875rem; height:2.875rem; border-radius:50%; background:#fff url('assets/images/heart-gold.svg') center/1.25rem 1.25rem no-repeat; }
-.catalog-page ul.products li.product a img { width:16.25rem; height:20.3125rem; margin:0 0 1.25rem; object-fit:cover; background:#eee5db; }
+.catalog-page ul.products li.product a img { width:16.25rem; height:20.3125rem; margin:0 0 1.25rem; object-fit:cover; background:#eee5db; transition:transform 650ms cubic-bezier(.22,.61,.36,1); }
 .catalog-page ul.products li.product .woocommerce-loop-product__title { padding:0; color:#343434; font:500 0.875rem/1.18125rem 'Montserrat',Arial,sans-serif; text-transform:none; }
 .catalog-page ul.products li.product .catalog-product-description { margin:0.5rem 0 0; color:#343434; font:400 0.875rem/1.35625rem 'Montserrat',Arial,sans-serif; }
 .catalog-page ul.products li.product .price { display:inline-block; margin:0.75rem 0 0; vertical-align:middle; color:#b0903d; font:500 1.125rem/1.51875rem 'Montserrat',Arial,sans-serif; }
 .catalog-page ul.products li.product .button { position:absolute; left:0; bottom:0.5rem; width:10.37304688rem; min-width:10.37304688rem; min-height:2.18554688rem; height:2.18554688rem; margin:0; padding:0; display:flex !important; align-items:center; justify-content:center; border:0; border-radius:62.4375rem; color:#fff; background:#b0903d; font:400 0.8125rem/1.1375rem 'Montserrat',Arial,sans-serif; }
+@media (prefers-reduced-motion:reduce) { .catalog-page ul.products li.product a img { transition:none; } }
 .media-page { height:75.0625rem; position:relative; overflow:hidden; background:var(--paper); }
 .media-page::before { content:""; position:absolute; top:5.8125rem; left:0; width:13.1875rem; height:17.77441406rem; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
 .media-breadcrumb { position:absolute; top:8.5625rem; left:0; width:100%; text-align:center; color:#b0903d; font:400 0.6875rem/1.125rem 'Montserrat',Arial,sans-serif; }

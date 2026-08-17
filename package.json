@@ -25,6 +25,7 @@
     "test:menu-scaling": "node scripts/verify-mobile-menu-scaling.spec.js",
     "test:footer": "node scripts/verify-responsive-footer.spec.js",
     "test:footer-contacts": "node scripts/verify-footer-contact-links.spec.js",
+    "test:catalog-interactions": "node scripts/verify-catalog-interactions.spec.js",
     "test:reviews": "node scripts/verify-review-carousel.spec.js",
     "test:mobile-secondary": "node scripts/verify-mobile-secondary-content.spec.js"
   },
