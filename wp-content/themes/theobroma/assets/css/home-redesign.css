@@ -243,7 +243,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .header-account { display: none !important; }
   .home-hero h1 { font-size: clamp(7rem, 14vw, 12.25rem); }
   .home-hero,
-  .home-hero__shell { height: 29rem; min-height: 29rem; max-height: none; }
+  .home-hero__shell { height: clamp(24rem, 40vw, 25rem); min-height: clamp(24rem, 40vw, 25rem); max-height: none; }
   .home-hero { margin-top: 0; }
   .home-hero__shell { padding: 1.5rem 2.5rem; display: grid; grid-template-rows: auto auto auto minmax(1rem, 1fr) auto; }
   .home-eyebrow { text-align: left; }

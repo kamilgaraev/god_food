@@ -2165,8 +2165,42 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 /* Keep product-description typography on the same fluid rem scale as the rest of the product card. */
 .commerce-modal-product .product-detail-accordions summary,
 .commerce-modal-product .product-detail-accordions details > div {
+  font-family:'Montserrat',Arial,sans-serif;
   font-size:1rem;
   line-height:1.5rem;
+  font-weight:400;
+}
+
+.commerce-modal-product .product-detail-buy button.single_add_to_cart_button {
+  transition:background-color .2s ease-in-out,color .2s ease-in-out !important;
+}
+
+.commerce-modal-product .product-detail-buy button.single_add_to_cart_button:hover {
+  color:#000 !important;
+  background:#e2d9d2 !important;
+  transform:none !important;
+}
+
+.commerce-modal-product .product-detail-marketplaces a,
+.commerce-modal-product .product-detail-favorite {
+  transition:background-color .2s ease-in-out,color .2s ease-in-out,border-color .2s ease-in-out;
+}
+
+.commerce-modal-product .product-detail-marketplaces a:first-child:hover {
+  background:#8f18ed;
+  transform:none;
+}
+
+.commerce-modal-product .product-detail-marketplaces a:last-child:hover {
+  background:#0049cc;
+  transform:none;
+}
+
+.commerce-modal-product .product-detail-favorite:hover {
+  color:#ff8562;
+  border-color:#e4e4e4;
+  background:#fffbf7;
+  transform:none;
 }
 
 /* Shared three-mode layout system. Full-bleed sections own backgrounds only;
