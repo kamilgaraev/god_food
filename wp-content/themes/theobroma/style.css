@@ -93,8 +93,8 @@ h1 { position:absolute; top:10.6875rem; left:0; width:35rem; margin:0; font:400 
 h1 span { display:block; height:4.4375rem; } h1 span:nth-child(2) { margin-left:3.125rem; }
 .hero p { position:absolute; top:25.5rem; left:0; width:35rem; margin:0; color:#343434; font:400 1.125rem/1.75rem 'Montserrat',Arial,sans-serif; letter-spacing:normal; }
 .hero .button { position:absolute; top:29.75rem; left:0; width:13.75rem; min-height:2.625rem; margin:0; font-size:1rem; line-height:1.55rem; }
-.button { display:inline-flex; justify-content:center; align-items:center; min-width:9.25rem; min-height:2.625rem; padding:0 1.5rem; border:0; border-radius:62.4375rem; color:white; background:var(--gold); font:500 0.6875rem/1 'Montserrat',Arial,sans-serif; margin-top:0.875rem; transition:transform .2s ease,background .2s ease; }
-.button:hover { background:#98731d; transform:translateY(-2px); }
+.button { display:inline-flex; justify-content:center; align-items:center; min-width:9.25rem; min-height:2.625rem; padding:0 1.5rem; border:0; border-radius:62.4375rem; color:white; background:var(--gold); font:500 0.6875rem/1 'Montserrat',Arial,sans-serif; margin-top:0.875rem; transition:background .2s ease; }
+.button:hover { background:#98731d; }
 .section { max-width:77.5rem; margin:auto; padding:5.75rem 1.75rem; }
 .section-heading { display:flex; justify-content:space-between; align-items:end; gap:1.5rem; margin-bottom:2rem; }
 h2 { margin:0; font-size:clamp(1.9375rem,4vw,3.375rem); line-height:.94; font-weight:400; letter-spacing:-.045em; text-transform:uppercase; }
