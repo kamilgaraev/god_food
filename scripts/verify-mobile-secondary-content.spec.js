@@ -103,7 +103,7 @@ async function verifyFooterIcons(browser, width) {
   await page.setContent(`
     <style>${stylesheet}</style>
     <footer class="site-footer"><div class="footer-shell">
-      <div class="footer-phones"><span>+7 499 755 54 90</span><span>+7 800 444 70 54</span></div>
+      <div class="footer-phones"><a href="tel:+74997555490">+7 499 755 54 90</a><a href="tel:+78004447054">+7 800 444 70 54</a></div>
       <div class="footer-card footer-address">Адрес фабрики:<br>Московская обл.,<br>Наро-Фоминский г.о.</div>
       <div class="footer-card footer-mail"><strong>info@theobroma.msk.ru</strong><small>Коммерческие предложения</small></div>
       <div class="footer-card footer-mail"><strong>opt@theobroma.msk.ru</strong><small>Оптовые покупки</small></div>

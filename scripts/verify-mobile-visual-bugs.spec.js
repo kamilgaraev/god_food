@@ -68,7 +68,7 @@ async function run() {
       const mail = document.querySelector('.footer-mail:nth-of-type(6)');
       const mailCards = Array.from(document.querySelectorAll('.footer-mail'));
       const mailStyle = getComputedStyle(mail, '::before');
-      const phoneText = document.querySelector('.footer-phones span:first-child');
+      const phoneText = document.querySelector('.footer-phones a:first-child');
       const footerContent = [phoneText, document.querySelector('.footer-address'), mail.querySelector('strong')].filter(Boolean).map((element) => {
         const range = document.createRange();
         range.selectNodeContents(element);

@@ -193,7 +193,7 @@ h2 { margin:0; font-size:clamp(1.9375rem,4vw,3.375rem); line-height:.94; font-we
 .footer-map h3 { grid-column:1/-1; margin:0 0 0.5625rem; color:#000; font:400 1.625rem/1.9375rem 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
 .footer-map ul { margin:0; padding:0; list-style:none; color:#343434; font:0.875rem/1.125rem 'Montserrat',Arial,sans-serif; }.footer-map li + li { margin-top:0.625rem; }
 .footer-logo { text-align:center; }.footer-logo img { width:11.25rem; height:4.713875rem; margin:auto; }
-.footer-phones { height:9.1875rem; border-radius:1.25rem; background:#f3ebe4; text-align:center; }.footer-phones img { position:absolute; height:1.5625rem; }.footer-phones img:first-child { top:2.375rem; left:3.5rem; width:14.5rem; }.footer-phones img:last-child { top:5.1875rem; left:3.4375rem; width:14.625rem; }.footer-phones span { position:absolute; left:0; width:100%; color:#000; font:400 2rem/2rem 'Cormorant',Arial,sans-serif; }.footer-phones span:first-child { top:2.125rem; }.footer-phones span:last-child { top:4.9375rem; }
+.footer-phones { height:9.1875rem; border-radius:1.25rem; background:#f3ebe4; text-align:center; }.footer-phones img { position:absolute; height:1.5625rem; }.footer-phones img:first-child { top:2.375rem; left:3.5rem; width:14.5rem; }.footer-phones img:last-child { top:5.1875rem; left:3.4375rem; width:14.625rem; }.footer-phones a { position:absolute; left:0; width:100%; color:#000; font:400 2rem/2rem 'Cormorant',Arial,sans-serif; }.footer-phones a:first-child { top:2.125rem; }.footer-phones a:last-child { top:4.9375rem; }
 .footer-phones strong { font:400 1.625rem/1.24 'Cormorant',Arial,sans-serif; }
 .footer-card { height:9.1875rem; padding:0; position:absolute; border-radius:1.25rem; background:#f3ebe4; text-align:center; }
 .footer-address { padding:0.875rem 1.625rem 0.8125rem 1.5625rem; color:#000; font:500 1.5625rem/1.875rem 'Cormorant',Arial,sans-serif; opacity:.9; }
@@ -1756,9 +1756,9 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .footer-mail:nth-of-type(7),
   .footer-mail:nth-of-type(8) { height:6.625rem; }
   .footer-phones { text-align:left; }
-  .footer-phones span { left:1.25rem; width:calc(100% - 2.5rem); font:400 1.5rem/1.875rem 'Cormorant',Arial,sans-serif; text-align:left; }
-  .footer-phones span:first-child { top:1.125rem; }
-  .footer-phones span:last-child { top:3.5rem; }
+  .footer-phones a { left:1.25rem; width:calc(100% - 2.5rem); font:400 1.5rem/1.875rem 'Cormorant',Arial,sans-serif; text-align:left; }
+  .footer-phones a:first-child { top:1.125rem; }
+  .footer-phones a:last-child { top:3.5rem; }
   .footer-address { padding-inline:1.25rem; text-align:left; }
   .copyright { font-size:0.625rem; line-height:0.9375rem; }
   .footer-mail:nth-of-type(7) { top:46.7305rem !important; }
@@ -2355,7 +2355,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .footer-mail:nth-of-type(8)::before {
     background-image:url('assets/images/envelope.svg');
   }
-  .footer-phones span { width:calc(100% - 7.5rem); }
+  .footer-phones a { width:calc(100% - 7.5rem); }
   .footer-address { padding-right:7.5rem; }
   .footer-mail:nth-of-type(6) strong,
   .footer-mail:nth-of-type(7) strong,

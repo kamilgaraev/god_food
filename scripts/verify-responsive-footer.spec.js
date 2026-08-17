@@ -21,7 +21,7 @@ async function footerMetrics(browser, viewportWidth) {
       <div class="footer-shell">
         <div class="footer-map"><h3>Карта сайта</h3><ul><li>Каталог</li><li>Где купить</li></ul></div>
         <div class="footer-logo"></div>
-        <div class="footer-phones"><span>+7 499 755 54 90</span><span>+7 800 444 70 54</span></div>
+        <div class="footer-phones"><a href="tel:+74997555490">+7 499 755 54 90</a><a href="tel:+78004447054">+7 800 444 70 54</a></div>
         <div class="footer-card footer-address">Адрес фабрики:<br>Московская обл., Наро-Фоминский г.о.</div>
         <div class="footer-media"></div>
         <div class="footer-card footer-mail"><strong>info@theobroma.msk.ru</strong><small>Коммерческие предложения и любые другие вопросы</small></div>
