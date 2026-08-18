@@ -49,9 +49,13 @@
     });
 
     if (window.jQuery) {
-        window.jQuery(document.body).on('added_to_cart.theobromaCartCount', () => {
+        window.jQuery(document.body).on('added_to_cart.theobromaCartCount', (_event, _fragments, _cartHash, button) => {
             setCartCount(document.querySelector('.cart-count')?.textContent || 0);
             window.requestAnimationFrame(syncCartAccessibleName);
+            const opener = button?.jquery ? button.get(0) : button;
+            if (opener?.matches('.home-product-card__button')) {
+                openCart(opener);
+            }
         });
     }
 
@@ -551,7 +555,7 @@
         }
 
         const productLink = event.target.closest('[data-product-modal-link],ul.products li.product a.woocommerce-LoopProduct-link,.product > a,.product-related a[href*="/product/"]');
-        if (productLink && productLink.href && !event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) {
+        if (productLink && !productLink.matches('.add_to_cart_button') && productLink.href && !event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) {
             event.preventDefault();
             openProduct(productLink.href, { opener: productLink });
             return;
