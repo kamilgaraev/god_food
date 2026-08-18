@@ -20,6 +20,7 @@
     "test:home-gold-accents": "node scripts/verify-home-gold-accents.spec.js",
     "test:home-trust": "node scripts/verify-home-trust-alignment.spec.js",
     "test:button-hover": "node scripts/verify-button-hover-motion.spec.js",
+    "test:input-focus": "node scripts/verify-input-focus-style.spec.js",
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",
     "test:header-actions": "node scripts/verify-header-action-layout.spec.js",

@@ -37,6 +37,7 @@ html { overflow-x:hidden; scroll-behavior:smooth; font-size:clamp(0.9375rem,calc
 body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:'Montserrat', Arial, sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 a { color:inherit; text-decoration:none; }
 img { display:block; max-width:100%; }
+:where(input:not([type="checkbox"]):not([type="radio"]),textarea,select):focus { outline:none; }
 .home > main { position:relative; }.home-decor { position:absolute; z-index:4; inset:0; overflow:hidden; pointer-events:none; }.home-decor i { position:absolute; display:block; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }.home-decor i:nth-child(1) { top:36.875rem; right:0; width:17.1875rem; height:21.71875rem; background-image:url('assets/images/botanical-home-right.webp'); }.home-decor i:nth-child(2) { top:80.04003906rem; left:0; width:13.1875rem; height:17.77441406rem; }.home-decor i:nth-child(3) { top:114.47753906rem; right:0; width:13.25rem; height:25.8125rem; }.home-decor i:nth-child(4) { top:155.04003906rem; left:0; width:11.5625rem; height:22.91601563rem; }
 .home-decor i:nth-child(2).is-loaded { background-image:url('assets/images/botanical-home-left.webp'); }
 .home-decor i:nth-child(3).is-loaded { background-image:url('assets/images/botanical-home-right-tall.webp'); }
