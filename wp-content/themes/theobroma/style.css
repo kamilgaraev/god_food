@@ -2424,3 +2424,16 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   font-size:1rem;
   line-height:1.5rem;
 }
+
+/* Pull inner-page introductions closer to the header without changing their internal rhythm. */
+.catalog-page,
+.recipes-intro,
+.marketplace-intro,
+.buy-intro,
+.cooperation-page,
+.delivery-page,
+.media-page,
+.legal-page,
+.recipe-detail-intro {
+  margin-top:-3rem;
+}
