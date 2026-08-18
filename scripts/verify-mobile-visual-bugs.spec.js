@@ -79,6 +79,7 @@ async function run() {
         };
       });
       const firstProduct = document.querySelector('.home-product-card');
+      const secondProduct = document.querySelectorAll('.home-product-card')[1];
       const productGrid = document.querySelector('.home-product-grid');
       const gridStyle = getComputedStyle(productGrid);
       return {
@@ -97,6 +98,8 @@ async function run() {
         phonesUseText: Boolean(phoneText) && !document.querySelector('.footer-phones img'),
         catalog: {
           cardWidth: rect(firstProduct).width,
+          firstTop: rect(firstProduct).top,
+          secondTop: rect(secondProduct).top,
           availableWidth: rect(productGrid).width - parseFloat(gridStyle.paddingLeft) - parseFloat(gridStyle.paddingRight),
         },
         ctaBackground: getComputedStyle(document.querySelector('.home-hero__actions .home-button--primary')).backgroundColor,
@@ -110,7 +113,7 @@ async function run() {
     check(parseFloat(homeMetrics.mail.iconBottom) <= 12 && parseFloat(homeMetrics.mail.iconRight) <= 12 && homeMetrics.mail.strongAlign === 'left' && homeMetrics.mail.height <= 112 && homeMetrics.mail.firstGap >= 12 && homeMetrics.mail.firstGap <= 24, '3. Mobile footer mail cards must be compact with a bottom-right icon', failures);
     const footerLefts = homeMetrics.footerContent.map(({ left }) => left);
     check(homeMetrics.phonesUseText && homeMetrics.footerContent.length === 3 && homeMetrics.footerContent.every(({ textAlign }) => textAlign === 'left') && Math.max(...footerLefts) - Math.min(...footerLefts) <= 2 && homeMetrics.footerContent[0].fontSize === homeMetrics.footerContent[2].fontSize, '3a. Mobile footer card content must share one left-aligned typography grid', failures);
-    check(homeMetrics.catalog.cardWidth >= homeMetrics.catalog.availableWidth - 2, '6. Mobile catalog must show one complete card inside its viewport', failures);
+    check(homeMetrics.catalog.cardWidth <= homeMetrics.catalog.availableWidth / 2 && Math.abs(homeMetrics.catalog.firstTop - homeMetrics.catalog.secondTop) <= 1, '6. Mobile homepage catalog must show two products in one row', failures);
     check(homeMetrics.ctaBackground === 'rgb(176, 144, 61)', '7. Primary home CTA must use the brand gold color', failures);
 
     const wideMobile = await pageFor(browser, '/', 509);
@@ -125,12 +128,15 @@ async function run() {
       const mailIcon = getComputedStyle(mail, '::before');
       const grid = document.querySelector('.home-product-grid');
       const gridStyle = getComputedStyle(grid);
+      const products = document.querySelectorAll('.home-product-card');
       return {
         controls,
         mailHeight: bounds(mail).height,
         mailIconBottom: parseFloat(mailIcon.bottom),
         mailIconRight: parseFloat(mailIcon.right),
-        catalogCardWidth: bounds(document.querySelector('.home-product-card')).width,
+        catalogCardWidth: bounds(products[0]).width,
+        catalogFirstTop: bounds(products[0]).top,
+        catalogSecondTop: bounds(products[1]).top,
         catalogAvailableWidth: bounds(grid).width - parseFloat(gridStyle.paddingLeft) - parseFloat(gridStyle.paddingRight),
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       };
@@ -140,7 +146,7 @@ async function run() {
     const wideContactRight = Math.min(...wideMetrics.controls.map(({ right }) => right));
     check(Math.abs(wideContactLeft) <= 2 && Math.abs(wideContactRight) <= 2, '2. Contact fields must stay on the shared visible container at 509px', failures);
     check(wideMetrics.mailHeight <= 112 && wideMetrics.mailIconBottom <= 12 && wideMetrics.mailIconRight <= 12, '3. Footer cards must stay compact at 509px', failures);
-    check(wideMetrics.catalogCardWidth <= Math.min(384.5, wideMetrics.catalogAvailableWidth + 1), '6. Catalog must show a restrained complete card at 509px', failures);
+    check(wideMetrics.catalogCardWidth <= wideMetrics.catalogAvailableWidth / 2 && Math.abs(wideMetrics.catalogFirstTop - wideMetrics.catalogSecondTop) <= 1, '6. Homepage catalog must show two products in one row at 509px', failures);
     check(!wideMetrics.overflow, 'Mobile homepage must not overflow horizontally at 509px', failures);
 
     const transition = await pageFor(browser, '/', 521);
@@ -164,13 +170,15 @@ async function run() {
         firstCardLeft: products[0].getBoundingClientRect().left,
         firstCardRight: products[0].getBoundingClientRect().right,
         secondCardLeft: products[1].getBoundingClientRect().left,
+        firstCardTop: products[0].getBoundingClientRect().top,
+        secondCardTop: products[1].getBoundingClientRect().top,
         viewportWidth,
       };
     });
     await transition.close();
     check(transitionMetrics.aboutContained, '8. The complete about composition must fit at 521px', failures);
     check(transitionMetrics.contactHeadingContained && transitionMetrics.contactControlsContained, '8. Contact heading and fields must fit at 521px', failures);
-    check(transitionMetrics.catalogCardWidth <= 384.5 && transitionMetrics.firstCardLeft >= -1 && transitionMetrics.firstCardRight <= transitionMetrics.viewportWidth + 1 && transitionMetrics.secondCardLeft >= transitionMetrics.firstCardRight, '8. Catalog must show one restrained complete card at 521px', failures);
+    check(transitionMetrics.catalogCardWidth <= transitionMetrics.viewportWidth / 2 && transitionMetrics.firstCardLeft >= -1 && transitionMetrics.firstCardRight <= transitionMetrics.viewportWidth + 1 && transitionMetrics.secondCardLeft >= transitionMetrics.firstCardRight && Math.abs(transitionMetrics.firstCardTop - transitionMetrics.secondCardTop) <= 1, '8. Homepage catalog must show two products in one row at 521px', failures);
 
     const cooperation = await pageFor(browser, '/cooperation/', 390);
     const benefitMetrics = await cooperation.evaluate(() => Array.from(document.querySelectorAll('.cooperation-benefit-grid article'), (card) => {

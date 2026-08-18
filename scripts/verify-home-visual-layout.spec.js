@@ -35,7 +35,7 @@ async function metricsFor(page) {
     const style = (selector) => getComputedStyle(document.querySelector(selector));
     const productCards = Array.from(document.querySelectorAll('.home-product-card'), (card) => {
       const box = card.getBoundingClientRect();
-      return { left: box.left, right: box.right, width: box.width };
+      return { left: box.left, right: box.right, top: box.top, width: box.width };
     });
     const sharedContainers = [
       '.home-section-heading',
@@ -87,8 +87,9 @@ async function run() {
       check(metrics.cacaoPanel.left >= -1 && metrics.cacaoPanel.right <= metrics.viewport + 1, `${width}px cacao panel must fit the viewport`);
 
       if (width <= 600) {
-        check(metrics.productFlow === 'column', `${width}px mobile catalog must use one horizontal carousel`);
-        check(metrics.productCards[0].width <= 384.5 && metrics.productCards[0].left >= -1 && metrics.productCards[0].right <= metrics.viewport + 1, `${width}px mobile catalog must expose one complete restrained card`);
+        check(metrics.productColumns === 2 && metrics.productFlow === 'row', `${width}px mobile homepage catalog must use two columns`);
+        check(Math.abs(metrics.productCards[0].top - metrics.productCards[1].top) <= 1, `${width}px first two homepage products must share one row`);
+        check(metrics.productCards.every(({ left, right }) => left >= -1 && right <= metrics.viewport + 1), `${width}px mobile homepage products must fit the viewport`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px mobile content sections must use one column`);
         check(metrics.title.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px mobile hero content must keep title, trust and actions in order`);
       } else if (width < 1200) {
