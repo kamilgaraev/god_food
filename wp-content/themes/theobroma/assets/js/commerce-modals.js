@@ -514,7 +514,7 @@
             return;
         }
 
-        const cartLink = event.target.closest('[data-commerce-cart-open],.floating-actions a:first-child');
+        const cartLink = event.target.closest('[data-commerce-cart-open]');
         if (cartLink && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
             event.preventDefault();
             openCart(cartLink);

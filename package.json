@@ -29,6 +29,7 @@
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",
     "test:header-actions": "node scripts/verify-header-action-layout.spec.js",
+    "test:header-routing": "node scripts/verify-header-action-routing.spec.js",
     "test:menu-scaling": "node scripts/verify-mobile-menu-scaling.spec.js",
     "test:footer": "node scripts/verify-responsive-footer.spec.js",
     "test:footer-contacts": "node scripts/verify-footer-contact-links.spec.js",
