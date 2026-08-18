@@ -14,12 +14,12 @@ while (have_posts()) {
     $detail_image_id = absint(get_post_meta($post_id, '_theobroma_detail_image_id', true));
     $detail_image_url = $detail_image_id ? wp_get_attachment_image_url($detail_image_id, 'full') : '';
     $layout = (string) get_post_meta($post_id, '_theobroma_layout', true);
-    $product_ids = array_values(array_filter(array_map('absint', (array) get_post_meta($post_id, '_theobroma_product_ids', true))));
+    $product_ids = array_slice(array_values(array_unique(array_filter(array_map('absint', (array) get_post_meta($post_id, '_theobroma_product_ids', true))))), 0, 3);
     $recipe_products = array();
     if (function_exists('wc_get_product')) {
         foreach ($product_ids as $product_id) {
             $recipe_product = wc_get_product($product_id);
-            if ($recipe_product instanceof WC_Product) {
+            if ($recipe_product instanceof WC_Product && $recipe_product->get_status() === 'publish') {
                 $recipe_products[] = $recipe_product;
             }
         }
@@ -63,7 +63,7 @@ while (have_posts()) {
             </div>
             <section class="recipe-product-promo">
                 <h2><em>Какао-порошок</em> натуральный</h2>
-                <div class="recipe-product-grid home-product-grid">
+                <div class="recipe-product-grid recipe-product-grid--count-<?php echo esc_attr((string) count($recipe_products)); ?> home-product-grid">
                     <?php if ($recipe_products) : ?>
                         <?php foreach ($recipe_products as $product) : ?>
                             <?php get_template_part('template-parts/home/product-card', null, array('product' => $product)); ?>

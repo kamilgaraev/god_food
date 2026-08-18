@@ -31,4 +31,46 @@
         field.find('img').attr('src', '').prop('hidden', true);
         $(this).prop('hidden', true);
     });
+
+    function refreshProductPicker(picker) {
+        var checkboxes = picker.find('[data-product-option] input[type="checkbox"]');
+        var selected = checkboxes.filter(':checked');
+        var limit = Number(picker.data('limit')) || 3;
+        var isFull = selected.length >= limit;
+
+        checkboxes.each(function () {
+            var checkbox = $(this);
+            var option = checkbox.closest('[data-product-option]');
+            var isSelected = checkbox.is(':checked');
+            checkbox.prop('disabled', isFull && !isSelected);
+            option.toggleClass('is-selected', isSelected).toggleClass('is-disabled', isFull && !isSelected);
+        });
+        picker.find('.theobroma-product-picker-count')
+            .toggleClass('is-full', isFull)
+            .find('strong').text(String(selected.length));
+    }
+
+    $('[data-product-picker]').each(function () {
+        refreshProductPicker($(this));
+    });
+
+    $(document).on('change', '[data-product-picker] input[type="checkbox"]', function () {
+        refreshProductPicker($(this).closest('[data-product-picker]'));
+    });
+
+    $(document).on('input', '[data-product-search]', function () {
+        var input = $(this);
+        var picker = input.closest('[data-product-picker]');
+        var query = input.val().toLocaleLowerCase().trim();
+        var visible = 0;
+        picker.find('[data-product-option]').each(function () {
+            var option = $(this);
+            var matches = !query || String(option.data('search')).toLocaleLowerCase().includes(query);
+            option.prop('hidden', !matches);
+            if (matches) {
+                visible += 1;
+            }
+        });
+        picker.find('[data-product-empty]').prop('hidden', visible !== 0);
+    });
 }(jQuery));

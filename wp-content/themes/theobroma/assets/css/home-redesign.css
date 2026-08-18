@@ -479,6 +479,30 @@ body { overflow-x: clip; background: var(--home-paper); }
   transform: none;
 }
 
+/* Recipes render at most three explicitly selected products, not a four-slot catalog row. */
+.recipe-product-grid.home-product-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (min-width: 1200px) {
+  .recipe-product-grid--count-1.home-product-grid {
+    grid-template-columns: minmax(0, calc((100% - 3rem) / 3));
+    justify-content: center;
+  }
+
+  .recipe-product-grid--count-2.home-product-grid {
+    grid-template-columns: repeat(2, minmax(0, calc((100% - 3rem) / 3)));
+    justify-content: center;
+  }
+
+  .recipe-detail-intro { height: 120rem; }
+  .recipe-detail-long .recipe-detail-intro { height: 145rem; }
+  .recipe-detail-banana .recipe-detail-intro { height: 140rem; }
+  .recipe-product-promo,
+  .recipe-detail-long .recipe-product-promo,
+  .recipe-detail-banana .recipe-product-promo { height: auto; }
+}
+
 :is(
   .catalog-page ul.products.home-product-grid,
   .product-related-grid.home-product-grid,

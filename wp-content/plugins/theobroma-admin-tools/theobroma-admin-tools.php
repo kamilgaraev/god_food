@@ -316,7 +316,7 @@ final class Theobroma_Admin_Tools {
         $steps = self::decode_rows($post->ID, '_theobroma_steps');
         $card_image_id = absint(get_post_meta($post->ID, '_theobroma_card_image_id', true));
         $detail_image_id = absint(get_post_meta($post->ID, '_theobroma_detail_image_id', true));
-        $product_ids = array_filter(array_map('absint', (array) get_post_meta($post->ID, '_theobroma_product_ids', true)));
+        $product_ids = array_slice(array_values(array_unique(array_filter(array_map('absint', (array) get_post_meta($post->ID, '_theobroma_product_ids', true))))), 0, 3);
 
         echo '<div class="theobroma-recipe-editor">';
         echo '<div class="theobroma-fields-grid">';
@@ -332,15 +332,43 @@ final class Theobroma_Admin_Tools {
         self::render_repeater('theobroma_ingredients', 'Ингредиенты', $ingredients, array('name' => 'Ингредиент', 'amount' => 'Количество'));
         self::render_repeater('theobroma_steps', 'Шаги приготовления', $steps, array('text' => 'Описание шага'));
 
-        echo '<section class="theobroma-related-products"><h3>Связанные товары</h3><p class="description">Выберите до трёх товаров, которые будут показаны под рецептом.</p>';
+        echo '<section class="theobroma-related-products theobroma-recipe-products" data-product-picker data-limit="3">';
+        echo '<div class="theobroma-product-picker-heading"><div><h3>Товары под рецептом</h3><p class="description">Выберите до трёх товаров. Выбранные позиции показаны первыми и появятся под рецептом в этом порядке.</p></div>';
+        printf('<p class="theobroma-product-picker-count" aria-live="polite">Выбрано: <strong>%d</strong> из 3</p></div>', min(count($product_ids), 3));
+        echo '<label class="theobroma-product-search"><span class="screen-reader-text">Найти товар</span><input type="search" placeholder="Найти товар по названию или артикулу" data-product-search></label>';
         $products = get_posts(array('post_type' => 'product', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC'));
-        for ($slot = 0; $slot < 3; $slot++) {
-            printf('<label>Товар %1$d<select name="theobroma_product_ids[]"><option value="">— не выбран —</option>', $slot + 1);
-            foreach ($products as $product) {
-                printf('<option value="%1$d"%2$s>%3$s</option>', $product->ID, selected($product_ids[$slot] ?? 0, $product->ID, false), esc_html($product->post_title));
+        $positions = array_flip($product_ids);
+        usort($products, static function (WP_Post $left, WP_Post $right) use ($positions): int {
+            $left_position = $positions[$left->ID] ?? PHP_INT_MAX;
+            $right_position = $positions[$right->ID] ?? PHP_INT_MAX;
+            return $left_position === $right_position
+                ? strnatcasecmp($left->post_title, $right->post_title)
+                : $left_position <=> $right_position;
+        });
+        echo '<div class="theobroma-product-options" data-product-options>';
+        foreach ($products as $product_post) {
+            $product = function_exists('wc_get_product') ? wc_get_product($product_post->ID) : null;
+            if (!$product instanceof WC_Product) {
+                continue;
             }
-            echo '</select></label>';
+            $is_selected = in_array($product_post->ID, $product_ids, true);
+            $thumbnail = get_the_post_thumbnail_url($product_post->ID, 'thumbnail');
+            $search_text = $product->get_name() . ' ' . $product->get_sku();
+            echo '<label class="theobroma-product-option" data-product-option data-search="' . esc_attr($search_text) . '">';
+            printf('<input type="checkbox" name="theobroma_product_ids[]" value="%1$d"%2$s>', $product_post->ID, checked($is_selected, true, false));
+            if ($thumbnail) {
+                printf('<img src="%1$s" alt="" width="64" height="64">', esc_url($thumbnail));
+            } else {
+                echo '<span class="theobroma-product-option-placeholder dashicons dashicons-products" aria-hidden="true"></span>';
+            }
+            echo '<span class="theobroma-product-option-copy"><strong>' . esc_html($product->get_name()) . '</strong>';
+            $details = array_filter(array($product->get_sku() ? 'Арт. ' . $product->get_sku() : '', wp_strip_all_tags($product->get_price_html())));
+            if ($details) {
+                echo '<small>' . esc_html(implode(' · ', $details)) . '</small>';
+            }
+            echo '</span></label>';
         }
+        echo '</div><p class="theobroma-product-picker-empty" data-product-empty hidden>Товары не найдены.</p>';
         echo '</section></div>';
     }
 
@@ -406,9 +434,7 @@ final class Theobroma_Admin_Tools {
             return;
         }
         update_post_meta($post_id, '_theobroma_article_link', esc_url_raw(wp_unslash($_POST['theobroma_article_link'] ?? '')));
-        $product_ids = array_slice(array_values(array_filter(array_map('absint', (array) ($_POST['theobroma_product_ids'] ?? array())), static function (int $product_id): bool {
-            return function_exists('wc_get_product') && wc_get_product($product_id) instanceof WC_Product;
-        })), 0, 3);
+        $product_ids = self::sanitize_product_ids($_POST['theobroma_product_ids'] ?? array());
         update_post_meta($post_id, '_theobroma_product_ids', $product_ids);
     }
 
@@ -424,8 +450,28 @@ final class Theobroma_Admin_Tools {
         }
         update_post_meta($post_id, '_theobroma_ingredients', wp_json_encode(self::sanitize_rows($_POST['theobroma_ingredients'] ?? array(), array('name', 'amount')), JSON_UNESCAPED_UNICODE));
         update_post_meta($post_id, '_theobroma_steps', wp_json_encode(self::sanitize_rows($_POST['theobroma_steps'] ?? array(), array('text')), JSON_UNESCAPED_UNICODE));
-        $product_ids = array_slice(array_values(array_filter(array_map('absint', (array) ($_POST['theobroma_product_ids'] ?? array())))), 0, 3);
+        $product_ids = self::sanitize_product_ids($_POST['theobroma_product_ids'] ?? array());
         update_post_meta($post_id, '_theobroma_product_ids', $product_ids);
+    }
+
+    private static function sanitize_product_ids($raw_product_ids): array {
+        if (!is_array($raw_product_ids) || !function_exists('wc_get_product')) {
+            return array();
+        }
+
+        $product_ids = array_values(array_unique(array_filter(array_map('absint', wp_unslash($raw_product_ids)))));
+        $valid_product_ids = array();
+        foreach ($product_ids as $product_id) {
+            $product = wc_get_product($product_id);
+            if (!$product instanceof WC_Product || $product->get_status() !== 'publish') {
+                continue;
+            }
+            $valid_product_ids[] = $product_id;
+            if (count($valid_product_ids) === 3) {
+                break;
+            }
+        }
+        return $valid_product_ids;
     }
 
     private static function decode_rows(int $post_id, string $key): array {

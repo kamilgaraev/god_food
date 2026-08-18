@@ -1,12 +1,41 @@
-.theobroma-recipe-editor h3 { margin: 24px 0 8px; }
+.theobroma-recipe-editor h3 { margin:24px 0 8px; }
 .theobroma-fields-grid { display:grid; grid-template-columns:repeat(2,minmax(220px,1fr)); gap:0 18px; }
 .theobroma-repeater { margin-top:24px; padding-top:1px; border-top:1px solid #dcdcde; }
 .theobroma-repeater-row { display:grid; grid-template-columns:repeat(2,minmax(180px,1fr)) auto; align-items:end; gap:12px; margin-bottom:10px; }
 .theobroma-repeater[data-repeater="theobroma_steps"] .theobroma-repeater-row { grid-template-columns:1fr auto; }
-.theobroma-repeater-row label span,.theobroma-related-products label { display:block; font-weight:600; }
-.theobroma-repeater-row input,.theobroma-related-products select { width:100%; margin-top:4px; }
+.theobroma-repeater-row label span,.theobroma-related-products:not(.theobroma-recipe-products) label { display:block; font-weight:600; }
+.theobroma-repeater-row input,.theobroma-related-products:not(.theobroma-recipe-products) select { width:100%; margin-top:4px; }
 .theobroma-media-field { display:inline-block; width:min(45%,360px); margin:18px 4% 0 0; vertical-align:top; }
 .theobroma-media-field img { display:block; width:100%; max-height:190px; object-fit:cover; border:1px solid #dcdcde; }
 .theobroma-related-products { margin-top:24px; padding-top:1px; border-top:1px solid #dcdcde; }
-.theobroma-related-products label { display:inline-block; width:31%; margin-right:2%; }
-@media (max-width:782px) { .theobroma-fields-grid,.theobroma-repeater-row,.theobroma-repeater[data-repeater="theobroma_steps"] .theobroma-repeater-row { grid-template-columns:1fr; } .theobroma-media-field,.theobroma-related-products label { width:100%; } }
+.theobroma-related-products:not(.theobroma-recipe-products) label { display:inline-block; width:31%; margin-right:2%; }
+.theobroma-recipe-products { margin-top:32px; padding:20px; border:1px solid #dcdcde; border-radius:8px; background:#fff; }
+.theobroma-product-picker-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.theobroma-product-picker-heading h3 { margin:0 0 6px; }
+.theobroma-product-picker-heading .description { margin:0; }
+.theobroma-product-picker-count { flex:0 0 auto; margin:0; padding:7px 11px; border-radius:999px; color:#50575e; background:#f0f0f1; }
+.theobroma-product-picker-count.is-full { color:#5d4710; background:#f5e8b8; }
+.theobroma-product-search { display:block; max-width:440px; margin-top:18px; }
+.theobroma-product-search input { width:100%; }
+.theobroma-product-options { max-height:440px; margin-top:14px; padding:2px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; overflow-y:auto; }
+.theobroma-product-option { min-width:0; min-height:84px; padding:9px; display:grid; grid-template-columns:20px 64px minmax(0,1fr); align-items:center; gap:10px; border:1px solid #dcdcde; border-radius:6px; background:#fff; cursor:pointer; transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease; }
+.theobroma-product-option:hover { border-color:#8c8f94; }
+.theobroma-product-option.is-selected { border-color:#b0903d; background:#fffaf0; box-shadow:0 0 0 1px #b0903d; }
+.theobroma-product-option.is-disabled { opacity:.48; cursor:not-allowed; }
+.theobroma-product-option input { margin:0; }
+.theobroma-product-option img,.theobroma-product-option-placeholder { width:64px; height:64px; border-radius:4px; background:#f0f0f1; object-fit:cover; }
+.theobroma-product-option-placeholder { display:grid; place-items:center; color:#8c8f94; font-size:28px; }
+.theobroma-product-option-copy { min-width:0; display:block; }
+.theobroma-product-option-copy strong,.theobroma-product-option-copy small { display:block; overflow:hidden; text-overflow:ellipsis; }
+.theobroma-product-option-copy strong { color:#1d2327; line-height:1.35; }
+.theobroma-product-option-copy small { margin-top:5px; color:#646970; white-space:nowrap; }
+.theobroma-product-picker-empty { margin:18px 0 0; color:#646970; }
+@media (max-width:1100px) { .theobroma-product-options { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:782px) {
+    .theobroma-fields-grid,.theobroma-repeater-row,.theobroma-repeater[data-repeater="theobroma_steps"] .theobroma-repeater-row { grid-template-columns:1fr; }
+    .theobroma-media-field,.theobroma-related-products:not(.theobroma-recipe-products) label { width:100%; }
+    .theobroma-recipe-products { padding:16px; }
+    .theobroma-product-picker-heading { display:block; }
+    .theobroma-product-picker-count { width:max-content; margin-top:12px; }
+    .theobroma-product-options { grid-template-columns:1fr; }
+}
