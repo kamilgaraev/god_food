@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once get_template_directory() . '/inc/homepage.php';
+require_once get_template_directory() . '/inc/checkout-order-button.php';
 
 function theobroma_setup(): void {
     add_theme_support('title-tag');
@@ -472,7 +473,6 @@ function theobroma_checkout_fields(array $fields): array {
 }
 add_filter('woocommerce_checkout_fields', 'theobroma_checkout_fields', 20);
 add_filter('woocommerce_checkout_registration_enabled', '__return_false');
-add_filter('woocommerce_order_button_text', static fn(): string => 'заказать');
 add_filter('woocommerce_checkout_privacy_policy_text', '__return_empty_string');
 
 function theobroma_checkout_consent(): void {
