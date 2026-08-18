@@ -60,7 +60,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
             <?php wp_nonce_field('theobroma_contact', 'theobroma_contact_nonce'); ?>
             <?php theobroma_contact_antispam_fields(); ?>
             <input name="name" required placeholder="Имя" aria-label="Имя"><input name="company" placeholder="Компания" aria-label="Компания"><input type="email" name="email" required placeholder="E-mail" aria-label="E-mail"><input type="tel" name="phone" value="+7" required placeholder="+7 (000) 000-00-00" inputmode="tel" autocomplete="tel" maxlength="18" aria-label="Телефон"><select name="gift_type" aria-label="Тип подарка"><option value="">Тип подарка</option><option>Для клиентов</option><option>Для команды</option><option>Для партнёров</option></select><input name="volume" placeholder="Количество подарков" aria-label="Количество подарков"><select name="branding" aria-label="Брендирование"><option value="">Нужно ли брендирование?</option><option>Да</option><option>Нет</option></select><textarea name="message" placeholder="Повод, пожелания, сроки" aria-label="Комментарий"></textarea>
-            <label><input type="checkbox" name="consent" value="1" required> Я согласен на обработку персональных данных</label><button class="button" type="submit">Отправить заявку</button>
+            <label class="consent"><input type="checkbox" name="consent" value="1" required><span>Я согласен на обработку персональных данных</span></label><button class="button" type="submit">Отправить заявку</button>
         </form>
     </section>
 </main>

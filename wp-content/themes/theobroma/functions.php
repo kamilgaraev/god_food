@@ -480,7 +480,7 @@ function theobroma_checkout_consent(): void {
     $policy_url = theobroma_page_url('Политика конфиденциальности');
     ?>
     <p class="commerce-checkout-consent form-row validate-required">
-        <label>
+        <label class="consent">
             <input type="checkbox" name="theobroma_privacy_consent" value="1" required>
             <span>Отправляя форму я даю <a href="<?php echo esc_url($agreement_url); ?>">согласие</a> на <a href="<?php echo esc_url($policy_url); ?>">обработку персональных данных</a></span>
         </label>
