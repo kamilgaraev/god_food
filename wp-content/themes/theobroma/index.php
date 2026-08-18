@@ -85,7 +85,6 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         <?php else : ?>
             <p class="home-empty-state">Популярные товары скоро появятся в каталоге.</p>
         <?php endif; ?>
-        <div class="home-catalog__footer"><a class="home-button home-button--primary" href="<?php echo esc_url($shop_url); ?>">Перейти в каталог</a></div>
     </section>
 
     <section class="home-cacao" id="cacao-selector" aria-labelledby="home-cacao-title">
