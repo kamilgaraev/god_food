@@ -102,7 +102,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .floating-actions .header-cart img,
 .floating-actions a:nth-child(n).header-cart img { filter: brightness(0) invert(1); transition: opacity 160ms ease; }
 .floating-actions .header-account img,
-.floating-actions a:nth-child(n).header-account img { filter: brightness(0) saturate(100%); opacity: .72; }
+.floating-actions a:nth-child(n).header-account img { filter: brightness(0) saturate(100%); opacity: .72; transition: filter 180ms ease, opacity 180ms ease; }
 .floating-actions a span,
 .floating-actions a:nth-child(n) span { position: static; display: inline; color: inherit; font: 500 0.75rem/1 'Montserrat', Arial, sans-serif; }
 .floating-actions .cart-count { min-width: 1ch; font-variant-numeric: tabular-nums; text-align: center; }
@@ -111,7 +111,14 @@ body { overflow-x: clip; background: var(--home-paper); }
 .floating-actions .header-cart:focus-visible img { opacity: 0; }
 .floating-actions .header-cart:hover .cart-count,
 .floating-actions .header-cart:focus-visible .cart-count { opacity: 1; }
-.floating-actions .header-account:hover { border-color: var(--home-gold); background: rgba(176, 144, 61, .12); }
+.floating-actions .header-account:hover,
+.floating-actions .header-account:focus-visible,
+.floating-actions a:nth-child(n).header-account:hover,
+.floating-actions a:nth-child(n).header-account:focus-visible { color:#fff; border-color:var(--home-gold); background:var(--home-gold); }
+.floating-actions .header-account:hover img,
+.floating-actions .header-account:focus-visible img,
+.floating-actions a:nth-child(n).header-account:hover img,
+.floating-actions a:nth-child(n).header-account:focus-visible img { filter:brightness(0) invert(1); opacity:1; }
 .floating-actions .header-account:active,
 .floating-actions .header-cart:active { transform: scale(.96); }
 .menu-toggle { display: none; }

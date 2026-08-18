@@ -84,3 +84,47 @@ test('cart count replaces the icon only on hover', async () => {
     assert.equal(await opacity(count), 1, 'Cart count must appear on hover');
   });
 });
+
+async function accountControlColors(account) {
+  return account.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    const iconStyles = getComputedStyle(element.querySelector('img'));
+    return {
+      backgroundColor: styles.backgroundColor,
+      borderColor: styles.borderColor,
+      iconFilter: iconStyles.filter,
+    };
+  });
+}
+
+test('account control becomes gold with a white icon on hover', async () => {
+  await withRenderedHeader(async (page) => {
+    const account = page.locator('.header-account');
+    await account.hover();
+    await page.waitForTimeout(220);
+
+    assert.deepEqual(await accountControlColors(account), {
+      backgroundColor: 'rgb(176, 144, 61)',
+      borderColor: 'rgb(176, 144, 61)',
+      iconFilter: 'brightness(0) invert(1)',
+    });
+  });
+});
+
+test('account control keeps the same gold state for keyboard focus', async () => {
+  await withRenderedHeader(async (page) => {
+    const account = page.locator('.header-account');
+    for (let step = 0; step < 12; step += 1) {
+      await page.keyboard.press('Tab');
+      if (await account.evaluate((element) => element === document.activeElement)) break;
+    }
+    assert.equal(await account.evaluate((element) => element === document.activeElement), true, 'Tab navigation must reach the account control');
+    await page.waitForTimeout(220);
+
+    assert.deepEqual(await accountControlColors(account), {
+      backgroundColor: 'rgb(176, 144, 61)',
+      borderColor: 'rgb(176, 144, 61)',
+      iconFilter: 'brightness(0) invert(1)',
+    });
+  });
+});
