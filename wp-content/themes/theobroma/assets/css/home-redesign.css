@@ -430,6 +430,20 @@ body { overflow-x: clip; background: var(--home-paper); }
   }
 }
 
+/* Legacy catalog breakpoints must not reintroduce fixed rows or card gutters. */
+.catalog-page ul.products.home-product-grid,
+.catalog-page.catalog-group-chocolate-30g ul.products.home-product-grid {
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+}
+
+.catalog-page ul.products.home-product-grid > li.product.home-product-card,
+.catalog-page.catalog-group-chocolate-30g ul.products.home-product-grid > li.product.home-product-card {
+  height: auto;
+  min-height: auto;
+  padding: 0;
+}
+
 @media (min-width:601px) and (max-width:1199px) {
   .home-hero__shell { width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter))); max-width:var(--layout-container); padding-inline:0; grid-template-columns:minmax(0,1fr); container-type:inline-size; }
   .home-hero h1 { width:100%; max-width:100%; min-height:18.8cqi; margin-left:0; margin-right:0; font-size:clamp(6.125rem,18.5cqi,9rem); }
@@ -500,6 +514,25 @@ ul.products.home-product-grid > li.product.home-product-card > a.home-product-ca
   display: flex !important;
 }
 
+.woocommerce ul.products.home-product-grid > li.product.home-product-card {
+  min-height: auto;
+}
+
+.woocommerce ul.products.home-product-grid li.product.home-product-card h3 {
+  margin: 0;
+  padding: 0;
+  font: 400 clamp(1.4375rem, 2vw, 1.9375rem) / 1 'Cormorant', Georgia, serif;
+  text-transform: none;
+}
+
+.woocommerce ul.products.home-product-grid li.product.home-product-card a.home-product-card__image img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: block;
+  object-fit: cover;
+}
+
 .catalog-page ul.products.home-product-grid.is-filter-entering {
   opacity: 0;
   transform: translateY(8px);
@@ -520,6 +553,14 @@ ul.products.home-product-grid > li.product.home-product-card > a.home-product-ca
   .corporate-gifts-showcase-grid.home-product-grid,
   .commerce-modal-product .product-related-grid.home-product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.625rem 1.5rem;
+  }
+
+  .catalog-page ul.products.home-product-grid {
+    width: calc(100vw - 2 * var(--layout-gutter));
+    max-width: var(--home-container);
+    margin-left: calc(50% - 50vw + var(--layout-gutter));
+    margin-right: calc(50% - 50vw + var(--layout-gutter));
   }
 }
 
@@ -531,5 +572,6 @@ ul.products.home-product-grid > li.product.home-product-card > a.home-product-ca
   .corporate-gifts-showcase-grid.home-product-grid,
   .commerce-modal-product .product-related-grid.home-product-grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
   }
 }

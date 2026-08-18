@@ -36,6 +36,8 @@
     "test:catalog-interactions": "node scripts/verify-catalog-interactions.spec.js",
     "test:product-cart-button": "node scripts/verify-product-cart-button.spec.js",
     "test:product-cards": "node scripts/verify-shared-product-cards.spec.js",
+    "test:product-card-parity": "node scripts/verify-product-card-runtime-parity.spec.js",
+    "test:product-card-parity:source": "node scripts/verify-product-card-runtime-parity.spec.js --inject-source-styles",
     "test:reviews": "node scripts/verify-review-carousel.spec.js",
     "test:mobile-secondary": "node scripts/verify-mobile-secondary-content.spec.js"
   },
