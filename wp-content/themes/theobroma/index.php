@@ -83,7 +83,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
             <div class="home-cacao__selector">
                 <p class="home-kicker">Дегустационная шкала — выберите процент</p>
                 <h2 id="home-cacao-title">Ваш процент какао</h2>
-                <p class="home-cacao__intro"><?php if ($minimum_cacao_percentage !== null && $maximum_cacao_percentage !== null) : ?>От <?php echo esc_html((string) $minimum_cacao_percentage); ?>% до <?php echo esc_html((string) $maximum_cacao_percentage); ?>%. <?php endif; ?>Выберите крепость — покажем вкус, сахар и повод.</p>
+                <p class="home-cacao__intro"><?php if ($minimum_cacao_percentage !== null && $maximum_cacao_percentage !== null) : ?>От <?php echo esc_html((string) $minimum_cacao_percentage); ?>% до <?php echo esc_html((string) $maximum_cacao_percentage); ?>%. <?php endif; ?>Выберите крепость, а мы подберем вкус, идеально подходящий вам.</p>
                 <?php if ($cacao_options) : ?>
                     <div class="home-cacao__tabs" role="tablist" aria-label="Процент какао">
                         <?php foreach ($cacao_options as $percentage => $option) : ?>
