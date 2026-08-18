@@ -206,6 +206,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-product-card__button:hover,
 .home-product-card__button.is-in-cart,
 .home-product-card__button.added { color: #fff; background: var(--home-gold); }
+.home-product-card > .added_to_cart.wc-forward { display: none; }
 .home-catalog__footer { display: none; width: 100%; max-width: var(--home-container); margin: 2.25rem auto 0; justify-content: center; }
 .home-empty-state { padding: 2.5rem; border: 1px solid var(--home-line); color: var(--home-muted); text-align: center; }
 

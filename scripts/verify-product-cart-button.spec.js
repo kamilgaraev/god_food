@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 
 const commerceScript = path.resolve(__dirname, '../wp-content/themes/theobroma/assets/js/commerce-modals.js');
+const productCardStyles = path.resolve(__dirname, '../wp-content/themes/theobroma/assets/css/home-redesign.css');
 
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
@@ -27,6 +28,7 @@ const commerceScript = path.resolve(__dirname, '../wp-content/themes/theobroma/a
         </li>
       </ul>
     `);
+    await page.addStyleTag({ path: productCardStyles });
 
     await page.evaluate(() => {
       const handlers = new Map();
@@ -73,6 +75,7 @@ const commerceScript = path.resolve(__dirname, '../wp-content/themes/theobroma/a
         const button = event.target.closest('.add_to_cart_button');
         if (!button) return;
         event.preventDefault();
+        button.insertAdjacentHTML('afterend', '<a href="/cart/" class="added_to_cart wc-forward">Просмотр корзины</a>');
         window.jQuery(document.body).trigger('added_to_cart', [{}, 'cart-hash', window.jQuery(button)]);
       });
     });
@@ -80,6 +83,11 @@ const commerceScript = path.resolve(__dirname, '../wp-content/themes/theobroma/a
     await page.locator('.home-product-card__button').click();
     await page.locator('#commerce-modal[data-commerce-type="cart"].is-open').waitFor();
     await page.locator('.commerce-cart-product').waitFor();
+    assert.equal(
+      await page.locator('.home-product-card > .added_to_cart.wc-forward').isVisible(),
+      false,
+      'WooCommerce view-cart link must stay hidden when the cart opens automatically.',
+    );
 
     const requests = await page.evaluate(() => window.__commerceRequests);
     assert.equal(requests.some(({ url }) => url.includes('/product/')), false, 'Add-to-cart click must not open the product modal.');
