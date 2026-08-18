@@ -75,6 +75,17 @@ const gold = 'rgb(176, 144, 61)';
       { fontFamily: 'Montserrat, Arial, sans-serif', letterSpacing: 'normal' },
     ], 'Cacao profile names must use Montserrat without artificial tracking');
 
+    const cacaoProfileSizes = async () => page.locator('.home-cacao__tabs button span, .home-cacao__copy h3').evaluateAll((elements) => elements.map((element) => parseFloat(getComputedStyle(element).fontSize)));
+    const mobileProfileSizes = await cacaoProfileSizes();
+    assert(mobileProfileSizes[0] >= 9, `Mobile cacao profile labels must remain legible; received ${mobileProfileSizes[0]}px`);
+    assert(mobileProfileSizes[1] >= 40, `Mobile cacao profile title must use the enlarged scale; received ${mobileProfileSizes[1]}px`);
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const desktopProfileSizes = await cacaoProfileSizes();
+    assert(desktopProfileSizes[0] > mobileProfileSizes[0], 'Cacao profile labels must scale up on wider screens');
+    assert(desktopProfileSizes[1] > mobileProfileSizes[1], 'Cacao profile title must scale up on wider screens');
+    assert(desktopProfileSizes[0] <= 10 && desktopProfileSizes[1] <= 44, 'Cacao profile typography increase must stay restrained');
+
     const giftCard = await page.locator('.home-promo-card--gift').evaluate((element) => {
       const style = getComputedStyle(element);
       const heading = getComputedStyle(element.querySelector('h2'));
