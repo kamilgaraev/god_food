@@ -375,6 +375,20 @@ function theobroma_catalog_layout(): void {
 }
 add_action('wp', 'theobroma_catalog_layout');
 
+function theobroma_catalog_thumbnail_frame_open(): void {
+    if (function_exists('is_shop') && (is_shop() || is_product_category())) {
+        echo '<span class="catalog-product-image">';
+    }
+}
+add_action('woocommerce_before_shop_loop_item_title', 'theobroma_catalog_thumbnail_frame_open', 9);
+
+function theobroma_catalog_thumbnail_frame_close(): void {
+    if (function_exists('is_shop') && (is_shop() || is_product_category())) {
+        echo '</span>';
+    }
+}
+add_action('woocommerce_before_shop_loop_item_title', 'theobroma_catalog_thumbnail_frame_close', 11);
+
 function theobroma_catalog_products(WP_Query $query): void {
     if (!is_admin() && $query->is_main_query() && function_exists('is_shop') && is_shop()) {
         $requested_percentage = theobroma_requested_cacao_percentage();
