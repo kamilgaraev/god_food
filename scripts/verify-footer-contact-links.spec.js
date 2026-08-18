@@ -9,6 +9,7 @@ const footerTemplate = path.join(themeDirectory, 'footer.php');
 const stylesheet = fs.readFileSync(path.join(themeDirectory, 'style.css'), 'utf8');
 
 const contacts = {
+  footer_address: 'Адрес производства:\nМосковская обл.,\nНаро-Фоминский г.о.,\nд.Мартемьяново 230Б. 143345',
   footer_phone_1: '+7 499 755 54 90',
   footer_phone_2: '+7 (800) 444-70-54',
   footer_info_email: 'info@theobroma.msk.ru',
@@ -61,6 +62,12 @@ async function run() {
       text: link.textContent.trim(),
       href: link.getAttribute('href'),
     })));
+    const addressLink = await page.locator('.footer-address a').evaluate((link) => ({
+      text: link.textContent.trim(),
+      href: link.getAttribute('href'),
+      target: link.getAttribute('target'),
+      rel: link.getAttribute('rel'),
+    }));
     const phoneStyles = await page.locator('.footer-phones a').evaluateAll((links) => links.map((link) => {
       const style = getComputedStyle(link);
       const bounds = link.getBoundingClientRect();
@@ -82,12 +89,21 @@ async function run() {
       { text: contacts.footer_opt_email, href: `mailto:${contacts.footer_opt_email}` },
       { text: contacts.footer_press_email, href: `mailto:${contacts.footer_press_email}` },
     ];
+    const expectedAddress = {
+      text: contacts.footer_address,
+      href: `https://yandex.ru/maps/?text=${encodeURIComponent(contacts.footer_address)}`,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    };
 
     if (JSON.stringify(phoneLinks) !== JSON.stringify(expectedPhones)) {
       throw new Error(`footer phones must be clickable: expected ${JSON.stringify(expectedPhones)}, received ${JSON.stringify(phoneLinks)}`);
     }
     if (JSON.stringify(emailLinks) !== JSON.stringify(expectedEmails)) {
       throw new Error(`footer emails must be clickable: expected ${JSON.stringify(expectedEmails)}, received ${JSON.stringify(emailLinks)}`);
+    }
+    if (JSON.stringify(addressLink) !== JSON.stringify(expectedAddress)) {
+      throw new Error(`footer address must open Yandex Maps: expected ${JSON.stringify(expectedAddress)}, received ${JSON.stringify(addressLink)}`);
     }
     if (phoneStyles.some((style) => style.position !== 'absolute'
       || !style.fontFamily.includes('Cormorant')

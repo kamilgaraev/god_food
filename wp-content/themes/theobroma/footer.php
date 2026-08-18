@@ -5,11 +5,13 @@
         <?php
         $footer_phone_1 = theobroma_content('footer_phone_1');
         $footer_phone_2 = theobroma_content('footer_phone_2');
+        $footer_address = theobroma_content('footer_address');
         $footer_phone_1_href = preg_replace('/[^\d+]/', '', $footer_phone_1);
         $footer_phone_2_href = preg_replace('/[^\d+]/', '', $footer_phone_2);
+        $footer_address_map_url = 'https://yandex.ru/maps/?text=' . rawurlencode($footer_address);
         ?>
         <div class="footer-phones"><a href="tel:<?php echo esc_attr($footer_phone_1_href); ?>"><?php echo esc_html($footer_phone_1); ?></a><a href="tel:<?php echo esc_attr($footer_phone_2_href); ?>"><?php echo esc_html($footer_phone_2); ?></a></div>
-        <div class="footer-card footer-address"><?php echo nl2br(esc_html(theobroma_content('footer_address'))); ?></div>
+        <div class="footer-card footer-address"><a href="<?php echo esc_url($footer_address_map_url); ?>" target="_blank" rel="noopener noreferrer" aria-label="Открыть адрес в Яндекс Картах"><?php echo nl2br(esc_html($footer_address)); ?></a></div>
         <div class="footer-media"><div class="social-icons"><a href="<?php echo esc_url(theobroma_content('social_vk')); ?>" aria-label="ВКонтакте"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/social-vk.svg'); ?>" alt=""></a><a href="<?php echo esc_url(theobroma_content('social_telegram')); ?>" aria-label="Telegram"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/social-telegram.svg'); ?>" alt=""></a><a href="<?php echo esc_url(theobroma_content('social_whatsapp')); ?>" aria-label="WhatsApp"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/social-whatsapp.svg'); ?>" alt=""></a><a href="<?php echo esc_url(theobroma_content('social_dzen')); ?>" aria-label="Дзен"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/social-star.svg'); ?>" alt=""></a></div><a class="footer-media-button" href="<?php echo esc_url(theobroma_page_url('Медиа')); ?>">Медиа о нас</a></div>
         <div class="footer-card footer-mail"><strong><a href="mailto:<?php echo esc_attr(theobroma_content('footer_info_email')); ?>"><?php echo esc_html(theobroma_content('footer_info_email')); ?></a></strong><small><?php echo nl2br(esc_html(theobroma_content('footer_info_note'))); ?></small></div>
         <div class="footer-card footer-mail"><strong><a href="mailto:<?php echo esc_attr(theobroma_content('footer_opt_email')); ?>"><?php echo esc_html(theobroma_content('footer_opt_email')); ?></a></strong><small><?php echo nl2br(esc_html(theobroma_content('footer_opt_note'))); ?></small></div>
