@@ -20,7 +20,8 @@ const gold = 'rgb(176, 144, 61)';
       <a class="home-product-card__button added">В корзине</a>
       <nav class="nav-links"><a href="#catalog">Каталог</a></nav>
       <article class="home-promo-card home-promo-card--gift"><h2>Подарки</h2><p>Наборы в крафтовой коробке</p><a class="home-button">Подробнее</a></article>
-      <div class="home-cacao__tabs"><button aria-selected="true">70%</button></div>
+      <div class="home-cacao__tabs"><button aria-selected="true"><strong>70%</strong><span>Классический</span></button></div>
+      <div class="home-cacao__copy"><h3>Классический 70%</h3></div>
       <p class="home-cacao__fact">С вишней и зеленой гречкой</p>
     `);
     await page.addStyleTag({ content: stylesheet });
@@ -61,6 +62,18 @@ const gold = 'rgb(176, 144, 61)';
       letterSpacing: 'normal',
       textTransform: 'uppercase',
     }, 'Cacao flavor note must use compact uppercase gold typography');
+
+    const cacaoProfileTypography = await page.locator('.home-cacao__tabs button span, .home-cacao__copy h3').evaluateAll((elements) => elements.map((element) => {
+      const style = getComputedStyle(element);
+      return {
+        fontFamily: style.fontFamily,
+        letterSpacing: style.letterSpacing,
+      };
+    }));
+    assert.deepEqual(cacaoProfileTypography, [
+      { fontFamily: 'Montserrat, Arial, sans-serif', letterSpacing: 'normal' },
+      { fontFamily: 'Montserrat, Arial, sans-serif', letterSpacing: 'normal' },
+    ], 'Cacao profile names must use Montserrat without artificial tracking');
 
     const giftCard = await page.locator('.home-promo-card--gift').evaluate((element) => {
       const style = getComputedStyle(element);
