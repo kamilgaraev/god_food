@@ -16,6 +16,7 @@ const recipe = read('wp-content/themes/theobroma/single-theobroma_recipe.php');
 const corporateGifts = read('wp-content/themes/theobroma/template-parts/pages/corporate-gifts.php');
 const home = read('wp-content/themes/theobroma/index.php');
 const styles = read('wp-content/themes/theobroma/assets/css/home-redesign.css');
+const commerceModals = read('wp-content/themes/theobroma/assets/js/commerce-modals.js');
 
 const failures = [];
 const expectContains = (source, needle, message) => {
@@ -26,6 +27,12 @@ expectContains(sharedCard, "$args['wrapper_tag']", 'Shared card must support the
 expectContains(sharedCard, "$args['wrapper_classes']", 'Shared card must accept context-specific wrapper classes.');
 expectContains(sharedCard, "$run_woocommerce_loop_hook('woocommerce_before_shop_loop_item')", 'WooCommerce cards must preserve the before-item extension point.');
 expectContains(sharedCard, "$run_woocommerce_loop_hook('woocommerce_after_shop_loop_item')", 'WooCommerce cards must preserve the after-item extension point.');
+expectContains(sharedCard, "apply_filters('woocommerce_loop_add_to_cart_args'", 'Canonical add-to-cart buttons must preserve WooCommerce argument filters.');
+expectContains(sharedCard, "apply_filters('woocommerce_loop_add_to_cart_link'", 'Canonical add-to-cart buttons must preserve WooCommerce markup filters.');
+if (/if \(\$can_add\) \{\r?\n\s*\$button_args = apply_filters\('woocommerce_loop_add_to_cart_args'/.test(sharedCard)
+  || /\}\s*else\s*\{\r?\n\s*\$button_html = sprintf/.test(sharedCard)) {
+  failures.push('WooCommerce CTA filters must also run for variable, grouped, and external products.');
+}
 expectContains(productLoop, "template-parts/home/product-card", 'WooCommerce product loops must render the homepage card template.');
 expectContains(productLoop, "'woocommerce_loop_hooks' => true", 'WooCommerce product loops must enable classic loop hooks.');
 expectContains(loopStart, 'home-product-grid', 'WooCommerce product loops must use the homepage card grid.');
@@ -46,6 +53,7 @@ expectContains(styles, '.media-article-products-grid.home-product-grid', 'Articl
 expectContains(styles, '.recipe-product-grid.home-product-grid', 'Recipe products must use the shared card grid layout.');
 expectContains(styles, '.corporate-gifts-showcase-grid.home-product-grid', 'Corporate gift products must use the shared card grid layout.');
 expectContains(styles, 'display: flex !important;', 'The canonical catalog add-to-cart button must override the legacy hidden-button rule.');
+expectContains(commerceModals, '.product > a:not(.add_to_cart_button)', 'Product modal routing must exclude add-to-cart links before matching a product link.');
 
 if (recipe.includes("for ($card = 0; $card < 3; $card++)")) {
   failures.push('Recipe fallback must not render legacy placeholder product cards.');

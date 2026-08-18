@@ -554,7 +554,7 @@
             return;
         }
 
-        const productLink = event.target.closest('[data-product-modal-link],ul.products li.product a.woocommerce-LoopProduct-link,.product > a,.product-related a[href*="/product/"]');
+        const productLink = event.target.closest('[data-product-modal-link],ul.products li.product a.woocommerce-LoopProduct-link,.product > a:not(.add_to_cart_button),.product-related a[href*="/product/"]');
         if (productLink && !productLink.matches('.add_to_cart_button') && productLink.href && !event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) {
             event.preventDefault();
             openProduct(productLink.href, { opener: productLink });

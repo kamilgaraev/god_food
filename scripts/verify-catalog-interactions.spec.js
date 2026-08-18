@@ -9,6 +9,7 @@ const style = fs.readFileSync(path.join(themeRoot, 'style.css'), 'utf8');
 const homeStyle = fs.readFileSync(path.join(themeRoot, 'assets', 'css', 'home-redesign.css'), 'utf8');
 const catalogScriptPath = path.join(themeRoot, 'assets', 'js', 'catalog-filters.js');
 const catalogScript = fs.existsSync(catalogScriptPath) ? fs.readFileSync(catalogScriptPath, 'utf8') : '';
+const commerceScript = fs.readFileSync(path.join(themeRoot, 'assets', 'js', 'commerce-modals.js'), 'utf8');
 
 function catalogHtml(group, label) {
   return `<!doctype html><html><body>
@@ -30,6 +31,13 @@ function catalogHtml(group, label) {
         <article class="home-product-card">
           <a class="home-product-card__image" href="/product/home"><img alt="Товар на главной"></a>
         </article>
+        <div id="commerce-modal" hidden aria-hidden="true">
+          <div class="commerce-modal-panel">
+            <button class="commerce-modal-close" type="button">Закрыть</button>
+            <div class="commerce-modal-status" hidden></div>
+            <div class="commerce-modal-content"><div class="theobroma-checkout-anchor"></div></div>
+          </div>
+        </div>
       </div>
     </main>
   </body></html>`;
@@ -71,6 +79,25 @@ function scaleFromTransform(transform) {
     const canonicalCartButton = page.locator('ul.products .home-product-card__button').first();
     assert.equal(await canonicalCartButton.evaluate((button) => getComputedStyle(button).display), 'flex', 'canonical catalog add-to-cart button must remain visible');
     assert.equal(await canonicalCartButton.isVisible(), true, 'canonical catalog add-to-cart button must be visible to the shopper');
+    await page.evaluate(() => {
+      window.theobromaCommerce = {
+        ajaxUrl: '/wp-admin/admin-ajax.php',
+        wcAjaxUrl: '/?wc-ajax=%%endpoint%%',
+        wishlistIds: [],
+        wishlistLoggedIn: false,
+        shopUrl: '/catalog/',
+      };
+    });
+    await page.addScriptTag({ content: commerceScript });
+    const cartClickRouting = await canonicalCartButton.evaluate((button) => {
+      button.addEventListener('click', (event) => event.preventDefault(), { once: true });
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+      button.dispatchEvent(event);
+      return {
+        modalOpen: document.querySelector('#commerce-modal').classList.contains('is-open'),
+      };
+    });
+    assert.deepEqual(cartClickRouting, { modalOpen: false }, 'add-to-cart click must bypass product modal routing');
 
     const productLink = page.locator('.woocommerce-loop-product__link').first();
     const productImageFrame = productLink.locator('.catalog-product-image');

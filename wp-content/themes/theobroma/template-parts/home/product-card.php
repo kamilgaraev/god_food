@@ -66,13 +66,33 @@ if (function_exists('WC') && WC()->cart) {
     }
 }
 $can_add = $product->is_purchasable() && $product->is_in_stock() && $product->supports('ajax_add_to_cart');
-$button_classes = array('home-product-card__button');
+$button_classes = array('home-product-card__button', 'product_type_' . $product->get_type());
 if ($can_add) {
-    $button_classes = array_merge($button_classes, array('product_type_' . $product->get_type(), 'add_to_cart_button', 'ajax_add_to_cart'));
+    $button_classes = array_merge($button_classes, array('add_to_cart_button', 'ajax_add_to_cart'));
 }
 if ($is_in_cart) {
     $button_classes[] = 'is-in-cart';
 }
+$button_text = $is_in_cart ? 'В корзине' : ($can_add ? 'В корзину' : 'Подробнее');
+$button_args = apply_filters('woocommerce_loop_add_to_cart_args', array(
+    'quantity' => 1,
+    'class' => implode(' ', $button_classes),
+    'attributes' => array(
+        'data-product_id' => (string) $product->get_id(),
+        'data-product_sku' => $product->get_sku(),
+        'aria-label' => $can_add ? $product->add_to_cart_description() : 'Открыть карточку товара',
+        'rel' => 'nofollow',
+    ),
+), $product);
+$button_html = sprintf(
+    '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
+    esc_url($can_add ? $product->add_to_cart_url() : $product->get_permalink()),
+    esc_attr((string) ($button_args['quantity'] ?? 1)),
+    esc_attr((string) ($button_args['class'] ?? implode(' ', $button_classes))),
+    isset($button_args['attributes']) ? wc_implode_html_attributes($button_args['attributes']) : '',
+    esc_html($button_text)
+);
+$button_html = apply_filters('woocommerce_loop_add_to_cart_link', $button_html, $product, $button_args);
 ?>
 <<?php echo $wrapper_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- constrained to article or li above. ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>">
     <?php $run_woocommerce_loop_hook('woocommerce_before_shop_loop_item'); ?>
@@ -88,11 +108,6 @@ if ($is_in_cart) {
     </div>
     <?php $run_woocommerce_loop_hook('woocommerce_after_shop_loop_item_title'); ?>
     <p><?php echo esc_html(wp_strip_all_tags($product->get_short_description())); ?></p>
-    <a
-        class="<?php echo esc_attr(implode(' ', $button_classes)); ?>"
-        href="<?php echo esc_url($can_add ? $product->add_to_cart_url() : $product->get_permalink()); ?>"
-        <?php if ($can_add) : ?>data-quantity="1" data-product_id="<?php echo esc_attr((string) $product->get_id()); ?>" data-product_sku="<?php echo esc_attr($product->get_sku()); ?>" rel="nofollow"<?php endif; ?>
-        aria-label="<?php echo esc_attr($can_add ? $product->add_to_cart_description() : 'Открыть карточку товара'); ?>"
-    ><?php echo esc_html($is_in_cart ? 'В корзине' : ($can_add ? 'В корзину' : 'Подробнее')); ?></a>
+    <?php echo $button_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- generated safely above; WooCommerce filters are trusted extension points. ?>
     <?php $run_woocommerce_loop_hook('woocommerce_after_shop_loop_item'); ?>
 </<?php echo $wrapper_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- constrained to article or li above. ?>>
