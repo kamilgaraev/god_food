@@ -151,7 +151,7 @@ h2 { margin:0; font-size:clamp(1.9375rem,4vw,3.375rem); line-height:.94; font-we
 .reviews .section-heading h2 em { color:var(--gold); font-weight:400; }
 .review-controls { position:absolute; z-index:2; top:3.4375rem; right:0; display:flex; gap:1.25rem; }
 .review-controls button { width:2.5rem; height:2.5rem; padding:0; border:0; color:transparent; background:url('assets/images/review-arrow.svg') center/2.5rem 2.5rem no-repeat; font-size:0; cursor:pointer; }.review-controls button:last-child { transform:rotate(180deg); }
-.review-grid { height:24.8125rem; display:grid; grid-template-columns:repeat(7,16.25rem); gap:2.5rem; overflow-x:hidden; }
+.review-grid { height:24.8125rem; display:grid; grid-template-columns:repeat(7,16.25rem); grid-auto-flow:column; grid-auto-columns:16.25rem; gap:2.5rem; overflow-x:hidden; overflow-y:hidden; }
 .review { height:21.6875rem; margin-top:1.5625rem; padding:1.875rem 1.8125rem; position:relative; background:#f3ebe4; }
 .review p { width:12.375rem; margin:0; color:#343434; font:0.875rem/1.125rem 'Montserrat',Arial,sans-serif; }
 .review time { display:block; margin-top:0.75rem; color:#343434; font:0.75rem/1rem 'Montserrat',Arial,sans-serif; opacity:.5; }

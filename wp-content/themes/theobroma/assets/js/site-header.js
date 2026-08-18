@@ -106,6 +106,45 @@
     const reviewGrid = document.querySelector('.review-grid');
     const reviewButtons = document.querySelectorAll('[data-review-direction]');
 
+    const initializeReviewLoop = (grid) => {
+        const reviews = [...grid.querySelectorAll('.review')];
+        if (reviews.length < 2) {
+            return;
+        }
+
+        const cloneReviews = () => reviews.map((review) => {
+            const clone = review.cloneNode(true);
+            clone.setAttribute('aria-hidden', 'true');
+            clone.setAttribute('inert', '');
+            return clone;
+        });
+        const before = cloneReviews();
+        const after = cloneReviews();
+        const beforeFragment = document.createDocumentFragment();
+        const afterFragment = document.createDocumentFragment();
+        before.forEach((review) => beforeFragment.append(review));
+        after.forEach((review) => afterFragment.append(review));
+        grid.prepend(beforeFragment);
+        grid.append(afterFragment);
+
+        const cycleWidth = () => after[0].offsetLeft - reviews[0].offsetLeft;
+        grid.scrollLeft = cycleWidth();
+
+        const normalizePosition = () => {
+            const width = cycleWidth();
+            if (grid.scrollLeft < width * 0.5) {
+                grid.scrollLeft += width;
+            } else if (grid.scrollLeft >= width * 1.5) {
+                grid.scrollLeft -= width;
+            }
+        };
+        grid.addEventListener('scroll', normalizePosition, { passive: true });
+    };
+
+    if (reviewGrid) {
+        initializeReviewLoop(reviewGrid);
+    }
+
     reviewButtons.forEach((button) => {
         button.addEventListener('click', () => {
             if (!reviewGrid) {

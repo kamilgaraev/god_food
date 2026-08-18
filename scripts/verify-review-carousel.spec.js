@@ -33,6 +33,17 @@ async function verifyCarousel(browser, width) {
   const grid = page.locator('.review-grid');
   const next = page.locator('[data-review-direction="1"]');
   const previous = page.locator('[data-review-direction="-1"]');
+  const layout = await grid.evaluate((element) => {
+    const cards = [...element.querySelectorAll('.review')];
+    return {
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+      cardTops: cards.map((card) => card.offsetTop),
+    };
+  });
+  assert.equal(layout.scrollHeight, layout.clientHeight, `${width}px carousel must not have vertical overflow`);
+  assert.equal(new Set(layout.cardTops).size, 1, `${width}px carousel must keep every review in one row`);
+
   const before = await grid.evaluate((element) => element.scrollLeft);
   await next.click();
   const afterNext = await grid.evaluate((element) => ({
@@ -45,6 +56,22 @@ async function verifyCarousel(browser, width) {
   await previous.click();
   const afterPrevious = await grid.evaluate((element) => element.scrollLeft);
   assert(afterPrevious < afterNext.scrollLeft, `${width}px previous review button must move the carousel back`);
+
+  for (let step = 1; step <= 8; step += 1) {
+    await next.click();
+    await page.waitForTimeout(100);
+    const nearestReview = await grid.evaluate((element) => {
+      const cards = [...element.querySelectorAll('.review')];
+      const nearest = cards.reduce((closest, card) => (
+        Math.abs(card.offsetLeft - element.scrollLeft) < Math.abs(closest.offsetLeft - element.scrollLeft)
+          ? card
+          : closest
+      ));
+      return nearest.querySelector('p')?.textContent?.trim();
+    });
+    const expectedReview = `Отзыв ${(step % 7) + 1}`;
+    assert.equal(nearestReview, expectedReview, `${width}px carousel must loop after the last review`);
+  }
   await page.close();
 }
 
