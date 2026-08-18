@@ -40,6 +40,9 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
 </header>
 <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
     <button class="mobile-menu-close" type="button" aria-label="Закрыть меню"></button>
+    <a class="mobile-menu-brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Theobroma — Пища Богов, на главную">
+        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" decoding="async" alt="Theobroma — Пища Богов">
+    </a>
     <nav aria-label="Мобильная навигация">
         <p class="mobile-menu-label">О продукте</p>
         <ul>

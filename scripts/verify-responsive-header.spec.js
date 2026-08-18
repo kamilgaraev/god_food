@@ -117,6 +117,7 @@ async function routeLocalAssets(page) {
           maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
           controlsRight: Math.max(account.right, cart.right, menu.right),
           heroContentOrdered: heroTrust.bottom <= heroActions.top + 1,
+          brand: { top: brand.top, left: brand.left, width: brand.width, height: brand.height },
           viewportWidth: document.documentElement.clientWidth,
           scrollWidth: document.documentElement.scrollWidth,
         };
@@ -133,6 +134,19 @@ async function routeLocalAssets(page) {
       assert.ok(metrics.controlsRight <= metrics.viewportWidth, `${width}px: tablet actions are clipped by the viewport`);
       assert.equal(metrics.heroContentOrdered, true, `${width}px: tablet hero actions collide with the trust metrics`);
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${width}px: tablet header creates horizontal overflow`);
+
+      await page.locator('.menu-toggle').click();
+      await page.waitForTimeout(300);
+      const menuBrand = await page.locator('.mobile-menu-brand').evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return { top: box.top, left: box.left, width: box.width, height: box.height };
+      });
+      for (const edge of ['top', 'left', 'width', 'height']) {
+        assert.ok(
+          Math.abs(menuBrand[edge] - metrics.brand[edge]) <= 1,
+          `${width}px: open-menu logo ${edge} must match the closed-header logo`,
+        );
+      }
       await page.close();
     }
 
@@ -160,6 +174,7 @@ async function routeLocalAssets(page) {
         scrollWidth: document.documentElement.scrollWidth,
         cartHeight: cart.height,
         rootScale: parseFloat(getComputedStyle(document.documentElement).fontSize) / 16,
+        brand: { top: brand.top, left: brand.left, width: brand.width, height: brand.height },
         maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
       }});
 
@@ -177,6 +192,17 @@ async function routeLocalAssets(page) {
       await page.keyboard.press('Enter');
       assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'), 'true');
       assert.equal(await page.locator('.mobile-menu').getAttribute('aria-hidden'), 'false');
+      await page.waitForTimeout(300);
+      const menuBrand = await page.locator('.mobile-menu-brand').evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return { top: box.top, left: box.left, width: box.width, height: box.height };
+      });
+      for (const edge of ['top', 'left', 'width', 'height']) {
+        assert.ok(
+          Math.abs(menuBrand[edge] - metrics.brand[edge]) <= 1,
+          `${viewport.width}px: open-menu logo ${edge} must match the closed-header logo`,
+        );
+      }
       const mobileMenu = page.locator('.mobile-menu');
       assert.ok(await mobileMenu.getByRole('link', { name: 'Доставка и оплата' }).isVisible());
       assert.ok(await mobileMenu.getByRole('link', { name: 'Контакты' }).isVisible());
