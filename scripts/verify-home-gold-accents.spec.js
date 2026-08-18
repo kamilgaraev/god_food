@@ -18,7 +18,8 @@ const gold = 'rgb(176, 144, 61)';
       <a class="home-button home-button--secondary">Подробнее</a>
       <span class="home-product-card__badge">Бестселлер</span>
       <a class="home-product-card__button added">В корзине</a>
-      <article class="home-promo-card home-promo-card--gift"><h2>Подарки</h2><a class="home-button">Подробнее</a></article>
+      <nav class="nav-links"><a href="#catalog">Каталог</a></nav>
+      <article class="home-promo-card home-promo-card--gift"><h2>Подарки</h2><p>Наборы в крафтовой коробке</p><a class="home-button">Подробнее</a></article>
       <div class="home-cacao__tabs"><button aria-selected="true">70%</button></div>
     `);
     await page.addStyleTag({ content: stylesheet });
@@ -43,8 +44,26 @@ const gold = 'rgb(176, 144, 61)';
     });
     assert.equal(giftButton.background, gold, 'Gift card action button must use the primary gold');
     assert.equal(giftButton.color, 'rgb(255, 255, 255)', 'Gold action button must keep white button text');
-    const giftBackground = await page.locator('.home-promo-card--gift').evaluate((element) => getComputedStyle(element).backgroundColor);
-    assert.equal(giftBackground, 'rgb(42, 26, 16)', 'Non-interactive gift card surface must keep its existing color');
+    const homeInk = await page.locator('.nav-links a').evaluate((element) => getComputedStyle(element).color);
+    assert.equal(homeInk, 'rgb(52, 52, 52)', 'Homepage ink must use the shared neutral charcoal instead of brown');
+
+    const giftCard = await page.locator('.home-promo-card--gift').evaluate((element) => {
+      const style = getComputedStyle(element);
+      const heading = getComputedStyle(element.querySelector('h2'));
+      const copy = getComputedStyle(element.querySelector('p'));
+      return {
+        background: style.backgroundColor,
+        border: style.borderColor,
+        heading: heading.color,
+        copy: copy.color,
+      };
+    });
+    assert.deepEqual(giftCard, {
+      background: 'rgb(241, 230, 213)',
+      border: 'rgb(222, 208, 189)',
+      heading: 'rgb(52, 52, 52)',
+      copy: 'rgb(117, 107, 99)',
+    }, 'Gift card must use the established beige and neutral text palette');
   } finally {
     await browser.close();
   }
