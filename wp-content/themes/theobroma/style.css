@@ -2408,3 +2408,17 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
     width:calc(100% - 2 * var(--layout-gutter));
   }
 }
+
+/* Breadcrumbs use the same fluid base size as the rest of the page copy. */
+.catalog-breadcrumb,
+.recipes-breadcrumb,
+.marketplace-breadcrumb,
+.buy-breadcrumb,
+.cooperation-breadcrumb,
+.delivery-breadcrumb,
+.media-breadcrumb,
+.legal-breadcrumb,
+.recipe-detail-breadcrumb {
+  font-size:1rem;
+  line-height:1.5rem;
+}
