@@ -91,7 +91,7 @@ async function run() {
     ];
     const expectedAddress = {
       text: contacts.footer_address,
-      href: `https://yandex.ru/maps/?text=${encodeURIComponent(contacts.footer_address)}`,
+      href: 'https://yandex.ru/maps/-/CTgONImy',
       target: '_blank',
       rel: 'noopener noreferrer',
     };

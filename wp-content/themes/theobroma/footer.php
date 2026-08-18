@@ -8,7 +8,7 @@
         $footer_address = theobroma_content('footer_address');
         $footer_phone_1_href = preg_replace('/[^\d+]/', '', $footer_phone_1);
         $footer_phone_2_href = preg_replace('/[^\d+]/', '', $footer_phone_2);
-        $footer_address_map_url = 'https://yandex.ru/maps/?text=' . rawurlencode($footer_address);
+        $footer_address_map_url = 'https://yandex.ru/maps/-/CTgONImy';
         ?>
         <div class="footer-phones"><a href="tel:<?php echo esc_attr($footer_phone_1_href); ?>"><?php echo esc_html($footer_phone_1); ?></a><a href="tel:<?php echo esc_attr($footer_phone_2_href); ?>"><?php echo esc_html($footer_phone_2); ?></a></div>
         <div class="footer-card footer-address"><a href="<?php echo esc_url($footer_address_map_url); ?>" target="_blank" rel="noopener noreferrer" aria-label="Открыть адрес в Яндекс Картах"><?php echo nl2br(esc_html($footer_address)); ?></a></div>
