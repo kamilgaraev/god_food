@@ -18,8 +18,14 @@ function catalogHtml(group, label) {
           <a class="${group === 'chocolate-200g' ? 'is-active' : ''}" href="https://example.test/catalog/">Шоколад 200г</a>
           <a class="${group === 'chocolate-100g' ? 'is-active' : ''}" href="https://example.test/catalog/?product_group=chocolate-100g">Шоколад 100г</a>
         </nav>
-        <ul class="products">
+        <ul class="products home-product-grid">
           <li class="product"><a class="woocommerce-loop-product__link" href="/product/${group}"><span class="catalog-product-image"><img alt="${label}"></span><h2>${label}</h2></a></li>
+          <li class="product home-product-card">
+            <a class="home-product-card__image" href="/product/${group}"><img alt="${label}, эталонная карточка"></a>
+            <div class="home-product-card__heading"><h3><a href="/product/${group}">${label}</a></h3><span class="home-product-card__price">500 р.</span></div>
+            <p>Описание товара</p>
+            <a class="home-product-card__button add_to_cart_button ajax_add_to_cart" href="/?add-to-cart=1">В корзину</a>
+          </li>
         </ul>
         <article class="home-product-card">
           <a class="home-product-card__image" href="/product/home"><img alt="Товар на главной"></a>
@@ -62,6 +68,10 @@ function scaleFromTransform(transform) {
     await page.goto('https://example.test/catalog/');
     await page.addStyleTag({ content: `${style}\n${homeStyle}` });
 
+    const canonicalCartButton = page.locator('ul.products .home-product-card__button').first();
+    assert.equal(await canonicalCartButton.evaluate((button) => getComputedStyle(button).display), 'flex', 'canonical catalog add-to-cart button must remain visible');
+    assert.equal(await canonicalCartButton.isVisible(), true, 'canonical catalog add-to-cart button must be visible to the shopper');
+
     const productLink = page.locator('.woocommerce-loop-product__link').first();
     const productImageFrame = productLink.locator('.catalog-product-image');
     const productImage = productLink.locator('img');
@@ -78,7 +88,7 @@ function scaleFromTransform(transform) {
     assert.ok(Math.abs(finalScale - 1.04) < 0.001, `hover must finish at scale(1.04), received ${finalScale}`);
     assert.deepEqual(await productImageFrame.boundingBox(), frameBeforeHover, 'catalog image frame must stay fixed during the animation');
 
-    const homeProductLink = page.locator('.home-product-card__image');
+    const homeProductLink = page.locator('.shop-shell > .home-product-card .home-product-card__image');
     const homeFrameBeforeHover = await homeProductLink.boundingBox();
     await homeProductLink.focus();
     assert.equal(await homeProductLink.evaluate((link) => getComputedStyle(link).outlineStyle), 'none', 'homepage card image link must not show a focus outline');
@@ -123,7 +133,7 @@ function scaleFromTransform(transform) {
     assert.equal(await page.getByRole('link', { name: 'Шоколад 200г' }).getAttribute('aria-current'), null, 'previous filter must deactivate immediately');
     assert.match(await page.getByRole('link', { name: 'Шоколад 100г' }).evaluate((link) => getComputedStyle(link).transitionDuration), /0\.22s/, 'filter color transition must stay lightweight');
     releaseCatalogFetch();
-    await page.getByText('Товар 100г').waitFor();
+    await page.locator('.woocommerce-loop-product__link h2', { hasText: 'Товар 100г' }).waitFor();
     await page.waitForFunction(() => window.__catalogMotionSamples.length === 1);
     assert.deepEqual(await page.evaluate(() => window.__catalogMotionSamples[0]), { opacity: '0', transform: 'matrix(1, 0, 0, 1, 0, 8)' }, 'new product grid must enter from a subtle offset');
     await page.waitForFunction(() => window.__catalogMidOpacity !== null);
@@ -147,7 +157,7 @@ function scaleFromTransform(transform) {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
 
     await page.evaluate(() => history.back());
-    await page.getByText('Товар 200г').waitFor();
+    await page.locator('.woocommerce-loop-product__link h2', { hasText: 'Товар 200г' }).waitFor();
     assert.equal(navigationRequests, 0, 'browser history must restore the catalog without a document navigation request');
     assert.equal(await page.evaluate(() => window.__catalogDocumentMarker), 'same-document');
     assert.equal(page.url(), 'https://example.test/catalog/');
@@ -171,7 +181,7 @@ function scaleFromTransform(transform) {
     assert.equal(page.url(), 'https://example.test/product/chocolate-200g');
     assert.deepEqual(await page.evaluate(() => window.history.state), { theobromaModal: 'product' });
     assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('role')), 'dialog');
-    assert.equal(await page.getByText('Товар 200г').isVisible(), true, 'late catalog response must not replace content behind a product modal');
+    assert.equal(await page.locator('.woocommerce-loop-product__link h2', { hasText: 'Товар 200г' }).isVisible(), true, 'late catalog response must not replace content behind a product modal');
 
   } finally {
     if (page) await page.close();

@@ -10,8 +10,6 @@ if (!$product instanceof WC_Product) {
 }
 
 $related_ids = theobroma_related_product_ids($product);
-$mobile_related_ids = $related_ids;
-$tablet_related_ids = $related_ids;
 $detail_copy = $product->get_meta('_theobroma_detail_copy', true);
 if (!is_array($detail_copy) || !$detail_copy) {
     $detail_copy = array_filter(array(
@@ -101,27 +99,11 @@ get_header();
     </section>
     <section class="product-related">
         <h2>Вам может понравиться</h2>
-        <?php foreach (array('desktop' => $related_ids, 'tablet' => $tablet_related_ids, 'mobile' => $mobile_related_ids) as $related_layout => $layout_related_ids) : ?>
-        <div class="product-related-grid product-related-grid-<?php echo esc_attr($related_layout); ?>">
-            <?php foreach ($layout_related_ids as $related_id) : $related = wc_get_product($related_id); if (!$related instanceof WC_Product) { continue; } ?>
-                <article>
-                    <a class="product-related-image" href="<?php echo esc_url(get_permalink($related_id)); ?>"><img src="<?php echo esc_url(wp_get_attachment_image_url($related->get_image_id(), 'full') ?: wc_placeholder_img_src('full')); ?>" width="312" height="390" loading="eager" decoding="async" alt="<?php echo esc_attr($related->get_name()); ?>"><span>♡</span></a>
-                    <h3><a href="<?php echo esc_url(get_permalink($related_id)); ?>"><?php echo esc_html($related->get_name()); ?></a></h3>
-                    <p><?php echo esc_html($related->get_short_description()); ?></p>
-                    <div class="product-related-price"><?php echo esc_html(number_format((float) $related->get_price(), 0, '', ' ') . ' р.'); ?></div>
-                    <a
-                        class="product-related-button product_type_<?php echo esc_attr($related->get_type()); ?> add_to_cart_button ajax_add_to_cart"
-                        href="<?php echo esc_url($related->add_to_cart_url()); ?>"
-                        data-quantity="1"
-                        data-product_id="<?php echo esc_attr((string) $related_id); ?>"
-                        data-product_sku="<?php echo esc_attr($related->get_sku()); ?>"
-                        aria-label="<?php echo esc_attr(sprintf('Добавить «%s» в корзину', $related->get_name())); ?>"
-                        rel="nofollow"
-                    >Добавить в корзину</a>
-                </article>
+        <div class="product-related-grid home-product-grid">
+            <?php foreach ($related_ids as $related_id) : $related = wc_get_product($related_id); if (!$related instanceof WC_Product) { continue; } ?>
+                <?php get_template_part('template-parts/home/product-card', null, array('product' => $related)); ?>
             <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
     </section>
 </main>
 </div>

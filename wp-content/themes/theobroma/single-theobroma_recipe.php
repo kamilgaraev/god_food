@@ -15,6 +15,24 @@ while (have_posts()) {
     $detail_image_url = $detail_image_id ? wp_get_attachment_image_url($detail_image_id, 'full') : '';
     $layout = (string) get_post_meta($post_id, '_theobroma_layout', true);
     $product_ids = array_values(array_filter(array_map('absint', (array) get_post_meta($post_id, '_theobroma_product_ids', true))));
+    $recipe_products = array();
+    if (function_exists('wc_get_product')) {
+        foreach ($product_ids as $product_id) {
+            $recipe_product = wc_get_product($product_id);
+            if ($recipe_product instanceof WC_Product) {
+                $recipe_products[] = $recipe_product;
+            }
+        }
+    }
+    if (!$recipe_products && function_exists('wc_get_products')) {
+        $recipe_products = wc_get_products(array(
+            'status' => 'publish',
+            'limit' => 3,
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+            'return' => 'objects',
+        ));
+    }
     ?>
     <main class="recipe-detail recipe-detail-<?php echo esc_attr($layout ?: 'standard'); ?>">
         <section class="recipe-detail-intro">
@@ -45,19 +63,13 @@ while (have_posts()) {
             </div>
             <section class="recipe-product-promo">
                 <h2><em>Какао-порошок</em> натуральный</h2>
-                <div class="recipe-product-grid">
-                    <?php if ($product_ids && function_exists('wc_get_product')) : ?>
-                        <?php foreach ($product_ids as $product_id) : $product = wc_get_product($product_id); if (!$product) { continue; } ?>
-                            <article>
-                                <a href="<?php echo esc_url($product->get_permalink()); ?>"><?php echo $product->get_image('woocommerce_single', array('loading' => 'eager')); ?></a>
-                                <p><?php echo wp_kses_post(wpautop($product->get_short_description())); ?></p>
-                                <strong><?php echo wp_kses_post($product->get_price_html()); ?></strong>
-                            </article>
+                <div class="recipe-product-grid home-product-grid">
+                    <?php if ($recipe_products) : ?>
+                        <?php foreach ($recipe_products as $product) : ?>
+                            <?php get_template_part('template-parts/home/product-card', null, array('product' => $product)); ?>
                         <?php endforeach; ?>
                     <?php else : ?>
-                        <?php for ($card = 0; $card < 3; $card++) : ?>
-                            <article><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/recipe-product.jpg'); ?>" width="720" height="536" loading="eager" decoding="async" alt="Какао-порошок натуральный"><p>Прекрасный выбор ценителей<br>высококачественного и вкусного какао</p><strong>320₽</strong></article>
-                        <?php endfor; ?>
+                        <p class="home-empty-state">Товары скоро появятся в каталоге.</p>
                     <?php endif; ?>
                 </div>
                 <a class="button" href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/')); ?>">Купить</a>

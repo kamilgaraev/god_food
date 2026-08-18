@@ -38,16 +38,9 @@ $related_articles = function_exists('theobroma_related_media_posts') ? theobroma
         <?php if ($related_products) : ?>
             <section class="media-article-products" aria-labelledby="media-article-products-title">
                 <h2 id="media-article-products-title">Шоколад по теме статьи</h2>
-                <div class="media-article-products-grid">
+                <div class="media-article-products-grid home-product-grid">
                     <?php foreach ($related_products as $product) : ?>
-                        <article>
-                            <a href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link>
-                                <?php echo wp_kses_post($product->get_image('woocommerce_thumbnail', array('loading' => 'lazy'))); ?>
-                            </a>
-                            <h3><a href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link><?php echo esc_html(theobroma_frontend_product_title($product->get_name(), $product->get_id())); ?></a></h3>
-                            <strong><?php echo wp_kses_post($product->get_price_html()); ?></strong>
-                            <a class="button" href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link>Купить</a>
-                        </article>
+                        <?php get_template_part('template-parts/home/product-card', null, array('product' => $product)); ?>
                     <?php endforeach; ?>
                 </div>
             </section>

@@ -16,14 +16,10 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
     </section>
     <section class="corporate-gifts-showcase" aria-labelledby="corporate-showcase-title">
         <header><p class="corporate-gifts-eyebrow">Витрина</p><h2 id="corporate-showcase-title">Основа вашего подарка</h2><p>Выберите шоколад — оформление, состав и тираж обсудим индивидуально.</p></header>
-        <div class="corporate-gifts-showcase-grid">
+        <div class="corporate-gifts-showcase-grid home-product-grid">
             <?php foreach ($showcase_products as $product) : ?>
                 <?php if (!$product instanceof WC_Product) { continue; } ?>
-                <article>
-                    <a href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link><?php echo wp_kses_post($product->get_image('woocommerce_thumbnail', array('loading' => 'lazy'))); ?></a>
-                    <h3><a href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link><?php echo esc_html(theobroma_frontend_product_title($product->get_name(), $product->get_id())); ?></a></h3>
-                    <a class="button" href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link>Подробнее</a>
-                </article>
+                <?php get_template_part('template-parts/home/product-card', null, array('product' => $product)); ?>
             <?php endforeach; ?>
         </div>
     </section>
