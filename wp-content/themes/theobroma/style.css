@@ -169,7 +169,7 @@ h2 { margin:0; font-size:clamp(1.9375rem,4vw,3.375rem); line-height:.94; font-we
 .form-grid > input,.phone-field input { width:100%; height:3.25rem; padding:0 1.25rem; border:0; appearance:none; background:#efe5d9; color:#000; font:400 0.75rem/0.9975rem 'Montserrat',Arial,sans-serif; }
 .form-grid > input,.phone-field { box-shadow:inset 0 -1px #b0903d; }
 .message-field { grid-column:1/-1; }
-.phone-field { height:3.25rem; position:relative; background:#efe5d9; }.phone-field input { position:absolute; top:0; right:1.25rem; width:15.7275625rem; padding:0; background:transparent; }.phone-flag { position:absolute; top:1.21875rem; left:1.25rem; width:1.125rem; height:0.8125rem; background:linear-gradient(to bottom,#fff 0 33.333%,#1351b4 33.333% 66.666%,#d52b1e 66.666%); }.phone-triangle { position:absolute; top:1.46875rem; left:2.75rem; width:0; height:0; border-left:0.25rem solid transparent; border-right:0.25rem solid transparent; border-top:0.3125rem solid #343434; }.phone-code { position:absolute; top:1.126rem; left:3.875rem; font:400 0.75rem/0.9975rem 'Montserrat',Arial,sans-serif; }
+.phone-field { height:3.25rem; position:relative; background:#efe5d9; }
 .form-message { padding:0.75rem 1rem; color:#5d4e22; background:#f6eee5; font:0.8125rem 'Montserrat',Arial,sans-serif; }
 .form-grid input::placeholder { color:#000; opacity:.5; }
 .consent { height:1.25rem; margin-top:1.75rem; position:relative; display:flex; align-items:center; gap:0.625rem; color:#7a7a7a; font:400 0.75rem/0.9rem 'Montserrat',Arial,sans-serif; }
@@ -1250,9 +1250,6 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .cooperation-form .form-grid > input,
   .cooperation-form .phone-field { height:3.50390625rem; }
   .cooperation-form .phone-field input { right:1.5234375rem; width:11.47460938rem; height:3.50390625rem; }
-  .cooperation-form .phone-flag { top:1.25683594rem; left:1.5234375rem; width:1.37109375rem; height:0.99023438rem; }
-  .cooperation-form .phone-triangle { top:1.56445313rem; left:3.3515625rem; border-top-width:0.375rem; }
-  .cooperation-form .phone-code { top:1.14453125rem; left:4.61328125rem; font-size:0.75rem; line-height:0.9975rem; }
   .cooperation-form .consent { width:19.046875rem; height:3.50292969rem; min-height:3.50292969rem; margin-top:1.14257813rem; display:block; font:400 0.75rem/0.9rem 'Montserrat',Arial,sans-serif; }
   .cooperation-form .consent::before { position:absolute; top:0; left:0; width:1.25rem; height:1.25rem; transform:scale(1.21875); transform-origin:top left; }
   .cooperation-form .consent input { top:0.44140625rem; left:0.3046875rem; width:0.99023438rem; height:0.99023438rem; margin:0; transform:none; }
@@ -1940,7 +1937,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-cart-checkout #billing_city_field { position:relative; }
 .commerce-cart-checkout #billing_city_field::after { content:""; width:0.6875rem; height:0.6875rem; position:absolute; right:1.125rem; bottom:1.375rem; border:1px solid #8e8985; border-radius:50%; pointer-events:none; }
 .commerce-cart-checkout #billing_city_field::before { content:""; width:0.4375rem; height:1px; position:absolute; z-index:1; right:0.875rem; bottom:1.1875rem; background:#8e8985; transform:rotate(-48deg); pointer-events:none; }
-.commerce-cart-checkout form.checkout #billing_phone { padding-left:3.8125rem !important; background-color:#f3ebe4 !important; background-image:linear-gradient(to bottom,#fff 0 33.333%,#1f4ba5 33.333% 66.666%,#d52b1e 66.666%) !important; background-position:1.25rem center !important; background-size:1.25rem 0.875rem !important; background-repeat:no-repeat !important; }
+.commerce-cart-checkout form.checkout #billing_phone { background:#f3ebe4 !important; }
 .commerce-cart-checkout textarea { min-height:6.25rem; padding-block:1rem; resize:vertical; }
 .commerce-cart-checkout .select2-container { width:100% !important; }
 .commerce-cart-checkout .select2-selection__rendered { line-height:3.5rem !important; }.commerce-cart-checkout .select2-selection__arrow { height:3.5rem !important; }
@@ -2223,16 +2220,10 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 }
 
 .phone-field {
-  padding-inline:1.25rem;
-  display:grid;
-  grid-template-columns:1.125rem .5rem auto minmax(0,1fr);
-  align-items:center;
-  column-gap:.625rem;
+  padding-inline:0;
+  display:block;
 }
-.phone-field :where(.phone-flag,.phone-triangle,.phone-code,input) { position:static; inset:auto; }
-.phone-field .phone-triangle { justify-self:center; }
-.phone-field .phone-code { white-space:nowrap; }
-.phone-field input { position:static; inset:auto; width:100%; min-width:0; padding:0; }
+.phone-field input { position:static; inset:auto; width:100%; min-width:0; padding:0 1.25rem; }
 
 @media (max-width:1199px) {
   :where(.recipes-intro,.marketplace-intro,.buy-intro,.cooperation-page,.recipe-detail-intro) { width:100%; margin-inline:0; }

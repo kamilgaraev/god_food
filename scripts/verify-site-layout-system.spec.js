@@ -61,11 +61,14 @@ async function run() {
           const phone = document.querySelector('.phone-field');
           let phoneParts = null;
           if (phone) {
-            const names = ['.phone-flag', '.phone-triangle', '.phone-code', 'input'];
-            phoneParts = names.map((selector) => {
-              const box = phone.querySelector(selector).getBoundingClientRect();
-              return { selector, left: box.left, right: box.right };
-            });
+            const input = phone.querySelector('input[type="tel"]');
+            const fieldBox = phone.getBoundingClientRect();
+            const inputBox = input.getBoundingClientRect();
+            phoneParts = {
+              field: { left: fieldBox.left, right: fieldBox.right },
+              input: { left: inputBox.left, right: inputBox.right },
+              hasCountryControl: Boolean(phone.querySelector('.phone-flag,.phone-triangle,.phone-code')),
+            };
           }
           return {
             expectedLeft,
@@ -92,9 +95,9 @@ async function run() {
         }
         if (metrics.overflow > 1) failures.push(`${viewport.name} ${entry.path} horizontal overflow ${metrics.overflow}px`);
         if (metrics.phoneParts) {
-          const [flag, triangle, code, input] = metrics.phoneParts;
-          if (!(flag.right + 6 <= triangle.left && triangle.right + 6 <= code.left && code.right + 8 <= input.left)) {
-            failures.push(`${viewport.name} ${entry.path} phone prefix overlaps input`);
+          const { field, input, hasCountryControl } = metrics.phoneParts;
+          if (hasCountryControl || input.left < field.left - 1 || input.right > field.right + 1) {
+            failures.push(`${viewport.name} ${entry.path} phone input must fill its field without a country control`);
           }
         }
         await page.close();

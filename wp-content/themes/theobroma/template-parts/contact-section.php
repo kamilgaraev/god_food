@@ -12,10 +12,7 @@
                 <div class="form-grid">
                     <input type="text" name="name" placeholder="Имя" aria-label="Имя" required>
                     <div class="phone-field">
-                        <span class="phone-flag" aria-hidden="true"></span>
-                        <span class="phone-triangle" aria-hidden="true"></span>
-                        <span class="phone-code" aria-hidden="true">+7</span>
-                        <input type="tel" name="phone" placeholder="(000) 000-00-00" aria-label="Телефон" required>
+                        <input type="tel" name="phone" value="+7" placeholder="+7 (000) 000-00-00" inputmode="tel" autocomplete="tel" maxlength="18" aria-label="Телефон" required>
                     </div>
                     <input class="message-field" type="text" name="message" placeholder="Ваш вопрос или комментарий" aria-label="Ваш вопрос">
                 </div>

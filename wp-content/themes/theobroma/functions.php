@@ -84,6 +84,13 @@ function theobroma_assets(): void {
         (string) filemtime($theme_dir . '/assets/js/decorative-motion.js'),
         array('strategy' => 'defer', 'in_footer' => true)
     );
+    wp_enqueue_script(
+        'theobroma-phone-input',
+        get_template_directory_uri() . '/assets/js/phone-input.js',
+        array(),
+        (string) filemtime($theme_dir . '/assets/js/phone-input.js'),
+        array('strategy' => 'defer', 'in_footer' => true)
+    );
 
     if (is_front_page()) {
         wp_enqueue_script(
@@ -449,7 +456,7 @@ function theobroma_checkout_fields(array $fields): array {
     $field_config = array(
         'billing_city' => array('label' => 'Город', 'placeholder' => '', 'priority' => 10),
         'billing_first_name' => array('label' => '', 'placeholder' => 'Имя', 'priority' => 20),
-        'billing_phone' => array('label' => '', 'placeholder' => '+7 (000) 000-00-00', 'priority' => 30, 'required' => true),
+        'billing_phone' => array('label' => '', 'placeholder' => '+7 (000) 000-00-00', 'priority' => 30, 'required' => true, 'custom_attributes' => array('inputmode' => 'tel', 'maxlength' => '18')),
         'billing_email' => array('label' => '', 'placeholder' => 'Email', 'priority' => 40),
     );
     foreach ($field_config as $key => $config) {
