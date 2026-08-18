@@ -8,9 +8,18 @@ const homeCss = fs.readFileSync(
   path.resolve(__dirname, '../wp-content/themes/theobroma/assets/css/home-redesign.css'),
   'utf8',
 );
+const themeCss = fs.readFileSync(
+  path.resolve(__dirname, '../wp-content/themes/theobroma/style.css'),
+  'utf8',
+);
+const headerPhp = fs.readFileSync(
+  path.resolve(__dirname, '../wp-content/themes/theobroma/header.php'),
+  'utf8',
+);
 
 async function routeLocalAssets(page) {
   await page.route('**/home-redesign.css*', (route) => route.fulfill({ contentType: 'text/css', body: homeCss }));
+  await page.route('**/themes/theobroma/style.css*', (route) => route.fulfill({ contentType: 'text/css', body: themeCss }));
   const local = new URL(url);
   if (local.port === '8080') return;
   await page.route('http://localhost:8080/**', async (route) => {
@@ -22,7 +31,23 @@ async function routeLocalAssets(page) {
   });
 }
 
+async function renderWorktreeShippingBanner(page) {
+  await page.locator('.site-header').evaluate((header) => {
+    if (header.querySelector('.shipping')) return;
+    const shipping = document.createElement('a');
+    shipping.className = 'shipping';
+    shipping.href = Array.from(document.querySelectorAll('.mobile-menu a'))
+      .find((link) => link.textContent.trim() === 'Доставка и оплата')?.href ?? '/delivery';
+    shipping.innerHTML = '<img src="/wp-content/themes/theobroma/assets/images/truck-original.webp" width="18" height="18" alt=""><span>Бесплатная доставка от 2500 рублей</span>';
+    header.prepend(shipping);
+  });
+}
+
 (async () => {
+  assert.match(headerPhp, /<a class="shipping"[^>]+theobroma_page_url\('Доставка и оплата'\)/, 'Header template must render the delivery banner as a link');
+  assert.match(headerPhp, /assets\/images\/truck-original\.webp/, 'Header template must render the reference truck icon');
+  assert.match(headerPhp, /theobroma_content\('shipping_text'\)/, 'Header template must use the managed free-shipping copy');
+
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
   try {
@@ -30,9 +55,15 @@ async function routeLocalAssets(page) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
+      await renderWorktreeShippingBanner(page);
 
       const metrics = await page.evaluate(() => {
         const nav = document.querySelector('.nav');
+        const shipping = document.querySelector('.shipping');
+        const shippingBox = shipping?.getBoundingClientRect() ?? null;
+        const shippingIcon = shipping?.querySelector('img')?.getBoundingClientRect() ?? null;
+        const deliveryLink = Array.from(document.querySelectorAll('.mobile-menu a'))
+          .find((link) => link.textContent.trim() === 'Доставка и оплата');
         const brand = document.querySelector('.brand').getBoundingClientRect();
         const navBox = nav.getBoundingClientRect();
         const study = document.querySelector('.nav-links-study').getBoundingClientRect();
@@ -48,6 +79,17 @@ async function routeLocalAssets(page) {
           position: getComputedStyle(nav).position,
           top: navBox.top,
           height: navBox.height,
+          shipping: shippingBox && shippingIcon ? {
+            tagName: shipping.tagName,
+            text: shipping.textContent.trim(),
+            href: shipping.href,
+            deliveryHref: deliveryLink?.href ?? '',
+            width: shippingBox.width,
+            height: shippingBox.height,
+            bottom: shippingBox.bottom,
+            iconWidth: shippingIcon.width,
+            iconHeight: shippingIcon.height,
+          } : null,
           brandCenter: brand.left + brand.width / 2,
           viewportCenter: document.documentElement.clientWidth / 2,
           viewportWidth: document.documentElement.clientWidth,
@@ -69,7 +111,16 @@ async function routeLocalAssets(page) {
       });
 
       assert.equal(metrics.position, 'fixed', `${width}px: navigation must be fixed`);
-      assert.ok(Math.abs(metrics.top) <= 1, `${width}px: navigation must stay at the top`);
+      assert.ok(metrics.shipping, `${width}px: free-shipping banner is missing`);
+      if (metrics.shipping) {
+        assert.equal(metrics.shipping.tagName, 'A', `${width}px: free-shipping banner must be one link`);
+        assert.equal(metrics.shipping.text, 'Бесплатная доставка от 2500 рублей', `${width}px: unexpected free-shipping copy`);
+        assert.equal(metrics.shipping.href, metrics.shipping.deliveryHref, `${width}px: free-shipping banner must open delivery details`);
+        assert.ok(Math.abs(metrics.shipping.width - metrics.viewportWidth) <= 1, `${width}px: free-shipping banner must span the viewport`);
+        assert.ok(metrics.shipping.height >= 24, `${width}px: free-shipping banner is too short`);
+        assert.ok(metrics.shipping.iconWidth > 0 && metrics.shipping.iconHeight > 0, `${width}px: free-shipping icon is hidden`);
+        assert.ok(Math.abs(metrics.top - metrics.shipping.bottom) <= 1, `${width}px: navigation must sit directly below the free-shipping banner`);
+      }
       assert.ok(Math.abs(metrics.height - 78 * metrics.rootScale) <= 1.5, `${width}px: unexpected header height ${metrics.height}`);
       assert.ok(Math.abs(metrics.brandCenter - metrics.viewportCenter) <= 1, `${width}px: logo is not centered`);
       assert.equal(metrics.studyVisible, true, `${width}px: desktop links must be visible`);
@@ -88,9 +139,11 @@ async function routeLocalAssets(page) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
+      await renderWorktreeShippingBanner(page);
 
       const metrics = await page.evaluate(() => {
         const nav = document.querySelector('.nav').getBoundingClientRect();
+        const shipping = document.querySelector('.shipping')?.getBoundingClientRect() ?? null;
         const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
         const display = (selector) => getComputedStyle(document.querySelector(selector)).display;
         const brand = rect('.brand');
@@ -114,7 +167,9 @@ async function routeLocalAssets(page) {
           accountVisible: account.width > 0,
           cartVisible: cart.width > 0,
           menuVisible: menu.width > 0,
+          navTop: nav.top,
           maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
+          shipping: shipping ? { width: shipping.width, height: shipping.height, bottom: shipping.bottom } : null,
           controlsRight: Math.max(account.right, cart.right, menu.right),
           heroContentOrdered: heroTrust.bottom <= heroActions.top + 1,
           brand: { top: brand.top, left: brand.left, width: brand.width, height: brand.height },
@@ -124,6 +179,11 @@ async function routeLocalAssets(page) {
       });
 
       assert.equal(metrics.studyDisplay, 'none', `${width}px: dense desktop navigation must collapse at the tablet breakpoint`);
+      assert.ok(metrics.shipping, `${width}px: free-shipping banner is missing`);
+      if (metrics.shipping) {
+        assert.ok(Math.abs(metrics.shipping.width - metrics.viewportWidth) <= 1, `${width}px: free-shipping banner must span the viewport`);
+        assert.ok(Math.abs(metrics.navTop - metrics.shipping.bottom) <= 1, `${width}px: tablet navigation must sit below the free-shipping banner`);
+      }
       assert.equal(metrics.whereDisplay, 'none', `${width}px: where-to-buy must collapse into the tablet menu`);
       assert.equal(metrics.whereMenuCount, 1, `${width}px: where-to-buy must remain available inside the tablet menu`);
       assert.equal(metrics.accountVisible, true, `${width}px: account icon must remain visible in the tablet header`);
@@ -154,9 +214,11 @@ async function routeLocalAssets(page) {
       const page = await browser.newPage({ viewport });
       await routeLocalAssets(page);
       await page.goto(url, { waitUntil: 'networkidle' });
+      await renderWorktreeShippingBanner(page);
 
       const metrics = await page.evaluate(() => {
         const nav = document.querySelector('.nav').getBoundingClientRect();
+        const shipping = document.querySelector('.shipping')?.getBoundingClientRect() ?? null;
         const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
         const brand = rect('.brand');
         const account = rect('.header-account');
@@ -176,9 +238,17 @@ async function routeLocalAssets(page) {
         rootScale: parseFloat(getComputedStyle(document.documentElement).fontSize) / 16,
         brand: { top: brand.top, left: brand.left, width: brand.width, height: brand.height },
         maxAxisDrift: Math.max(...centers.map((center) => Math.abs(center - (nav.top + nav.height / 2)))),
+        navTop: nav.top,
+        shipping: shipping ? { width: shipping.width, height: shipping.height, bottom: shipping.bottom } : null,
       }});
 
       assert.ok(Math.abs(metrics.headerHeight - 68 * metrics.rootScale) <= 1.5, `${viewport.width}px: unexpected mobile header height`);
+      assert.ok(metrics.shipping, `${viewport.width}px: free-shipping banner is missing`);
+      if (metrics.shipping) {
+        assert.ok(Math.abs(metrics.shipping.width - metrics.viewportWidth) <= 1, `${viewport.width}px: free-shipping banner must span the viewport`);
+        assert.ok(metrics.shipping.height >= 24, `${viewport.width}px: free-shipping banner is too short`);
+        assert.ok(Math.abs(metrics.navTop - metrics.shipping.bottom) <= 1, `${viewport.width}px: mobile navigation must sit below the free-shipping banner`);
+      }
       assert.equal(metrics.brandVisible, true, `${viewport.width}px: logo is hidden`);
       assert.equal(metrics.cartVisible, true, `${viewport.width}px: cart is hidden`);
       assert.equal(metrics.menuVisible, true, `${viewport.width}px: burger is hidden`);

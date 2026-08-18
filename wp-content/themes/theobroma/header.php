@@ -15,6 +15,10 @@ $cart_url = function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/
 $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 ?>
 <header class="site-header">
+    <a class="shipping" href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">
+        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/truck-original.webp'); ?>" width="18" height="18" decoding="async" alt="">
+        <span><?php echo esc_html(theobroma_content('shipping_text')); ?></span>
+    </a>
     <nav class="nav" aria-label="Основная навигация">
         <div class="nav-links nav-links-study">
             <a href="<?php echo esc_url($shop_url); ?>">Каталог</a>

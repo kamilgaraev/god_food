@@ -43,7 +43,7 @@ img { display:block; max-width:100%; }
 .home-decor i:nth-child(3).is-loaded { background-image:url('assets/images/botanical-home-right-tall.webp'); }
 .home-decor i:nth-child(4).is-loaded { background-image:url('assets/images/botanical-home-left-tall.webp'); }
 .site-header { position:relative; z-index:20; height:3.1875rem; background:transparent; }
-.shipping { min-height:3.1875rem; position:relative; color:white; background:var(--gold); }
+.shipping { min-height:3.1875rem; position:relative; display:block; color:white; background:var(--gold); }
 .shipping img { position:absolute; top:0.639625rem; left:calc(50vw - 11.296875rem); width:1.9199375rem; height:1.9199375rem; object-fit:contain; }
 .shipping span { position:absolute; top:0.375rem; left:calc(29.291154vw - 4.7431875rem); width:13.1965rem; white-space:nowrap; font:400 0.6875rem/1.0625rem 'Montserrat',Arial,sans-serif; letter-spacing:normal; zoom:1.707; }
 .nav { position:absolute; top:3.1875rem; left:50vw; width:min(80rem,calc(100vw - 9.375rem)); min-height:7rem; transform:translateX(-50%); padding:0; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:2.125rem; }
