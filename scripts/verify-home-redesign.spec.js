@@ -48,20 +48,20 @@ async function run() {
       url: option.dataset.url,
     })));
     assert(JSON.stringify(cacaoMapping) === JSON.stringify([
-      { actual: '59', visible: '55%', url: `${BASE_URL}/catalog/?cacao_percentage=59` },
-      { actual: '70', visible: '72%', url: `${BASE_URL}/catalog/?cacao_percentage=70` },
-      { actual: '80', visible: '85%', url: `${BASE_URL}/catalog/?cacao_percentage=80` },
-      { actual: '68', visible: '92%', url: `${BASE_URL}/catalog/?cacao_percentage=68` },
-      { actual: '65', visible: '99%', url: `${BASE_URL}/catalog/?cacao_percentage=65` },
-    ]), 'Every visible reference percentage must retain its real WooCommerce group URL');
+      { actual: '59', visible: '59%', url: `${BASE_URL}/catalog/?cacao_percentage=59` },
+      { actual: '65', visible: '65%', url: `${BASE_URL}/catalog/?cacao_percentage=65` },
+      { actual: '68', visible: '68%', url: `${BASE_URL}/catalog/?cacao_percentage=68` },
+      { actual: '70', visible: '70%', url: `${BASE_URL}/catalog/?cacao_percentage=70` },
+      { actual: '80', visible: '80%', url: `${BASE_URL}/catalog/?cacao_percentage=80` },
+    ]), 'Every selector percentage must match its WooCommerce product group and URL');
 
     const selected70 = desktop.locator('[data-cacao-option="70"]');
-    assert(await selected70.getAttribute('aria-selected') === 'true', 'The product group behind 72% must be selected by default');
-    assert((await selected70.locator('strong').textContent()).trim() === '72%', 'The default selector label must match the 72% reference value');
+    assert(await selected70.getAttribute('aria-selected') === 'true', 'The 70% product group must be selected by default');
+    assert((await selected70.locator('strong').textContent()).trim() === '70%', 'The default selector label must match the product percentage');
     await desktop.locator('[data-cacao-option="80"]').click();
     await desktop.waitForTimeout(400);
-    assert(await desktop.locator('[data-cacao-option="80"]').getAttribute('aria-selected') === 'true', 'The product group behind 85% must become selected');
-    assert((await desktop.locator('[data-cacao-title]').textContent()).includes('85%'), 'Selector content must update to the visible reference value without a reload');
+    assert(await desktop.locator('[data-cacao-option="80"]').getAttribute('aria-selected') === 'true', 'The 80% product group must become selected');
+    assert((await desktop.locator('[data-cacao-title]').textContent()).includes('80%'), 'Selector content must update to the product percentage without a reload');
     const selectorUrl = await desktop.locator('.home-cacao__buy a').getAttribute('href');
     assert(selectorUrl && selectorUrl.includes('/catalog/?cacao_percentage=80'), 'Selector CTA must point to the filtered catalog');
 
@@ -114,11 +114,11 @@ async function run() {
       href: link.href,
     })));
     assert(JSON.stringify(fallbackLinks) === JSON.stringify([
-      { text: '55% — мягкий', href: `${BASE_URL}/catalog/?cacao_percentage=59` },
-      { text: '72% — классический', href: `${BASE_URL}/catalog/?cacao_percentage=70` },
-      { text: '85% — глубокий', href: `${BASE_URL}/catalog/?cacao_percentage=80` },
-      { text: '92% — строгий', href: `${BASE_URL}/catalog/?cacao_percentage=68` },
-      { text: '99% — чистый', href: `${BASE_URL}/catalog/?cacao_percentage=65` },
+      { text: '59% — мягкий', href: `${BASE_URL}/catalog/?cacao_percentage=59` },
+      { text: '65% — пряный', href: `${BASE_URL}/catalog/?cacao_percentage=65` },
+      { text: '68% — характерный', href: `${BASE_URL}/catalog/?cacao_percentage=68` },
+      { text: '70% — классический', href: `${BASE_URL}/catalog/?cacao_percentage=70` },
+      { text: '80% — глубокий', href: `${BASE_URL}/catalog/?cacao_percentage=80` },
     ]), 'No-JavaScript fallback must expose every visible percentage with its real catalog URL');
 
     console.log('Homepage redesign contract verified');

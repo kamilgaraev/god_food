@@ -8,24 +8,15 @@ $cooperation_url = theobroma_page_url('Сотрудничество');
 $homepage_products = theobroma_homepage_products();
 $cacao_groups = theobroma_home_cacao_groups();
 $cacao_profiles = theobroma_cacao_profiles();
-$cacao_scale = array(
-    59 => array('percentage' => 55, 'label' => 'мягкий'),
-    70 => array('percentage' => 72, 'label' => 'классический'),
-    80 => array('percentage' => 85, 'label' => 'глубокий'),
-    68 => array('percentage' => 92, 'label' => 'строгий'),
-    65 => array('percentage' => 99, 'label' => 'чистый'),
-);
-$cacao_options = array();
-foreach ($cacao_scale as $actual_percentage => $display) {
-    if (isset($cacao_groups[$actual_percentage])) {
-        $cacao_options[$actual_percentage] = array_merge($display, array('group' => $cacao_groups[$actual_percentage]));
-    }
-}
+$cacao_options = theobroma_home_cacao_options($cacao_groups, $cacao_profiles);
+$cacao_percentages = array_keys($cacao_options);
+$minimum_cacao_percentage = $cacao_percentages[0] ?? null;
+$maximum_cacao_percentage = $cacao_percentages ? $cacao_percentages[array_key_last($cacao_percentages)] : null;
 $default_percentage = isset($cacao_groups[70]) ? 70 : (int) (array_key_first($cacao_groups) ?? 0);
 $default_group = $default_percentage > 0 ? $cacao_groups[$default_percentage] : null;
 $default_product = is_array($default_group) ? $default_group['representative'] : null;
 $default_profile = $cacao_profiles[$default_percentage] ?? array('label' => '', 'description' => '');
-$default_display = $cacao_scale[$default_percentage] ?? array('percentage' => $default_percentage, 'label' => $default_profile['label']);
+$default_display = $cacao_options[$default_percentage] ?? array('percentage' => $default_percentage, 'label' => $default_profile['label']);
 $default_image_id = $default_product instanceof WC_Product
     ? (int) ($default_product->get_meta('_theobroma_product_detail_image_id', true) ?: $default_product->get_image_id())
     : 0;
@@ -92,7 +83,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
             <div class="home-cacao__selector">
                 <p class="home-kicker">Дегустационная шкала — выберите процент</p>
                 <h2 id="home-cacao-title">Ваш процент какао</h2>
-                <p class="home-cacao__intro">От мягких 55% до чистых 99%. Выберите крепость — покажем вкус, сахар и повод.</p>
+                <p class="home-cacao__intro"><?php if ($minimum_cacao_percentage !== null && $maximum_cacao_percentage !== null) : ?>От <?php echo esc_html((string) $minimum_cacao_percentage); ?>% до <?php echo esc_html((string) $maximum_cacao_percentage); ?>%. <?php endif; ?>Выберите крепость — покажем вкус, сахар и повод.</p>
                 <?php if ($cacao_options) : ?>
                     <div class="home-cacao__tabs" role="tablist" aria-label="Процент какао">
                         <?php foreach ($cacao_options as $percentage => $option) : ?>

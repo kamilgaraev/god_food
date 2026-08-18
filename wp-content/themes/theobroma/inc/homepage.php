@@ -199,6 +199,27 @@ function theobroma_cacao_profiles(): array {
     );
 }
 
+/**
+ * @param array<int,array{products:WC_Product[],representative:WC_Product,minimum_price:float}> $groups
+ * @param array<int,array{label:string,description:string}> $profiles
+ * @return array<int,array{percentage:int,label:string,group:array{products:WC_Product[],representative:WC_Product,minimum_price:float}}>
+ */
+function theobroma_home_cacao_options(array $groups, array $profiles): array {
+    ksort($groups, SORT_NUMERIC);
+
+    $options = array();
+    foreach ($groups as $percentage => $group) {
+        $percentage = (int) $percentage;
+        $options[$percentage] = array(
+            'percentage' => $percentage,
+            'label' => $profiles[$percentage]['label'] ?? '',
+            'group' => $group,
+        );
+    }
+
+    return $options;
+}
+
 function theobroma_requested_cacao_percentage(?array $source = null): ?int {
     $source ??= $_GET;
     return theobroma_normalize_cacao_percentage($source['cacao_percentage'] ?? null);
