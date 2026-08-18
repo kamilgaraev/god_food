@@ -98,7 +98,7 @@ $button_html = apply_filters('woocommerce_loop_add_to_cart_link', $button_html, 
     <?php $run_woocommerce_loop_hook('woocommerce_before_shop_loop_item'); ?>
     <?php $run_woocommerce_loop_hook('woocommerce_before_shop_loop_item_title'); ?>
     <a class="home-product-card__image" href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link aria-label="<?php echo esc_attr($product->get_name()); ?>">
-        <?php echo wp_kses_post($product->get_image('woocommerce_thumbnail', array('loading' => 'lazy', 'decoding' => 'async', 'fetchpriority' => 'low'))); ?>
+        <?php echo wp_kses_post($product->get_image('theobroma-product-card', array('loading' => 'lazy', 'decoding' => 'async', 'fetchpriority' => 'low', 'sizes' => '(max-width: 767px) calc(50vw - 24px), (max-width: 1279px) calc(50vw - 40px), 300px'))); ?>
         <?php if (!empty($args['bestseller'])) : ?><span class="home-product-card__badge">Бестселлер</span><?php endif; ?>
     </a>
     <?php $run_woocommerce_loop_hook('woocommerce_shop_loop_item_title'); ?>

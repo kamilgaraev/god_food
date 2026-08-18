@@ -5,6 +5,7 @@ require_once '/var/www/html/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
+require_once '/var/www/html/wp-content/themes/theobroma/inc/product-images.php';
 
 if (!class_exists('WC_Product_Simple')) {
     fwrite(STDERR, "WooCommerce is not available.\n");
@@ -211,22 +212,19 @@ foreach ($products as $order => $data) {
     }
     $product_id = $product->save();
 
-    if (!$product->get_image_id()) {
-        $attachment_id = media_sideload_image($data['image'], $product_id, $data['name'], 'id');
+    $featured_image_id = (int) $product->get_image_id();
+    $detail_image_id = (int) $product->get_meta('_theobroma_product_detail_image_id', true);
+    $featured_metadata = $featured_image_id ? wp_get_attachment_metadata($featured_image_id) : false;
+    $detail_metadata = $detail_image_id ? wp_get_attachment_metadata($detail_image_id) : false;
+    if (theobroma_product_image_needs_upgrade($featured_metadata) || theobroma_product_image_needs_upgrade($detail_metadata)) {
+        $original_image_url = theobroma_tilda_original_image_url($data['image']);
+        $attachment_id = media_sideload_image($original_image_url, $product_id, $data['name'], 'id');
         if (is_wp_error($attachment_id)) {
-            fwrite(STDERR, $data['sku'] . ': ' . $attachment_id->get_error_message() . "\n");
+            fwrite(STDERR, $data['sku'] . ' image upgrade: ' . $attachment_id->get_error_message() . "\n");
         } else {
             $product->set_image_id((int) $attachment_id);
-            $product->save();
-        }
-    }
-    if (!$product->get_meta('_theobroma_product_detail_image_id', true)) {
-        $detail_image_url = str_replace('/cover/312x390/', '/cover/560x745/', $data['image']);
-        $detail_attachment_id = media_sideload_image($detail_image_url, $product_id, $data['name'] . ' — детальная карточка', 'id');
-        if (is_wp_error($detail_attachment_id)) {
-            fwrite(STDERR, $data['sku'] . ' detail: ' . $detail_attachment_id->get_error_message() . "\n");
-        } else {
-            $product->update_meta_data('_theobroma_product_detail_image_id', (int) $detail_attachment_id);
+            $product->update_meta_data('_theobroma_product_detail_image_id', (int) $attachment_id);
+            $product->update_meta_data('_theobroma_product_image_source', $original_image_url);
             $product->save();
         }
     }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once get_template_directory() . '/inc/homepage.php';
 require_once get_template_directory() . '/inc/checkout-order-button.php';
+require_once get_template_directory() . '/inc/product-images.php';
 
 function theobroma_setup(): void {
     add_theme_support('title-tag');
@@ -11,6 +12,9 @@ function theobroma_setup(): void {
     add_theme_support('custom-logo', array('height' => 80, 'width' => 300, 'flex-height' => true, 'flex-width' => true));
     add_theme_support('html5', array('search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script'));
     add_image_size('theobroma-media-card', 480, 360, true);
+    foreach (theobroma_product_image_sizes() as $name => [$width, $height, $crop]) {
+        add_image_size($name, $width, $height, $crop);
+    }
     register_nav_menus(array('primary' => __('Главное меню', 'theobroma')));
 }
 add_action('after_setup_theme', 'theobroma_setup');
@@ -427,9 +431,7 @@ function theobroma_catalog_excerpt(): void {
 }
 add_action('woocommerce_after_shop_loop_item_title', 'theobroma_catalog_excerpt', 6);
 
-// Tilda's catalogue cards use the original 312x390 portrait asset. Using the
-// square WooCommerce thumbnail here changes the crop before CSS can size it.
-add_filter('single_product_archive_thumbnail_size', static fn(): string => 'full');
+add_filter('single_product_archive_thumbnail_size', static fn(): string => 'theobroma-product-card');
 
 function theobroma_loop_button_text(string $text, WC_Product $product): string {
     return (function_exists('is_shop') && is_shop()) ? 'Добавить в корзину' : $text;
