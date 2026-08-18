@@ -238,7 +238,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-cacao__copy { width: 100%; max-width: 29.375rem; text-align: center; }
 .home-cacao__copy h3 { margin: 0; font: 400 clamp(2.4375rem, 2.8vw, 2.625rem)/1 'Cormorant', Georgia, serif; }
 .home-cacao__description { max-width: 27.5rem; margin: 0.625rem auto 0.5rem; color: var(--home-muted); font: 400 0.75rem/1.5 'Montserrat', Arial, sans-serif; }
-.home-cacao__fact { min-height: 0; margin: 0 0 0.875rem; color: var(--home-peach); font: 500 0.5rem/1.4 'Montserrat', Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; }
+.home-cacao__fact { min-height: 0; margin: 0 0 0.875rem; color: var(--home-gold); font: 500 0.5rem/1.4 'Montserrat', Arial, sans-serif; letter-spacing: normal; text-transform: uppercase; }
 .home-cacao__buy { display: flex; align-items: center; justify-content: center; gap: 1.25rem; }
 .home-cacao__buy strong { font: 400 1.5625rem/1 'Cormorant', Georgia, serif; }
 

@@ -21,6 +21,7 @@ const gold = 'rgb(176, 144, 61)';
       <nav class="nav-links"><a href="#catalog">Каталог</a></nav>
       <article class="home-promo-card home-promo-card--gift"><h2>Подарки</h2><p>Наборы в крафтовой коробке</p><a class="home-button">Подробнее</a></article>
       <div class="home-cacao__tabs"><button aria-selected="true">70%</button></div>
+      <p class="home-cacao__fact">С вишней и зеленой гречкой</p>
     `);
     await page.addStyleTag({ content: stylesheet });
     await page.locator('.home-button--secondary').hover();
@@ -46,6 +47,20 @@ const gold = 'rgb(176, 144, 61)';
     assert.equal(giftButton.color, 'rgb(255, 255, 255)', 'Gold action button must keep white button text');
     const homeInk = await page.locator('.nav-links a').evaluate((element) => getComputedStyle(element).color);
     assert.equal(homeInk, 'rgb(52, 52, 52)', 'Homepage ink must use the shared neutral charcoal instead of brown');
+
+    const cacaoFact = await page.locator('.home-cacao__fact').evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        color: style.color,
+        letterSpacing: style.letterSpacing,
+        textTransform: style.textTransform,
+      };
+    });
+    assert.deepEqual(cacaoFact, {
+      color: gold,
+      letterSpacing: 'normal',
+      textTransform: 'uppercase',
+    }, 'Cacao flavor note must use compact uppercase gold typography');
 
     const giftCard = await page.locator('.home-promo-card--gift').evaluate((element) => {
       const style = getComputedStyle(element);
