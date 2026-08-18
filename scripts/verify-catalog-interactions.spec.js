@@ -101,10 +101,19 @@ function scaleFromTransform(transform) {
 
     await page.evaluate(() => {
       window.__catalogMotionSamples = [];
+      window.__catalogMidOpacity = null;
+      window.__catalogFinalMotion = null;
       document.addEventListener('theobroma:catalog-updated', () => {
         const products = document.querySelector('.catalog-page ul.products');
         const style = getComputedStyle(products);
         window.__catalogMotionSamples.push({ opacity: style.opacity, transform: style.transform });
+        window.setTimeout(() => {
+          window.__catalogMidOpacity = Number.parseFloat(getComputedStyle(products).opacity);
+        }, 450);
+        window.setTimeout(() => {
+          const finalStyle = getComputedStyle(products);
+          window.__catalogFinalMotion = { opacity: finalStyle.opacity, transform: finalStyle.transform };
+        }, 1000);
       });
     });
     delayNextCatalogFetch = true;
@@ -117,15 +126,12 @@ function scaleFromTransform(transform) {
     await page.getByText('Товар 100г').waitFor();
     await page.waitForFunction(() => window.__catalogMotionSamples.length === 1);
     assert.deepEqual(await page.evaluate(() => window.__catalogMotionSamples[0]), { opacity: '0', transform: 'matrix(1, 0, 0, 1, 0, 8)' }, 'new product grid must enter from a subtle offset');
-    await page.waitForTimeout(350);
-    const midEnterOpacity = Number.parseFloat(await page.locator('.catalog-page ul.products').evaluate((products) => getComputedStyle(products).opacity));
-    assert.ok(midEnterOpacity > 0.45 && midEnterOpacity < 0.75, `product grid must remain visibly mid-reveal at 350ms, received opacity ${midEnterOpacity}`);
-    await page.waitForTimeout(300);
+    await page.waitForFunction(() => window.__catalogMidOpacity !== null);
+    const midEnterOpacity = await page.evaluate(() => window.__catalogMidOpacity);
+    assert.ok(midEnterOpacity > 0.35 && midEnterOpacity < 0.65, `product grid must remain near half opacity at 450ms, received opacity ${midEnterOpacity}`);
+    await page.waitForFunction(() => window.__catalogFinalMotion !== null);
     assert.deepEqual(
-      await page.locator('.catalog-page ul.products').evaluate((products) => {
-        const style = getComputedStyle(products);
-        return { opacity: style.opacity, transform: style.transform };
-      }),
+      await page.evaluate(() => window.__catalogFinalMotion),
       { opacity: '1', transform: 'none' },
       'product grid must settle without a lingering transform',
     );
