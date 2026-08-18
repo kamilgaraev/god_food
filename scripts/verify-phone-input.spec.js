@@ -4,6 +4,7 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 const phoneScript = path.join(__dirname, '..', 'wp-content', 'themes', 'theobroma', 'assets', 'js', 'phone-input.js');
+const themeStyles = path.join(__dirname, '..', 'wp-content', 'themes', 'theobroma', 'style.css');
 const localChrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
 (async () => {
@@ -15,15 +16,20 @@ const localChrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 
   try {
     await page.setContent(`
-      <form>
-        <div class="phone-field">
-          <span class="phone-flag" aria-hidden="true"></span>
-          <span class="phone-triangle" aria-hidden="true"></span>
-          <span class="phone-code" aria-hidden="true">+7</span>
-          <input type="tel" name="phone" required>
-        </div>
-      </form>
+      <section class="cooperation-form">
+        <form>
+          <div class="form-grid">
+            <div class="phone-field">
+              <span class="phone-flag" aria-hidden="true"></span>
+              <span class="phone-triangle" aria-hidden="true"></span>
+              <span class="phone-code" aria-hidden="true">+7</span>
+              <input type="tel" name="phone" required>
+            </div>
+          </div>
+        </form>
+      </section>
     `);
+    await page.addStyleTag({ path: themeStyles });
     await page.addScriptTag({ path: phoneScript });
 
     const phone = page.locator('[name="phone"]');
@@ -33,6 +39,23 @@ const localChrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     assert.equal(await phone.getAttribute('autocomplete'), 'tel');
     assert.equal(await phone.getAttribute('maxlength'), '18');
     assert.equal(await page.locator('.phone-flag,.phone-triangle,.phone-code').count(), 0, 'legacy country controls must be removed');
+
+    await phone.focus();
+    await page.keyboard.type('2131231234');
+    assert.equal(await phone.inputValue(), '+7 (213) 123-12-34', 'typing all ten digits must preserve the final digit');
+    const layout = await phone.evaluate((input) => {
+      const field = input.closest('.phone-field');
+      return {
+        fieldWidth: field.getBoundingClientRect().width,
+        inputWidth: input.getBoundingClientRect().width,
+        clientWidth: input.clientWidth,
+        scrollWidth: input.scrollWidth,
+        boxShadow: getComputedStyle(input).boxShadow,
+      };
+    });
+    assert(Math.abs(layout.fieldWidth - layout.inputWidth) <= 1, `phone input must fill its ${layout.fieldWidth}px field, received ${layout.inputWidth}px`);
+    assert(layout.scrollWidth <= layout.clientWidth, `full phone number must fit without clipping: ${layout.scrollWidth}px > ${layout.clientWidth}px`);
+    assert.notEqual(layout.boxShadow, 'none', 'the underline must belong to the input and remain continuous');
 
     await phone.fill('89991234567');
     assert.equal(await phone.inputValue(), '+7 (999) 123-45-67', 'a number pasted with 8 must normalize to +7');
