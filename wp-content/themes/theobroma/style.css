@@ -2275,6 +2275,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .catalog-page ul.products { width:calc(100% - 2 * var(--layout-gutter)); margin-inline:auto; }
   .catalog-page ul.products,
   .catalog-page.catalog-group-chocolate-30g ul.products {
+    grid-template-columns:minmax(0,1fr);
     grid-template-rows:none;
     grid-auto-rows:auto;
     align-items:stretch;

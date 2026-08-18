@@ -48,8 +48,10 @@ const { chromium } = require('playwright');
           right: Math.max(...row.map((filter) => filter.right)),
         }));
         const footer = document.querySelector('.site-footer').getBoundingClientRect();
+        const productGrid = document.querySelector('ul.products').getBoundingClientRect();
         return {
           products,
+          productGridWidth: productGrid.width,
           filters,
           filterRows,
           footerY: footer.y,
@@ -66,9 +68,14 @@ const { chromium } = require('playwright');
       assert.ok(metrics.filterRows.every((row) => Math.abs((row.left + row.right) / 2 - viewport.width / 2) <= 2), `${viewport.width}px: catalog filter row is not centered`);
       assert.equal(metrics.products.length, 6, `${viewport.width}px: all catalog products must remain visible`);
       assert.ok(metrics.products.every((product) => product.x >= 0 && product.x + product.width <= viewport.width), `${viewport.width}px: product is clipped`);
-      assert.ok(Math.abs(metrics.products[0].y - metrics.products[1].y) < 2, `${viewport.width}px: first row is misaligned`);
-      assert.ok(metrics.products[2].y > metrics.products[0].y, `${viewport.width}px: second row does not follow the first`);
-      assert.ok(metrics.products[4].y > metrics.products[2].y, `${viewport.width}px: third row does not follow the second`);
+      if (viewport.width <= 600) {
+        assert.ok(metrics.products.slice(1).every((product, index) => product.y > metrics.products[index].y), `${viewport.width}px: catalog must show one product per row`);
+        assert.ok(metrics.products.every((product) => product.width >= metrics.productGridWidth - 2), `${viewport.width}px: catalog product must fill its row`);
+      } else {
+        assert.ok(Math.abs(metrics.products[0].y - metrics.products[1].y) < 2, `${viewport.width}px: first row is misaligned`);
+        assert.ok(metrics.products[2].y > metrics.products[0].y, `${viewport.width}px: second row does not follow the first`);
+        assert.ok(metrics.products[4].y > metrics.products[2].y, `${viewport.width}px: third row does not follow the second`);
+      }
       assert.ok(metrics.products.every((product) => Math.abs(product.imageWidth - product.width + (viewport.width < 600 ? 20 : 0)) < 2), `${viewport.width}px: product image sizing changed`);
       assert.ok(metrics.footerY > metrics.products[5].y + metrics.products[5].height, `${viewport.width}px: footer overlaps products`);
       await context.close();

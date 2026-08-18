@@ -87,8 +87,9 @@ async function run() {
       check(metrics.cacaoPanel.left >= -1 && metrics.cacaoPanel.right <= metrics.viewport + 1, `${width}px cacao panel must fit the viewport`);
 
       if (width <= 600) {
-        check(metrics.productColumns === 2 && metrics.productFlow === 'row', `${width}px mobile homepage catalog must use two columns`);
-        check(Math.abs(metrics.productCards[0].top - metrics.productCards[1].top) <= 1, `${width}px first two homepage products must share one row`);
+        check(metrics.productColumns === 1 && metrics.productFlow === 'row', `${width}px mobile homepage catalog must use one column`);
+        check(metrics.productCards[1].top > metrics.productCards[0].top, `${width}px homepage products must use separate rows`);
+        check(metrics.productCards.every(({ width: cardWidth }) => cardWidth >= metrics.productGrid.width - 2), `${width}px mobile homepage products must fill their row`);
         check(metrics.productCards.every(({ left, right }) => left >= -1 && right <= metrics.viewport + 1), `${width}px mobile homepage products must fit the viewport`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px mobile content sections must use one column`);
         check(metrics.title.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px mobile hero content must keep title, trust and actions in order`);
