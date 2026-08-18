@@ -344,10 +344,11 @@ body.account-modal-open { overflow:hidden; }
 .catalog-page .shop-shell { width:72.5rem; padding:0; position:relative; }
 .catalog-breadcrumb { padding-top:8.5625rem; text-align:center; color:#b0903d; font:400 0.6875rem/1.125rem 'Montserrat',Arial,sans-serif; }.catalog-breadcrumb a { color:#9d938a; text-decoration:none; }.catalog-breadcrumb span { margin:0 0.25rem; }.catalog-breadcrumb strong { font-weight:400; }
 .catalog-title { position:static; width:auto; margin:1.375rem 0 3.125rem; text-align:center; color:#000; font:500 3.25rem/3.25rem 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
-.catalog-filters { height:3.25rem; margin-bottom:4.0625rem; display:flex; justify-content:center; gap:1.25rem; }.catalog-filters a { width:11.25rem; height:3.25rem; display:flex; align-items:center; justify-content:center; border-radius:1.875rem; color:#776f68; background:#efe5d9; text-decoration:none; font:400 1rem/1.5rem 'Montserrat',Arial,sans-serif; }.catalog-filters a.is-active { color:#fff; background:#b0903d; }
+.catalog-filters { height:3.25rem; margin-bottom:4.0625rem; display:flex; justify-content:center; gap:1.25rem; }.catalog-filters a { width:11.25rem; height:3.25rem; display:flex; align-items:center; justify-content:center; border-radius:1.875rem; color:#776f68; background:#efe5d9; text-decoration:none; font:400 1rem/1.5rem 'Montserrat',Arial,sans-serif; transition:color 220ms cubic-bezier(.2,0,0,1),background-color 220ms cubic-bezier(.2,0,0,1); }.catalog-filters a.is-active { color:#fff; background:#b0903d; }
 .catalog-page .woocommerce-products-header,.catalog-page .woocommerce-result-count,.catalog-page .woocommerce-ordering { display:none; }
 .catalog-page h1.page-title { display:none; }
-.catalog-page ul.products { width:72.5rem; margin:0; display:grid; grid-template-columns:repeat(4,16.25rem); grid-auto-rows:31.91308594rem; gap:2.5rem; }
+.catalog-page ul.products { width:72.5rem; margin:0; display:grid; grid-template-columns:repeat(4,16.25rem); grid-auto-rows:31.91308594rem; gap:2.5rem; transition:opacity 280ms cubic-bezier(.2,0,0,1),transform 280ms cubic-bezier(.2,0,0,1); }
+.catalog-page ul.products.is-filter-entering { opacity:0; transform:translateY(8px); }
 .catalog-page ul.products::before,.catalog-page ul.products::after { display:none; }
 .catalog-page ul.products li.product { width:16.25rem; height:31.91308594rem; margin:0; float:none; }
 .catalog-page.catalog-group-chocolate-30g { min-height:123.29785156rem; }
@@ -364,7 +365,12 @@ body.account-modal-open { overflow:hidden; }
 .catalog-page ul.products li.product .catalog-product-description { margin:0.5rem 0 0; color:#343434; font:400 0.875rem/1.35625rem 'Montserrat',Arial,sans-serif; }
 .catalog-page ul.products li.product .price { display:inline-block; margin:0.75rem 0 0; vertical-align:middle; color:#b0903d; font:500 1.125rem/1.51875rem 'Montserrat',Arial,sans-serif; }
 .catalog-page ul.products li.product .button { position:absolute; left:0; bottom:0.5rem; width:10.37304688rem; min-width:10.37304688rem; min-height:2.18554688rem; height:2.18554688rem; margin:0; padding:0; display:flex !important; align-items:center; justify-content:center; border:0; border-radius:62.4375rem; color:#fff; background:#b0903d; font:400 0.8125rem/1.1375rem 'Montserrat',Arial,sans-serif; }
-@media (prefers-reduced-motion:reduce) { .catalog-page ul.products li.product .catalog-product-image img { transition:none; } }
+@media (prefers-reduced-motion:reduce) {
+  .catalog-filters a,
+  .catalog-page ul.products,
+  .catalog-page ul.products li.product .catalog-product-image img { transition:none; }
+  .catalog-page ul.products.is-filter-entering { opacity:1; transform:none; }
+}
 .media-page { height:75.0625rem; position:relative; overflow:hidden; background:var(--paper); }
 .media-page::before { content:""; position:absolute; top:5.8125rem; left:0; width:13.1875rem; height:17.77441406rem; pointer-events:none; background:url('assets/images/botanical-page-left.webp') center/100% 100% no-repeat; }
 .media-breadcrumb { position:absolute; top:8.5625rem; left:0; width:100%; text-align:center; color:#b0903d; font:400 0.6875rem/1.125rem 'Montserrat',Arial,sans-serif; }

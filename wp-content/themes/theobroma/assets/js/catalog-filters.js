@@ -5,10 +5,22 @@
   const catalogPaths = new Set([window.location.pathname]);
   let activeRequest = null;
 
-  function syncActiveFilter() {
+  function syncActiveFilter(activeHref = null) {
     catalogPage.querySelectorAll('.catalog-filters a').forEach((link) => {
-      if (link.classList.contains('is-active')) link.setAttribute('aria-current', 'page');
+      const isActive = activeHref ? link.href === activeHref : link.classList.contains('is-active');
+      link.classList.toggle('is-active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
+    });
+  }
+
+  function animateProductsIn() {
+    const products = catalogPage.querySelector('ul.products');
+    if (!products) return;
+
+    products.classList.add('is-filter-entering');
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => products.classList.remove('is-filter-entering'));
     });
   }
 
@@ -36,9 +48,15 @@
       if (!nextCatalogPage) throw new Error('Catalog response is missing .catalog-page');
       if (activeRequest !== request || window.location.href !== startingUrl) return;
 
+      const currentFilters = catalogPage.querySelector('.catalog-filters');
+      const nextFilters = nextCatalogPage.querySelector('.catalog-filters');
+      const nextActiveHref = nextFilters?.querySelector('.is-active')?.href || nextUrl.href;
+      syncActiveFilter(nextActiveHref);
+      if (currentFilters && nextFilters) nextFilters.replaceWith(currentFilters);
+
       catalogPage.className = nextCatalogPage.className;
-      catalogPage.innerHTML = nextCatalogPage.innerHTML;
-      syncActiveFilter();
+      catalogPage.replaceChildren(...nextCatalogPage.childNodes);
+      animateProductsIn();
       catalogPaths.add(nextUrl.pathname);
 
       if (push) window.history.pushState({ theobromaCatalog: true }, '', nextUrl.href);
@@ -72,6 +90,7 @@
 
     event.preventDefault();
     if (nextUrl.href === window.location.href) return;
+    syncActiveFilter(nextUrl.href);
     loadCatalog(nextUrl.href, { push: true, focusFilter: true });
   });
 

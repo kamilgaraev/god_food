@@ -99,13 +99,43 @@ function scaleFromTransform(transform) {
       if (request.isNavigationRequest() && request.frame() === page.mainFrame()) navigationRequests += 1;
     });
 
+    await page.evaluate(() => {
+      window.__catalogMotionSamples = [];
+      document.addEventListener('theobroma:catalog-updated', () => {
+        const products = document.querySelector('.catalog-page ul.products');
+        const style = getComputedStyle(products);
+        window.__catalogMotionSamples.push({ opacity: style.opacity, transform: style.transform });
+      });
+    });
+    delayNextCatalogFetch = true;
     await page.getByRole('link', { name: 'Шоколад 100г' }).click();
+    await page.locator('.catalog-page[aria-busy="true"]').waitFor();
+    assert.equal(await page.getByRole('link', { name: 'Шоколад 100г' }).getAttribute('aria-current'), 'page', 'clicked filter must become active before the response arrives');
+    assert.equal(await page.getByRole('link', { name: 'Шоколад 200г' }).getAttribute('aria-current'), null, 'previous filter must deactivate immediately');
+    assert.match(await page.getByRole('link', { name: 'Шоколад 100г' }).evaluate((link) => getComputedStyle(link).transitionDuration), /0\.22s/, 'filter color transition must stay lightweight');
+    releaseCatalogFetch();
     await page.getByText('Товар 100г').waitFor();
+    await page.waitForFunction(() => window.__catalogMotionSamples.length === 1);
+    assert.deepEqual(await page.evaluate(() => window.__catalogMotionSamples[0]), { opacity: '0', transform: 'matrix(1, 0, 0, 1, 0, 8)' }, 'new product grid must enter from a subtle offset');
+    await page.waitForTimeout(350);
+    assert.deepEqual(
+      await page.locator('.catalog-page ul.products').evaluate((products) => {
+        const style = getComputedStyle(products);
+        return { opacity: style.opacity, transform: style.transform };
+      }),
+      { opacity: '1', transform: 'none' },
+      'product grid must settle without a lingering transform',
+    );
     assert.equal(navigationRequests, 0, 'catalog filter must update without a document navigation request');
     assert.equal(await page.evaluate(() => window.__catalogDocumentMarker), 'same-document');
     assert.equal(page.url(), 'https://example.test/catalog/?product_group=chocolate-100g');
     assert.equal(await page.locator('.catalog-filters .is-active').textContent(), 'Шоколад 100г');
     assert.equal(await page.locator('.catalog-filters .is-active').getAttribute('aria-current'), 'page');
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    assert.equal(await page.locator('.catalog-filters .is-active').evaluate((link) => getComputedStyle(link).transitionDuration), '0s');
+    assert.equal(await page.locator('.catalog-page ul.products').evaluate((products) => getComputedStyle(products).transitionDuration), '0s');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
 
     await page.evaluate(() => history.back());
     await page.getByText('Товар 200г').waitFor();
