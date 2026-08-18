@@ -1376,8 +1376,6 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
   .catalog-page { padding-bottom:3.75rem; }
   .catalog-filters { margin-bottom:6.15234375rem; }
-  .catalog-page ul.products,
-  .catalog-page.catalog-group-chocolate-30g ul.products { grid-template-rows:repeat(3,28.25rem); }
   .catalog-page ul.products li.product .button { height:2.49804688rem; }
 
   .marketplace-intro {
