@@ -347,7 +347,7 @@ body.account-modal-open { overflow:hidden; }
 .catalog-filters { height:3.25rem; margin-bottom:4.0625rem; display:flex; justify-content:center; gap:1.25rem; }.catalog-filters a { width:11.25rem; height:3.25rem; display:flex; align-items:center; justify-content:center; border-radius:1.875rem; color:#776f68; background:#efe5d9; text-decoration:none; font:400 1rem/1.5rem 'Montserrat',Arial,sans-serif; transition:color 220ms cubic-bezier(.2,0,0,1),background-color 220ms cubic-bezier(.2,0,0,1); }.catalog-filters a.is-active { color:#fff; background:#b0903d; }
 .catalog-page .woocommerce-products-header,.catalog-page .woocommerce-result-count,.catalog-page .woocommerce-ordering { display:none; }
 .catalog-page h1.page-title { display:none; }
-.catalog-page ul.products { width:72.5rem; margin:0; display:grid; grid-template-columns:repeat(4,16.25rem); grid-auto-rows:31.91308594rem; gap:2.5rem; transition:opacity 280ms cubic-bezier(.2,0,0,1),transform 280ms cubic-bezier(.2,0,0,1); }
+.catalog-page ul.products { width:72.5rem; margin:0; display:grid; grid-template-columns:repeat(4,16.25rem); grid-auto-rows:31.91308594rem; gap:2.5rem; transition:opacity 600ms cubic-bezier(.2,0,0,1),transform 600ms cubic-bezier(.2,0,0,1); }
 .catalog-page ul.products.is-filter-entering { opacity:0; transform:translateY(8px); }
 .catalog-page ul.products::before,.catalog-page ul.products::after { display:none; }
 .catalog-page ul.products li.product { width:16.25rem; height:31.91308594rem; margin:0; float:none; }

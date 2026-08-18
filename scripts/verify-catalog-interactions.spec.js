@@ -118,6 +118,9 @@ function scaleFromTransform(transform) {
     await page.waitForFunction(() => window.__catalogMotionSamples.length === 1);
     assert.deepEqual(await page.evaluate(() => window.__catalogMotionSamples[0]), { opacity: '0', transform: 'matrix(1, 0, 0, 1, 0, 8)' }, 'new product grid must enter from a subtle offset');
     await page.waitForTimeout(350);
+    const midEnterOpacity = Number.parseFloat(await page.locator('.catalog-page ul.products').evaluate((products) => getComputedStyle(products).opacity));
+    assert.ok(midEnterOpacity > 0 && midEnterOpacity < 1, `product grid must still be entering at 350ms, received opacity ${midEnterOpacity}`);
+    await page.waitForTimeout(300);
     assert.deepEqual(
       await page.locator('.catalog-page ul.products').evaluate((products) => {
         const style = getComputedStyle(products);
