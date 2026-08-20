@@ -14,6 +14,10 @@ final class SettingsPage
         add_action('admin_menu', [$this, 'menu']);
         add_action('admin_init', [$this, 'settings']);
         add_action('admin_enqueue_scripts', [$this, 'assets']);
+        add_filter(
+            'option_page_capability_theobroma_1c',
+            static fn (string $capability): string => 'manage_woocommerce'
+        );
     }
 
     public function menu(): void
