@@ -254,7 +254,7 @@ final class Theobroma_Admin_Tools {
         self::textarea('theobroma_product_details', 'Состав и характеристики', $details, 'Допускается безопасная HTML-разметка.');
         for ($index = 0; $index < 3; $index++) {
             $benefit = is_array($benefits[$index] ?? null) ? $benefits[$index] : array();
-            self::input('theobroma_product_benefits[' . $index . '][title]', 'Заголовок дополнительного блока ' . ($index + 1), (string) ($benefit['title'] ?? ''));
+            self::input('theobroma_product_benefits[' . $index . '][title]', 'Заголовок дополнительного блока ' . ($index + 1), (string) ($benefit['title'] ?? ''), 'text');
             self::textarea('theobroma_product_benefits[' . $index . '][content]', 'Содержимое дополнительного блока ' . ($index + 1), (string) ($benefit['content'] ?? ''), 'Оставьте оба поля пустыми, если блок не нужен.');
         }
         self::input('theobroma_wb_url', 'Ссылка Wildberries', (string) ($marketplaces['wb'] ?? ''), 'url');
