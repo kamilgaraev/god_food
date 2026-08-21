@@ -3,7 +3,6 @@
   --home-muted: #756b63;
   --home-paper: #fbf7f1;
   --home-sand: #f1e6d5;
-  --home-peach: #c98268;
   --home-gold: #b0903d;
   --home-line: #ded0bd;
   --home-container: var(--layout-container, 72.5rem);
@@ -222,7 +221,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-cacao__shell { width: 100%; max-width: var(--home-container); min-width: 0; margin-inline: auto; display: grid; grid-template-columns: minmax(26.875rem, .94fr) minmax(28.75rem, 1.06fr); gap: clamp(4rem, 6vw, 5.375rem); align-items: start; }
 .home-cacao__selector,
 .home-cacao__panel { min-width: 0; }
-.home-kicker { margin: 0 0 1.125rem; color: var(--home-peach); font: 500 0.5625rem/1.4 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+.home-kicker { margin: 0 0 1.125rem; color: var(--home-gold); font: 500 0.5625rem/1.4 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
 .home-cacao .home-kicker { display: none; }
 .home-cacao h2 { max-width: 22.5rem; font-size: clamp(3rem, 4.35vw, 3.5rem); }
 .home-cacao__intro { max-width: 28.75rem; margin: 1rem 0 1.125rem; color: var(--home-muted); font: 400 0.75rem/1.55 'Montserrat', Arial, sans-serif; }
@@ -242,13 +241,13 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-cacao__buy { display: flex; align-items: center; justify-content: center; gap: 1.25rem; }
 .home-cacao__buy strong { font: 400 1.5625rem/1 'Cormorant', Georgia, serif; }
 
-.home-composition { padding: 2.9375rem var(--home-gutter); background: var(--home-sand); }
+.home-composition { padding: 2.9375rem var(--home-gutter); background: #fff; }
 .home-composition__shell { width: 100%; max-width: var(--home-container); margin-inline: auto; display: grid; grid-template-columns: minmax(18.75rem, .9fr) minmax(31.25rem, 1.6fr); gap: clamp(2.5rem, 6vw, 5.5rem); align-items: center; }
 .home-composition h2 { max-width: 20.625rem; font-size: clamp(2.5rem, 3.5vw, 2.75rem); line-height: .96; }
 .home-composition__intro > p:last-child { max-width: 24.375rem; margin: 1.25rem 0 0; color: var(--home-muted); font: 400 0.8125rem/1.6 'Montserrat', Arial, sans-serif; }
 .home-composition dl { margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); }
 .home-composition dl > div { min-height: 6.5625rem; padding: 1rem 1.375rem; border-left: 1px solid var(--home-line); }
-.home-composition dt { color: var(--home-peach); font: 400 2.125rem/1 'Cormorant', Georgia, serif; }
+.home-composition dt { color: var(--home-gold); font: 400 2.125rem/1 'Cormorant', Georgia, serif; }
 .home-composition dd { margin: 0.625rem 0 0; color: var(--home-muted); font: 400 0.6875rem/1.45 'Montserrat', Arial, sans-serif; }
 
 .home-promo-grid { width: 100%; max-width: calc(var(--home-container) + 2 * var(--home-gutter)); margin-inline: auto; padding: 2.9375rem var(--home-gutter) 3.6875rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; background: var(--home-paper); }
@@ -324,7 +323,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .mobile-menu { inset: var(--home-shipping-height) 0 0; }
   .mobile-menu::before { width: 88vw; background: var(--home-paper); }
   .mobile-menu nav { top: 4.25rem; left: 1.75rem; width: calc(88vw - 3.5rem); }
-  .mobile-menu-label { margin: 1.625rem 0 0.875rem; color: var(--home-peach); font: 500 0.5625rem/1.2 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+  .mobile-menu-label { margin: 1.625rem 0 0.875rem; color: var(--home-gold); font: 500 0.5625rem/1.2 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
   .mobile-menu li + li { margin-top: 0.75rem; }
   .mobile-menu a { max-width: 100%; color: var(--home-ink); font-size: 1.5rem; line-height: 1.08; text-transform: none; }
   .mobile-menu .mobile-menu-brand { position: absolute; z-index: 2; top: 0.5625rem; left: clamp(1.5rem, 3.35vw, 2.25rem); width: 8.75rem; height: 3.75rem; display: grid; place-items: center; transform: translateX(-115%); transition: transform .25s ease; }
@@ -407,7 +406,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-composition { padding: 4.125rem 1.125rem; }
   .home-composition__shell { grid-template-columns: 1fr; gap: 2.25rem; }
   .home-composition dl { grid-template-columns: repeat(2, 1fr); }
-  .home-composition dl > div { padding: 1.125rem 0.875rem; border-top: 1px solid var(--home-line); }
+  .home-composition dl > div { padding: 1.125rem 0.875rem; border: 0; }
   .home-promo-grid { padding: 2.25rem 1.125rem 3rem; grid-template-columns: 1fr; gap: 0.75rem; }
   .home-promo-card { min-height: 0; padding: 1.75rem 1.5rem; }
   .home-promo-card h2 { font-size: 2.125rem; }
