@@ -166,9 +166,9 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         <article class="home-promo-card home-promo-card--where">
             <h2>Где купить</h2>
             <nav aria-label="Где купить Theobroma">
-                <a href="<?php echo esc_url($where_url); ?>">Бутики</a>
-                <a href="<?php echo esc_url($where_url); ?>">Маркетплейсы</a>
-                <a href="<?php echo esc_url($where_url); ?>">Вся Россия</a>
+                <a href="<?php echo esc_url($where_url . '#bulletcities1'); ?>">Бутики</a>
+                <a href="<?php echo esc_url($where_url . '#bulletcities2'); ?>">Маркетплейсы</a>
+                <a href="<?php echo esc_url($where_url . '#bulletcities3'); ?>">Вся Россия</a>
             </nav>
             <p>Розничные партнёры в 14 городах и оптовые поставки с фабрики. <a href="<?php echo esc_url($cooperation_url); ?>">Запросить прайс</a></p>
         </article>
