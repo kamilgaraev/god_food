@@ -20,11 +20,14 @@ const productCardStyles = path.resolve(__dirname, '../wp-content/themes/theobrom
       </div>
       <ul class="products">
         <li class="product home-product-card">
-          <a
-            class="home-product-card__button product_type_simple add_to_cart_button ajax_add_to_cart"
-            href="/?add-to-cart=42"
-            data-product_id="42"
-          >В корзину</a>
+          <div class="home-product-card__purchase">
+            <span class="home-product-card__price">772₽</span>
+            <a
+              class="home-product-card__button product_type_simple add_to_cart_button ajax_add_to_cart"
+              href="/?add-to-cart=42"
+              data-product_id="42"
+            >В корзину</a>
+          </div>
         </li>
       </ul>
     `);
@@ -84,7 +87,7 @@ const productCardStyles = path.resolve(__dirname, '../wp-content/themes/theobrom
     await page.locator('#commerce-modal[data-commerce-type="cart"].is-open').waitFor();
     await page.locator('.commerce-cart-product').waitFor();
     assert.equal(
-      await page.locator('.home-product-card > .added_to_cart.wc-forward').isVisible(),
+      await page.locator('.home-product-card__purchase > .added_to_cart.wc-forward').isVisible(),
       false,
       'WooCommerce view-cart link must stay hidden when the cart opens automatically.',
     );

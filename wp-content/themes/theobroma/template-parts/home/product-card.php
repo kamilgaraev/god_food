@@ -104,10 +104,12 @@ $button_html = apply_filters('woocommerce_loop_add_to_cart_link', $button_html, 
     <?php $run_woocommerce_loop_hook('woocommerce_shop_loop_item_title'); ?>
     <div class="home-product-card__heading">
         <h3><a href="<?php echo esc_url($product->get_permalink()); ?>" data-product-modal-link><?php echo esc_html($product->get_name()); ?></a></h3>
-        <span class="home-product-card__price"><?php echo wp_kses_post($product->get_price_html()); ?></span>
     </div>
     <?php $run_woocommerce_loop_hook('woocommerce_after_shop_loop_item_title'); ?>
     <p><?php echo esc_html(wp_strip_all_tags($product->get_short_description())); ?></p>
-    <?php echo $button_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- generated safely above; WooCommerce filters are trusted extension points. ?>
+    <div class="home-product-card__purchase">
+        <span class="home-product-card__price"><?php echo wp_kses_post($product->get_price_html()); ?></span>
+        <?php echo $button_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- generated safely above; WooCommerce filters are trusted extension points. ?>
+    </div>
     <?php $run_woocommerce_loop_hook('woocommerce_after_shop_loop_item'); ?>
 </<?php echo $wrapper_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- constrained to article or li above. ?>>

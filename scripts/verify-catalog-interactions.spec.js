@@ -23,9 +23,12 @@ function catalogHtml(group, label) {
           <li class="product"><a class="woocommerce-loop-product__link" href="/product/${group}"><span class="catalog-product-image"><img alt="${label}"></span><h2>${label}</h2></a></li>
           <li class="product home-product-card">
             <a class="home-product-card__image" href="/product/${group}"><img alt="${label}, эталонная карточка"></a>
-            <div class="home-product-card__heading"><h3><a href="/product/${group}">${label}</a></h3><span class="home-product-card__price">500 р.</span></div>
+            <div class="home-product-card__heading"><h3><a href="/product/${group}">${label}</a></h3></div>
             <p>Описание товара</p>
-            <a class="home-product-card__button add_to_cart_button ajax_add_to_cart" href="/?add-to-cart=1">В корзину</a>
+            <div class="home-product-card__purchase">
+              <span class="home-product-card__price">500 р.</span>
+              <a class="home-product-card__button add_to_cart_button ajax_add_to_cart" href="/?add-to-cart=1">В корзину</a>
+            </div>
           </li>
         </ul>
         <article class="home-product-card">

@@ -34,17 +34,9 @@ function assertAligned(actual, expected, message) {
 
         const metrics = await cards.evaluateAll((items) => items.slice(0, 2).map((card) => {
           const title = card.querySelector('h3');
-          const titleLink = title.querySelector('a');
           const price = card.querySelector('.home-product-card__price');
           const titleStyle = getComputedStyle(title);
-          const baseline = (element) => {
-            const marker = document.createElement('span');
-            marker.style.cssText = 'display:inline-block;width:0;height:0;padding:0;border:0;';
-            element.prepend(marker);
-            const position = marker.getBoundingClientRect().top;
-            marker.remove();
-            return position;
-          };
+          const priceStyle = getComputedStyle(price);
           const bounds = (selector) => {
             const rect = card.querySelector(selector).getBoundingClientRect();
             return { top: rect.top, bottom: rect.bottom };
@@ -52,22 +44,27 @@ function assertAligned(actual, expected, message) {
           return {
             heading: bounds('.home-product-card__heading'),
             description: bounds(':scope > p'),
+            price: bounds('.home-product-card__price'),
             button: bounds('.home-product-card__button'),
-            titleBaseline: baseline(titleLink),
-            priceBaseline: baseline(price),
             titleClientHeight: title.clientHeight,
             titleScrollHeight: title.scrollHeight,
             titleOverflowY: titleStyle.overflowY,
             titleLineClamp: titleStyle.webkitLineClamp,
+            priceFontSize: Number.parseFloat(priceStyle.fontSize),
+            priceFontWeight: Number.parseInt(priceStyle.fontWeight, 10),
           };
         }));
 
         assertAligned(metrics[0].heading.top, metrics[1].heading.top, `${width}px title rows must start together`);
         assertAligned(metrics[0].heading.bottom, metrics[1].heading.bottom, `${width}px title rows must reserve a consistent height`);
         assertAligned(metrics[0].description.top, metrics[1].description.top, `${width}px descriptions must start on one reading line`);
+        assertAligned(metrics[0].price.top, metrics[1].price.top, `${width}px prices must start on one reading line`);
         assertAligned(metrics[0].button.bottom, metrics[1].button.bottom, `${width}px actions must share a baseline`);
         metrics.forEach((card, index) => {
-          assertAligned(card.titleBaseline, card.priceBaseline, `${width}px card ${index + 1} price must align with the first title baseline`);
+          assert.ok(card.price.top >= card.description.bottom, `${width}px card ${index + 1} price must follow the description.`);
+          assert.ok(card.button.top >= card.price.bottom, `${width}px card ${index + 1} price must sit directly above the action.`);
+          assert.ok(card.priceFontSize >= 16, `${width}px card ${index + 1} price must be readable at a glance.`);
+          assert.ok(card.priceFontWeight >= 500, `${width}px card ${index + 1} price must carry enough visual weight.`);
           const titleFits = card.titleScrollHeight <= card.titleClientHeight + 1;
           assert.ok(titleFits || card.titleOverflowY === 'visible', `${width}px card ${index + 1} title overflow must remain visible.`);
           assert.equal(card.titleLineClamp, 'none', `${width}px card ${index + 1} title must not be line-clamped.`);
