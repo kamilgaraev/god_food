@@ -236,7 +236,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-cacao__image-wrap { width: min(100%, 26.25rem); max-width: 26.25rem; aspect-ratio: 1; padding: 0; display: grid; place-items: center; justify-self: center; overflow: hidden; border-radius: 50%; background: var(--home-sand); }
 .home-cacao__image-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .home-cacao__copy { width: 100%; max-width: 29.375rem; text-align: center; }
-.home-cacao__copy h3 { margin: 0; font: 400 clamp(2.5rem, 2.9vw, 2.75rem)/1 'Montserrat', Arial, sans-serif; letter-spacing: normal; }
+.home-cacao__copy h3 { margin: 0; font: 400 clamp(2.5rem, 2.9vw, 2.75rem)/1 'Cormorant', Georgia, serif; letter-spacing: normal; }
 .home-cacao__description { max-width: 27.5rem; margin: 0.625rem auto 0.5rem; color: var(--home-muted); font: 400 0.75rem/1.5 'Montserrat', Arial, sans-serif; }
 .home-cacao__fact { min-height: 0; margin: 0 0 0.875rem; color: var(--home-gold); font: 500 0.5rem/1.4 'Montserrat', Arial, sans-serif; letter-spacing: normal; text-transform: uppercase; }
 .home-cacao__buy { display: flex; align-items: center; justify-content: center; gap: 1.25rem; }
