@@ -42,7 +42,7 @@ final class Plugin
         return $this->renderer->render($this->definition($formId));
     }
 
-    /** @param array<string, string> $values */
+    /** @param array<string, mixed> $values */
     public function validate(string $formId, array $values): bool
     {
         return $this->submission->isValid($values, $this->definition($formId));
@@ -53,13 +53,13 @@ final class Plugin
         return (string) ($this->definition($formId)['recipient'] ?? '');
     }
 
-    /** @param array<string, string> $values @return list<string> */
+    /** @param array<string, mixed> $values @return list<string> */
     public function notificationLines(string $formId, array $values): array
     {
         return $this->submission->lines($values, $this->definition($formId));
     }
 
-    /** @param array<string, string> $values @return array<string, string> */
+    /** @param array<string, mixed> $values @return array<string, string> */
     public function values(string $formId, array $values): array
     {
         return $this->submission->values($values, $this->definition($formId));
