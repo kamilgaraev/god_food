@@ -165,7 +165,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 @media (hover: hover) and (pointer: fine) {
   .home-chocolate-pyramid[data-state="idle"]:hover { transform: translateX(-50%) translateY(-.2rem) rotate(.35deg); filter: saturate(1.04); }
 }
-.home-chocolate-pyramid:focus-visible { outline: 2px solid var(--home-gold); outline-offset: .4rem; border-radius: 50%; }
+.home-chocolate-pyramid:focus { outline: none; }
 .home-hero__lead { position: absolute; z-index: 3; right: max(calc((100% - var(--home-container)) / 2 + 15.625rem), calc(var(--home-gutter) + 15.625rem)); bottom: 1.5rem; left: max(calc((100% - var(--home-container)) / 2), var(--home-gutter)); width: auto; display: grid; grid-template-columns: minmax(15.625rem, 19.375rem) auto; gap: clamp(2.125rem, 4vw, 3.625rem); align-items: center; }
 .home-hero__lead > p { width: 100%; margin: 0; color: var(--home-muted); font: 400 0.75rem/1.55 'Montserrat', Arial, sans-serif; }
 .home-hero__actions { display: flex; gap: 0.75rem; flex-wrap: nowrap; }
