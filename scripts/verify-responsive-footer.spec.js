@@ -22,7 +22,7 @@ async function footerMetrics(browser, viewportWidth) {
         <div class="footer-map"><h3>Карта сайта</h3><ul><li>Каталог</li><li>Где купить</li></ul></div>
         <div class="footer-logo"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='252' height='106' viewBox='0 0 252 106'%3E%3Crect width='252' height='106' fill='%23b0903d'/%3E%3C/svg%3E" width="252" height="106" alt="Theobroma"></div>
         <div class="footer-phones"><a href="tel:+74997555490">+7 499 755 54 90</a><a href="tel:+78004447054">+7 800 444 70 54</a></div>
-        <div class="footer-card footer-address">Адрес фабрики:<br>Московская обл., Наро-Фоминский г.о.</div>
+        <div class="footer-card footer-address"><a href="#map">Адрес фабрики:<br>Московская обл.,<br>Наро-Фоминский г.о.,<br>д.Софьино 230А. 143345</a></div>
         <div class="footer-media">
           <div class="social-icons">
             <a href="#vk"><img src="vk.svg" alt=""></a>
@@ -40,10 +40,28 @@ async function footerMetrics(browser, viewportWidth) {
   `);
 
   const metrics = await page.evaluate(() => {
-    const bounds = (selector) => {
-      const rect = document.querySelector(selector).getBoundingClientRect();
-      return { left: rect.left, right: rect.right, width: rect.width, height: rect.height };
+    const elementBounds = (element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      };
     };
+    const bounds = (selector) => elementBounds(document.querySelector(selector));
+
+    const overflowingCards = Array.from(document.querySelectorAll('.footer-card')).flatMap((card) => {
+      const cardRect = card.getBoundingClientRect();
+      const overflows = Array.from(card.children).some((child) => {
+        const childRect = child.getBoundingClientRect();
+        return childRect.left < cardRect.left - 1 || childRect.right > cardRect.right + 1
+          || childRect.top < cardRect.top - 1 || childRect.bottom > cardRect.bottom + 1;
+      });
+      return overflows ? [card.className] : [];
+    });
 
     return {
       rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
@@ -56,14 +74,12 @@ async function footerMetrics(browser, viewportWidth) {
       })(),
       map: bounds('.footer-map'),
       phones: bounds('.footer-phones'),
-      contentOverflow: Array.from(document.querySelectorAll('.footer-card')).some((card) => {
-        const cardRect = card.getBoundingClientRect();
-        return Array.from(card.children).some((child) => {
-          const childRect = child.getBoundingClientRect();
-          return childRect.left < cardRect.left - 1 || childRect.right > cardRect.right + 1
-            || childRect.top < cardRect.top - 1 || childRect.bottom > cardRect.bottom + 1;
-        });
-      }),
+      phoneLinks: Array.from(document.querySelectorAll('.footer-phones a'), elementBounds),
+      phoneTextAlign: getComputedStyle(document.querySelector('.footer-phones')).textAlign,
+      addressTextAlign: getComputedStyle(document.querySelector('.footer-address')).textAlign,
+      addressContent: bounds('.footer-address a'),
+      contentOverflow: overflowingCards.length > 0,
+      overflowingCards,
     };
   });
 
@@ -113,6 +129,12 @@ async function run() {
     if (mobile.contactArtwork.width > 80 || mobile.contactArtwork.height > 80) {
       throw new Error(`390px footer contact artwork must fit within 80px: received ${mobile.contactArtwork.width}x${mobile.contactArtwork.height}px`);
     }
+    if (mobile.phoneTextAlign !== 'left' || mobile.addressTextAlign !== 'left') {
+      throw new Error(`390px phone and address cards must align left: received ${mobile.phoneTextAlign}/${mobile.addressTextAlign}`);
+    }
+    if (mobile.contentOverflow) {
+      throw new Error(`390px footer text must stay inside its cards: ${mobile.overflowingCards.join(', ')} ${JSON.stringify(mobile.addressContent)}`);
+    }
 
     const tablet = await footerMetrics(browser, 768);
     const tabletInset = 2.5 * tablet.rootFontSize;
@@ -120,6 +142,19 @@ async function run() {
     assertClose(tablet.shell.right, 768 - tabletInset, '768px footer shell must keep a fluid 2.5rem right inset');
     assertClose(tablet.map.width, tablet.phones.width, 'tablet footer columns must have equal widths');
     assertClose(tablet.map.left - tablet.shell.left, tablet.shell.right - tablet.phones.right, 'tablet footer outer insets must be equal');
+    if (tablet.phoneTextAlign !== 'left' || tablet.addressTextAlign !== 'left') {
+      throw new Error(`768px phone and address cards must align left: received ${tablet.phoneTextAlign}/${tablet.addressTextAlign}`);
+    }
+
+    const wideTablet = await footerMetrics(browser, 1083);
+    const phoneInset = 1.25 * wideTablet.rootFontSize;
+    assertClose(wideTablet.phoneLinks[0].left, wideTablet.phones.left + phoneInset, '1083px phone numbers must keep the shared left card inset');
+    assertClose(wideTablet.phoneLinks[1].left, wideTablet.phones.left + phoneInset, '1083px phone numbers must share one left edge');
+    assertClose(
+      wideTablet.phoneLinks[0].top - wideTablet.phones.top,
+      wideTablet.phones.bottom - wideTablet.phoneLinks[1].bottom,
+      '1083px phone numbers must stay vertically centered inside the card',
+    );
 
     for (const width of [461, 509, 550, 599, 600]) {
       const narrow = await footerMetrics(browser, width);
