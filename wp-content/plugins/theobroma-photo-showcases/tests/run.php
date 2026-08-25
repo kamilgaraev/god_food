@@ -272,6 +272,7 @@ $same(true, str_contains($homeHtml, 'data-id="31"') && str_contains($homeHtml, '
 $same(true, str_contains($homeHtml, 'data-id="32"') && str_contains($homeHtml, 'alt="Своя подпись"'), 'configured alt overrides attachment alt');
 $same(true, str_contains($homeHtml, '<figcaption>Ручная работа</figcaption>'), 'renderer includes configured caption');
 $same(true, str_contains($homeHtml, 'loading="lazy"') && str_contains($homeHtml, 'decoding="async"'), 'renderer requests deferred responsive images');
+$same(true, str_contains($homeHtml, 'tabindex="0"') && str_contains($homeHtml, 'aria-label="Фотогалерея"'), 'scrollable gallery is keyboard reachable and labelled');
 $corporateHtml = $renderer->html('corporate', $rendererSettings);
 $same(true, str_contains($corporateHtml, 'theobroma-photo-showcase--corporate'), 'corporate renderer uses business modifier');
 $same(true, str_contains($corporateHtml, '<span aria-hidden="true">01</span>'), 'corporate renderer numbers the photo series');

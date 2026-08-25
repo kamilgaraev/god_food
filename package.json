@@ -22,6 +22,7 @@
     "test:home-promo-cards": "node scripts/verify-home-promo-card-styles.spec.js",
     "test:corporate-minimum-button": "node scripts/verify-corporate-minimum-button.spec.js",
     "test:corporate-gifts-cleanup": "node scripts/verify-corporate-gifts-cleanup.spec.js",
+    "test:photo-showcases": "node scripts/verify-photo-showcases.spec.js",
     "test:home-hero-pyramid": "node scripts/verify-home-hero-pyramid.spec.js",
     "test:home-bestseller": "node scripts/verify-home-bestseller-badge.spec.js",
     "test:home-gold-accents": "node scripts/verify-home-gold-accents.spec.js",

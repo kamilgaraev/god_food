@@ -30,7 +30,7 @@ final class Renderer
             . '<div class="theobroma-photo-showcase__shell">'
             . '<header class="theobroma-photo-showcase__intro"><p class="theobroma-photo-showcase__eyebrow">%3$s</p>'
             . '<h2 id="%2$s">%4$s</h2><p class="theobroma-photo-showcase__description">%5$s</p></header>'
-            . '<div class="theobroma-photo-showcase__gallery" role="list">%6$s</div>'
+            . '<div class="theobroma-photo-showcase__gallery" role="list" aria-label="Фотогалерея" tabindex="0">%6$s</div>'
             . '</div></section>',
             esc_attr($location),
             esc_attr($titleId),

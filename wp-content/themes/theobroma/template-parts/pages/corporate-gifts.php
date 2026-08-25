@@ -30,6 +30,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
             <?php endfor; ?>
         </div>
     </section>
+    <?php if (function_exists('theobroma_photo_showcase_html')) { echo theobroma_photo_showcase_html('corporate'); } ?>
     <section class="corporate-gifts-cases" aria-labelledby="corporate-cases-title">
         <header><h2 id="corporate-cases-title">Для разных задач бизнеса</h2></header>
         <div>
