@@ -21,6 +21,12 @@ function overlaps(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
+function overlapArea(a, b) {
+  if (!overlaps(a, b)) return 0;
+  return (Math.min(a.right, b.right) - Math.max(a.left, b.left))
+    * (Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+}
+
 function renderHeroDocument() {
   return `<body class="home"><main>${renderHeroAssets(hero)}</main><style>${styles}</style></body>`;
 }
@@ -95,17 +101,17 @@ function renderHeroDocument() {
           content: Array.from(document.querySelectorAll('.home-hero__lead > p, .home-hero__actions a, .home-hero__trust > div'), (node) => node.getBoundingClientRect().toJSON()),
         }));
         const collisions = geometry.pieces.flatMap((piece, pieceIndex) => geometry.content.flatMap((content, contentIndex) => (
-          overlaps(piece, content) ? [{ piece: pieceIndex + 1, content: contentIndex + 1 }] : []
+          overlaps(piece, content) ? [{ piece: pieceIndex + 1, content: contentIndex + 1, area: overlapArea(piece, content) }] : []
         )));
         assert.deepEqual(collisions, [], `${width}px chocolate pieces must not overlap hero content at ${elapsed}ms of collapse`);
       }
 
       if (width === 1440) {
-        const componentCounts = await layoutPage.evaluate(async () => {
+        const assetMetrics = await layoutPage.evaluate(async () => {
           const images = Array.from(document.querySelectorAll('.home-chocolate-pyramid__piece img'));
           await Promise.all(images.map((image) => image.decode()));
 
-          return images.map((image) => {
+          const metrics = images.map((image) => {
             const canvas = document.createElement('canvas');
             canvas.width = image.naturalWidth;
             canvas.height = image.naturalHeight;
@@ -114,6 +120,15 @@ function renderHeroDocument() {
             const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
             const visited = new Uint8Array(canvas.width * canvas.height);
             let meaningfulComponents = 0;
+            let greenSpillPixels = 0;
+
+            for (let index = 0; index < pixels.length; index += 4) {
+              const red = pixels[index];
+              const green = pixels[index + 1];
+              const blue = pixels[index + 2];
+              const alpha = pixels[index + 3];
+              if (alpha >= 20 && green > red * 1.3 && green > blue * 1.3) greenSpillPixels += 1;
+            }
 
             for (let start = 0; start < visited.length; start += 1) {
               if (visited[start] || pixels[start * 4 + 3] < 20) continue;
@@ -142,11 +157,28 @@ function renderHeroDocument() {
               if (area >= 100) meaningfulComponents += 1;
             }
 
-            return meaningfulComponents;
+            return {
+              components: meaningfulComponents,
+              dimensions: [image.naturalWidth, image.naturalHeight],
+              declaredDimensions: [Number(image.getAttribute('width')), Number(image.getAttribute('height'))],
+              greenSpillPixels,
+            };
           });
+          return {
+            componentCounts: metrics.map(({ components }) => components),
+            dimensions: metrics.map(({ dimensions }) => dimensions),
+            declaredDimensions: metrics.map(({ declaredDimensions }) => declaredDimensions),
+            greenSpillPixels: metrics.map(({ greenSpillPixels }) => greenSpillPixels),
+          };
         });
-        assert.deepEqual(componentCounts, [1, 1, 1, 1, 1, 1, 1],
-          `Each chocolate asset must contain one connected piece without floating fragments (got ${componentCounts.join(', ')})`);
+        assert.deepEqual(assetMetrics.componentCounts, [1, 1, 1, 1, 1, 1, 1],
+          `Each chocolate asset must contain one connected piece without floating fragments (got ${assetMetrics.componentCounts.join(', ')})`);
+        assert.deepEqual(assetMetrics.dimensions.map((dimensions) => Math.max(...dimensions)), Array(7).fill(420),
+          `The redesigned chocolate pieces must use consistently detailed 420px cutouts (got ${assetMetrics.dimensions.map((dimensions) => dimensions.join('x')).join(', ')})`);
+        assert.deepEqual(assetMetrics.declaredDimensions, assetMetrics.dimensions,
+          'Hero image width and height attributes must match the generated cutouts');
+        assert.deepEqual(assetMetrics.greenSpillPixels, [0, 0, 0, 0, 0, 0, 0],
+          `Chocolate cutouts must not retain chroma-key spill (got ${assetMetrics.greenSpillPixels.join(', ')})`);
       }
       await layoutPage.close();
     }
