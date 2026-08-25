@@ -28,9 +28,10 @@
         return;
       }
 
-      setPyramidState('collapsed', true);
-      schedulePyramidState('reassembling', true, 2800);
-      schedulePyramidState('idle', false, 4550);
+      setPyramidState('anticipating', true);
+      schedulePyramidState('collapsed', true, 350);
+      schedulePyramidState('reassembling', true, 3500);
+      schedulePyramidState('idle', false, 6150);
     });
   }
 
