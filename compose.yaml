@@ -23,8 +23,10 @@ services:
       - ./wp-content/plugins/theobroma-admin-tools:/var/www/html/wp-content/plugins/theobroma-admin-tools
       - ./wp-content/plugins/theobroma-analytics:/var/www/html/wp-content/plugins/theobroma-analytics
       - ./wp-content/plugins/theobroma-commerce:/var/www/html/wp-content/plugins/theobroma-commerce
+      - ./wp-content/plugins/theobroma-contact-forms:/var/www/html/wp-content/plugins/theobroma-contact-forms
       - ./wp-content/plugins/theobroma-1c:/var/www/html/wp-content/plugins/theobroma-1c
       - ./wp-content/plugins/theobroma-seo:/var/www/html/wp-content/plugins/theobroma-seo
+      - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins
       - ./scripts:/opt/theobroma-scripts:ro
     depends_on:
       db:
