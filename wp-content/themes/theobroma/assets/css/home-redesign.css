@@ -289,9 +289,9 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-hero,
   .home-hero__shell { height: clamp(28rem, 48vw, 30rem); min-height: clamp(28rem, 48vw, 30rem); max-height: none; }
   .home-hero { margin-top: 0; }
-  .home-hero__shell { padding: 1.5rem 2.5rem; display: grid; grid-template-rows: auto minmax(12rem, 13.5rem) auto minmax(.5rem, 1fr) auto; }
+  .home-hero__shell { padding: 1.5rem 2.5rem; display: grid; grid-template-rows: auto clamp(13.5rem, 25vw, 17rem) auto minmax(.5rem, 1fr) auto; }
   .home-eyebrow { text-align: left; }
-  .home-chocolate-pyramid { position: relative; inset: auto; width: min(22rem, 52vw); height: 13.5rem; margin: .15rem auto 0; grid-row: 2; align-self: start; justify-self: center; transform: none; }
+  .home-chocolate-pyramid { position: relative; inset: auto; width: min(30rem, 52vw); height: clamp(13.5rem, 25vw, 17rem); margin: .15rem auto 0; grid-row: 2; align-self: start; justify-self: center; transform: none; }
   .home-chocolate-pyramid__piece img { filter: drop-shadow(0 .3rem .35rem rgba(51,22,11,.16)); }
   .home-hero__trust { position: static; margin-top: 1.5rem; grid-row: 3; justify-self: end; align-self: start; }
   .home-hero__lead { position: static; display: grid; grid-row: 5; grid-template-columns: minmax(13rem, 1fr) auto; gap: 2rem; align-self: end; }

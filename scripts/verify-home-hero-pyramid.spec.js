@@ -53,7 +53,7 @@ function renderHeroDocument() {
       'Clicking the pyramid must start with a short anticipation beat');
     assert.equal(await pyramid.getAttribute('aria-busy'), 'true',
       'The pyramid must expose its animation state to assistive technology');
-    await pyramid.click();
+    await pyramid.evaluate((node) => node.click());
     assert.equal(await pyramid.getAttribute('data-state'), 'anticipating',
       'Repeated clicks must not restart an animation already in progress');
 
@@ -75,22 +75,27 @@ function renderHeroDocument() {
       'Reduced-motion users must not see the pieces jump to their collapsed positions');
     await reducedPage.close();
 
-    for (const width of [320, 390, 600, 601, 768, 1199, 1200, 1440, 2560, 3200]) {
+    for (const width of [320, 390, 600, 601, 768, 1117, 1199, 1200, 1440, 2560, 3200]) {
       const layoutPage = await browser.newPage({ viewport: { width, height: 900 } });
       await layoutPage.setContent(renderHeroDocument());
       const scale = await layoutPage.evaluate(() => ({
         heroHeight: document.querySelector('.home-hero').getBoundingClientRect().height,
         pyramidWidth: document.querySelector('.home-chocolate-pyramid').getBoundingClientRect().width,
+        pyramidHeight: document.querySelector('.home-chocolate-pyramid').getBoundingClientRect().height,
         fallDurationMs: parseFloat(getComputedStyle(document.querySelector('.home-chocolate-pyramid__piece')).transitionDuration) * 1000,
       }));
       const minimumPyramidWidth = width <= 600
         ? Math.min(285, width * 0.72)
-        : (width < 1200 ? 300 : Math.min(650, width * 0.34));
+        : (width < 1000 ? 300 : (width < 1200 ? 460 : Math.min(650, width * 0.34)));
       const minimumHeroHeight = width <= 600 ? 480 : (width < 1200 ? 448 : 430);
       assert(scale.pyramidWidth >= minimumPyramidWidth,
         `${width}px pyramid must be visually dominant (expected at least ${minimumPyramidWidth}px, got ${scale.pyramidWidth}px)`);
       assert(scale.heroHeight >= minimumHeroHeight,
         `${width}px hero must provide enough stage height for the larger pyramid (expected at least ${minimumHeroHeight}px, got ${scale.heroHeight}px)`);
+      if (width >= 1000 && width < 1200) {
+        assert(scale.pyramidHeight >= 260,
+          `${width}px tablet pyramid must receive enough vertical stage (expected at least 260px, got ${scale.pyramidHeight}px)`);
+      }
       assert(scale.fallDurationMs >= 1350 && scale.fallDurationMs <= 1600,
         `${width}px collapse must remain weighty and readable (expected 1350-1600ms, got ${scale.fallDurationMs}ms)`);
       await layoutPage.locator('.home-chocolate-pyramid').evaluate((node) => { node.dataset.state = 'collapsed'; });
