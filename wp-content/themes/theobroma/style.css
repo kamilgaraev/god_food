@@ -959,7 +959,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .footer-mail:nth-of-type(6) { top:38.8555rem; left:1.25rem; width:calc(100% - 2.5rem); height:7.6181875rem; border-radius:1.25rem; }
   .footer-mail:nth-of-type(7) { top:47.693375rem; left:1.25rem; width:calc(100% - 2.5rem); height:6.6279375rem; border-radius:1.25rem; }
   .footer-mail:nth-of-type(8) { top:55.5400625rem; left:1.25rem; width:calc(100% - 2.5rem); height:6.6279375rem; border-radius:1.25rem; }
-  .footer-address { padding:0.5625rem 1.5rem; font:400 1.375rem/1.625rem 'Cormorant',Arial,sans-serif; }
+  .footer-address { padding:0.5rem 1.5rem; font:400 1.25rem/1.5rem 'Cormorant',Arial,sans-serif; }
   .footer-mail strong { font:400 1.5rem/1.875rem 'Cormorant',Arial,sans-serif; }
   .footer-mail small,
   .footer-mail:nth-of-type(6) small,
@@ -1767,6 +1767,26 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
   .cooperation-benefit-grid h3 { padding-right:3.625rem; }
   .buy-decor-right { display:none; }
+}
+
+@media (max-width:1199px) {
+  .footer-phones {
+    padding-inline:1.25rem;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:.5rem;
+    text-align:left;
+  }
+  .footer-phones a {
+    position:static;
+    width:auto;
+    text-align:left;
+  }
+  .footer-address {
+    padding-left:1.25rem;
+    text-align:left;
+  }
 }
 
 /* WooCommerce overlays: standalone product/cart URLs remain as no-JS fallbacks. */
