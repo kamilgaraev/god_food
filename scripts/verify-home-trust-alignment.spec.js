@@ -82,6 +82,7 @@ async function metricsAt(browser, width) {
       labelTops: Array.from(element.querySelectorAll(':scope > div > span'), (item) => item.getBoundingClientRect().top),
       labelFontSizes: Array.from(element.querySelectorAll(':scope > div > span'), (item) => parseFloat(getComputedStyle(item).fontSize)),
       labelTextTransforms: Array.from(element.querySelectorAll(':scope > div > span'), (item) => getComputedStyle(item).textTransform),
+      labelLetterSpacings: Array.from(element.querySelectorAll(':scope > div > span'), (item) => getComputedStyle(item).letterSpacing),
     }));
     const image = PNG.sync.read(await trust.screenshot());
     return {
@@ -121,8 +122,13 @@ async function metricsAt(browser, width) {
       );
       assert.deepEqual(
         layout.labelTextTransforms,
-        ['uppercase', 'uppercase'],
-        `${width}px: trust labels must use uppercase styling`,
+        ['none', 'none'],
+        `${width}px: trust labels must preserve their original case`,
+      );
+      assert.deepEqual(
+        layout.labelLetterSpacings,
+        ['normal', 'normal'],
+        `${width}px: trust labels must use normal letter spacing`,
       );
       assert.ok(
         Math.abs(layout.labelFontSizes[0] - layout.labelFontSizes[1]) <= 0.01 && layout.labelFontSizes[0] >= 8.5,
