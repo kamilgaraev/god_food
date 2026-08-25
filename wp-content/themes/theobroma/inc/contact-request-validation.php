@@ -25,7 +25,7 @@ function theobroma_standard_contact_request_is_valid(array $request, string $for
         return false;
     }
     if (function_exists('theobroma_contact_forms_validate')) {
-        return theobroma_contact_forms_validate($formId, array_map('strval', $request));
+        return theobroma_contact_forms_validate($formId, $request);
     }
 
     return trim((string) ($request['name'] ?? '')) !== ''
@@ -43,7 +43,7 @@ function theobroma_standard_contact_request_recipient(string $formId, string $fa
 /** @param array<string, mixed> $request @return list<string> */
 function theobroma_standard_contact_request_lines(string $formId, array $request): array {
     if (function_exists('theobroma_contact_forms_notification_lines')) {
-        return theobroma_contact_forms_notification_lines($formId, array_map('strval', $request));
+        return theobroma_contact_forms_notification_lines($formId, $request);
     }
 
     return theobroma_contact_request_lines($request);
@@ -51,12 +51,11 @@ function theobroma_standard_contact_request_lines(string $formId, array $request
 
 /** @param array<string, mixed> $request @return array<string, string> */
 function theobroma_standard_contact_request_values(string $formId, array $request): array {
-    $values = array_map('strval', array_intersect_key($request, array_flip(array('name', 'phone', 'email', 'message'))));
     if (function_exists('theobroma_contact_forms_values')) {
-        return theobroma_contact_forms_values($formId, $values);
+        return theobroma_contact_forms_values($formId, $request);
     }
 
-    return $values;
+    return array_map('strval', array_intersect_key($request, array_flip(array('name', 'phone', 'email', 'message'))));
 }
 
 /**

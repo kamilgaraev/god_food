@@ -31,6 +31,45 @@ final class FieldRenderer
             }
         }
 
+        $customFields = isset($definition['custom_fields']) && is_array($definition['custom_fields'])
+            ? $definition['custom_fields']
+            : array();
+        foreach ($customFields as $field) {
+            if (!is_array($field) || empty($field['key']) || empty($field['label']) || empty($field['type'])) {
+                continue;
+            }
+            $key = $this->escape((string) $field['key']);
+            $label = $this->escape((string) $field['label']);
+            $placeholder = $this->escape((string) ($field['placeholder'] ?? $field['label']));
+            $name = 'custom[' . $key . ']';
+            $required = !empty($field['required']) ? ' required' : '';
+            $type = (string) $field['type'];
+
+            if ($type === 'textarea') {
+                $html .= '<textarea class="field-wide" name="' . $name . '" placeholder="' . $placeholder . '" aria-label="' . $label . '" data-field-width="full"' . $required . '></textarea>';
+                continue;
+            }
+            if ($type === 'select') {
+                $html .= '<select name="' . $name . '" aria-label="' . $label . '"' . $required . '>';
+                $html .= '<option value="">' . ($placeholder !== '' ? $placeholder : $label) . '</option>';
+                foreach (is_array($field['options'] ?? null) ? $field['options'] : array() as $option) {
+                    $option = $this->escape((string) $option);
+                    $html .= '<option value="' . $option . '">' . $option . '</option>';
+                }
+                $html .= '</select>';
+                continue;
+            }
+
+            $allowedType = in_array($type, array('text', 'email', 'tel', 'number'), true) ? $type : 'text';
+            $attributes = $allowedType === 'number' ? ' inputmode="decimal" step="any"' : '';
+            $html .= '<input type="' . $allowedType . '" name="' . $name . '" placeholder="' . $placeholder . '" aria-label="' . $label . '"' . $attributes . $required . '>';
+        }
+
         return $html;
+    }
+
+    private function escape(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 }

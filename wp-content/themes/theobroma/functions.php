@@ -568,6 +568,9 @@ function theobroma_handle_contact_request(): void {
     $honeypot = sanitize_text_field(wp_unslash($_POST['theobroma_website'] ?? ''));
     $started_at = absint($_POST['theobroma_form_started'] ?? 0);
     $consent = sanitize_text_field(wp_unslash($_POST['consent'] ?? ''));
+    $custom = isset($_POST['custom']) && is_array($_POST['custom'])
+        ? wp_unslash($_POST['custom'])
+        : array();
     $request = array(
         'name' => $name,
         'phone' => $phone,
@@ -576,6 +579,7 @@ function theobroma_handle_contact_request(): void {
         'consent' => $consent,
         'honeypot' => $honeypot,
         'started_at' => $started_at,
+        'custom' => $custom,
     );
     $valid = $request_type === 'corporate_gift'
         ? theobroma_contact_request_is_valid($request, time())
