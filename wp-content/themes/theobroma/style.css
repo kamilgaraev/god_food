@@ -1221,7 +1221,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
   .recipes-intro::before { display:none; }
   .recipe-grid { width:22.125rem; margin-top:2.1875rem; grid-template-columns:minmax(0,1fr); gap:0.625rem; }
-  .recipe-card { height:20.375rem; padding:1.5rem 1.5625rem; display:flex; flex-direction:column; }
+  .recipe-card { height:20.375rem; padding:1.5rem 1.5625rem; display:flex; flex-direction:column; align-items:center; }
   .recipe-card h2 { order:1; height:auto; min-height:1.6875rem; flex-shrink:0; font-size:1.25rem; line-height:1.6875rem; white-space:normal; }
   .recipe-card h2 br { display:none; }
   .recipe-card:nth-child(3) h2 br { display:inline; }
