@@ -33,6 +33,7 @@
         document.querySelectorAll('.cart-count').forEach((element) => {
             const normalizedCount = Number(count) || 0;
             element.textContent = String(normalizedCount);
+            element.dataset.count = String(normalizedCount);
             element.closest('[data-commerce-cart-open]')?.setAttribute('aria-label', `Корзина, товаров: ${normalizedCount}`);
         });
     };

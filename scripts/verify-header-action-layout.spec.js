@@ -67,7 +67,7 @@ test('cart has the same dimensions as the account control', async () => {
   }
 });
 
-test('cart count replaces the icon only on hover', async () => {
+test('cart count uses a separate badge without covering the icon', async () => {
   await withRenderedHeader(async (page) => {
     const cart = page.locator('.header-cart');
     const icon = cart.locator('img');
@@ -75,13 +75,33 @@ test('cart count replaces the icon only on hover', async () => {
     const opacity = async (locator) => Number(await locator.evaluate((element) => getComputedStyle(element).opacity));
 
     assert.equal(await opacity(icon), 1, 'Cart icon must be visible before hover');
-    assert.equal(await opacity(count), 0, 'Cart count must be hidden before hover');
+    assert.equal(await opacity(count), 0, 'An empty cart must not show a zero badge');
+
+    await count.evaluate((element) => {
+      element.textContent = '24';
+      element.dataset.count = '24';
+    });
+
+    assert.equal(await opacity(count), 1, 'A non-empty cart must show its count badge');
 
     await cart.hover();
     await page.waitForTimeout(250);
 
-    assert.equal(await opacity(icon), 0, 'Cart icon must hide on hover');
-    assert.equal(await opacity(count), 1, 'Cart count must appear on hover');
+    const boxes = await page.evaluate(() => {
+      const iconRect = document.querySelector('.header-cart img').getBoundingClientRect();
+      const countRect = document.querySelector('.header-cart .cart-count').getBoundingClientRect();
+      return {
+        icon: { top: iconRect.top, right: iconRect.right, bottom: iconRect.bottom, left: iconRect.left },
+        count: { top: countRect.top, right: countRect.right, bottom: countRect.bottom, left: countRect.left },
+      };
+    });
+    const overlaps = boxes.icon.left < boxes.count.right
+      && boxes.icon.right > boxes.count.left
+      && boxes.icon.top < boxes.count.bottom
+      && boxes.icon.bottom > boxes.count.top;
+
+    assert.equal(await opacity(icon), 1, 'Cart icon must remain visible on hover');
+    assert.equal(overlaps, false, `Cart badge ${JSON.stringify(boxes.count)} must not cover icon ${JSON.stringify(boxes.icon)}`);
   });
 });
 
@@ -119,7 +139,7 @@ test('account control keeps the same gold state for keyboard focus', async () =>
       if (await account.evaluate((element) => element === document.activeElement)) break;
     }
     assert.equal(await account.evaluate((element) => element === document.activeElement), true, 'Tab navigation must reach the account control');
-    await page.waitForTimeout(220);
+    await page.waitForTimeout(400);
 
     assert.deepEqual(await accountControlColors(account), {
       backgroundColor: 'rgb(176, 144, 61)',
