@@ -45,6 +45,9 @@ const mobileBlock = css.match(/@media \(max-width:\s*600px\)[\s\S]*$/)?.[0] || '
 if (!mobileBlock.includes('grid-auto-flow: column') || !mobileBlock.includes('scroll-snap-align: start')) {
   fail('Mobile showcases must become a horizontal snap gallery.');
 }
+if (!mobileBlock.includes('font-size: clamp(2.5rem, 11vw, 3.25rem)')) {
+  fail('Mobile showcase headings must fit long Russian words without clipping.');
+}
 
 const pluginEntry = 'theobroma-photo-showcases/theobroma-photo-showcases.php';
 if (!configure.includes(pluginEntry) || !verifyWordPress.includes(pluginEntry)) {

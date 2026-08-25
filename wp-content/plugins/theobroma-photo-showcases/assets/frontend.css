@@ -216,7 +216,7 @@
   }
 
   .theobroma-photo-showcase__eyebrow { margin-bottom: .875rem; }
-  .theobroma-photo-showcase__intro h2 { font-size: clamp(2.75rem, 14vw, 4rem); line-height: .91; }
+  .theobroma-photo-showcase__intro h2 { font-size: clamp(2.5rem, 11vw, 3.25rem); line-height: .91; }
   .theobroma-photo-showcase__description { margin-top: 1.25rem; font-size: .8125rem; }
 
   .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery,
