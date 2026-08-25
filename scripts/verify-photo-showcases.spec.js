@@ -45,13 +45,6 @@ const mobileBlock = css.match(/@media \(max-width:\s*600px\)[\s\S]*$/)?.[0] || '
 if (!mobileBlock.includes('grid-auto-flow: column') || !mobileBlock.includes('scroll-snap-align: start')) {
   fail('Mobile showcases must become a horizontal snap gallery.');
 }
-if (!css.includes('.theobroma-photo-showcase--home .theobroma-photo-showcase__intro h2') || !css.includes('font-size: clamp(2.5rem, 3.5vw, 2.75rem)')) {
-  fail('Homepage showcase heading must match the restrained composition section scale.');
-}
-if (!css.includes('.theobroma-photo-showcase--corporate .theobroma-photo-showcase__intro h2') || !css.includes('font-size: clamp(2.25rem, 3.5vw, 2.875rem)')) {
-  fail('Corporate showcase heading must match the other corporate section headings.');
-}
-
 const pluginEntry = 'theobroma-photo-showcases/theobroma-photo-showcases.php';
 if (!configure.includes(pluginEntry) || !verifyWordPress.includes(pluginEntry)) {
   fail('Reproducible WordPress setup and verification must require the photo showcase plugin.');

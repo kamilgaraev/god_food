@@ -17,28 +17,25 @@
 }
 
 .theobroma-photo-showcase__intro {
-  margin-bottom: clamp(2rem, 4vw, 3.5rem);
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(18rem, .7fr);
-  gap: 1.5rem 4rem;
-  align-items: end;
+  max-width: 47rem;
+  margin-bottom: 2rem;
+  display: block;
 }
 
 .theobroma-photo-showcase__intro h2 {
-  max-width: 47rem;
   margin: 0;
   color: var(--photo-ink);
-  font-family: 'Cormorant', Georgia, serif;
-  font-weight: 400;
+  font: 400 clamp(3rem, 4.35vw, 3.5rem)/.95 'Cormorant', Georgia, serif;
   letter-spacing: -.025em;
+  text-transform: none;
   text-wrap: balance;
 }
 
 .theobroma-photo-showcase__description {
-  max-width: 28rem;
-  margin: 0 0 .25rem;
+  max-width: 28.75rem;
+  margin: 1rem 0 0;
   color: var(--photo-muted);
-  font: 400 .875rem/1.65 'Montserrat', Arial, sans-serif;
+  font: 400 .75rem/1.55 'Montserrat', Arial, sans-serif;
 }
 
 .theobroma-photo-showcase__gallery {
@@ -159,11 +156,6 @@
     linear-gradient(128deg, #eee3d4 0%, #f7efe4 52%, #ede0cd 100%);
 }
 
-.theobroma-photo-showcase--home .theobroma-photo-showcase__intro h2 {
-  font-size: clamp(2.5rem, 3.5vw, 2.75rem);
-  line-height: .96;
-}
-
 .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -193,9 +185,6 @@
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__intro h2 {
   color: #fff;
-  font-size: clamp(2.25rem, 3.5vw, 2.875rem);
-  line-height: 1;
-  text-transform: uppercase;
 }
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__description { color: rgba(255, 255, 255, .66); }
 
@@ -366,7 +355,6 @@
 html.theobroma-photo-lightbox-open { overflow: hidden; }
 
 @media (min-width: 601px) and (max-width: 1199px) {
-  .theobroma-photo-showcase__intro { grid-template-columns: minmax(0, 1fr) minmax(16rem, .75fr); gap: 1.25rem 2.5rem; }
   .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { grid-auto-rows: clamp(11rem, 22vw, 16rem); }
   .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(3n + 2) { transform: none; }
@@ -384,8 +372,6 @@ html.theobroma-photo-lightbox-open { overflow: hidden; }
     margin: 0 auto 2rem;
     display: block;
   }
-
-  .theobroma-photo-showcase__description { margin-top: 1.25rem; font-size: .8125rem; }
 
   .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery,
   .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery {
