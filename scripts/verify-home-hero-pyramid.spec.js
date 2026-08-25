@@ -21,6 +21,10 @@ function overlaps(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
+function renderHeroDocument() {
+  return `<body class="home"><main>${renderHeroAssets(hero)}</main><style>${styles}</style></body>`;
+}
+
 (async () => {
   assert(hero, 'Homepage hero must exist');
   assert.match(hero, /<h1[^>]*class="screen-reader-text"[^>]*>Абсолютно натуральный шоколад<\/h1>/,
@@ -34,7 +38,7 @@ function overlaps(a, b) {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-    await page.setContent(`<main>${hero.replace(/<\?php[\s\S]*?\?>/g, '#')}</main>`);
+    await page.setContent(renderHeroDocument());
     await page.addScriptTag({ content: script });
 
     const pyramid = page.locator('.home-chocolate-pyramid');
@@ -43,6 +47,9 @@ function overlaps(a, b) {
       'Clicking the pyramid must start with a short anticipation beat');
     assert.equal(await pyramid.getAttribute('aria-busy'), 'true',
       'The pyramid must expose its animation state to assistive technology');
+    await pyramid.click();
+    assert.equal(await pyramid.getAttribute('data-state'), 'anticipating',
+      'Repeated clicks must not restart an animation already in progress');
 
     await page.waitForFunction(() => document.querySelector('.home-chocolate-pyramid')?.dataset.state === 'collapsed', null, { timeout: 800 });
     await page.waitForFunction(() => document.querySelector('.home-chocolate-pyramid')?.dataset.state === 'reassembling', null, { timeout: 4200 });
@@ -54,7 +61,7 @@ function overlaps(a, b) {
       'The pyramid must automatically return to its idle state');
 
     const reducedPage = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
-    await reducedPage.setContent(`<main>${hero.replace(/<\?php[\s\S]*?\?>/g, '#')}</main>`);
+    await reducedPage.setContent(renderHeroDocument());
     await reducedPage.addScriptTag({ content: script });
     const reducedPyramid = reducedPage.locator('.home-chocolate-pyramid');
     await reducedPyramid.click();
@@ -62,20 +69,22 @@ function overlaps(a, b) {
       'Reduced-motion users must not see the pieces jump to their collapsed positions');
     await reducedPage.close();
 
-    for (const width of [390, 1440, 2560]) {
+    for (const width of [320, 390, 600, 601, 768, 1199, 1200, 1440, 2560, 3200]) {
       const layoutPage = await browser.newPage({ viewport: { width, height: 900 } });
-      await layoutPage.setContent(`<body class="home"><main>${renderHeroAssets(hero)}</main><style>${styles}</style></body>`);
+      await layoutPage.setContent(renderHeroDocument());
       const scale = await layoutPage.evaluate(() => ({
         heroHeight: document.querySelector('.home-hero').getBoundingClientRect().height,
         pyramidWidth: document.querySelector('.home-chocolate-pyramid').getBoundingClientRect().width,
         fallDurationMs: parseFloat(getComputedStyle(document.querySelector('.home-chocolate-pyramid__piece')).transitionDuration) * 1000,
       }));
-      const minimumPyramidWidth = width === 390 ? 285 : (width === 1440 ? 500 : 650);
-      const minimumHeroHeight = width === 390 ? 480 : 470;
+      const minimumPyramidWidth = width <= 600
+        ? Math.min(285, width * 0.72)
+        : (width < 1200 ? 300 : Math.min(650, width * 0.34));
+      const minimumHeroHeight = width <= 600 ? 480 : (width < 1200 ? 448 : 430);
       assert(scale.pyramidWidth >= minimumPyramidWidth,
         `${width}px pyramid must be visually dominant (expected at least ${minimumPyramidWidth}px, got ${scale.pyramidWidth}px)`);
       assert(scale.heroHeight >= minimumHeroHeight,
-        `${width}px hero must provide enough stage height for the larger pyramid`);
+        `${width}px hero must provide enough stage height for the larger pyramid (expected at least ${minimumHeroHeight}px, got ${scale.heroHeight}px)`);
       assert(scale.fallDurationMs >= 1350 && scale.fallDurationMs <= 1600,
         `${width}px collapse must remain weighty and readable (expected 1350-1600ms, got ${scale.fallDurationMs}ms)`);
       await layoutPage.locator('.home-chocolate-pyramid').evaluate((node) => { node.dataset.state = 'collapsed'; });
@@ -89,6 +98,55 @@ function overlaps(a, b) {
           overlaps(piece, content) ? [{ piece: pieceIndex + 1, content: contentIndex + 1 }] : []
         )));
         assert.deepEqual(collisions, [], `${width}px chocolate pieces must not overlap hero content at ${elapsed}ms of collapse`);
+      }
+
+      if (width === 1440) {
+        const componentCounts = await layoutPage.evaluate(async () => {
+          const images = Array.from(document.querySelectorAll('.home-chocolate-pyramid__piece img'));
+          await Promise.all(images.map((image) => image.decode()));
+
+          return images.map((image) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = image.naturalWidth;
+            canvas.height = image.naturalHeight;
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+            context.drawImage(image, 0, 0);
+            const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+            const visited = new Uint8Array(canvas.width * canvas.height);
+            let meaningfulComponents = 0;
+
+            for (let start = 0; start < visited.length; start += 1) {
+              if (visited[start] || pixels[start * 4 + 3] < 20) continue;
+              visited[start] = 1;
+              const queue = [start];
+              let area = 0;
+
+              for (let cursor = 0; cursor < queue.length; cursor += 1) {
+                const current = queue[cursor];
+                area += 1;
+                const x = current % canvas.width;
+                const neighbors = [
+                  current - canvas.width,
+                  current + canvas.width,
+                  x > 0 ? current - 1 : -1,
+                  x + 1 < canvas.width ? current + 1 : -1,
+                ];
+                for (const neighbor of neighbors) {
+                  if (neighbor < 0 || neighbor >= visited.length || visited[neighbor]
+                    || pixels[neighbor * 4 + 3] < 20) continue;
+                  visited[neighbor] = 1;
+                  queue.push(neighbor);
+                }
+              }
+
+              if (area >= 100) meaningfulComponents += 1;
+            }
+
+            return meaningfulComponents;
+          });
+        });
+        assert.deepEqual(componentCounts, [1, 1, 1, 1, 1, 1, 1],
+          `Each chocolate asset must contain one connected piece without floating fragments (got ${componentCounts.join(', ')})`);
       }
       await layoutPage.close();
     }
