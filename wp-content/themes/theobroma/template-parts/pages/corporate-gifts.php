@@ -54,7 +54,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
             <input type="hidden" name="action" value="theobroma_contact"><input type="hidden" name="request_type" value="corporate_gift">
             <?php wp_nonce_field('theobroma_contact', 'theobroma_contact_nonce'); ?>
             <?php theobroma_contact_antispam_fields(); ?>
-            <input name="name" required placeholder="Имя" autocomplete="name" aria-label="Имя"><input type="tel" name="phone" value="+7" required placeholder="+7 (000) 000-00-00" inputmode="tel" autocomplete="tel" maxlength="18" aria-label="Телефон"><textarea name="message" placeholder="Коротко о задаче — необязательно" aria-label="Комментарий"></textarea>
+            <input name="name" required placeholder="Имя" autocomplete="name" aria-label="Имя"><input type="tel" name="phone" required placeholder="Номер телефона" inputmode="tel" autocomplete="tel" maxlength="18" aria-label="Телефон"><textarea name="message" placeholder="Коротко о задаче — необязательно" aria-label="Комментарий"></textarea>
             <label class="consent"><input type="checkbox" name="consent" value="1" required><span>Я согласен на обработку персональных данных</span></label><button class="button" type="submit">Отправить заявку</button>
         </form>
     </section>

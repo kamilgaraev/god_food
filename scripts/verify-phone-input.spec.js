@@ -33,15 +33,18 @@ const localChrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     await page.addScriptTag({ path: phoneScript });
 
     const phone = page.locator('[name="phone"]');
-    assert.equal(await phone.inputValue(), '+7', 'every phone input must start with the fixed +7 prefix');
-    assert.equal(await phone.getAttribute('placeholder'), '+7 (000) 000-00-00');
+    assert.equal(await phone.inputValue(), '', 'an untouched phone input must stay empty');
+    assert.equal(await phone.getAttribute('placeholder'), 'Номер телефона');
     assert.equal(await phone.getAttribute('inputmode'), 'tel');
     assert.equal(await phone.getAttribute('autocomplete'), 'tel');
     assert.equal(await phone.getAttribute('maxlength'), '18');
     assert.equal(await page.locator('.phone-flag,.phone-triangle,.phone-code').count(), 0, 'legacy country controls must be removed');
 
     await phone.focus();
-    await page.keyboard.type('2131231234');
+    assert.equal(await phone.inputValue(), '', 'focus alone must not insert the +7 prefix');
+    await phone.pressSequentially('2');
+    assert.equal(await phone.inputValue(), '+7 (2', 'the +7 prefix must appear after the first entered digit');
+    await phone.pressSequentially('131231234');
     assert.equal(await phone.inputValue(), '+7 (213) 123-12-34', 'typing all ten digits must preserve the final digit');
     const layout = await phone.evaluate((input) => {
       const field = input.closest('.phone-field');
@@ -75,7 +78,9 @@ const localChrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     for (let index = 0; index < 9; index += 1) {
       await page.keyboard.press('Backspace');
     }
-    assert.equal(await phone.inputValue(), '+7', 'repeated Backspace must erase all national digits and preserve only +7');
+    assert.equal(await phone.inputValue(), '', 'repeated Backspace must restore the empty state after all national digits are removed');
+    await phone.blur();
+    assert.equal(await phone.inputValue(), '', 'an empty prefix must disappear when the field becomes inactive');
 
     await phone.fill('+7 (999) 123-45-67');
     await phone.focus();
@@ -86,29 +91,38 @@ const localChrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     await phone.fill('+7 (999) 123-45-67');
     await phone.selectText();
     await page.keyboard.press('Backspace');
-    assert.equal(await phone.inputValue(), '+7', 'deleting a selection must restore the fixed +7 prefix');
+    assert.equal(await phone.inputValue(), '', 'deleting a selection must restore the empty state');
 
+    await phone.fill('9');
     await phone.blur();
-    assert.notEqual(await phone.evaluate((input) => input.validationMessage), '', 'an incomplete prefixed number must remain invalid');
+    assert.notEqual(await phone.evaluate((input) => input.validationMessage), '', 'a non-empty incomplete number must remain invalid');
     await phone.fill('9991234567');
     assert.equal(await phone.inputValue(), '+7 (999) 123-45-67');
     assert.equal(await phone.evaluate((input) => input.validationMessage), '', 'a complete Russian number must be valid');
 
     await phone.evaluate((input) => input.form.reset());
-    await page.waitForFunction(() => document.querySelector('[name="phone"]').value === '+7');
-    assert.equal(await phone.inputValue(), '+7', 'resetting a form must restore the +7 prefix');
+    await page.waitForFunction(() => document.querySelector('[name="phone"]').value === '');
+    assert.equal(await phone.inputValue(), '', 'resetting a form must restore the empty state');
 
     await page.evaluate(() => {
+      const form = document.createElement('form');
       const input = document.createElement('input');
       input.name = 'billing_phone';
-      document.body.append(input);
+      form.append(input);
+      document.body.append(form);
     });
     const checkoutPhone = page.locator('[name="billing_phone"]');
     await checkoutPhone.waitFor();
     assert.equal(await checkoutPhone.getAttribute('type'), 'tel', 'phone-named inputs must receive the telephone input type');
     await assert.doesNotReject(async () => {
-      await page.waitForFunction(() => document.querySelector('[name="billing_phone"]').value === '+7');
-    }, 'phone inputs inserted by the checkout must be enhanced automatically');
+      await page.waitForFunction(() => document.querySelector('[name="billing_phone"]').placeholder === 'Номер телефона');
+    }, 'phone inputs inserted by the checkout must receive the shared placeholder automatically');
+    assert.equal(await checkoutPhone.inputValue(), '', 'phone inputs inserted by the checkout must stay empty until typing');
+    await checkoutPhone.pressSequentially('9');
+    assert.equal(await checkoutPhone.inputValue(), '+7 (9', 'dynamic checkout inputs must add +7 after the first digit');
+    await checkoutPhone.evaluate((input) => input.form.reset());
+    await page.waitForFunction(() => document.querySelector('[name="billing_phone"]').value === '');
+    assert.equal(await checkoutPhone.inputValue(), '', 'resetting a dynamic checkout form must restore the empty state');
 
     console.log('Russian phone formatting and deletion behavior verified.');
   } finally {

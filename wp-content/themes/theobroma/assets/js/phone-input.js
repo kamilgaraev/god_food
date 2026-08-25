@@ -19,6 +19,8 @@
 
   function formatPhone(digits) {
     const value = String(digits || '').replace(/\D/g, '').slice(0, 10);
+    if (value.length === 0) return '';
+
     let formatted = '+7';
 
     if (value.length > 0) formatted += ` (${value.slice(0, 3)}`;
@@ -50,7 +52,7 @@
 
   function applyValue(input, digits, caretDigits) {
     input.value = formatPhone(digits);
-    input.setCustomValidity(digits.length === 10 ? '' : incompleteMessage);
+    input.setCustomValidity(digits.length === 0 || digits.length === 10 ? '' : incompleteMessage);
 
     if (typeof caretDigits === 'number' && document.activeElement === input) {
       const caret = caretAfterDigits(input.value, caretDigits);
@@ -88,7 +90,7 @@
 
     input.dataset.phoneFormatReady = 'true';
     input.type = 'tel';
-    input.placeholder = '+7 (000) 000-00-00';
+    input.placeholder = 'Номер телефона';
     input.inputMode = 'tel';
     input.autocomplete = 'tel';
     input.maxLength = 18;
@@ -100,9 +102,6 @@
     input.addEventListener('input', () => {
       const caretDigits = nationalDigitCountBefore(input.value, input.selectionStart ?? input.value.length);
       applyValue(input, nationalDigits(input.value), caretDigits);
-    });
-    input.addEventListener('focus', () => {
-      if (input.value === '') applyValue(input, '');
     });
     input.addEventListener('blur', () => applyValue(input, nationalDigits(input.value)));
 

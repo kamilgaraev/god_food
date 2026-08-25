@@ -460,7 +460,7 @@ function theobroma_checkout_fields(array $fields): array {
     $field_config = array(
         'billing_city' => array('label' => 'Город', 'placeholder' => '', 'priority' => 10),
         'billing_first_name' => array('label' => '', 'placeholder' => 'Имя', 'priority' => 20),
-        'billing_phone' => array('label' => '', 'placeholder' => '+7 (000) 000-00-00', 'priority' => 30, 'required' => true, 'custom_attributes' => array('inputmode' => 'tel', 'maxlength' => '18')),
+        'billing_phone' => array('label' => '', 'placeholder' => 'Номер телефона', 'priority' => 30, 'required' => true, 'custom_attributes' => array('inputmode' => 'tel', 'maxlength' => '18')),
         'billing_email' => array('label' => '', 'placeholder' => 'Email', 'priority' => 40),
     );
     foreach ($field_config as $key => $config) {

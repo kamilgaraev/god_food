@@ -195,6 +195,8 @@ $renderer = new FieldRenderer();
 $defaultHtml = $renderer->render($defaults['home']);
 $same(true, str_contains($defaultHtml, 'name="name"'), 'renderer includes name');
 $same(true, str_contains($defaultHtml, 'name="phone"'), 'renderer includes phone');
+$same(true, str_contains($defaultHtml, 'name="phone"') && str_contains($defaultHtml, 'placeholder="Номер телефона"'), 'renderer uses the inactive phone placeholder');
+$same(false, str_contains($defaultHtml, 'name="phone" value="+7"'), 'renderer keeps untouched phone fields empty');
 $same(true, str_contains($defaultHtml, 'name="message"'), 'renderer includes message');
 $same(false, str_contains($defaultHtml, 'name="email"'), 'renderer omits disabled email');
 $same(true, str_contains($defaultHtml, 'name="phone"') && preg_match('/name="phone"[^>]*required/', $defaultHtml) === 1, 'renderer marks required phone');
