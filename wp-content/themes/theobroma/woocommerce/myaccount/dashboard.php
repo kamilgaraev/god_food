@@ -5,7 +5,7 @@ $current_user = wp_get_current_user();
 $display_name = $current_user->display_name ?: $current_user->user_login;
 ?>
 <section class="theobroma-account-dashboard">
-    <p class="account-eyebrow">Личный кабинет</p>
+    <p class="account-eyebrow">ЛИЧНЫЙ КАБИНЕТ</p>
     <h1>Здравствуйте, <?php echo esc_html($display_name); ?></h1>
     <p class="account-lead">Здесь можно посмотреть заказы и бонусы, сохранить адреса доставки и изменить данные профиля.</p>
     <div class="account-dashboard-grid">

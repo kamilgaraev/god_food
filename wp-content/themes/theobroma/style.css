@@ -260,18 +260,18 @@ body.account-modal-open { overflow:hidden; }
 .logged-in.woocommerce-account .shop-shell > .woocommerce { display:grid; grid-template-columns:16.25rem 1fr; gap:2.5rem; align-items:start; }
 .logged-in.woocommerce-account .shop-shell > .woocommerce::before,.logged-in.woocommerce-account .shop-shell > .woocommerce::after { display:none; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-navigation,.logged-in.woocommerce-account .woocommerce-MyAccount-content { width:auto; float:none; }
-.logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { margin:0; padding:0; overflow:hidden; border-radius:1.25rem; background:#f3ebe4; list-style:none; }
+.logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { margin:0; padding:0; overflow:hidden; border-radius:0; background:#f3ebe4; list-style:none; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-navigation li { margin:0; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { min-height:3.625rem; padding:0 1.5rem; display:flex; align-items:center; border-bottom:1px solid rgba(176,144,61,.22); color:#343434; font:500 0.875rem/1.25rem 'Montserrat',Arial,sans-serif; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-navigation li:last-child a { border-bottom:0; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-navigation .is-active a { color:#fff; background:#b0903d; }
-.logged-in.woocommerce-account .woocommerce-MyAccount-content { min-height:21.75rem; padding:2.375rem 2.5rem 2.625rem; border-radius:1.25rem; background:#f3ebe4; color:#343434; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; }
+.logged-in.woocommerce-account .woocommerce-MyAccount-content { min-height:21.75rem; padding:2.375rem 2.5rem 2.625rem; border-radius:0; background:#f3ebe4; color:#343434; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-content a:not(.button) { color:#9b7827; border-bottom:1px solid currentColor; }
 .theobroma-account-dashboard .account-eyebrow { margin:0 0 0.5625rem; color:#b0903d; font:600 0.6875rem/1rem 'Montserrat',Arial,sans-serif; text-transform:uppercase; letter-spacing:.12em; }
 .theobroma-account-dashboard h1 { position:static; width:auto; margin:0; color:#000; font:400 2.625rem/2.8125rem 'Cormorant',Arial,sans-serif; text-transform:none; }
 .theobroma-account-dashboard .account-lead { max-width:38.75rem; margin:0.9375rem 0 1.75rem; color:#6f655e; }
 .account-dashboard-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.75rem; }
-.account-dashboard-grid a { min-height:7rem; padding:1.25rem; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(176,144,61,.35) !important; border-radius:0.875rem; background:#fcf9f7; }
+.account-dashboard-grid a { min-height:7rem; padding:1.25rem; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(176,144,61,.35) !important; border-radius:0; background:#fcf9f7; }
 .account-dashboard-grid span { color:#000; font:500 1.5rem/1.6875rem 'Cormorant',Arial,sans-serif; }
 .account-dashboard-grid small { color:#766c64; font:400 0.6875rem/1rem 'Montserrat',Arial,sans-serif; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-content form .form-row { margin:0 0 1.125rem; }
@@ -306,7 +306,7 @@ body.account-modal-open { overflow:hidden; }
   .account-modal-body { top:calc(50% - 6.46875rem); }
   .logged-in.woocommerce-account .shop-shell { width:min(37.5rem,calc(100vw - 5rem)); padding:9.25rem 0 5rem; }
   .logged-in.woocommerce-account .shop-shell > .woocommerce { grid-template-columns:1fr; gap:1.25rem; }
-  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { display:grid; grid-template-columns:repeat(6,1fr); border-radius:1rem; }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { display:grid; grid-template-columns:repeat(6,1fr); border-radius:0; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { min-height:3.25rem; padding:0 0.625rem; justify-content:center; border-right:1px solid rgba(176,144,61,.22); border-bottom:0; font-size:0.75rem; }
 }
 
@@ -328,7 +328,7 @@ body.account-modal-open { overflow:hidden; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation { overflow:visible; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { width:21.875rem; grid-template-columns:repeat(6,1fr); }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { padding:0 1px; font-size:0.5625rem; }
-  .logged-in.woocommerce-account .woocommerce-MyAccount-content { min-height:0; padding:1.5625rem 1.25rem 1.875rem; border-radius:1rem; }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-content { min-height:0; padding:1.5625rem 1.25rem 1.875rem; border-radius:0; }
   .theobroma-account-dashboard h1 { font-size:2rem; line-height:2.1875rem; }
   .account-dashboard-grid { grid-template-columns:1fr; }
   .account-dashboard-grid a { min-height:5.75rem; }
