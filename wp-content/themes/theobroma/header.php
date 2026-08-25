@@ -33,7 +33,7 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
             <a class="header-where" href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a>
             <a class="header-icon header-cart" href="<?php echo esc_url($cart_url); ?>" data-commerce-cart-open aria-label="Корзина, товаров: <?php echo esc_attr((string) $cart_count); ?>">
                 <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/cart.svg'); ?>" alt="">
-                <span class="cart-count" data-count="<?php echo esc_attr((string) $cart_count); ?>" aria-hidden="true"><?php echo esc_html((string) $cart_count); ?></span>
+                <span class="cart-count" aria-hidden="true"><?php echo esc_html((string) $cart_count); ?></span>
             </a>
             <a class="header-icon header-account" href="<?php echo esc_url($account_url); ?>"<?php echo !is_user_logged_in() ? ' data-account-trigger' : ''; ?> aria-label="Личный кабинет">
                 <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/user.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt="">

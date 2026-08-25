@@ -521,7 +521,7 @@ add_action('woocommerce_review_order_after_submit', 'theobroma_checkout_afterwor
 
 function theobroma_cart_count_fragment(array $fragments): array {
     $count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
-    $fragments['.floating-actions .cart-count'] = '<span class="cart-count" data-count="' . esc_attr((string) $count) . '" aria-hidden="true">' . esc_html((string) $count) . '</span>';
+    $fragments['.floating-actions .cart-count'] = '<span class="cart-count" aria-hidden="true">' . esc_html((string) $count) . '</span>';
     return $fragments;
 }
 add_filter('woocommerce_add_to_cart_fragments', 'theobroma_cart_count_fragment');

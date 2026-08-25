@@ -67,41 +67,25 @@ test('cart has the same dimensions as the account control', async () => {
   }
 });
 
-test('cart count uses a separate badge without covering the icon', async () => {
+test('cart count replaces the icon without overlapping it', async () => {
   await withRenderedHeader(async (page) => {
     const cart = page.locator('.header-cart');
     const icon = cart.locator('img');
     const count = cart.locator('.cart-count');
     const opacity = async (locator) => Number(await locator.evaluate((element) => getComputedStyle(element).opacity));
 
-    assert.equal(await opacity(icon), 1, 'Cart icon must be visible before hover');
-    assert.equal(await opacity(count), 0, 'An empty cart must not show a zero badge');
-
     await count.evaluate((element) => {
       element.textContent = '24';
-      element.dataset.count = '24';
     });
 
-    assert.equal(await opacity(count), 1, 'A non-empty cart must show its count badge');
+    assert.equal(await opacity(icon), 1, 'Cart icon must be visible before hover');
+    assert.equal(await count.evaluate((element) => getComputedStyle(element).display), 'none', 'Cart count must be hidden before hover');
 
     await cart.hover();
-    await page.waitForTimeout(250);
 
-    const boxes = await page.evaluate(() => {
-      const iconRect = document.querySelector('.header-cart img').getBoundingClientRect();
-      const countRect = document.querySelector('.header-cart .cart-count').getBoundingClientRect();
-      return {
-        icon: { top: iconRect.top, right: iconRect.right, bottom: iconRect.bottom, left: iconRect.left },
-        count: { top: countRect.top, right: countRect.right, bottom: countRect.bottom, left: countRect.left },
-      };
-    });
-    const overlaps = boxes.icon.left < boxes.count.right
-      && boxes.icon.right > boxes.count.left
-      && boxes.icon.top < boxes.count.bottom
-      && boxes.icon.bottom > boxes.count.top;
-
-    assert.equal(await opacity(icon), 1, 'Cart icon must remain visible on hover');
-    assert.equal(overlaps, false, `Cart badge ${JSON.stringify(boxes.count)} must not cover icon ${JSON.stringify(boxes.icon)}`);
+    assert.equal(await icon.evaluate((element) => getComputedStyle(element).display), 'none', 'Cart icon must be removed before the count appears');
+    assert.equal(await count.evaluate((element) => getComputedStyle(element).display), 'grid', 'Cart count must replace the icon on hover');
+    assert.equal(await opacity(count), 1, 'Cart count must be fully visible on hover');
   });
 });
 
