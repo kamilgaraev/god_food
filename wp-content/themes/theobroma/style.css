@@ -2441,3 +2441,24 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .recipe-detail-intro {
   margin-top:-3rem;
 }
+
+/* Keep the delivery icon and copy centered as one unit at every viewport. */
+.shipping {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.shipping img,
+.shipping span {
+  position:static;
+  flex:0 0 auto;
+}
+@media (min-width:1200px) {
+  .shipping { gap:min(1vw,.8rem); }
+}
+@media (min-width:601px) and (max-width:1199px) {
+  .shipping { gap:2.3458vw; }
+}
+@media (max-width:600px) {
+  .shipping { gap:3.1286vw; }
+}
