@@ -16,6 +16,7 @@
     "test:home-visual": "node scripts/verify-home-visual-layout.spec.js",
     "test:home-about-tablet": "node scripts/verify-home-about-tablet.spec.js",
     "test:home-cacao-spacing": "node scripts/verify-home-cacao-spacing.spec.js",
+    "test:home-cacao-stability": "node scripts/verify-home-cacao-stability.spec.js",
     "test:home-eyebrow-color": "node scripts/verify-home-eyebrow-color.spec.js",
     "test:home-gift-button": "node scripts/verify-home-gift-button.spec.js",
     "test:home-promo-cards": "node scripts/verify-home-promo-card-styles.spec.js",
