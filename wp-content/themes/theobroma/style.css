@@ -484,9 +484,9 @@ body.account-modal-open { overflow:hidden; }
 .marketplace-intro::before,.marketplace-intro::after { content:""; position:absolute; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }.marketplace-intro::before { top:5rem; right:0; width:15.625rem; height:20.57226563rem; background-image:url('assets/images/botanical-page-right.webp'); }.marketplace-intro::after { top:43.75rem; left:0; width:13.1875rem; height:17.77441406rem; background-image:url('assets/images/botanical-page-left.webp'); }
 .marketplace-breadcrumb { padding-top:8.5625rem; text-align:center; color:#b0903d; font:400 0.6875rem/1.125rem 'Montserrat',Arial,sans-serif; }.marketplace-breadcrumb a { color:#9d938a; text-decoration:none; }.marketplace-breadcrumb span { margin:0 0.25rem; }.marketplace-breadcrumb strong { font-weight:400; }
 .marketplace-intro > h1 { position:static; width:auto; margin:1.375rem 0 1.25rem; text-align:center; color:#000; font:500 3.25rem/3.25rem 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }.marketplace-lead { margin:0; text-align:center; color:#343434; font:400 1rem/1.25rem 'Montserrat',Arial,sans-serif; }
-.market-grid { width:72.5rem; margin:3.5625rem auto 0; display:grid; grid-template-columns:repeat(4,16.25rem); gap:2.5rem; }.market-product { color:#343434; }.market-image { width:16.25rem; height:18.75rem; display:block; background-position:center; background-size:cover; }.market-cacao { background-image:url('assets/images/market-cacao.jpg'); }.market-dark { background-image:url('assets/images/market-dark.webp'); }.market-cinnamon { background-image:url('assets/images/market-cinnamon.webp'); }.market-milk { background-image:url('assets/images/market-milk.webp'); }
+.market-grid { width:72.5rem; margin:3.5625rem auto 0; display:grid; grid-template-columns:repeat(4,16.25rem); gap:2.5rem; }.market-product { display:flex; flex-direction:column; color:#343434; }.market-image { width:16.25rem; height:18.75rem; flex:none; display:block; background-position:center; background-size:cover; }.market-cacao { background-image:url('assets/images/market-cacao.jpg'); }.market-dark { background-image:url('assets/images/market-dark.webp'); }.market-cinnamon { background-image:url('assets/images/market-cinnamon.webp'); }.market-milk { background-image:url('assets/images/market-milk.webp'); }
 .market-product h2 { margin:0.875rem 0 0.1875rem; color:#343434; font:500 0.875rem/1.18125rem 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }.market-product p { margin:0; color:#343434; font:400 0.875rem/1.35625rem 'Montserrat',Arial,sans-serif; }.market-product strong { display:block; margin-top:0.4375rem; color:#b0903d; font:500 1.125rem/1.51875rem 'Montserrat',Arial,sans-serif; }
-.market-buttons { margin-top:3rem; display:flex; justify-content:center; gap:0.625rem; }.market-buttons a { width:15rem; height:2.625rem; display:flex; justify-content:center; align-items:center; border-radius:1.5rem; color:#fff; text-decoration:none; font:500 0.875rem/1.125rem 'Montserrat',Arial,sans-serif; }.market-wb { background:#a62cff; }.market-ozon { background:#0069ff; }
+.market-product-actions { margin-top:auto; padding-top:0.8125rem; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.375rem; }.market-product-actions a { min-width:0; height:2.375rem; display:flex; justify-content:center; align-items:center; border-radius:1.5rem; color:#fff; text-decoration:none; font:500 0.6875rem/1rem 'Montserrat',Arial,sans-serif; transition:transform .2s ease,box-shadow .2s ease,filter .2s ease; }.market-product-actions a:hover { transform:translateY(-2px); filter:saturate(1.08); box-shadow:0 0.5rem 1rem rgba(52,52,52,.14); }.market-product-actions a:focus-visible { outline:2px solid #b0903d; outline-offset:3px; }.market-wb { background:#a62cff; }.market-ozon { background:#0069ff; }
 .buy-page { background:var(--paper); }
 .buy-intro { height:53.6875rem; position:relative; overflow:visible; }
 .buy-breadcrumb { padding-top:8.5625rem; text-align:center; color:#b0903d; font:400 0.875rem/1.375rem 'Montserrat',Arial,sans-serif; }
@@ -800,7 +800,6 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .marketplace-lead { width:min(37.5rem,calc(100vw - 5rem)); margin:0 auto; }
   .market-grid { width:min(37.5rem,calc(100vw - 5rem)); margin-top:2.8125rem; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2.375rem 2.5rem; }
   .market-image { width:100%; height:auto; aspect-ratio:260/300; }
-  .market-buttons { margin-top:2.8125rem; }
 
   .buy-intro { height:auto; min-height:53.125rem; padding-bottom:6.25rem; overflow:hidden; }
   .buy-breadcrumb { padding-top:8.4375rem; }
@@ -1038,8 +1037,8 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .market-product h2 { margin-top:0.75rem; font-size:0.8125rem; line-height:1.0625rem; }
   .market-product p { font-size:0.75rem; line-height:1.125rem; }
   .market-product strong { font-size:1.0625rem; line-height:1.4375rem; }
-  .market-buttons { margin-top:2.625rem; flex-direction:column; align-items:center; gap:0.625rem; }
-  .market-buttons a { width:16.875rem; height:2.75rem; }
+  .market-product-actions { gap:0.25rem; }
+  .market-product-actions a { height:2.25rem; font-size:0.625rem; }
 
   .buy-intro { height:auto; min-height:0; padding-bottom:5.625rem; overflow:hidden; }
   .buy-breadcrumb { padding-top:6.5625rem; font-size:0.6875rem; line-height:1.125rem; }
@@ -1265,6 +1264,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 
   .marketplace-breadcrumb { padding-top:7.5625rem; }
   .marketplace-intro::before { top:2.1875rem; width:8.4375rem; height:11.109375rem; }
+  .marketplace-intro::after { display:none; }
   .marketplace-intro > h1 { transform:translateY(0.18164063rem); }
   .marketplace-lead { transform:translateY(1.09375px); }
   .market-grid { width:22.125rem; grid-template-columns:repeat(2,10.6875rem); gap:2.125rem 0.75rem; }
@@ -1573,8 +1573,6 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .market-grid { grid-template-columns:repeat(2,18.125rem); gap:2.375rem 1.25rem; transform:translateY(0.1875rem); }
   .market-image { height:19.375rem; aspect-ratio:auto; margin-bottom:-0.25rem; transform:translateY(-0.25rem); }
   .market-product:nth-child(n+3) { transform:translateY(1.09375px); }
-  .market-buttons { margin-top:2.44921875rem; }
-  .market-buttons .market-ozon { width:12.5rem; }
 
   .buy-breadcrumb { padding-top:9.25rem; }
   .buy-intro > h1 { width:30.4375rem; margin-inline:auto; font-size:2.75rem; line-height:2.75rem; transform:translateY(0.25rem); }

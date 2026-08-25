@@ -47,6 +47,8 @@
     "test:product-card-text-alignment:source": "node scripts/verify-product-card-text-alignment.spec.js --inject-source-styles",
     "test:product-card-price-hierarchy": "node scripts/verify-product-card-price-hierarchy.spec.js",
     "test:product-image-quality": "php scripts/verify-product-image-quality.php",
+    "test:marketplace-products": "php scripts/verify-marketplace-product-links.php",
+    "test:marketplace-card-heights": "node scripts/verify-marketplace-card-heights.spec.js",
     "test:recipe-products": "node scripts/verify-recipe-products.spec.js",
     "test:reviews": "node scripts/verify-review-carousel.spec.js",
     "test:mobile-secondary": "node scripts/verify-mobile-secondary-content.spec.js"
