@@ -18,6 +18,7 @@
     "test:home-cacao-spacing": "node scripts/verify-home-cacao-spacing.spec.js",
     "test:home-eyebrow-color": "node scripts/verify-home-eyebrow-color.spec.js",
     "test:home-gift-button": "node scripts/verify-home-gift-button.spec.js",
+    "test:corporate-minimum-button": "node scripts/verify-corporate-minimum-button.spec.js",
     "test:home-chocolate-texture": "node scripts/verify-home-chocolate-texture.spec.js",
     "test:home-bestseller": "node scripts/verify-home-bestseller-badge.spec.js",
     "test:home-gold-accents": "node scripts/verify-home-gold-accents.spec.js",
