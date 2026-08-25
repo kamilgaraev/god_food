@@ -1,10 +1,19 @@
 (() => {
+    const siteHeader = document.querySelector('.site-header');
+    let stickyStart = siteHeader?.offsetHeight ?? 40;
+
     const updateHeader = () => {
-        document.body.classList.toggle('nav-sticky', window.scrollY > 40);
+        document.body.classList.toggle('nav-sticky', window.scrollY >= stickyStart);
+    };
+
+    const measureStickyStart = () => {
+        stickyStart = siteHeader?.offsetHeight ?? 40;
+        updateHeader();
     };
 
     updateHeader();
     window.addEventListener('scroll', updateHeader, { passive: true });
+    window.addEventListener('resize', measureStickyStart, { passive: true });
 
     const menuToggle = document.querySelector('.menu-toggle');
     const mobileMenu = document.querySelector('.mobile-menu');
