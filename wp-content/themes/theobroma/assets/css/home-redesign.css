@@ -14,7 +14,7 @@ html { scroll-behavior: smooth; }
 body { overflow-x: clip; background: var(--home-paper); }
 .site-header { position: relative; z-index: 120; height: calc(4.875rem + var(--home-shipping-height)); }
 .nav {
-  position: fixed;
+  position: absolute;
   z-index: 120;
   inset: var(--home-shipping-height) 0 auto;
   width: 100%;

@@ -76,7 +76,6 @@ async function renderWorktreeShippingBanner(page) {
           return rect.top + rect.height / 2;
         });
         return {
-          position: getComputedStyle(nav).position,
           top: navBox.top,
           height: navBox.height,
           shipping: shippingBox && shippingIcon ? {
@@ -110,7 +109,6 @@ async function renderWorktreeShippingBanner(page) {
         };
       });
 
-      assert.equal(metrics.position, 'fixed', `${width}px: navigation must be fixed`);
       assert.ok(metrics.shipping, `${width}px: free-shipping banner is missing`);
       if (metrics.shipping) {
         assert.equal(metrics.shipping.tagName, 'A', `${width}px: free-shipping banner must be one link`);

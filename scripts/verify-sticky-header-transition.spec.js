@@ -4,6 +4,7 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
 const cssPath = path.join(root, 'wp-content/themes/theobroma/style.css');
+const homeCssPath = path.join(root, 'wp-content/themes/theobroma/assets/css/home-redesign.css');
 const scriptPath = path.join(root, 'wp-content/themes/theobroma/assets/js/site-header.js');
 
 (async () => {
@@ -29,11 +30,12 @@ const scriptPath = path.join(root, 'wp-content/themes/theobroma/assets/js/site-h
         <main style="height:3000px"></main>
       `);
       await page.addStyleTag({ path: cssPath });
+      await page.addStyleTag({ path: homeCssPath });
       await page.addScriptTag({ path: scriptPath });
 
       const nav = page.locator('.nav');
       const samples = [];
-      for (let y = 0; y <= 100; y += 1) {
+      for (let y = 0; y <= 160; y += 1) {
         await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), y);
         await page.waitForTimeout(8);
         samples.push(await nav.evaluate((element) => element.getBoundingClientRect().top));

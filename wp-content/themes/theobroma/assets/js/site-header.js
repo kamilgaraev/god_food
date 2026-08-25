@@ -1,13 +1,14 @@
 (() => {
     const siteHeader = document.querySelector('.site-header');
-    let stickyStart = siteHeader?.offsetHeight ?? 40;
+    const shipping = siteHeader?.querySelector('.shipping');
+    let stickyStart = shipping?.getBoundingClientRect().height ?? 40;
 
     const updateHeader = () => {
         document.body.classList.toggle('nav-sticky', window.scrollY >= stickyStart);
     };
 
     const measureStickyStart = () => {
-        stickyStart = siteHeader?.offsetHeight ?? 40;
+        stickyStart = shipping?.getBoundingClientRect().height ?? 40;
         updateHeader();
     };
 
