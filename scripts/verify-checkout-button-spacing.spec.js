@@ -8,13 +8,26 @@ const themeCss = fs.readFileSync(
   'utf8',
 );
 
-(async () => {
+async function launchBrowser() {
   const launchOptions = { headless: true };
   if (process.env.PLAYWRIGHT_CHROME_CHANNEL) {
     launchOptions.channel = process.env.PLAYWRIGHT_CHROME_CHANNEL;
+    return chromium.launch(launchOptions);
   }
 
-  const browser = await chromium.launch(launchOptions);
+  try {
+    return await chromium.launch(launchOptions);
+  } catch (error) {
+    if (!error.message.includes("Executable doesn't exist")) {
+      throw error;
+    }
+
+    return chromium.launch({ channel: 'chrome', headless: true });
+  }
+}
+
+(async () => {
+  const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 588, height: 285 } });
 
   try {
