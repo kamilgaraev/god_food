@@ -31,7 +31,9 @@ async function checkboxMetrics(page, fixture) {
       rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
       width: inputRect.width,
       height: inputRect.height,
-      topDelta: Math.abs(inputRect.top - textRect.top),
+      centerDelta: Math.abs(
+        inputRect.top + inputRect.height / 2 - (textRect.top + textRect.height / 2),
+      ),
       opacity: style.opacity,
       appearance: style.appearance,
       borderWidth: style.borderTopWidth,
@@ -62,7 +64,7 @@ async function checkboxMetrics(page, fixture) {
           const expectedSize = metrics.rootFontSize * 1.25;
           assert.ok(Math.abs(metrics.width - expectedSize) <= 0.02, 'Consent checkbox width must follow the 1.25rem design scale');
           assert.ok(Math.abs(metrics.height - expectedSize) <= 0.02, 'Consent checkbox height must follow the 1.25rem design scale');
-          assert.ok(metrics.topDelta <= 1, 'Checkbox and consent text must share the same top edge');
+          assert.ok(metrics.centerDelta <= 1, 'Checkbox and consent text must share the same vertical center');
           assert.equal(metrics.opacity, '1', 'The real checkbox control must remain visible');
           assert.equal(metrics.appearance, 'none', 'Consent checkboxes must use the shared cross-browser rendering');
           assert.equal(metrics.borderWidth, '1px', 'Consent checkbox border must stay crisp');
