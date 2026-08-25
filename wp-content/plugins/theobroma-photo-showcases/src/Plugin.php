@@ -52,6 +52,13 @@ final class Plugin
             array(),
             THEOBROMA_PHOTO_SHOWCASES_VERSION
         );
+        wp_enqueue_script(
+            'theobroma-photo-showcases',
+            plugins_url('assets/frontend.js', THEOBROMA_PHOTO_SHOWCASES_FILE),
+            array(),
+            THEOBROMA_PHOTO_SHOWCASES_VERSION,
+            array('in_footer' => true, 'strategy' => 'defer')
+        );
     }
 
     /** @return array<string, array<string, mixed>> */
