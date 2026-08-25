@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+require_once dirname(__DIR__) . '/wp-content/plugins/theobroma-contact-forms/src/Settings.php';
+require_once dirname(__DIR__) . '/wp-content/plugins/theobroma-contact-forms/src/FieldRenderer.php';
+
 function esc_html(mixed $value): string { return htmlspecialchars((string) $value, ENT_QUOTES); }
 function esc_url(mixed $value): string { return (string) $value; }
 function admin_url(string $path = ''): string { return 'https://example.test/wp-admin/' . $path; }
@@ -17,6 +20,11 @@ function theobroma_contact_antispam_fields(): void {
     echo '<input type="hidden" name="theobroma_form_started" value="1">';
     echo '<input type="text" name="theobroma_website" value="">';
 }
+function theobroma_contact_forms_render_fields(string $formId): string {
+    $settings = new \Theobroma\ContactForms\Settings();
+    $renderer = new \Theobroma\ContactForms\FieldRenderer();
+    return $renderer->render($settings->defaults('owner@example.test')[$formId]);
+}
 
 function render_template(string $path): string {
     ob_start();
@@ -29,6 +37,7 @@ function lead_field_names(string $html): array {
     preg_match_all('/<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"[^>]*>/i', $html, $matches);
     $service_fields = array(
         'action',
+        'form_id',
         'request_type',
         'theobroma_contact_nonce',
         'theobroma_form_started',
@@ -44,16 +53,20 @@ function lead_field_names(string $html): array {
 
 $theme = dirname(__DIR__) . '/wp-content/themes/theobroma/template-parts';
 $cases = array(
-    'main contact form' => array($theme . '/contact-section.php', array('name', 'phone')),
-    'cooperation form' => array($theme . '/pages/cooperation.php', array('name', 'phone')),
-    'corporate gifts form' => array($theme . '/pages/corporate-gifts.php', array('name', 'phone', 'message')),
+    'main contact form' => array($theme . '/contact-section.php', 'home', array('name', 'phone', 'message')),
+    'cooperation form' => array($theme . '/pages/cooperation.php', 'cooperation', array('name', 'phone', 'message')),
+    'corporate gifts form' => array($theme . '/pages/corporate-gifts.php', '', array('name', 'phone', 'message')),
 );
 
 $failures = array();
-foreach ($cases as $label => [$path, $expected]) {
-    $actual = lead_field_names(render_template($path));
+foreach ($cases as $label => [$path, $formId, $expected]) {
+    $html = render_template($path);
+    $actual = lead_field_names($html);
     if ($actual !== $expected) {
         $failures[] = sprintf('%s: expected [%s], got [%s]', $label, implode(', ', $expected), implode(', ', $actual));
+    }
+    if ($formId !== '' && !str_contains($html, 'name="form_id" value="' . $formId . '"')) {
+        $failures[] = $label . ': missing form identifier ' . $formId;
     }
 }
 
