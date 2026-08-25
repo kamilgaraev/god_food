@@ -28,6 +28,7 @@
     "test:home-composition": "node scripts/verify-home-composition.spec.js",
     "test:home-trust": "node scripts/verify-home-trust-alignment.spec.js",
     "test:button-hover": "node scripts/verify-button-hover-motion.spec.js",
+    "test:focus-ring": "node scripts/verify-focus-ring-color.spec.js",
     "test:input-focus": "node scripts/verify-input-focus-style.spec.js",
     "test:phone-input": "node scripts/verify-phone-input.spec.js",
     "test:consent-checkbox": "node scripts/verify-consent-checkbox.spec.js",
