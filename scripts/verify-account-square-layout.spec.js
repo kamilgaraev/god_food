@@ -29,6 +29,23 @@ async function accountRadii(page) {
   });
 }
 
+async function headingLayout(page) {
+  return page.evaluate(() => {
+    const heading = document.querySelector('.account-page-title');
+    const navigation = document.querySelector('.woocommerce-MyAccount-navigation');
+    const headingRect = heading.getBoundingClientRect();
+    const navigationRect = navigation.getBoundingClientRect();
+
+    return {
+      display: getComputedStyle(heading).display,
+      position: getComputedStyle(heading).position,
+      headingBottom: headingRect.bottom,
+      navigationTop: navigationRect.top,
+      leftDifference: Math.abs(headingRect.left - navigationRect.left),
+    };
+  });
+}
+
 (async () => {
   const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -37,7 +54,9 @@ async function accountRadii(page) {
     await page.setContent(`
       <style>${themeCss}</style>
       <body class="logged-in woocommerce-account">
-        <main class="shop-page"><div class="shop-shell"><div class="woocommerce">
+        <main class="shop-page"><div class="shop-shell">
+          <h1 class="account-page-title">ЛИЧНЫЙ КАБИНЕТ</h1>
+          <div class="woocommerce">
           <nav class="woocommerce-MyAccount-navigation"><ul><li class="is-active"><a href="#">Главная</a></li></ul></nav>
           <div class="woocommerce-MyAccount-content">
             <section class="theobroma-account-dashboard">
@@ -53,6 +72,11 @@ async function accountRadii(page) {
       content: '0px',
       card: '0px',
     });
+    const desktopHeading = await headingLayout(page);
+    assert.equal(desktopHeading.display, 'block');
+    assert.equal(desktopHeading.position, 'static');
+    assert.ok(desktopHeading.headingBottom < desktopHeading.navigationTop, 'The title must sit above the account layout.');
+    assert.ok(desktopHeading.leftDifference <= 1, 'The title and account navigation must share the left edge.');
 
     await page.setViewportSize({ width: 390, height: 844 });
     assert.deepEqual(await accountRadii(page), {
@@ -60,6 +84,10 @@ async function accountRadii(page) {
       content: '0px',
       card: '0px',
     });
+    const mobileHeading = await headingLayout(page);
+    assert.equal(mobileHeading.position, 'static');
+    assert.ok(mobileHeading.headingBottom < mobileHeading.navigationTop, 'The mobile title must sit above the account layout.');
+    assert.ok(mobileHeading.leftDifference <= 1, 'The mobile title and account navigation must share the left edge.');
   } finally {
     await browser.close();
   }
