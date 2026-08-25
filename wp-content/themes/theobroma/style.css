@@ -277,9 +277,9 @@ body.account-modal-open { overflow:hidden; }
 .logged-in.woocommerce-account .woocommerce-MyAccount-content .button { min-height:2.625rem; padding:0 1.5rem; border:0; border-radius:62.4375rem; color:#fff; background:#b0903d; font:500 0.875rem/1.25rem 'Montserrat',Arial,sans-serif; }
 .logged-in.woocommerce-account table.shop_table { width:100%; border-collapse:collapse; }
 .logged-in.woocommerce-account table.shop_table th,.logged-in.woocommerce-account table.shop_table td { padding:0.8125rem 0.625rem; border-bottom:1px solid rgba(176,144,61,.25); text-align:left; }
-.logged-in.woocommerce-account .woocommerce-info,.logged-in.woocommerce-account .woocommerce-message { margin:0; padding:1.125rem 1.25rem 1.125rem 3rem; border:0; border-top:2px solid #b0903d; background:#fcf9f7; color:#343434; }
-.logged-in.woocommerce-account .woocommerce-info::before,.logged-in.woocommerce-account .woocommerce-message::before { top:1.125rem; color:#b0903d; }
-.logged-in.woocommerce-account .woocommerce-info .button,.logged-in.woocommerce-account .woocommerce-message .button { min-height:2.625rem; padding:0 1.5rem; }
+.logged-in.woocommerce-account .woocommerce-info,.logged-in.woocommerce-account .woocommerce-message { margin:0; padding:1.125rem 1.25rem 1.125rem 3rem; border:0; border-top:2px solid #b0903d; display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem 1rem; background:#fcf9f7; color:#343434; }
+.logged-in.woocommerce-account .woocommerce-info::before,.logged-in.woocommerce-account .woocommerce-message::before { top:50%; color:#b0903d; transform:translateY(-50%); }
+.logged-in.woocommerce-account .woocommerce-info .button,.logged-in.woocommerce-account .woocommerce-message .button { min-height:2.625rem; margin:0 0 0 auto; padding:0 1.5rem; display:inline-flex; align-items:center; justify-content:center; }
 .theobroma-bonuses h1 { position:static; width:auto; margin:0; color:#000; font:400 2.625rem/2.8125rem 'Cormorant',Arial,sans-serif; text-transform:none; }
 .theobroma-bonus-summary { margin:1.5rem 0 1.25rem; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
 .theobroma-bonus-summary > div { min-height:7rem; padding:1.1875rem 1.25rem; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(176,144,61,.35); border-radius:0.875rem; background:#fcf9f7; }

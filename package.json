@@ -35,6 +35,7 @@
     "test:cooperation-form-layout": "node scripts/verify-cooperation-configurable-layout.spec.js",
     "test:cart-checkout-ui": "node scripts/verify-cart-checkout-ui.spec.js",
     "test:checkout-button-spacing": "node scripts/verify-checkout-button-spacing.spec.js",
+    "test:account-empty-state": "node scripts/verify-account-empty-state-alignment.spec.js",
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",
     "test:shipping-banner": "node scripts/verify-shipping-banner-alignment.spec.js",
