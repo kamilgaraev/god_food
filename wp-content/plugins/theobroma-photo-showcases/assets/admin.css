@@ -1,0 +1,92 @@
+.theobroma-photo-admin {
+    --photo-ink: #292721;
+    --photo-muted: #777064;
+    --photo-gold: #a8863f;
+    --photo-gold-dark: #765a25;
+    --photo-gold-soft: #eee3cc;
+    --photo-paper: #fbf8f2;
+    --photo-line: #dfd8ca;
+    max-width: 1240px;
+    margin: 24px auto 52px;
+    color: var(--photo-ink);
+}
+.theobroma-photo-admin *, .theobroma-photo-admin *::before, .theobroma-photo-admin *::after { box-sizing: border-box; }
+.theobroma-photo-admin__hero { min-height: 190px; padding: 38px 42px; display: flex; align-items: center; justify-content: space-between; gap: 30px; position: relative; overflow: hidden; border: 1px solid #d8c9ac; border-radius: 20px 20px 0 0; background: linear-gradient(118deg,#f5ecde 0%,#fcfaf5 54%,#e9dcc2 100%); }
+.theobroma-photo-admin__hero::before { content:''; width: 420px; height: 420px; position:absolute; top:-270px; right:-90px; border:1px solid rgba(118,90,37,.2); border-radius:50%; box-shadow:0 0 0 46px rgba(168,134,63,.05),0 0 0 92px rgba(168,134,63,.035); }
+.theobroma-photo-admin__hero > * { position:relative; z-index:1; }
+.theobroma-photo-admin__eyebrow { display:block; margin-bottom:11px; color:var(--photo-gold-dark); font-size:10px; font-weight:750; letter-spacing:.2em; }
+.theobroma-photo-admin__hero h1 { margin:0; color:var(--photo-ink); font:500 42px/1.02 Georgia,'Times New Roman',serif; letter-spacing:-.035em; }
+.theobroma-photo-admin__hero p { max-width:620px; margin:13px 0 0; color:var(--photo-muted); font-size:14px; line-height:1.55; }
+.theobroma-photo-admin__hero-mark { min-width:170px; padding:15px 18px; display:flex; align-items:center; gap:13px; border:1px solid rgba(118,90,37,.17); border-radius:13px; background:rgba(255,255,255,.57); box-shadow:0 10px 28px rgba(75,53,20,.07); backdrop-filter:blur(8px); }
+.theobroma-photo-admin__hero-mark span { color:var(--photo-gold-dark); font:500 38px/1 Georgia,serif; }
+.theobroma-photo-admin__hero-mark small { color:#625b50; font-size:10px; font-weight:700; line-height:1.35; text-transform:uppercase; letter-spacing:.08em; }
+.theobroma-photo-admin__tabs { padding:0 24px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; border:1px solid var(--photo-line); border-top:0; background:#fff; }
+.theobroma-photo-admin__tab { min-height:78px; padding:14px 20px; display:flex; align-items:center; gap:13px; position:relative; border:0; background:transparent; color:#777168; text-align:left; cursor:pointer; }
+.theobroma-photo-admin__tab::after { content:''; height:3px; position:absolute; right:0; bottom:-1px; left:0; border-radius:3px 3px 0 0; background:var(--photo-gold); transform:scaleX(0); transition:transform .2s ease; }
+.theobroma-photo-admin__tab > .dashicons { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background:#f1efea; color:#777168; font-size:18px; line-height:36px; }
+.theobroma-photo-admin__tab strong,.theobroma-photo-admin__tab small { display:block; }
+.theobroma-photo-admin__tab strong { color:#4e4a43; font-size:13px; }
+.theobroma-photo-admin__tab small { margin-top:3px; color:#948e83; font-size:10px; }
+.theobroma-photo-admin__tab.is-active::after { transform:scaleX(1); }
+.theobroma-photo-admin__tab.is-active > .dashicons { color:var(--photo-gold-dark); background:var(--photo-gold-soft); }
+.theobroma-photo-admin__tab:focus-visible { z-index:2; outline:2px solid var(--photo-gold); outline-offset:-2px; box-shadow:none; }
+.theobroma-photo-admin__panel { padding:32px; border:1px solid var(--photo-line); border-top:0; background:#f3f1ed; }
+.theobroma-photo-admin__panel[hidden] { display:none; }
+.theobroma-photo-admin__panel-heading { margin-bottom:22px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; }
+.theobroma-photo-admin__panel-heading > div > span { color:var(--photo-gold-dark); font-size:9px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
+.theobroma-photo-admin__panel-heading h2 { margin:4px 0 0; font:500 29px/1.1 Georgia,serif; }
+.theobroma-photo-switch { display:flex; align-items:center; gap:9px; color:#575249; font-size:11px; font-weight:650; cursor:pointer; }
+.theobroma-photo-switch__input { width:1px!important; height:1px!important; position:absolute!important; opacity:0; }
+.theobroma-photo-switch__track { width:39px; height:22px; display:inline-block; position:relative; border-radius:999px; background:#c9c6bf; transition:background .18s ease; }
+.theobroma-photo-switch__track::after { content:''; width:16px; height:16px; position:absolute; top:3px; left:3px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.2); transition:transform .18s ease; }
+.theobroma-photo-switch__input:checked + .theobroma-photo-switch__track { background:#65785f; }
+.theobroma-photo-switch__input:checked + .theobroma-photo-switch__track::after { transform:translateX(17px); }
+.theobroma-photo-switch__input:focus-visible + .theobroma-photo-switch__track { outline:2px solid var(--photo-gold); outline-offset:2px; }
+.theobroma-photo-admin__content-grid { display:grid; grid-template-columns:minmax(270px,.7fr) minmax(600px,1.55fr); gap:20px; align-items:start; }
+.theobroma-photo-admin__copy-card,.theobroma-photo-admin__gallery-card { padding:24px; border:1px solid var(--photo-line); border-radius:15px; background:#fff; box-shadow:0 8px 25px rgba(52,44,31,.045); }
+.theobroma-photo-admin__card-heading { margin-bottom:21px; display:flex; align-items:flex-start; gap:12px; }
+.theobroma-photo-admin__card-heading--action { justify-content:space-between; gap:18px; }
+.theobroma-photo-admin__card-heading--action > div { display:flex; gap:12px; }
+.theobroma-photo-admin__card-heading > .dashicons,.theobroma-photo-admin__card-heading--action > div > .dashicons { width:35px; height:35px; flex:0 0 35px; display:grid; place-items:center; border-radius:9px; color:var(--photo-gold-dark); background:var(--photo-gold-soft); font-size:17px; line-height:35px; }
+.theobroma-photo-admin__card-heading h3 { margin:0; color:#45413a; font-size:13px; line-height:1.4; }
+.theobroma-photo-admin__card-heading p { margin:4px 0 0; color:#888176; font-size:10px; line-height:1.5; }
+.theobroma-photo-field { display:block; margin-top:17px; }
+.theobroma-photo-field > span { display:block; margin-bottom:7px; color:#575149; font-size:10px; font-weight:700; }
+.theobroma-photo-field > span small { color:#9c958b; font-weight:400; }
+.theobroma-photo-field input,.theobroma-photo-field textarea { width:100%; min-height:42px; padding:8px 11px; border:1px solid #d8d3ca; border-radius:8px; background:var(--photo-paper); color:var(--photo-ink); box-shadow:none; font-size:12px; transition:.15s ease; }
+.theobroma-photo-field textarea { min-height:108px; resize:vertical; }
+.theobroma-photo-field input:focus,.theobroma-photo-field textarea:focus { border-color:var(--photo-gold); background:#fff; box-shadow:0 0 0 3px rgba(168,134,63,.12); outline:0; }
+.theobroma-photo-admin__tip { margin-top:22px; padding:13px; display:flex; gap:9px; border-radius:9px; color:#6c614e; background:#f5efe4; }
+.theobroma-photo-admin__tip .dashicons { color:var(--photo-gold-dark); font-size:16px; }
+.theobroma-photo-admin__tip p { margin:0; font-size:10px; line-height:1.5; }
+.theobroma-photo-admin__media-button { min-height:38px!important; padding:0 14px 0 11px!important; display:inline-flex!important; align-items:center; gap:6px; border-color:#c4ad7b!important; border-radius:8px!important; color:var(--photo-gold-dark)!important; font-weight:650!important; white-space:nowrap; }
+.theobroma-photo-admin__media-button .dashicons { width:16px; height:16px; font-size:16px; line-height:16px; }
+.theobroma-photo-admin__photo-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+.theobroma-photo-card { min-width:0; overflow:hidden; border:1px solid #ded9cf; border-radius:12px; background:var(--photo-paper); transition:opacity .15s ease,transform .15s ease,box-shadow .15s ease; }
+.theobroma-photo-card.is-dragging { opacity:.62; transform:scale(.985); box-shadow:0 13px 28px rgba(50,42,29,.15); }
+.theobroma-photo-card__preview { height:158px; position:relative; overflow:hidden; background:#e9e4da; cursor:grab; }
+.theobroma-photo-card__preview:active { cursor:grabbing; }
+.theobroma-photo-card__image { width:100%; height:100%; display:block; object-fit:cover; }
+.theobroma-photo-card__number { min-width:31px; height:25px; padding:0 8px; position:absolute; top:10px; left:10px; display:grid; place-items:center; border-radius:999px; color:#fff; background:rgba(43,37,28,.72); font-size:9px; font-weight:750; letter-spacing:.08em; backdrop-filter:blur(5px); }
+.theobroma-photo-card__preview > .dashicons { width:29px; height:29px; position:absolute; right:10px; bottom:10px; display:grid; place-items:center; border-radius:8px; color:#4d4435; background:rgba(255,255,255,.82); font-size:15px; line-height:29px; backdrop-filter:blur(5px); }
+.theobroma-photo-card__fields { padding:2px 13px 13px; display:grid; grid-template-columns:1fr; gap:0; }
+.theobroma-photo-card__fields .theobroma-photo-field { margin-top:11px; }
+.theobroma-photo-card__fields input { min-height:37px; font-size:11px; }
+.theobroma-photo-card__actions { min-height:43px; padding:6px 9px; display:flex; align-items:center; gap:5px; border-top:1px solid #e3ded4; background:#f3efe8; }
+.theobroma-photo-card__actions .button { width:30px; min-height:30px; padding:0; display:grid; place-items:center; border-color:#d6d0c5; border-radius:7px; background:#fff; color:#696258; }
+.theobroma-photo-card__actions .button .dashicons { width:15px; height:15px; font-size:15px; line-height:15px; }
+.theobroma-photo-card__actions .button-link-delete { margin-left:auto; display:flex; align-items:center; gap:4px; color:#9b504a; text-decoration:none; }
+.theobroma-photo-card__actions .button-link-delete .dashicons { width:15px; height:15px; font-size:15px; line-height:15px; }
+.theobroma-photo-admin__empty { min-height:245px; display:grid; place-content:center; justify-items:center; border:1px dashed #d4ccbd; border-radius:12px; background:#fcfaf6; text-align:center; }
+.theobroma-photo-admin__empty[hidden] { display:none; }
+.theobroma-photo-admin__empty > .dashicons { width:45px; height:45px; margin-bottom:11px; display:grid; place-items:center; border-radius:13px; color:var(--photo-gold-dark); background:var(--photo-gold-soft); font-size:21px; line-height:45px; }
+.theobroma-photo-admin__empty strong { color:#4c473f; font-size:12px; }
+.theobroma-photo-admin__empty p { max-width:360px; margin:6px 20px 0; color:#8c857a; font-size:10px; line-height:1.5; }
+.theobroma-photo-admin__save { min-height:76px; padding:14px 18px 14px 23px; display:flex; align-items:center; justify-content:space-between; gap:18px; position:sticky; z-index:20; bottom:0; border:1px solid #d6cfc2; border-top-color:#c5ad75; border-radius:0 0 15px 15px; background:rgba(255,255,255,.94); box-shadow:0 -9px 28px rgba(46,39,28,.08); backdrop-filter:blur(10px); }
+.theobroma-photo-admin__save > span { display:flex; align-items:center; gap:7px; color:#7a746a; font-size:10px; }
+.theobroma-photo-admin__save > span .dashicons { color:#65785f; }
+.theobroma-photo-admin__save .button-primary { min-height:42px; padding:0 22px; border-color:var(--photo-gold-dark); border-radius:8px; background:var(--photo-gold-dark); font-weight:650; text-shadow:none; box-shadow:none; }
+.theobroma-photo-admin__save .button-primary:hover,.theobroma-photo-admin__save .button-primary:focus { border-color:#60491e; background:#60491e; }
+@media (max-width:1080px) { .theobroma-photo-admin__content-grid { grid-template-columns:1fr; } .theobroma-photo-admin__copy-card { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; } .theobroma-photo-admin__copy-card > :first-child,.theobroma-photo-admin__copy-card > textarea,.theobroma-photo-admin__tip { grid-column:1/-1; } }
+@media (max-width:782px) { .theobroma-photo-admin { margin-top:14px; } .theobroma-photo-admin__hero { min-height:160px; padding:27px 22px; border-radius:15px 15px 0 0; } .theobroma-photo-admin__hero h1 { font-size:34px; } .theobroma-photo-admin__hero-mark { display:none; } .theobroma-photo-admin__tabs { padding:0 8px; } .theobroma-photo-admin__tab { min-height:70px; padding:10px; } .theobroma-photo-admin__tab small { display:none; } .theobroma-photo-admin__panel { padding:20px 13px; } .theobroma-photo-admin__panel-heading { align-items:flex-start; flex-direction:column; } .theobroma-photo-admin__copy-card,.theobroma-photo-admin__gallery-card { padding:17px 13px; border-radius:11px; } .theobroma-photo-admin__copy-card { display:block; } .theobroma-photo-admin__card-heading--action { align-items:flex-start; flex-direction:column; } .theobroma-photo-admin__photo-list { grid-template-columns:1fr; } .theobroma-photo-card__preview { height:190px; } .theobroma-photo-admin__save { padding:12px; } .theobroma-photo-admin__save > span { display:none; } .theobroma-photo-admin__save .button-primary { width:100%; } }
+@media (prefers-reduced-motion:reduce) { .theobroma-photo-admin *, .theobroma-photo-admin *::before, .theobroma-photo-admin *::after { scroll-behavior:auto!important; transition-duration:.01ms!important; } }

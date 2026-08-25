@@ -1,0 +1,257 @@
+.theobroma-photo-showcase {
+  --photo-ink: var(--home-ink, #343434);
+  --photo-muted: var(--home-muted, #756b63);
+  --photo-gold: var(--home-gold, #b0903d);
+  --photo-paper: var(--home-paper, #fbf7f1);
+  --photo-line: var(--home-line, #ded0bd);
+  width: 100%;
+  overflow: clip;
+  color: var(--photo-ink);
+}
+
+.theobroma-photo-showcase__shell {
+  width: min(var(--layout-container, 72.5rem), calc(100% - 2 * var(--layout-gutter, 4rem)));
+  max-width: var(--layout-container, 72.5rem);
+  margin-inline: auto;
+  padding-block: clamp(4.75rem, 8vw, 7.5rem);
+}
+
+.theobroma-photo-showcase__intro {
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(18rem, .7fr);
+  gap: 1.5rem 4rem;
+  align-items: end;
+}
+
+.theobroma-photo-showcase__eyebrow {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--photo-gold);
+  font: 600 .6875rem/1.2 'Montserrat', Arial, sans-serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.theobroma-photo-showcase__intro h2 {
+  max-width: 47rem;
+  margin: 0;
+  color: var(--photo-ink);
+  font: 400 clamp(3rem, 5.5vw, 5.5rem)/.9 'Cormorant', Georgia, serif;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.theobroma-photo-showcase__description {
+  max-width: 28rem;
+  margin: 0 0 .25rem;
+  color: var(--photo-muted);
+  font: 400 .875rem/1.65 'Montserrat', Arial, sans-serif;
+}
+
+.theobroma-photo-showcase__gallery {
+  min-width: 0;
+  outline: none;
+}
+
+.theobroma-photo-showcase__gallery:focus-visible {
+  outline: 2px solid var(--photo-gold);
+  outline-offset: .625rem;
+}
+
+.theobroma-photo-showcase__item {
+  min-width: 0;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  background: #ddd3c5;
+  isolation: isolate;
+}
+
+.theobroma-photo-showcase__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(.22, .61, .36, 1), filter 500ms ease;
+}
+
+.theobroma-photo-showcase__item:hover .theobroma-photo-showcase__image {
+  filter: saturate(1.04) contrast(1.02);
+  transform: scale(1.025);
+}
+
+.theobroma-photo-showcase__meta {
+  position: absolute;
+  z-index: 2;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #fff;
+  pointer-events: none;
+}
+
+.theobroma-photo-showcase__item::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 35% 0 0;
+  background: linear-gradient(to bottom, transparent, rgba(34, 24, 16, .62));
+  pointer-events: none;
+}
+
+.theobroma-photo-showcase__meta > span {
+  flex: 0 0 auto;
+  font: 600 .625rem/1 'Montserrat', Arial, sans-serif;
+  letter-spacing: .16em;
+}
+
+.theobroma-photo-showcase__meta figcaption {
+  max-width: 18rem;
+  color: inherit;
+  font: 500 .75rem/1.35 'Montserrat', Arial, sans-serif;
+  text-align: right;
+}
+
+.theobroma-photo-showcase--home {
+  background:
+    radial-gradient(circle at 88% 10%, rgba(176, 144, 61, .1) 0 1px, transparent 2px),
+    linear-gradient(128deg, #eee3d4 0%, #f7efe4 52%, #ede0cd 100%);
+}
+
+.theobroma-photo-showcase--home .theobroma-photo-showcase__gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-areas:
+    'lead lead detail-a detail-b'
+    'lead lead detail-c detail-d';
+  grid-auto-flow: dense;
+  grid-auto-rows: clamp(13rem, 19vw, 18.5rem);
+  gap: clamp(.75rem, 1.4vw, 1.25rem);
+}
+
+.theobroma-photo-showcase--home .theobroma-photo-showcase__item--1 { grid-area: lead; }
+.theobroma-photo-showcase--home .theobroma-photo-showcase__item--2 { grid-area: detail-a; }
+.theobroma-photo-showcase--home .theobroma-photo-showcase__item--3 { grid-area: detail-b; }
+.theobroma-photo-showcase--home .theobroma-photo-showcase__item--4 { grid-area: detail-c; }
+.theobroma-photo-showcase--home .theobroma-photo-showcase__item--5 { grid-area: detail-d; }
+.theobroma-photo-showcase--home .theobroma-photo-showcase__item:nth-child(n + 6) { aspect-ratio: 4 / 3; }
+
+.theobroma-photo-showcase--corporate {
+  background: #34312c;
+  color: #fff;
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__shell {
+  padding-block: clamp(4.75rem, 7vw, 6.75rem);
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__intro h2 { color: #fff; }
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__description { color: rgba(255, 255, 255, .66); }
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid rgba(255, 255, 255, .15);
+  background: rgba(255, 255, 255, .15);
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__item {
+  aspect-ratio: 3 / 4;
+  background: #24211d;
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(3n + 2) {
+  transform: translateY(clamp(1.25rem, 2.5vw, 2.25rem));
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery {
+  margin-bottom: clamp(1.25rem, 2.5vw, 2.25rem);
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__meta {
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__meta > span {
+  color: #dec588;
+  font-size: .6875rem;
+}
+
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__meta figcaption {
+  max-width: 20rem;
+  font: 400 clamp(1.5rem, 2.5vw, 2.25rem)/.95 'Cormorant', Georgia, serif;
+  text-align: left;
+  text-wrap: balance;
+}
+
+@media (min-width: 601px) and (max-width: 1199px) {
+  .theobroma-photo-showcase__intro { grid-template-columns: minmax(0, 1fr) minmax(16rem, .75fr); gap: 1.25rem 2.5rem; }
+  .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { grid-auto-rows: clamp(11rem, 22vw, 16rem); }
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(3n + 2) { transform: none; }
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(even) { transform: translateY(1.5rem); }
+}
+
+@media (max-width: 600px) {
+  .theobroma-photo-showcase__shell {
+    width: 100%;
+    padding-block: 4rem;
+  }
+
+  .theobroma-photo-showcase__intro {
+    width: calc(100% - 2 * var(--layout-gutter, 1.125rem));
+    margin: 0 auto 2rem;
+    display: block;
+  }
+
+  .theobroma-photo-showcase__eyebrow { margin-bottom: .875rem; }
+  .theobroma-photo-showcase__intro h2 { font-size: clamp(2.5rem, 11vw, 3.25rem); line-height: .91; }
+  .theobroma-photo-showcase__description { margin-top: 1.25rem; font-size: .8125rem; }
+
+  .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery,
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery {
+    width: 100%;
+    margin: 0;
+    padding-inline: var(--layout-gutter, 1.125rem);
+    display: grid;
+    grid-template: none;
+    grid-auto-flow: column;
+    grid-auto-columns: min(82vw, 21.5rem);
+    grid-auto-rows: auto;
+    gap: .875rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: var(--layout-gutter, 1.125rem);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .theobroma-photo-showcase__gallery::-webkit-scrollbar { display: none; }
+  .theobroma-photo-showcase--home .theobroma-photo-showcase__item,
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item,
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(n) {
+    grid-area: auto;
+    aspect-ratio: 4 / 5;
+    scroll-snap-align: start;
+    transform: none;
+  }
+
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { border: 0; background: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theobroma-photo-showcase__image { transition: none; }
+  .theobroma-photo-showcase__item:hover .theobroma-photo-showcase__image { transform: none; }
+  .theobroma-photo-showcase__gallery { scroll-behavior: auto; }
+}

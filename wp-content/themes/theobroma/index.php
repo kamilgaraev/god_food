@@ -167,6 +167,8 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         </div>
     </section>
 
+    <?php if (function_exists('theobroma_photo_showcase_html')) { echo theobroma_photo_showcase_html('home'); } ?>
+
     <section class="home-promo-grid" aria-label="Подарки и точки продаж">
         <article class="home-promo-card home-promo-card--gift">
             <h2>Подарок, который не стыдно вручить</h2>
