@@ -17,6 +17,7 @@ define('THEOBROMA_PHOTO_SHOWCASES_VERSION', '1.0.0');
 require_once __DIR__ . '/src/Settings.php';
 require_once __DIR__ . '/src/DefaultImages.php';
 require_once __DIR__ . '/src/Renderer.php';
+require_once __DIR__ . '/src/AdminPage.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 \Theobroma\PhotoShowcases\Plugin::boot();

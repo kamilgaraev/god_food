@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Theobroma\PhotoShowcases\DefaultImages;
+use Theobroma\PhotoShowcases\AdminPage;
 use Theobroma\PhotoShowcases\Plugin;
 use Theobroma\PhotoShowcases\Renderer;
 use Theobroma\PhotoShowcases\Settings;
@@ -13,12 +14,43 @@ $GLOBALS['theobroma_photo_test_attachment_alts'] = array();
 $GLOBALS['theobroma_photo_test_options'] = array();
 $GLOBALS['theobroma_photo_test_actions'] = array();
 $GLOBALS['theobroma_photo_test_styles'] = array();
+$GLOBALS['theobroma_photo_test_scripts'] = array();
+$GLOBALS['theobroma_photo_test_settings'] = array();
+$GLOBALS['theobroma_photo_test_menus'] = array();
+$GLOBALS['theobroma_photo_test_media_enqueued'] = false;
 $GLOBALS['theobroma_photo_test_front_page'] = false;
 $GLOBALS['theobroma_photo_test_page'] = '';
 
 function add_action(string $hook, callable $callback): void
 {
     $GLOBALS['theobroma_photo_test_actions'][$hook][] = $callback;
+}
+
+function is_admin(): bool
+{
+    return true;
+}
+
+function current_user_can(string $capability): bool
+{
+    return $capability === 'manage_options';
+}
+
+function wp_die(string $message): never
+{
+    throw new RuntimeException($message);
+}
+
+function register_setting(string $group, string $option, array $args): void
+{
+    $GLOBALS['theobroma_photo_test_settings'][$option] = compact('group', 'args');
+}
+
+function add_menu_page(string $pageTitle, string $menuTitle, string $capability, string $slug, callable $callback, string $icon = '', int|float|null $position = null): string
+{
+    $GLOBALS['theobroma_photo_test_menus'][$slug] = compact('pageTitle', 'menuTitle', 'capability', 'callback', 'icon', 'position');
+
+    return 'toplevel_page_' . $slug;
 }
 
 function sanitize_text_field(string $value): string
@@ -94,6 +126,31 @@ function wp_enqueue_style(string $handle, string $src, array $dependencies = arr
     $GLOBALS['theobroma_photo_test_styles'][$handle] = compact('src', 'dependencies', 'version');
 }
 
+function wp_enqueue_script(string $handle, string $src, array $dependencies = array(), string|bool|null $version = false, array|bool $args = array()): void
+{
+    $GLOBALS['theobroma_photo_test_scripts'][$handle] = compact('src', 'dependencies', 'version', 'args');
+}
+
+function wp_enqueue_media(): void
+{
+    $GLOBALS['theobroma_photo_test_media_enqueued'] = true;
+}
+
+function settings_fields(string $group): void
+{
+    echo '<input type="hidden" data-settings-group="' . esc_attr($group) . '">';
+}
+
+function checked(mixed $checked, mixed $current = true, bool $display = true): string
+{
+    $result = $checked == $current ? 'checked="checked"' : '';
+    if ($display) {
+        echo $result;
+    }
+
+    return $result;
+}
+
 function is_front_page(): bool
 {
     return $GLOBALS['theobroma_photo_test_front_page'];
@@ -121,6 +178,7 @@ $required = array(
     $plugin . '/src/Settings.php',
     $plugin . '/src/DefaultImages.php',
     $plugin . '/src/Renderer.php',
+    $plugin . '/src/AdminPage.php',
     $plugin . '/src/Plugin.php',
 );
 
@@ -242,6 +300,38 @@ $same('', theobroma_photo_showcase_html('home'), 'saved disabled collection does
 $GLOBALS['theobroma_photo_test_front_page'] = true;
 Plugin::instance()->enqueueFrontendAssets();
 $same(true, isset($GLOBALS['theobroma_photo_test_styles']['theobroma-photo-showcases']), 'frontend stylesheet loads on home');
+
+$adminPage = new AdminPage($settings, new DefaultImages());
+$adminPage->register();
+$adminPage->settings();
+$adminPage->menu();
+$same(true, isset($GLOBALS['theobroma_photo_test_actions']['admin_menu']), 'admin page registers menu hook');
+$same(true, isset($GLOBALS['theobroma_photo_test_actions']['admin_enqueue_scripts']), 'admin page registers scoped assets hook');
+$same('array', $GLOBALS['theobroma_photo_test_settings'][Settings::OPTION]['args']['type'] ?? null, 'photo option is registered as array');
+$same('manage_options', $GLOBALS['theobroma_photo_test_menus']['theobroma-photo-showcases']['capability'] ?? null, 'photo page requires manage_options');
+$adminPage->assets('dashboard_page_other');
+$same(false, $GLOBALS['theobroma_photo_test_media_enqueued'], 'media library stays unloaded outside photo screen');
+$adminPage->assets('toplevel_page_theobroma-photo-showcases');
+$same(true, $GLOBALS['theobroma_photo_test_media_enqueued'], 'photo screen loads WordPress media library');
+$same(true, isset($GLOBALS['theobroma_photo_test_scripts']['theobroma-photo-showcases-admin']), 'photo screen loads ordering script');
+$same(true, isset($GLOBALS['theobroma_photo_test_styles']['theobroma-photo-showcases-admin']), 'photo screen loads designed styles');
+
+$GLOBALS['theobroma_photo_test_options'][Settings::OPTION] = $rendererSettings;
+ob_start();
+$adminPage->render();
+$adminHtml = (string) ob_get_clean();
+$same(true, str_contains($adminHtml, 'class="theobroma-photo-admin '), 'admin uses branded application shell');
+$same(true, str_contains($adminHtml, 'role="tablist"'), 'admin exposes accessible showcase navigation');
+$same(true, str_contains($adminHtml, 'data-showcase-tab="home"') && str_contains($adminHtml, 'data-showcase-tab="corporate"'), 'admin has a tab for both placements');
+$same(true, str_contains($adminHtml, 'data-showcase-panel="corporate" hidden'), 'only active panel is initially visible');
+$same(true, str_contains($adminHtml, 'data-open-media'), 'admin provides media library upload control');
+$same(true, str_contains($adminHtml, 'data-photo-row'), 'admin renders selected image cards');
+$same(true, str_contains($adminHtml, '[images][0][attachment_id]'), 'admin persists attachment ids in their visual order');
+$same(true, str_contains($adminHtml, '[images][0][alt]') && str_contains($adminHtml, '[images][0][caption]'), 'each photo exposes alt and caption fields');
+$same(true, str_contains($adminHtml, 'data-move-photo="up"') && str_contains($adminHtml, 'data-move-photo="down"'), 'photo cards have keyboard ordering controls');
+$same(true, str_contains($adminHtml, 'data-remove-photo'), 'photo cards can be removed');
+$same(true, str_contains($adminHtml, 'data-photo-empty'), 'photo grid has explicit empty state');
+$same(true, str_contains($adminHtml, 'class="theobroma-photo-admin__save"'), 'admin has a persistent save bar');
 
 if ($failures !== array()) {
     fwrite(STDERR, implode(PHP_EOL, $failures) . PHP_EOL);

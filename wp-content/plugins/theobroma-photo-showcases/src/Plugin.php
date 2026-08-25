@@ -19,6 +19,9 @@ final class Plugin
     {
         $plugin = self::instance();
         add_action('wp_enqueue_scripts', array($plugin, 'enqueueFrontendAssets'));
+        if (is_admin()) {
+            (new AdminPage($plugin->settings, $plugin->defaultImages))->register();
+        }
 
         return $plugin;
     }
