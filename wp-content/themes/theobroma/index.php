@@ -26,7 +26,17 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
     <section class="home-hero" aria-labelledby="home-hero-title">
         <div class="home-hero__shell">
             <p class="home-eyebrow">Абсолютно натуральный</p>
-            <h1 id="home-hero-title">ШОКОЛАД</h1>
+            <h1 id="home-hero-title" class="screen-reader-text">Абсолютно натуральный шоколад</h1>
+            <button class="home-chocolate-pyramid" type="button" aria-label="Обрушить шоколадную пирамиду" aria-busy="false" data-state="idle">
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-1.webp'); ?>" alt="" width="251" height="285" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-2.webp'); ?>" alt="" width="304" height="301" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-3.webp'); ?>" alt="" width="335" height="417" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-4.webp'); ?>" alt="" width="346" height="297" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-5.webp'); ?>" alt="" width="390" height="345" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-6.webp'); ?>" alt="" width="450" height="334" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-7.webp'); ?>" alt="" width="411" height="350" loading="eager" decoding="async" draggable="false"></span>
+                <span class="home-chocolate-pyramid__shadow" aria-hidden="true"></span>
+            </button>
             <div class="home-hero__lead">
                 <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
                 <div class="home-hero__actions">

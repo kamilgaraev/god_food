@@ -54,7 +54,7 @@ async function metricsFor(page) {
       rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
       nav: rect('.nav'),
       hero: rect('.home-hero'),
-      title: rect('.home-hero h1'),
+      pyramid: rect('.home-chocolate-pyramid'),
       trust: rect('.home-hero__trust'),
       lead: rect('.home-hero__lead'),
       leadText: rect('.home-hero__lead > p'),
@@ -92,11 +92,11 @@ async function run() {
         check(metrics.productCards.every(({ width: cardWidth }) => cardWidth >= metrics.productGrid.width - 2), `${width}px mobile homepage products must fill their row`);
         check(metrics.productCards.every(({ left, right }) => left >= -1 && right <= metrics.viewport + 1), `${width}px mobile homepage products must fit the viewport`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px mobile content sections must use one column`);
-        check(metrics.title.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px mobile hero content must keep title, trust and actions in order`);
+        check(metrics.pyramid.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px mobile hero content must keep pyramid, trust and actions in order`);
       } else if (width < 1200) {
         check(metrics.productColumns === 2, `${width}px tablet catalog must use two columns`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px tablet content sections must use one column`);
-        check(metrics.title.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px tablet hero content must keep title, trust and actions in order`);
+        check(metrics.pyramid.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px tablet hero content must keep pyramid, trust and actions in order`);
         check(metrics.lead.bottom <= metrics.hero.bottom - metrics.rootFontSize + 1, `${width}px tablet hero actions must keep a 1rem bottom inset`);
         check(metrics.leadText.right <= metrics.heroActions.left - metrics.rootFontSize + 1, `${width}px tablet hero copy and actions must keep a 1rem gap`);
       } else {

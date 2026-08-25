@@ -1,6 +1,39 @@
 (function () {
   'use strict';
 
+  const pyramid = document.querySelector('.home-chocolate-pyramid');
+
+  if (pyramid) {
+    let animationTimers = [];
+
+    function setPyramidState(state, busy) {
+      pyramid.dataset.state = state;
+      pyramid.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    function schedulePyramidState(state, busy, delay) {
+      animationTimers.push(window.setTimeout(() => setPyramidState(state, busy), delay));
+    }
+
+    pyramid.addEventListener('click', () => {
+      if (pyramid.dataset.state !== 'idle') return;
+
+      animationTimers.forEach(window.clearTimeout);
+      animationTimers = [];
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion) {
+        setPyramidState('reassembling', true);
+        schedulePyramidState('idle', false, 200);
+        return;
+      }
+
+      setPyramidState('collapsed', true);
+      schedulePyramidState('reassembling', true, 2800);
+      schedulePyramidState('idle', false, 4400);
+    });
+  }
+
   const selector = document.querySelector('.home-cacao');
 
   if (selector) {
