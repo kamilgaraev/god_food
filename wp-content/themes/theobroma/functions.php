@@ -562,22 +562,48 @@ function theobroma_handle_contact_request(): void {
     $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
     $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
     $request_type = sanitize_key(wp_unslash($_POST['request_type'] ?? 'contact'));
+    $form_id = sanitize_key(wp_unslash($_POST['form_id'] ?? 'home'));
+    $form_id = in_array($form_id, array('home', 'cooperation'), true) ? $form_id : 'home';
     $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
     $honeypot = sanitize_text_field(wp_unslash($_POST['theobroma_website'] ?? ''));
     $started_at = absint($_POST['theobroma_form_started'] ?? 0);
     $consent = sanitize_text_field(wp_unslash($_POST['consent'] ?? ''));
-    if (!theobroma_contact_request_is_valid(array(
+    $request = array(
         'name' => $name,
         'phone' => $phone,
+        'email' => $email,
+        'message' => $message,
         'consent' => $consent,
         'honeypot' => $honeypot,
         'started_at' => $started_at,
-    ), time())) {
+    );
+    $valid = $request_type === 'corporate_gift'
+        ? theobroma_contact_request_is_valid($request, time())
+        : theobroma_standard_contact_request_is_valid($request, $form_id, time());
+    if (!$valid) {
         wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')));
         exit;
     }
+    $standard_lines = $request_type === 'corporate_gift'
+        ? array()
+        : theobroma_standard_contact_request_lines($form_id, $request);
+    $standard_values = $request_type === 'corporate_gift'
+        ? array()
+        : theobroma_standard_contact_request_values($form_id, $request);
+    $title_parts = $request_type === 'corporate_gift'
+        ? array_values(array_filter(array($name, $phone, $email)))
+        : array_values(array_filter(array(
+            $standard_values['name'] ?? '',
+            $standard_values['phone'] ?? '',
+            $standard_values['email'] ?? '',
+        )));
     $request_id = wp_insert_post(
-        array('post_type' => 'contact_request', 'post_status' => 'publish', 'post_title' => $name . ' — ' . $phone, 'post_content' => $message),
+        array(
+            'post_type' => 'contact_request',
+            'post_status' => 'publish',
+            'post_title' => $title_parts !== array() ? implode(' — ', $title_parts) : 'Заявка с сайта',
+            'post_content' => $request_type === 'corporate_gift' ? $message : implode("\n", $standard_lines),
+        ),
         true
     );
     if (is_wp_error($request_id)) {
@@ -607,6 +633,19 @@ function theobroma_handle_contact_request(): void {
             'email' => $email,
             'message' => $message,
         )))));
+    } else {
+        update_post_meta((int) $request_id, '_theobroma_form_id', $form_id);
+        if (($standard_values['email'] ?? '') !== '') {
+            update_post_meta((int) $request_id, '_theobroma_request_email', $standard_values['email']);
+        }
+        $subject = $form_id === 'cooperation'
+            ? 'Заявка со страницы «Сотрудничество» Theobroma'
+            : 'Заявка с сайта Theobroma';
+        wp_mail(
+            theobroma_standard_contact_request_recipient($form_id, sanitize_email((string) get_option('admin_email'))),
+            $subject,
+            implode("\n", $standard_lines)
+        );
     }
     wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contact-form');
     exit;

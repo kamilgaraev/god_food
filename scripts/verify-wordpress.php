@@ -17,6 +17,7 @@ verify_value(is_plugin_active('woocommerce/woocommerce.php'), 'WooCommerce activ
 verify_value(is_plugin_active('theobroma-admin-tools/theobroma-admin-tools.php'), 'admin tools active');
 verify_value(is_plugin_active('theobroma-analytics/theobroma-analytics.php'), 'analytics settings active');
 verify_value(is_plugin_active('theobroma-commerce/theobroma-commerce.php'), 'commerce integrations active');
+verify_value(is_plugin_active('theobroma-contact-forms/theobroma-contact-forms.php'), 'contact forms settings active');
 verify_value(is_plugin_active('theobroma-seo/theobroma-seo.php'), 'SEO active');
 verify_value(is_plugin_active('yookassa/yookassa.php'), 'YooKassa active');
 verify_value(is_plugin_active('theobroma-1c/theobroma-1c.php'), 'Theobroma 1C active');
@@ -27,6 +28,7 @@ verify_value($active_plugins === array(
     'theobroma-admin-tools/theobroma-admin-tools.php',
     'theobroma-analytics/theobroma-analytics.php',
     'theobroma-commerce/theobroma-commerce.php',
+    'theobroma-contact-forms/theobroma-contact-forms.php',
     'theobroma-seo/theobroma-seo.php',
     'woocommerce/woocommerce.php',
     'yookassa/yookassa.php',

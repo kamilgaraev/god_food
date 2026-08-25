@@ -29,6 +29,7 @@
     "test:input-focus": "node scripts/verify-input-focus-style.spec.js",
     "test:phone-input": "node scripts/verify-phone-input.spec.js",
     "test:consent-checkbox": "node scripts/verify-consent-checkbox.spec.js",
+    "test:contact-forms-plugin": "php wp-content/plugins/theobroma-contact-forms/tests/run.php",
     "test:lead-forms": "php scripts/verify-lead-form-simplification.spec.php && php scripts/verify-contact-request-validation.spec.php",
     "test:cooperation-form-layout": "node scripts/verify-cooperation-configurable-layout.spec.js",
     "test:cart-checkout-ui": "node scripts/verify-cart-checkout-ui.spec.js",
