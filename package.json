@@ -30,6 +30,7 @@
     "test:phone-input": "node scripts/verify-phone-input.spec.js",
     "test:consent-checkbox": "node scripts/verify-consent-checkbox.spec.js",
     "test:lead-forms": "php scripts/verify-lead-form-simplification.spec.php && php scripts/verify-contact-request-validation.spec.php",
+    "test:cooperation-form-layout": "node scripts/verify-cooperation-configurable-layout.spec.js",
     "test:cart-checkout-ui": "node scripts/verify-cart-checkout-ui.spec.js",
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",

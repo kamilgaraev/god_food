@@ -2563,3 +2563,103 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
     padding-inline:0;
   }
 }
+
+/* Cooperation fields are configurable, so the card must grow from its
+   contents instead of relying on the original fixed-field artboard. */
+.cooperation-form {
+  height:auto;
+  min-height:0;
+  padding:3.125rem 2.875rem 2.625rem;
+}
+.cooperation-form h2 {
+  margin:0;
+  padding:0;
+}
+.cooperation-form > p { margin:.75rem 0 0; }
+.cooperation-form form {
+  position:relative;
+  top:auto;
+  left:auto;
+  width:100%;
+  margin:2.875rem 0 0;
+}
+.cooperation-form .form-grid {
+  width:100%;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:auto;
+  gap:1.75rem .9375rem;
+}
+.cooperation-form .form-grid > * {
+  width:100%;
+  min-width:0;
+}
+.cooperation-form .form-grid > :is(textarea,.message-field,.field-wide,[data-field-width="full"]) {
+  grid-column:1/-1;
+}
+.cooperation-form .consent {
+  width:100%;
+  margin-top:1.125rem;
+  transform:none;
+}
+.cooperation-form .form-submit { margin:2.5625rem 0 0; }
+.cooperation-form .button { transform:none; }
+
+@media (min-width:1200px) {
+  .cooperation-page {
+    height:auto;
+    min-height:0;
+    padding:23rem 0 6.25rem;
+  }
+  .cooperation-form {
+    position:relative;
+    top:auto;
+    left:auto;
+    width:35rem;
+    margin:0 0 0 calc(50vw + 1.25rem);
+  }
+  .cooperation-benefits {
+    position:relative;
+    top:auto;
+    left:auto;
+    margin:6.25rem auto 0;
+  }
+}
+
+@media (min-width:601px) and (max-width:1199px) {
+  .cooperation-form {
+    height:auto;
+    padding:1.875rem;
+  }
+  .cooperation-form form {
+    width:100%;
+    margin-top:1.25rem;
+  }
+  .cooperation-form .form-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .cooperation-benefits,
+  .cooperation-benefit-grid { height:auto; }
+  .cooperation-benefit-grid {
+    width:100%;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:none;
+    grid-auto-rows:auto;
+  }
+  .cooperation-benefit-grid article { width:100%; }
+}
+
+@media (max-width:600px) {
+  .cooperation-form {
+    height:auto;
+    padding:1.5rem;
+  }
+  .cooperation-form form {
+    width:100%;
+    margin-top:2.25rem;
+  }
+  .cooperation-form .form-grid {
+    grid-template-columns:minmax(0,1fr);
+    gap:1.14257813rem;
+  }
+  .cooperation-form .form-submit { margin-top:1.90429688rem; }
+}
