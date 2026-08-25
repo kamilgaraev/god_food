@@ -10,7 +10,7 @@ $cart = WC()->cart->get_cart();
 <div class="commerce-cart<?php echo $cart ? '' : ' commerce-cart--empty'; ?>" data-commerce-cart>
     <?php if ($cart) : ?>
         <header class="commerce-cart-header">
-            <h2>Ваш заказ</h2>
+            <h2>ВАШ ЗАКАЗ</h2>
             <button type="button" class="commerce-cart-clear" data-cart-clear>Очистить корзину</button>
         </header>
     <?php endif; ?>
