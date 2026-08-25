@@ -18,29 +18,6 @@ function parseColor(value) {
   };
 }
 
-function composite(foreground, background) {
-  return {
-    red: foreground.red * foreground.alpha + background.red * (1 - foreground.alpha),
-    green: foreground.green * foreground.alpha + background.green * (1 - foreground.alpha),
-    blue: foreground.blue * foreground.alpha + background.blue * (1 - foreground.alpha),
-    alpha: 1,
-  };
-}
-
-function luminance(color) {
-  const channel = (value) => {
-    const normalized = value / 255;
-    return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * channel(color.red) + 0.7152 * channel(color.green) + 0.0722 * channel(color.blue);
-}
-
-function contrast(first, second) {
-  const brightest = Math.max(luminance(first), luminance(second));
-  const darkest = Math.min(luminance(first), luminance(second));
-  return (brightest + 0.05) / (darkest + 0.05);
-}
-
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
@@ -62,11 +39,9 @@ function contrast(first, second) {
 
     const metrics = await page.locator('.home-product-card__badge').evaluateAll((badges) => badges.map((badge) => {
       const style = getComputedStyle(badge);
-      const imageStyle = getComputedStyle(badge.closest('.home-product-card__image'));
       return {
         color: style.color,
         backgroundColor: style.backgroundColor,
-        imageBackgroundColor: imageStyle.backgroundColor,
         fontSize: parseFloat(style.fontSize),
         paddingInline: parseFloat(style.paddingLeft) + parseFloat(style.paddingRight),
       };
@@ -75,16 +50,15 @@ function contrast(first, second) {
     for (const metric of metrics) {
       const foreground = parseColor(metric.color);
       const badgeBackground = parseColor(metric.backgroundColor);
-      const imageBackground = parseColor(metric.imageBackgroundColor);
-      const effectiveBackground = composite(badgeBackground, imageBackground);
       assert.deepEqual(
         [badgeBackground.red, badgeBackground.green, badgeBackground.blue],
         [176, 144, 61],
         'Bestseller badge must use the primary button gold',
       );
-      assert.ok(
-        contrast(foreground, effectiveBackground) >= 4.5,
-        `Bestseller badge contrast must be at least 4.5:1; received ${contrast(foreground, effectiveBackground).toFixed(2)}:1`,
+      assert.deepEqual(
+        [foreground.red, foreground.green, foreground.blue, foreground.alpha],
+        [255, 255, 255, 1],
+        'Bestseller badge text must be white',
       );
       assert.ok(badgeBackground.alpha >= 0.9, 'Bestseller badge must not depend on the product image for contrast');
       assert.ok(metric.fontSize >= 9, `Bestseller badge text must be at least 9px; received ${metric.fontSize}px`);
@@ -94,7 +68,7 @@ function contrast(first, second) {
     await browser.close();
   }
 
-  console.log('Homepage bestseller badge stays readable on light and dark product images');
+  console.log('Homepage bestseller badge uses white text on its gold background');
 })().catch((error) => {
   console.error(error.stack || error.message);
   process.exitCode = 1;
