@@ -9,13 +9,12 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
 ?>
 <main class="corporate-gifts-page">
     <section class="corporate-gifts-hero">
-        <p class="corporate-gifts-eyebrow">Theobroma для бизнеса</p>
         <h1><?php echo esc_html(theobroma_content('corporate_hero_title')); ?><br><em><?php echo esc_html(theobroma_content('corporate_hero_accent')); ?></em></h1>
         <p><?php echo esc_html(theobroma_content('corporate_intro')); ?></p>
         <a class="button" href="#corporate-request">Обсудить проект</a>
     </section>
     <section class="corporate-gifts-showcase" aria-labelledby="corporate-showcase-title">
-        <header><p class="corporate-gifts-eyebrow">Витрина</p><h2 id="corporate-showcase-title">Основа вашего подарка</h2><p>Выберите шоколад — оформление, состав и тираж обсудим индивидуально.</p></header>
+        <header><h2 id="corporate-showcase-title">Основа вашего подарка</h2><p>Выберите шоколад — оформление, состав и тираж обсудим индивидуально.</p></header>
         <div class="corporate-gifts-showcase-grid home-product-grid">
             <?php foreach ($showcase_products as $product) : ?>
                 <?php if (!$product instanceof WC_Product) { continue; } ?>
@@ -24,7 +23,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
         </div>
     </section>
     <section class="corporate-gifts-branding" aria-labelledby="corporate-branding-title">
-        <header><p class="corporate-gifts-eyebrow">Индивидуальный дизайн</p><h2 id="corporate-branding-title">Варианты брендирования</h2></header>
+        <header><h2 id="corporate-branding-title">Варианты брендирования</h2></header>
         <div>
             <?php for ($index = 1; $index <= 3; $index++) : ?>
                 <article><span>0<?php echo esc_html((string) $index); ?></span><h3><?php echo esc_html(theobroma_content('corporate_branding_' . $index . '_title')); ?></h3><p><?php echo esc_html(theobroma_content('corporate_branding_' . $index . '_text')); ?></p></article>
@@ -32,7 +31,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
         </div>
     </section>
     <section class="corporate-gifts-cases" aria-labelledby="corporate-cases-title">
-        <header><p class="corporate-gifts-eyebrow">Сценарии</p><h2 id="corporate-cases-title">Для разных задач бизнеса</h2></header>
+        <header><h2 id="corporate-cases-title">Для разных задач бизнеса</h2></header>
         <div>
             <?php for ($index = 1; $index <= 3; $index++) : ?>
                 <article><h3><?php echo esc_html(theobroma_content('corporate_case_' . $index . '_title')); ?></h3><p><?php echo esc_html(theobroma_content('corporate_case_' . $index . '_text')); ?></p></article>
@@ -40,7 +39,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
         </div>
     </section>
     <section class="corporate-gifts-minimum" aria-labelledby="corporate-minimum-title">
-        <div><p class="corporate-gifts-eyebrow">Условия заказа</p><h2 id="corporate-minimum-title">Минимальный заказ</h2></div>
+        <div><h2 id="corporate-minimum-title">Минимальный заказ</h2></div>
         <p><?php echo esc_html(theobroma_content('corporate_minimum')); ?></p>
         <a class="button" href="#corporate-request">Получить расчёт</a>
     </section>
@@ -50,7 +49,7 @@ $showcase_products = function_exists('wc_get_products') ? wc_get_products(array(
         <article><h2>Тираж и логистика</h2><p>Согласуем минимальный заказ, сроки производства и доставку.</p></article>
     </section>
     <section class="corporate-gifts-request" id="corporate-request" aria-labelledby="corporate-request-title">
-        <div><p class="corporate-gifts-eyebrow">Индивидуальный расчёт</p><h2 id="corporate-request-title">Расскажите о вашем проекте</h2><p>Менеджер свяжется с вами, уточнит детали и подготовит предложение.</p></div>
+        <div><h2 id="corporate-request-title">Расскажите о вашем проекте</h2><p>Менеджер свяжется с вами, уточнит детали и подготовит предложение.</p></div>
         <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
             <input type="hidden" name="action" value="theobroma_contact"><input type="hidden" name="request_type" value="corporate_gift">
             <?php wp_nonce_field('theobroma_contact', 'theobroma_contact_nonce'); ?>
