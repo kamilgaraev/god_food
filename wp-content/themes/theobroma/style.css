@@ -2460,3 +2460,106 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 @media (max-width:600px) {
   .shipping { gap:3.1286vw; }
 }
+
+/* Fixed tablet artboards stop fitting at different points below 900px once
+   tablet rem scaling is applied. Let them contract to the shared container
+   before they can clip the page. */
+@media (min-width:601px) and (max-width:899px) {
+  .catalog-filters {
+    left:auto;
+    width:100%;
+    max-width:100%;
+    height:auto;
+    margin:0 auto 2.5rem;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:.75rem;
+    transform:translateY(.375rem);
+  }
+  .catalog-filters a,
+  .catalog-filters a:nth-child(n) {
+    width:auto;
+    min-width:9.625rem;
+    padding-inline:1rem;
+    position:static;
+  }
+}
+
+@media (min-width:601px) and (max-width:699px) {
+  .recipe-card { width:100%; }
+  .recipe-card h2,
+  .recipe-card p { width:calc(100% - 20rem); }
+
+  .cooperation-form form {
+    left:1.875rem;
+    width:calc(100% - 3.75rem);
+  }
+  .cooperation-form .form-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .media-article,
+  .shop-page .shop-shell,
+  .woocommerce-account .shop-shell {
+    width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter)));
+    max-width:var(--layout-container);
+    margin-inline:auto;
+  }
+
+  .product-detail-hero,
+  .product-detail-accordions,
+  .product-related {
+    width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter)));
+    max-width:var(--layout-container);
+    margin-inline:auto;
+  }
+  .product-detail-image,
+  .product-detail-image img,
+  .product-detail-summary,
+  .product-detail-summary h1,
+  .product-detail-buy,
+  .product-detail-copy {
+    width:100%;
+    max-width:100%;
+  }
+  .product-detail-summary {
+    margin-left:0;
+    box-sizing:border-box;
+  }
+
+  .commerce-modal[data-commerce-type="product"] .commerce-modal-panel,
+  .commerce-modal-product .product-detail-page {
+    width:100%;
+    max-width:100%;
+  }
+  .commerce-modal-product .product-detail-hero,
+  .commerce-modal-product .product-detail-accordions,
+  .commerce-modal-product .product-related {
+    width:min(var(--layout-container),calc(100% - 2 * var(--layout-gutter)));
+    max-width:var(--layout-container);
+    margin-inline:auto;
+  }
+  .commerce-modal-product .product-detail-gallery,
+  .commerce-modal-product .product-detail-image,
+  .commerce-modal-product .product-detail-summary {
+    width:100%;
+    max-width:100%;
+    margin-inline:auto;
+  }
+  .commerce-modal-product .product-detail-image {
+    height:auto;
+    aspect-ratio:560/745;
+  }
+  .commerce-modal-product .product-detail-image img,
+  .commerce-modal-product .product-detail-summary h1,
+  .commerce-modal-product .product-detail-buy,
+  .commerce-modal-product .product-detail-copy {
+    width:100%;
+    max-width:100%;
+  }
+  .commerce-modal-product .product-detail-image img { height:100%; }
+  .commerce-modal-product .product-detail-summary {
+    padding-inline:0;
+  }
+}

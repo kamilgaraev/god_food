@@ -1,29 +1,35 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const { chromium } = require('playwright');
 
 const baseUrl = (process.env.THEOBROMA_URL || 'http://localhost:8080').replace(/\/$/, '');
+const cssFile = process.env.THEOBROMA_CSS_FILE || '';
+const requestedWidths = new Set((process.env.THEOBROMA_LAYOUT_WIDTHS || '').split(',').filter(Boolean).map(Number));
 const viewports = [
   { name: 'narrow-mobile', width: 320 },
   { name: 'mobile', width: 390 },
   { name: 'wide-mobile', width: 521 },
   { name: 'mobile-boundary', width: 600 },
+  { name: 'narrow-tablet', width: 631 },
   { name: 'tablet', width: 900 },
   { name: 'wide-tablet', width: 1199 },
   { name: 'desktop-boundary', width: 1200 },
   { name: 'desktop', width: 2048 },
   { name: 'ultrawide', width: 3200 },
-];
+].filter(({ width }) => requestedWidths.size === 0 || requestedWidths.has(width));
 
 const pages = [
-  { path: '/', exact: ['.home-product-grid', '.home-cacao__shell', '.home-composition__shell'], mobileExact: ['.home-cacao__tabs', '.story', '.value:first-child', '.reviews-stage', '.contact-card', '.form-grid'], mobileLeft: ['.review:first-child'], contained: ['.home-hero__lead > p', '.home-hero__actions', '.home-section-heading h2', '.home-section-heading > a', '.home-promo-card:first-child', '.home-promo-card:last-child'] },
-  { path: '/catalog/', exact: ['.catalog-page .shop-shell'], contained: ['.catalog-page ul.products'] },
-  { path: '/recipes/', exact: ['.recipe-grid'] },
+  { path: '/', exact: ['.home-product-grid', '.home-cacao__shell', '.home-composition__shell'], mobileExact: ['.home-cacao__tabs', '.story', '.value:first-child', '.reviews-stage', '.contact-card', '.form-grid'], mobileLeft: ['.review:first-child'], contained: ['.home-hero__lead > p', '.home-hero__actions', '.home-section-heading h2', '.home-section-heading > a', '.home-promo-card:first-child', '.home-promo-card:last-child', '.values'] },
+  { path: '/catalog/', exact: ['.catalog-page .shop-shell'], contained: ['.catalog-filters', '.catalog-page ul.products'] },
+  { path: '/recipes/', exact: ['.recipe-grid'], contained: ['.recipe-card:first-child'] },
   { path: '/recipe/classic/', exact: ['.recipe-detail-columns', '.recipe-product-promo'] },
   { path: '/marketplace/', exact: ['.market-grid'] },
   { path: '/buy/', contained: ['.buy-tabs', '.buy-location'] },
-  { path: '/cooperation/', contained: ['.cooperation-form', '.cooperation-benefits'] },
+  { path: '/cooperation/', contained: ['.cooperation-form', '.cooperation-form form', '.cooperation-benefits'] },
   { path: '/delivery/', exact: ['.delivery-accordion'] },
   { path: '/media/', exact: ['.media-grid'] },
+  { path: '/chto-oznachayut-protsenty-na-plitke-shokolada/', contained: ['.media-article'] },
+  { path: '/product/theobroma-200-68-coriander/', contained: ['.product-detail-hero', '.product-detail-accordions', '.product-related'] },
   { path: '/policy/', exact: ['.legal-content'] },
   { path: '/corporate-gifts/', exact: ['.corporate-gifts-showcase', '.corporate-gifts-branding', '.corporate-gifts-cases', '.corporate-gifts-minimum', '.corporate-gifts-benefits', '.corporate-gifts-request'] },
   { path: '/my-account/', exact: ['.shop-shell'] },
@@ -38,8 +44,11 @@ async function run() {
     for (const viewport of viewports) {
       for (const entry of pages) {
         const page = await browser.newPage({ viewport: { width: viewport.width, height: 1100 }, reducedMotion: 'reduce' });
-        await page.goto(`${baseUrl}${entry.path}`, { waitUntil: 'domcontentloaded' });
+        await page.goto(`${baseUrl}${entry.path}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
         await page.evaluate(() => document.fonts.ready);
+        if (cssFile) {
+          await page.addStyleTag({ content: fs.readFileSync(cssFile, 'utf8') });
+        }
         const mobileExact = viewport.width <= 600 ? (entry.mobileExact || []) : [];
         const mobileLeft = viewport.width <= 600 ? (entry.mobileLeft || []) : [];
         const exactSelectors = [...(entry.exact || []), ...mobileExact];
