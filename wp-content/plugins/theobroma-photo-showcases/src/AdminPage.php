@@ -126,7 +126,6 @@ final class AdminPage
             <div class="theobroma-photo-admin__content-grid">
                 <aside class="theobroma-photo-admin__copy-card">
                     <div class="theobroma-photo-admin__card-heading"><span class="dashicons dashicons-edit" aria-hidden="true"></span><div><h3>Текст блока</h3><p>Короткая подводка помогает фотографиям рассказать одну историю.</p></div></div>
-                    <?php $this->textField($prefix, 'eyebrow', 'Надзаголовок', (string) ($collection['eyebrow'] ?? '')); ?>
                     <?php $this->textField($prefix, 'title', 'Заголовок', (string) ($collection['title'] ?? '')); ?>
                     <label class="theobroma-photo-field"><span>Описание</span><textarea name="<?php echo esc_attr($prefix . '[description]'); ?>" rows="5"><?php echo esc_html((string) ($collection['description'] ?? '')); ?></textarea></label>
                     <div class="theobroma-photo-admin__tip"><span class="dashicons dashicons-lightbulb" aria-hidden="true"></span><p><?php echo esc_html($location === 'home' ? 'Лучше всего работают 5 кадров: один крупный и четыре детальных.' : 'Используйте 3–5 кадров с упаковкой, брендированием и готовыми наборами.'); ?></p></div>

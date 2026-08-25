@@ -15,14 +15,12 @@ final class Settings
         return array(
             'home' => array(
                 'enabled' => true,
-                'eyebrow' => 'Вкус в деталях',
                 'title' => 'Шоколад, который хочется рассмотреть ближе',
                 'description' => 'Живые фактуры, натуральные ингредиенты и ручная работа — в каждом кадре и каждом кусочке.',
                 'images' => array(),
             ),
             'corporate' => array(
                 'enabled' => true,
-                'eyebrow' => 'Корпоративная коллекция',
                 'title' => 'Подарки, которые запоминают',
                 'description' => 'От первого эскиза до готового набора: оформление, шоколад и детали складываются в цельный подарок.',
                 'images' => array(),
@@ -46,7 +44,6 @@ final class Settings
                 'enabled' => array_key_exists('enabled', $candidate)
                     ? in_array($candidate['enabled'], array(1, '1', true, 'on'), true)
                     : (bool) $locationDefaults['enabled'],
-                'eyebrow' => $this->text($candidate, 'eyebrow', (string) $locationDefaults['eyebrow']),
                 'title' => $this->text($candidate, 'title', (string) $locationDefaults['title']),
                 'description' => $this->textarea($candidate, 'description', (string) $locationDefaults['description']),
                 'images' => $this->images($candidate['images'] ?? array()),

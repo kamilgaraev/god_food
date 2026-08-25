@@ -116,6 +116,13 @@ function wp_get_attachment_image(int $attachmentId, string|array $size = 'thumbn
     );
 }
 
+function wp_get_attachment_image_url(int $attachmentId, string|array $size = 'thumbnail', bool $icon = false): string|false
+{
+    return wp_attachment_is_image($attachmentId)
+        ? 'https://example.test/uploads/photo-' . $attachmentId . '.jpg'
+        : false;
+}
+
 function plugins_url(string $path, string $plugin): string
 {
     return 'https://example.test/plugins/theobroma-photo-showcases/' . ltrim($path, '/');
@@ -202,7 +209,8 @@ $settings = new Settings();
 $defaults = $settings->defaults();
 $same(array('home', 'corporate'), array_keys($defaults), 'defaults expose only supported locations');
 $same(true, $defaults['home']['enabled'] ?? null, 'home is published by default');
-$same('Вкус в деталях', $defaults['home']['eyebrow'] ?? null, 'home has editorial default copy');
+$same(false, array_key_exists('eyebrow', $defaults['home']), 'home has no eyebrow setting');
+$same(false, array_key_exists('eyebrow', $defaults['corporate']), 'corporate has no eyebrow setting');
 $same('Подарки, которые запоминают', $defaults['corporate']['title'] ?? null, 'corporate has business default copy');
 $same(array(), $defaults['corporate']['images'] ?? null, 'default collection starts without persisted images');
 
@@ -234,7 +242,7 @@ $sanitized = $settings->sanitize(array(
 
 $same(array('home', 'corporate'), array_keys($sanitized), 'unknown location is dropped');
 $same(false, $sanitized['home']['enabled'] ?? null, 'disabled collection remains disabled');
-$same('Детали вкуса', $sanitized['home']['eyebrow'] ?? null, 'eyebrow is sanitized');
+$same(false, array_key_exists('eyebrow', $sanitized['home']), 'legacy eyebrow is discarded');
 $same('Первый ряд описания', $sanitized['home']['description'] ?? null, 'description is sanitized');
 $same(8, count($sanitized['home']['images'] ?? array()), 'image collection is capped at eight');
 $same(array(1, 2, 3, 4, 5, 6, 7, 8), array_column($sanitized['home']['images'], 'attachment_id'), 'image ids stay positive unique and ordered');
@@ -268,13 +276,18 @@ $renderer = new Renderer();
 $homeHtml = $renderer->html('home', $rendererSettings);
 $same(true, str_contains($homeHtml, 'theobroma-photo-showcase--home'), 'home renderer uses editorial modifier');
 $same(true, str_contains($homeHtml, 'aria-labelledby="theobroma-photo-showcase-home-title"'), 'home renderer links its accessible title');
+$same(false, str_contains($homeHtml, 'theobroma-photo-showcase__eyebrow'), 'home renderer has no eyebrow');
+$same(false, str_contains($homeHtml, 'Вкус в деталях'), 'home renderer removes the old eyebrow copy');
 $same(true, str_contains($homeHtml, 'data-id="31"') && str_contains($homeHtml, 'alt="Шоколад 70%"'), 'renderer falls back to attachment alt');
 $same(true, str_contains($homeHtml, 'data-id="32"') && str_contains($homeHtml, 'alt="Своя подпись"'), 'configured alt overrides attachment alt');
 $same(true, str_contains($homeHtml, '<figcaption>Ручная работа</figcaption>'), 'renderer includes configured caption');
 $same(true, str_contains($homeHtml, 'loading="lazy"') && str_contains($homeHtml, 'decoding="async"'), 'renderer requests deferred responsive images');
 $same(true, str_contains($homeHtml, 'tabindex="0"') && str_contains($homeHtml, 'aria-label="Фотогалерея"'), 'scrollable gallery is keyboard reachable and labelled');
+$same(true, str_contains($homeHtml, 'data-photo-lightbox-trigger') && str_contains($homeHtml, 'data-photo-src="https://example.test/uploads/photo-31.jpg"'), 'gallery images open their full attachment in the viewer');
+$same(true, str_contains($homeHtml, 'role="dialog"') && str_contains($homeHtml, 'data-photo-lightbox-previous') && str_contains($homeHtml, 'data-photo-lightbox-next'), 'renderer includes accessible gallery viewer controls');
 $corporateHtml = $renderer->html('corporate', $rendererSettings);
 $same(true, str_contains($corporateHtml, 'theobroma-photo-showcase--corporate'), 'corporate renderer uses business modifier');
+$same(false, str_contains($corporateHtml, 'theobroma-photo-showcase__eyebrow'), 'corporate renderer has no eyebrow');
 $same(true, str_contains($corporateHtml, '<span aria-hidden="true">01</span>'), 'corporate renderer numbers the photo series');
 $rendererSettings['corporate']['enabled'] = false;
 $same('', $renderer->html('corporate', $rendererSettings), 'disabled collection renders no empty section');
@@ -301,6 +314,7 @@ $same('', theobroma_photo_showcase_html('home'), 'saved disabled collection does
 $GLOBALS['theobroma_photo_test_front_page'] = true;
 Plugin::instance()->enqueueFrontendAssets();
 $same(true, isset($GLOBALS['theobroma_photo_test_styles']['theobroma-photo-showcases']), 'frontend stylesheet loads on home');
+$same(true, isset($GLOBALS['theobroma_photo_test_scripts']['theobroma-photo-showcases']), 'frontend lightbox script loads on home');
 
 $adminPage = new AdminPage($settings, new DefaultImages());
 $adminPage->register();
@@ -322,6 +336,7 @@ ob_start();
 $adminPage->render();
 $adminHtml = (string) ob_get_clean();
 $same(true, str_contains($adminHtml, 'class="theobroma-photo-admin '), 'admin uses branded application shell');
+$same(false, str_contains($adminHtml, '[eyebrow]'), 'admin no longer offers unused eyebrow fields');
 $same(true, str_contains($adminHtml, 'role="tablist"'), 'admin exposes accessible showcase navigation');
 $same(true, str_contains($adminHtml, 'data-showcase-tab="home"') && str_contains($adminHtml, 'data-showcase-tab="corporate"'), 'admin has a tab for both placements');
 $same(true, str_contains($adminHtml, 'data-showcase-panel="corporate" hidden'), 'only active panel is initially visible');
