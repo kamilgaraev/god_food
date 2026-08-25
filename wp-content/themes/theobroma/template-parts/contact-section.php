@@ -14,7 +14,6 @@
                     <div class="phone-field">
                         <input type="tel" name="phone" value="+7" placeholder="+7 (000) 000-00-00" inputmode="tel" autocomplete="tel" maxlength="18" aria-label="Телефон" required>
                     </div>
-                    <input class="message-field" type="text" name="message" placeholder="Ваш вопрос или комментарий" aria-label="Ваш вопрос">
                 </div>
                 <label class="consent">
                     <input type="checkbox" name="consent" value="1" required>
