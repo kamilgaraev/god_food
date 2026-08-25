@@ -223,6 +223,14 @@ $settingsHtml = (string) ob_get_clean();
 $same(true, str_contains($settingsHtml, 'data-add-custom-field'), 'settings page provides add field controls');
 $same(true, str_contains($settingsHtml, '[custom_fields][0][label]'), 'settings page renders editable custom field rows');
 $same(true, str_contains($settingsHtml, 'data-move-custom-field="up"'), 'settings page provides field ordering controls');
+$same(true, str_contains($settingsHtml, 'class="theobroma-forms-admin"'), 'settings page uses the designed application shell');
+$same(true, str_contains($settingsHtml, 'role="tablist"'), 'settings page exposes form navigation as an accessible tab list');
+$same(true, str_contains($settingsHtml, 'data-form-tab="home"') && str_contains($settingsHtml, 'data-form-tab="cooperation"'), 'settings page provides a tab for each form');
+$same(true, str_contains($settingsHtml, 'data-form-panel="cooperation" hidden'), 'only the active form panel is initially visible');
+$same(true, substr_count($settingsHtml, 'class="theobroma-settings-card') >= 6, 'each form is organized into settings cards');
+$same(true, str_contains($settingsHtml, 'data-custom-fields-empty'), 'custom fields builder has an empty state');
+$same(true, str_contains($settingsHtml, 'class="theobroma-save-bar"'), 'settings page has a persistent save action bar');
+$same(true, str_contains($settingsHtml, 'class="theobroma-switch__input"'), 'standard field controls use consistent switch markup');
 
 $entry = $plugin . '/theobroma-contact-forms.php';
 if (!is_file($entry)) {
