@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once get_template_directory() . '/inc/homepage.php';
 require_once get_template_directory() . '/inc/checkout-order-button.php';
 require_once get_template_directory() . '/inc/product-images.php';
+require_once get_template_directory() . '/inc/contact-request-validation.php';
 
 function theobroma_setup(): void {
     add_theme_support('title-tag');
@@ -565,7 +566,13 @@ function theobroma_handle_contact_request(): void {
     $honeypot = sanitize_text_field(wp_unslash($_POST['theobroma_website'] ?? ''));
     $started_at = absint($_POST['theobroma_form_started'] ?? 0);
     $consent = sanitize_text_field(wp_unslash($_POST['consent'] ?? ''));
-    if ($name === '' || $phone === '' || $consent !== '1' || $honeypot !== '' || $started_at === 0 || (time() - $started_at) < 3 || ($request_type === 'corporate_gift' && !is_email($email))) {
+    if (!theobroma_contact_request_is_valid(array(
+        'name' => $name,
+        'phone' => $phone,
+        'consent' => $consent,
+        'honeypot' => $honeypot,
+        'started_at' => $started_at,
+    ), time())) {
         wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')));
         exit;
     }
@@ -578,16 +585,28 @@ function theobroma_handle_contact_request(): void {
         exit;
     }
     if ($request_type === 'corporate_gift') {
-        $details = array_filter(array(
-            'Компания: ' . sanitize_text_field(wp_unslash($_POST['company'] ?? '')),
-            'Тип подарка: ' . sanitize_text_field(wp_unslash($_POST['gift_type'] ?? '')),
-            'Тираж: ' . sanitize_text_field(wp_unslash($_POST['volume'] ?? '')),
-            'Брендирование: ' . sanitize_text_field(wp_unslash($_POST['branding'] ?? '')),
-        ));
+        $corporate_fields = array(
+            'company' => sanitize_text_field(wp_unslash($_POST['company'] ?? '')),
+            'gift_type' => sanitize_text_field(wp_unslash($_POST['gift_type'] ?? '')),
+            'volume' => sanitize_text_field(wp_unslash($_POST['volume'] ?? '')),
+            'branding' => sanitize_text_field(wp_unslash($_POST['branding'] ?? '')),
+        );
+        $details = theobroma_contact_request_lines($corporate_fields);
         update_post_meta((int) $request_id, '_theobroma_request_type', 'corporate_gift');
-        update_post_meta((int) $request_id, '_theobroma_request_email', $email);
-        wp_update_post(array('ID' => (int) $request_id, 'post_content' => trim(implode("\n", $details) . "\n\n" . $message)));
-        wp_mail(get_option('admin_email'), 'Корпоративная заявка Theobroma', implode("\n", array_merge(array('Имя: ' . $name, 'Телефон: ' . $phone, 'E-mail: ' . $email), $details, array('Комментарий: ' . $message))));
+        if ($email !== '') {
+            update_post_meta((int) $request_id, '_theobroma_request_email', $email);
+        }
+        $content = implode("\n", $details);
+        if ($message !== '') {
+            $content .= ($content !== '' ? "\n\n" : '') . $message;
+        }
+        wp_update_post(array('ID' => (int) $request_id, 'post_content' => $content));
+        wp_mail(get_option('admin_email'), 'Корпоративная заявка Theobroma', implode("\n", theobroma_contact_request_lines(array_merge($corporate_fields, array(
+            'name' => $name,
+            'phone' => $phone,
+            'email' => $email,
+            'message' => $message,
+        )))));
     }
     wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contact-form');
     exit;
