@@ -45,3 +45,9 @@ function theobroma_contact_forms_notification_lines(string $formId, array $value
 {
     return \Theobroma\ContactForms\Plugin::instance()->notificationLines($formId, $values);
 }
+
+/** @param array<string, string> $values @return array<string, string> */
+function theobroma_contact_forms_values(string $formId, array $values): array
+{
+    return \Theobroma\ContactForms\Plugin::instance()->values($formId, $values);
+}

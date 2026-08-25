@@ -587,7 +587,16 @@ function theobroma_handle_contact_request(): void {
     $standard_lines = $request_type === 'corporate_gift'
         ? array()
         : theobroma_standard_contact_request_lines($form_id, $request);
-    $title_parts = array_values(array_filter(array($name, $phone, $email)));
+    $standard_values = $request_type === 'corporate_gift'
+        ? array()
+        : theobroma_standard_contact_request_values($form_id, $request);
+    $title_parts = $request_type === 'corporate_gift'
+        ? array_values(array_filter(array($name, $phone, $email)))
+        : array_values(array_filter(array(
+            $standard_values['name'] ?? '',
+            $standard_values['phone'] ?? '',
+            $standard_values['email'] ?? '',
+        )));
     $request_id = wp_insert_post(
         array(
             'post_type' => 'contact_request',
@@ -626,8 +635,8 @@ function theobroma_handle_contact_request(): void {
         )))));
     } else {
         update_post_meta((int) $request_id, '_theobroma_form_id', $form_id);
-        if ($email !== '') {
-            update_post_meta((int) $request_id, '_theobroma_request_email', $email);
+        if (($standard_values['email'] ?? '') !== '') {
+            update_post_meta((int) $request_id, '_theobroma_request_email', $standard_values['email']);
         }
         $subject = $form_id === 'cooperation'
             ? 'Заявка со страницы «Сотрудничество» Theobroma'

@@ -49,6 +49,16 @@ function theobroma_standard_contact_request_lines(string $formId, array $request
     return theobroma_contact_request_lines($request);
 }
 
+/** @param array<string, mixed> $request @return array<string, string> */
+function theobroma_standard_contact_request_values(string $formId, array $request): array {
+    $values = array_map('strval', array_intersect_key($request, array_flip(array('name', 'phone', 'email', 'message'))));
+    if (function_exists('theobroma_contact_forms_values')) {
+        return theobroma_contact_forms_values($formId, $values);
+    }
+
+    return $values;
+}
+
 /**
  * @param array<string, mixed> $request
  * @return list<string>

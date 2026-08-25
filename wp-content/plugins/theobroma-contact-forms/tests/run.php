@@ -97,6 +97,20 @@ $same(
     ), $definition),
     'notification contains only enabled non-empty fields'
 );
+if (!method_exists($submission, 'values')) {
+    $failures[] = 'Submission::values is missing';
+} else {
+    $same(
+        array('name' => 'Анна', 'email' => 'anna@example.test'),
+        $submission->values(array(
+            'name' => 'Анна',
+            'phone' => '+7 999 111-22-33',
+            'email' => 'anna@example.test',
+            'message' => 'Скрытое сообщение',
+        ), $definition),
+        'submission values omit disabled fields'
+    );
+}
 
 $renderer = new FieldRenderer();
 $defaultHtml = $renderer->render($defaults['home']);
@@ -127,6 +141,7 @@ if (!is_file($entry)) {
     $same(true, function_exists('theobroma_contact_forms_validate'), 'validation API is available');
     $same(true, function_exists('theobroma_contact_forms_recipient'), 'recipient API is available');
     $same(true, function_exists('theobroma_contact_forms_notification_lines'), 'notification API is available');
+    $same(true, function_exists('theobroma_contact_forms_values'), 'enabled values API is available');
 }
 
 if ($failures !== array()) {

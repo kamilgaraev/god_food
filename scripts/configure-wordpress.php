@@ -63,6 +63,7 @@ $required_plugins = array(
     'theobroma-admin-tools/theobroma-admin-tools.php',
     'theobroma-analytics/theobroma-analytics.php',
     'theobroma-commerce/theobroma-commerce.php',
+    'theobroma-contact-forms/theobroma-contact-forms.php',
     'theobroma-1c/theobroma-1c.php',
     'theobroma-seo/theobroma-seo.php',
 );

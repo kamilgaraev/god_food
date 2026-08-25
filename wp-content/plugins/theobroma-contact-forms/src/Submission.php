@@ -53,6 +53,21 @@ final class Submission
     }
 
     /**
+     * @param array<string, string> $values
+     * @param array<string, mixed> $definition
+     * @return array<string, string>
+     */
+    public function values(array $values, array $definition): array
+    {
+        $enabled = array();
+        foreach ($this->enabledFields($definition) as $fieldId => $field) {
+            $enabled[$fieldId] = trim((string) ($values[$fieldId] ?? ''));
+        }
+
+        return $enabled;
+    }
+
+    /**
      * @param array<string, mixed> $definition
      * @return array<string, array<string, mixed>>
      */

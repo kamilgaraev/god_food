@@ -58,4 +58,10 @@ final class Plugin
     {
         return $this->submission->lines($values, $this->definition($formId));
     }
+
+    /** @param array<string, string> $values @return array<string, string> */
+    public function values(string $formId, array $values): array
+    {
+        return $this->submission->values($values, $this->definition($formId));
+    }
 }
