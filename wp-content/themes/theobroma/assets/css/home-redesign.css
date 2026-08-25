@@ -272,6 +272,10 @@ body { overflow-x: clip; background: var(--home-paper); }
 
 .home :where(a, button):focus-visible { outline: 2px solid var(--home-gold); outline-offset: 0.25rem; }
 
+@media (max-width: 1199px) {
+  .home-cacao { border-block: 0; }
+}
+
 @media (min-width: 601px) and (max-width: 1199px) {
   :root { --home-shipping-height: 2.25rem; }
   .home-cacao__shell { grid-template-columns: 1fr; gap: 3.375rem; }

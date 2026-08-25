@@ -18,6 +18,11 @@ const imageWrap = rule('.home-cacao__image-wrap');
 const image = rule('.home-cacao__image-wrap img');
 
 assert.match(section, /padding:\s*2\.375rem\s+var\(--home-gutter\)\s+2\.375rem;/, 'Desktop cacao section must have equal top and bottom spacing');
+assert.match(
+  css,
+  /@media\s*\(max-width:\s*1199px\)\s*\{\s*\.home-cacao\s*\{[^}]*border-block:\s*0;/,
+  'Mobile and tablet cacao section must not render separator borders',
+);
 assert.match(panel, /margin-top:\s*0;/, 'Desktop cacao panel must not negate the section top spacing');
 assert.match(imageWrap, /padding:\s*0;/, 'Cacao image must use the full circular frame');
 assert.match(image, /object-fit:\s*cover;/, 'Cacao image must cover its circular frame');
