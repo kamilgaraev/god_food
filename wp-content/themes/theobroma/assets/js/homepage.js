@@ -30,7 +30,7 @@
 
       setPyramidState('collapsed', true);
       schedulePyramidState('reassembling', true, 2800);
-      schedulePyramidState('idle', false, 4400);
+      schedulePyramidState('idle', false, 4550);
     });
   }
 
