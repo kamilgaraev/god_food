@@ -36,6 +36,7 @@
     "test:cart-checkout-ui": "node scripts/verify-cart-checkout-ui.spec.js",
     "test:cart-order-typography": "node scripts/verify-cart-order-typography.spec.js",
     "test:checkout-button-spacing": "node scripts/verify-checkout-button-spacing.spec.js",
+    "test:account-auth-forms": "node scripts/verify-account-auth-forms.spec.js",
     "test:account-empty-state": "node scripts/verify-account-empty-state-alignment.spec.js",
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",

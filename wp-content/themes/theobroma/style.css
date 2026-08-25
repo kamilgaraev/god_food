@@ -222,10 +222,14 @@ ul.products li.product > a.add_to_cart_button { display:none !important; }
 .woocommerce-account .shop-page { min-height:47.5rem; }
 .woocommerce-account .shop-shell { padding-top:9.0625rem; }
 .woocommerce-account .woocommerce h2 { margin:0 0 1.75rem; color:#000; font:400 3.25rem/3.25rem 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
-.woocommerce-account .woocommerce-form-login { padding:1.875rem; border:0; border-radius:0; background:#f3ebe4; }
+.woocommerce-account .woocommerce-form-login,
+.woocommerce-account .woocommerce-form-register { padding:1.875rem; border:0; border-radius:0; background:#f3ebe4; }
 .woocommerce-account .woocommerce-form-login input[type="text"],
-.woocommerce-account .woocommerce-form-login input[type="password"] { height:3.25rem; padding:0 1.25rem; border:0; border-bottom:1px solid #b0903d; background:#fcf9f7; font:400 0.875rem/1.125rem 'Montserrat',Arial,sans-serif; }
-.woocommerce-account .woocommerce-form-login button[type="submit"] { min-width:9.25rem; min-height:2.625rem; padding:0 1.5rem; border:0 !important; border-radius:62.4375rem !important; color:#fff !important; background:#b0903d !important; font:500 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif !important; }
+.woocommerce-account .woocommerce-form-login input[type="password"],
+.woocommerce-account .woocommerce-form-register input[type="email"],
+.woocommerce-account .woocommerce-form-register input[type="password"] { height:3.25rem; padding:0 1.25rem; border:0; border-bottom:1px solid #b0903d; background:#fcf9f7; font:400 0.875rem/1.125rem 'Montserrat',Arial,sans-serif; }
+.woocommerce-account .woocommerce-form-login button[type="submit"],
+.woocommerce-account .woocommerce-form-register button[type="submit"] { min-width:9.25rem; min-height:2.625rem; padding:0 1.5rem; border:0 !important; border-radius:62.4375rem !important; color:#fff !important; background:#b0903d !important; font:500 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif !important; }
 
 /* Native WooCommerce account, progressively presented like the source members panel. */
 body.account-modal-open { overflow:hidden; }
