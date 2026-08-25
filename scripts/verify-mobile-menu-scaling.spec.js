@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
+const scriptPath = path.join(root, 'wp-content/themes/theobroma/assets/js/site-header.js');
 const viewportCases = [
   { width: 744, height: 1133, panelWidth: 654.72, linkScale: 2 },
   { width: 320, panelWidth: 281.6, linkScale: 1.5 },
@@ -43,7 +44,8 @@ const markup = `
   try {
     for (const expected of viewportCases) {
       const page = await browser.newPage({ viewport: { width: expected.width, height: expected.height || 900 } });
-      await page.setContent(`<body class="mobile-menu-open">${markup}</body>`);
+      await page.setContent(`<body class="mobile-menu-open">${markup}<main style="height:3000px"></main></body>`);
+      await page.locator('html').evaluate((element) => element.classList.add('mobile-menu-open'));
       await page.addStyleTag({ content: themeCss });
       await page.addStyleTag({ content: redesignCss });
 
@@ -93,6 +95,11 @@ const markup = `
         `${expected.width}px: drawer links must render at ${expected.linkScale}rem`,
       );
       assert.equal(metrics.scrollWidth, metrics.viewportWidth, `${expected.width}px: drawer creates horizontal overflow`);
+      assert.equal(
+        await page.locator('html').evaluate((element) => getComputedStyle(element).overflowY),
+        'hidden',
+        `${expected.width}px: the root scroller must be locked while the drawer is open`,
+      );
       if (expected.width === 744) {
         assert.equal(metrics.menuOwnsBottomLayer, true, '744px: cookie notice must not cover an open drawer');
       }
@@ -105,6 +112,28 @@ const markup = `
     await desktop.addStyleTag({ content: redesignCss });
     assert.equal(await desktop.locator('.mobile-menu').evaluate((element) => getComputedStyle(element).display), 'none');
     await desktop.close();
+
+    const scrollLockPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    await scrollLockPage.setContent(`<body>${markup}<main style="height:3000px"></main></body>`);
+    await scrollLockPage.addStyleTag({ content: themeCss });
+    await scrollLockPage.addStyleTag({ content: redesignCss });
+    await scrollLockPage.addScriptTag({ path: scriptPath });
+    await scrollLockPage.evaluate(() => window.scrollTo(0, 500));
+    await scrollLockPage.waitForFunction(() => document.body.classList.contains('nav-sticky'));
+    await scrollLockPage.locator('.menu-toggle').evaluate((element) => element.click());
+    assert.equal(
+      await scrollLockPage.locator('.mobile-menu').evaluate((element) => element.getBoundingClientRect().top),
+      0,
+      'the drawer must stay flush with the viewport after the shipping banner scrolls away',
+    );
+    const lockedScrollY = await scrollLockPage.evaluate(() => window.scrollY);
+    await scrollLockPage.mouse.wheel(0, 600);
+    await scrollLockPage.waitForTimeout(50);
+    assert.equal(await scrollLockPage.evaluate(() => window.scrollY), lockedScrollY, 'an open drawer must prevent background scrolling');
+    await scrollLockPage.locator('.mobile-menu-close').click();
+    assert.equal(await scrollLockPage.evaluate(() => window.scrollY), lockedScrollY, 'closing the drawer must preserve the page position');
+    assert.equal(await scrollLockPage.locator('html').evaluate((element) => element.classList.contains('mobile-menu-open')), false, 'closing the drawer must unlock the root scroller');
+    await scrollLockPage.close();
   } finally {
     await browser.close();
   }

@@ -652,7 +652,7 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
 .product-related-grid h3 { margin:1.25rem 0 0.5rem; color:#343434; font:500 0.875rem/1.18125rem 'Montserrat',Arial,sans-serif; text-transform:uppercase; }.product-related-grid h3 a { color:inherit; }.product-related-grid p { height:1.375rem; margin:0; overflow:hidden; color:#343434; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; white-space:nowrap; text-overflow:ellipsis; }.product-related-price { margin-top:0.8125rem; color:#b0903d; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; }.product-related-price .amount { color:inherit; }
 .product-related-button { position:absolute; left:0; top:29.046875rem; width:10.37304688rem; height:2.1875rem; display:flex; align-items:center; justify-content:center; border-radius:62.4375rem; color:#fff; background:#b0903d; font:500 0.8125rem/1.125rem 'Montserrat',Arial,sans-serif; }
 @media (max-width:1199px) {
-  body.mobile-menu-open { overflow:hidden; }
+  html.mobile-menu-open,body.mobile-menu-open { overflow:hidden; }
   .mobile-menu { position:fixed; z-index:1000; inset:0; display:block; visibility:hidden; background:rgba(20,18,17,.66); opacity:0; transition:opacity .25s ease,visibility 0s linear .25s; }
   .mobile-menu::before { content:''; position:absolute; inset:0 auto 0 0; width:min(82.051vw,20rem); background:#f3ebe4; transform:translateX(-100%); transition:transform .25s ease; }
   .mobile-menu-open .mobile-menu { visibility:visible; opacity:1; transition-delay:0s; }

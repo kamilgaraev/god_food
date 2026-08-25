@@ -15,6 +15,7 @@
         if (!menuToggle || !mobileMenu) {
             return;
         }
+        document.documentElement.classList.toggle('mobile-menu-open', open);
         document.body.classList.toggle('mobile-menu-open', open);
         menuToggle.setAttribute('aria-expanded', String(open));
         mobileMenu.setAttribute('aria-hidden', String(!open));
