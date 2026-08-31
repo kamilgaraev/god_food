@@ -22,6 +22,53 @@
   text-underline-offset: .2em;
 }
 
+/* The storefront hides the order summary table; expose only its shipping row. */
+.commerce-cart-checkout .woocommerce-checkout-review-order-table {
+  border: 0;
+  display: table !important;
+  margin: 20px 0 24px;
+  width: 100%;
+}
+.commerce-cart-checkout .woocommerce-checkout-review-order-table > thead,
+.commerce-cart-checkout .woocommerce-checkout-review-order-table > tbody,
+.commerce-cart-checkout .woocommerce-checkout-review-order-table > tfoot > tr {
+  display: none;
+}
+.commerce-cart-checkout .woocommerce-checkout-review-order-table > tfoot,
+.commerce-cart-checkout .woocommerce-checkout-review-order-table > tfoot > .woocommerce-shipping-totals {
+  display: table-row-group;
+}
+.commerce-cart-checkout .woocommerce-checkout-review-order-table > tfoot > .woocommerce-shipping-totals {
+  background: transparent;
+  color: var(--theobroma-ink);
+  min-height: 0;
+  position: static;
+}
+.commerce-cart-checkout .woocommerce-shipping-totals { display: table-row !important; }
+.commerce-cart-checkout .woocommerce-shipping-totals > th,
+.commerce-cart-checkout .woocommerce-shipping-totals > td {
+  border: 0;
+  display: block;
+  padding: 0;
+  text-align: left;
+}
+.commerce-cart-checkout .woocommerce-shipping-totals > th {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+}
+.commerce-cart-checkout .woocommerce-shipping-methods {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.commerce-cart-checkout .woocommerce-shipping-methods li { margin: 0 0 12px; }
+.commerce-cart-checkout .woocommerce-shipping-totals span {
+  inset: auto;
+  position: static;
+  width: auto;
+  zoom: 1;
+}
+
 .theobroma-delivery-dialog {
   background: var(--theobroma-paper);
   border: 1px solid rgba(90, 63, 45, .15);

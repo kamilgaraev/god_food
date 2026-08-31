@@ -52,6 +52,7 @@
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
     "test:header": "node scripts/verify-responsive-header.spec.js",
     "test:shipping-banner": "node scripts/verify-shipping-banner-alignment.spec.js",
+    "test:delivery-selector": "node scripts/verify-delivery-selector.spec.js && node scripts/verify-delivery-selector-visibility.spec.js",
     "test:header-actions": "node scripts/verify-header-action-layout.spec.js",
     "test:header-routing": "node scripts/verify-header-action-routing.spec.js",
     "test:header-where-placement": "php scripts/verify-header-where-placement.php",
