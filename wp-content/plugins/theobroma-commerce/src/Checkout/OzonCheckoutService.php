@@ -15,11 +15,40 @@ final class OzonCheckoutService
     /** @param array<string,mixed> $viewport @return list<array{id:string,name:string,address:string,work_time:string,latitude:float|null,longitude:float|null}> */
     public function points(array $viewport): array
     {
-        $response = $this->client->deliveryPointList($viewport);
+        if ($this->validViewport($viewport)) {
+            $map = $this->client->deliveryMap(['viewport' => $viewport, 'zoom' => 14]);
+            $ids = [];
+            foreach ((array) ($map['clusters'] ?? []) as $cluster) {
+                if (!is_array($cluster)) {
+                    continue;
+                }
+                foreach ((array) ($cluster['map_point_ids'] ?? []) as $id) {
+                    if ((string) $id !== '') {
+                        $ids[] = (string) $id;
+                    }
+                }
+            }
+        } else {
+            $list = $this->client->deliveryPointList([]);
+            $ids = array_map(
+                static fn (array $point): string => trim((string) ($point['map_point_id'] ?? '')),
+                array_values(array_filter((array) ($list['points'] ?? $list), 'is_array'))
+            );
+        }
+
+        $ids = array_slice(array_values(array_unique(array_filter($ids))), 0, 100);
+        if ($ids === []) {
+            return [];
+        }
+
+        $response = $this->client->deliveryPointInfo(['map_point_ids' => $ids]);
         $points = is_array($response['points'] ?? null) ? $response['points'] : $response;
         $result = [];
         foreach ($points as $point) {
             if (!is_array($point)) {
+                continue;
+            }
+            if (($point['enabled'] ?? true) === false) {
                 continue;
             }
             $normalized = $this->normalizePoint($point);
@@ -33,8 +62,9 @@ final class OzonCheckoutService
     /** @return array{id:string,name:string,address:string,work_time:string,latitude:float|null,longitude:float|null} */
     public function point(string $id): array
     {
-        $response = $this->client->deliveryPointInfo(['map_point_id' => (int) $id]);
-        $point = is_array($response['point'] ?? null) ? $response['point'] : $response;
+        $response = $this->client->deliveryPointInfo(['map_point_ids' => [$id]]);
+        $points = array_values(array_filter((array) ($response['points'] ?? []), 'is_array'));
+        $point = $points[0] ?? (is_array($response['point'] ?? null) ? $response['point'] : $response);
         return $this->normalizePoint($point);
     }
 
@@ -110,15 +140,36 @@ final class OzonCheckoutService
     /** @param array<string,mixed> $point @return array{id:string,name:string,address:string,work_time:string,latitude:float|null,longitude:float|null} */
     private function normalizePoint(array $point): array
     {
-        $coordinate = is_array($point['coordinate'] ?? null) ? $point['coordinate'] : [];
+        $point = is_array($point['delivery_method'] ?? null) ? $point['delivery_method'] : $point;
+        $coordinate = is_array($point['coordinates'] ?? null)
+            ? $point['coordinates']
+            : (is_array($point['coordinate'] ?? null) ? $point['coordinate'] : []);
+        $workingHours = $point['work_time'] ?? $point['working_hours'] ?? '';
+        if (is_array($workingHours)) {
+            $workingHours = implode(', ', array_values(array_filter(array_map(
+                static fn (array $row): string => trim((string) ($row['date'] ?? '')),
+                array_values(array_filter($workingHours, 'is_array'))
+            ))));
+        }
         return [
             'id' => trim((string) ($point['map_point_id'] ?? $point['id'] ?? '')),
             'name' => trim((string) ($point['name'] ?? 'Пункт выдачи Ozon')),
             'address' => trim((string) ($point['address'] ?? $point['full_address'] ?? '')),
-            'work_time' => trim((string) ($point['work_time'] ?? $point['working_hours'] ?? '')),
+            'work_time' => trim((string) $workingHours),
             'latitude' => isset($coordinate['lat']) ? (float) $coordinate['lat'] : null,
             'longitude' => isset($coordinate['long']) ? (float) $coordinate['long'] : null,
         ];
+    }
+
+    /** @param array<string,mixed> $viewport */
+    private function validViewport(array $viewport): bool
+    {
+        foreach ([['left_bottom', 'lat'], ['left_bottom', 'long'], ['right_top', 'lat'], ['right_top', 'long']] as [$corner, $axis]) {
+            if (!is_numeric($viewport[$corner][$axis] ?? null)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** @param array<string,mixed> $money */

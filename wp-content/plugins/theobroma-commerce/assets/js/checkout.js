@@ -3,7 +3,7 @@
 
   var config = window.theobromaDelivery || {};
   var core = window.TheobromaDeliveryCore;
-  var state = { provider: '', kind: 'pickup', points: [], selected: null, map: null, placemarks: null };
+  var state = { provider: '', kind: 'pickup', points: [], selected: null, map: null, placemarks: null, suggestTimer: null };
 
   function dialog() { return document.querySelector('[data-delivery-dialog]'); }
   function field(name) { return document.querySelector('[data-delivery-field="' + name + '"]'); }
@@ -43,6 +43,11 @@
     });
   }
   function providerTitle() { return state.provider === 'ozon' ? 'Ozon Доставка' : 'СДЭК'; }
+  function closeDialog() {
+    var root = dialog();
+    if (!root) return;
+    if (typeof root.close === 'function' && root.open) root.close(); else root.removeAttribute('open');
+  }
 
   function open(provider) {
     state.provider = provider;
@@ -57,6 +62,11 @@
     });
     switchKind('pickup');
     setStatus('');
+    var search = root.querySelector('[data-delivery-search]');
+    var clear = root.querySelector('[data-delivery-search-clear]');
+    if (search) search.value = '';
+    if (clear) clear.hidden = true;
+    renderSuggestions([]);
     if (typeof root.showModal === 'function') root.showModal(); else root.setAttribute('open', '');
     loadPoints();
   }
@@ -73,9 +83,17 @@
     setStatus(kind === 'pickup' && !state.selected ? 'Выберите удобный пункт выдачи.' : '');
   }
 
-  function loadPoints() {
+  function viewportQuery(viewport) {
+    if (!viewport || !viewport.left_bottom || !viewport.right_top) return '';
+    return '&left_bottom_lat=' + encodeURIComponent(viewport.left_bottom.lat)
+      + '&left_bottom_long=' + encodeURIComponent(viewport.left_bottom.long)
+      + '&right_top_lat=' + encodeURIComponent(viewport.right_top.lat)
+      + '&right_top_long=' + encodeURIComponent(viewport.right_top.long);
+  }
+
+  function loadPoints(viewport) {
     var city = customer().city;
-    var url = config.pointsUrl + '?provider=' + encodeURIComponent(state.provider) + '&city=' + encodeURIComponent(city);
+    var url = config.pointsUrl + '?provider=' + encodeURIComponent(state.provider) + '&city=' + encodeURIComponent(city) + viewportQuery(viewport);
     if (state.provider === 'cdek' && !city) {
       state.points = [];
       renderPoints([]);
@@ -93,6 +111,46 @@
       renderPoints([]);
       setStatus(error.message, true);
     });
+  }
+
+  function renderSuggestions(items) {
+    var list = document.querySelector('[data-delivery-suggestions]');
+    if (!list) return;
+    list.innerHTML = '';
+    list.hidden = !items.length;
+    items.forEach(function (item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('role', 'option');
+      button.textContent = item.label || '';
+      button.addEventListener('click', function () {
+        var search = document.querySelector('[data-delivery-search]');
+        var clear = document.querySelector('[data-delivery-search-clear]');
+        if (search) search.value = item.label || '';
+        if (clear) clear.hidden = false;
+        renderSuggestions([]);
+        state.selected = null;
+        loadPoints(item.viewport || null);
+      });
+      list.appendChild(button);
+    });
+  }
+
+  function suggestAddress(value) {
+    if (state.provider !== 'ozon' || !config.suggestionsUrl || value.trim().length < 3) {
+      renderSuggestions([]);
+      return;
+    }
+    var city = customer().city;
+    var query = city && value.toLocaleLowerCase('ru-RU').indexOf(city.toLocaleLowerCase('ru-RU')) === -1
+      ? city + ', ' + value
+      : value;
+    request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
+      renderSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
+      if (data.configured === false) {
+        setStatus('Подсказки адреса доступны после настройки HTTP Геокодера. Пункты можно выбрать из списка.', false);
+      }
+    }).catch(function () { renderSuggestions([]); });
   }
 
   function pointButton(point) {
@@ -187,13 +245,28 @@
       }
       setStatus((data.quote && data.quote.label ? data.quote.label : 'Доставка выбрана') + '. Обновляем заказ…');
       $(document.body).trigger('update_checkout');
-      window.setTimeout(function () { if (dialog().open) dialog().close(); }, 350);
+      window.setTimeout(closeDialog, 350);
     }).catch(function (error) {
       setStatus(error.message, true);
     }).finally(function () { button.disabled = false; });
   }
 
   document.addEventListener('click', function (event) {
+    if (event.target === dialog()) { closeDialog(); return; }
+    if (event.target.closest('[data-delivery-close]')) { event.preventDefault(); closeDialog(); return; }
+    var clear = event.target.closest('[data-delivery-search-clear]');
+    if (clear) {
+      event.preventDefault();
+      var search = document.querySelector('[data-delivery-search]');
+      if (search) {
+        search.value = '';
+        search.focus();
+      }
+      clear.hidden = true;
+      renderSuggestions([]);
+      renderPoints(state.points);
+      return;
+    }
     var opener = event.target.closest('[data-delivery-open]');
     if (opener) { event.preventDefault(); open(opener.dataset.deliveryOpen); return; }
     var tab = event.target.closest('[data-delivery-kind]');
@@ -201,6 +274,13 @@
     if (event.target.closest('[data-delivery-confirm]')) confirm();
   });
   document.addEventListener('input', function (event) {
-    if (event.target.matches('[data-delivery-search]')) renderPoints(core.filterPoints(state.points, event.target.value));
+    if (event.target.matches('[data-delivery-search]')) {
+      var value = event.target.value;
+      var clear = document.querySelector('[data-delivery-search-clear]');
+      if (clear) clear.hidden = value === '';
+      renderPoints(core.filterPoints(state.points, value));
+      window.clearTimeout(state.suggestTimer);
+      state.suggestTimer = window.setTimeout(function () { suggestAddress(value); }, 280);
+    }
   });
 })(jQuery, window, document);

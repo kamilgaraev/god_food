@@ -11,30 +11,61 @@ use Theobroma\Commerce\Tests\Fakes\StaticAccessTokenProvider;
 
 final class OzonCheckoutServiceTest extends TestCase
 {
-    public function testNormalizesPickupPointsAndLoadsSelectedPointDetails(): void
+    public function testLoadsDetailedPickupPointsForMapViewport(): void
     {
         $transport = new RecordingTransport([
-            ['status' => 200, 'body' => ['result' => ['points' => [[
-                'map_point_id' => 125,
-                'coordinate' => ['lat' => 55.75, 'long' => 37.61],
+            ['status' => 200, 'body' => ['result' => ['clusters' => [[
+                'map_point_ids' => ['125'],
+                'points_count' => 1,
             ]]]]],
-            ['status' => 200, 'body' => ['result' => [
-                'map_point_id' => 125,
-                'name' => 'Ozon ПВЗ',
-                'address' => 'Москва, Тверская, 1',
-                'work_time' => '09:00–21:00',
-                'coordinate' => ['lat' => 55.75, 'long' => 37.61],
-            ]]],
+            ['status' => 200, 'body' => ['result' => ['points' => [[
+                'enabled' => true,
+                'delivery_method' => [
+                    'map_point_id' => 125,
+                    'name' => 'Ozon ПВЗ',
+                    'address' => 'Казань, проспект Космонавтов, 42А',
+                    'working_hours' => [['date' => 'Пн–Вс', 'periods' => []]],
+                    'coordinates' => ['lat' => 55.79, 'long' => 49.20],
+                ],
+            ]]]]],
         ]);
         $service = new OzonCheckoutService(new OzonClient($transport, new StaticAccessTokenProvider(['token'])));
 
-        $points = $service->points([]);
-        $point = $service->point('125');
+        $points = $service->points([
+            'left_bottom' => ['lat' => 55.70, 'long' => 49.05],
+            'right_top' => ['lat' => 55.90, 'long' => 49.30],
+        ]);
 
         $this->assertSame('125', $points[0]['id']);
-        $this->assertSame(55.75, $points[0]['latitude']);
-        $this->assertSame('Москва, Тверская, 1', $point['address']);
-        $this->assertSame('09:00–21:00', $point['work_time']);
+        $this->assertSame('Казань, проспект Космонавтов, 42А', $points[0]['address']);
+        $this->assertSame(55.79, $points[0]['latitude']);
+        $this->assertSame('/v1/delivery/map', parse_url($transport->requests[0]['url'], PHP_URL_PATH));
+        $this->assertSame(14, $transport->requests[0]['options']['json']['zoom']);
+        $this->assertSame('/v1/delivery/point/info', parse_url($transport->requests[1]['url'], PHP_URL_PATH));
+        $this->assertSame(['125'], $transport->requests[1]['options']['json']['map_point_ids']);
+    }
+
+    public function testLoadsSelectedPointUsingDocumentedBatchPayload(): void
+    {
+        $transport = new RecordingTransport([[
+            'status' => 200,
+            'body' => ['result' => ['points' => [[
+                'enabled' => true,
+                'delivery_method' => [
+                    'map_point_id' => 125,
+                    'name' => 'Ozon ПВЗ',
+                    'address' => 'Казань, проспект Космонавтов, 42А',
+                    'coordinates' => ['lat' => 55.79, 'long' => 49.20],
+                ],
+            ]]]],
+        ]]);
+        $service = new OzonCheckoutService(new OzonClient($transport, new StaticAccessTokenProvider(['token'])));
+
+        $point = $service->point('125');
+
+        $this->assertSame('125', $point['id']);
+        $this->assertSame('Казань, проспект Космонавтов, 42А', $point['address']);
+        $this->assertSame(['125'], $transport->requests[0]['options']['json']['map_point_ids']);
     }
 
     public function testBuildsConfirmedPickupQuoteAndExactOrderPayload(): void

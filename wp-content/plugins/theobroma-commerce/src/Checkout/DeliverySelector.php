@@ -43,13 +43,13 @@ final class DeliverySelector
         $this->rendered = true;
         ?>
         <dialog class="theobroma-delivery-dialog" data-delivery-dialog aria-labelledby="theobroma-delivery-title">
-            <form method="dialog" class="theobroma-delivery-shell">
+            <div class="theobroma-delivery-shell">
                 <header class="theobroma-delivery-header">
                     <div>
                         <p class="theobroma-delivery-eyebrow" data-delivery-provider>Доставка</p>
                         <h2 id="theobroma-delivery-title">Как доставить заказ?</h2>
                     </div>
-                    <button class="theobroma-delivery-close" value="cancel" aria-label="Закрыть">×</button>
+                    <button type="button" class="theobroma-delivery-close" data-delivery-close aria-label="Закрыть"><span aria-hidden="true"></span></button>
                 </header>
 
                 <div class="theobroma-delivery-tabs" role="tablist" aria-label="Способ доставки">
@@ -58,10 +58,14 @@ final class DeliverySelector
                 </div>
 
                 <section data-delivery-pickup>
-                    <label class="theobroma-delivery-search">
-                        <span>Найти пункт по адресу</span>
-                        <input type="search" data-delivery-search placeholder="Улица, метро или район" autocomplete="off">
-                    </label>
+                    <div class="theobroma-delivery-search">
+                        <label for="theobroma-delivery-search">Найти пункт по адресу</label>
+                        <span class="theobroma-delivery-search-control">
+                            <input id="theobroma-delivery-search" type="text" data-delivery-search placeholder="Город, улица или дом" autocomplete="off" aria-autocomplete="list" aria-controls="theobroma-delivery-suggestions">
+                            <button type="button" class="theobroma-delivery-search-clear" data-delivery-search-clear aria-label="Очистить поиск" hidden><span aria-hidden="true"></span></button>
+                        </span>
+                        <span class="theobroma-delivery-suggestions" id="theobroma-delivery-suggestions" data-delivery-suggestions role="listbox" hidden></span>
+                    </div>
                     <div class="theobroma-delivery-grid">
                         <div class="theobroma-delivery-list" data-delivery-list aria-live="polite"></div>
                         <div class="theobroma-delivery-map" data-delivery-map hidden aria-label="Карта пунктов выдачи"></div>
@@ -81,7 +85,7 @@ final class DeliverySelector
                 <footer class="theobroma-delivery-footer">
                     <button type="button" class="button alt" data-delivery-confirm>Рассчитать и выбрать</button>
                 </footer>
-            </form>
+            </div>
         </dialog>
         <?php
     }
@@ -111,11 +115,12 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_MAPS_JS_KEY')
             : (string) ($settings['yandex_maps_js_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.3');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.4');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.2', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.4', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
+            'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
             'quoteUrl' => rest_url('theobroma-commerce/v1/delivery/quote'),
             'selectionUrl' => rest_url('theobroma-commerce/v1/delivery/selection'),
             'nonce' => wp_create_nonce(DeliveryCheckoutController::NONCE_ACTION),

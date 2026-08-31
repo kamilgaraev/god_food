@@ -34,6 +34,11 @@ final class DeliveryCheckoutController
             'callback' => [$this, 'points'],
             'permission_callback' => [$this, 'permission'],
         ]);
+        register_rest_route('theobroma-commerce/v1', '/delivery/suggestions', [
+            'methods' => 'GET',
+            'callback' => [$this, 'suggestions'],
+            'permission_callback' => [$this, 'permission'],
+        ]);
         register_rest_route('theobroma-commerce/v1', '/delivery/quote', [
             'methods' => 'POST',
             'callback' => [$this, 'quote'],
@@ -58,7 +63,7 @@ final class DeliveryCheckoutController
             if ($provider === 'cdek') {
                 $points = $this->cdek($settings)->points(sanitize_text_field((string) $request->get_param('city')));
             } elseif ($provider === 'ozon') {
-                $points = $this->ozon($settings)->points([]);
+                $points = $this->ozon($settings)->points($this->viewport($request));
             } else {
                 return new \WP_Error('invalid_provider', __('Неизвестная служба доставки.', 'theobroma-commerce'), ['status' => 400]);
             }
@@ -66,6 +71,30 @@ final class DeliveryCheckoutController
         } catch (\Throwable $exception) {
             wc_get_logger()->error('Delivery points unavailable', ['source' => 'theobroma-delivery', 'provider' => sanitize_key((string) $request->get_param('provider'))]);
             return new \WP_Error('delivery_points_unavailable', __('Не удалось загрузить пункты выдачи.', 'theobroma-commerce'), ['status' => 502]);
+        }
+    }
+
+    public function suggestions(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $settings = (array) get_option('theobroma_commerce_settings', []);
+        $key = defined('THEOBROMA_YANDEX_GEOCODER_KEY')
+            ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY')
+            : (string) ($settings['yandex_geocoder_key'] ?? '');
+        if (trim($key) === '') {
+            return rest_ensure_response(['configured' => false, 'suggestions' => []]);
+        }
+
+        try {
+            return rest_ensure_response([
+                'configured' => true,
+                'suggestions' => (new YandexGeocoder())->suggestions(
+                    sanitize_text_field((string) $request->get_param('query')),
+                    $key
+                ),
+            ]);
+        } catch (\Throwable $exception) {
+            wc_get_logger()->error('Address suggestions unavailable', ['source' => 'theobroma-delivery']);
+            return new \WP_Error('delivery_suggestions_unavailable', __('Не удалось загрузить подсказки адреса.', 'theobroma-commerce'), ['status' => 502]);
         }
     }
 
@@ -213,5 +242,23 @@ final class DeliveryCheckoutController
             (string) ($destination['address'] ?? ''),
             (string) ($destination['address_2'] ?? ''),
         ])));
+    }
+
+    /** @return array<string,array{lat:float,long:float}> */
+    private function viewport(\WP_REST_Request $request): array
+    {
+        $values = [
+            'left_bottom' => ['lat' => $request->get_param('left_bottom_lat'), 'long' => $request->get_param('left_bottom_long')],
+            'right_top' => ['lat' => $request->get_param('right_top_lat'), 'long' => $request->get_param('right_top_long')],
+        ];
+        foreach ($values as $point) {
+            if (!is_numeric($point['lat']) || !is_numeric($point['long'])) {
+                return [];
+            }
+        }
+        return [
+            'left_bottom' => ['lat' => (float) $values['left_bottom']['lat'], 'long' => (float) $values['left_bottom']['long']],
+            'right_top' => ['lat' => (float) $values['right_top']['lat'], 'long' => (float) $values['right_top']['long']],
+        ];
     }
 }
