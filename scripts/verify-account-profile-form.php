@@ -46,6 +46,19 @@ foreach (['account_first_name', 'account_last_name', 'account_email', 'password_
     expect_true(str_contains($html, 'name="' . $field . '"'), 'The profile form must keep the ' . $field . ' field.');
 }
 
+expect_true(
+    str_contains($html, '<label for="password_current">Current password</label>'),
+    'The current-password label must stay concise.'
+);
+expect_true(
+    str_contains($html, '<label for="password_1">New password</label>'),
+    'The new-password label must stay concise.'
+);
+expect_true(
+    !str_contains($html, 'leave blank to leave unchanged'),
+    'The password labels must not repeat the optional-field hint.'
+);
+
 expect_true(str_contains($html, 'name="save-account-details-nonce"'), 'The profile form must keep WooCommerce nonce protection.');
 expect_true(str_contains($html, 'name="action" value="save_account_details"'), 'The profile form must submit the WooCommerce save action.');
 
