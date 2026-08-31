@@ -118,19 +118,67 @@ function theobroma_cacao_catalog_url(mixed $percentage): string {
 
 /** @return WC_Product[] */
 function theobroma_homepage_products(): array {
-    if (!function_exists('wc_get_product_id_by_sku')) {
+    if (!function_exists('wc_get_product_id_by_sku') || !function_exists('wc_get_product')) {
         return array();
     }
 
     $products = array();
-    foreach (array('theobroma-100-70', 'theobroma-30-raspberry', 'theobroma-cacao-200', 'theobroma-100-80') as $sku) {
-        $product_id = wc_get_product_id_by_sku($sku);
-        $product = $product_id ? wc_get_product($product_id) : null;
-        if ($product instanceof WC_Product && theobroma_product_is_home_eligible($product)) {
-            $products[] = $product;
+    $seen_product_ids = array();
+    $product_ids = array();
+    $settings = function_exists('get_option') ? get_option('theobroma_content_settings', array()) : array();
+    $settings = is_array($settings) ? $settings : array();
+
+    for ($slot = 1; $slot <= 4; $slot++) {
+        $value = $settings['homepage_product_' . $slot] ?? '';
+        if ((is_int($value) || (is_string($value) && ctype_digit($value))) && (int) $value > 0) {
+            $product_ids[] = (int) $value;
         }
     }
-    return $products;
+
+    $append_product = static function (mixed $product) use (&$products, &$seen_product_ids): void {
+        if (!$product instanceof WC_Product || !theobroma_product_is_home_eligible($product)) {
+            return;
+        }
+        $product_id = $product->get_id();
+        if (isset($seen_product_ids[$product_id])) {
+            return;
+        }
+        $products[] = $product;
+        $seen_product_ids[$product_id] = true;
+    };
+
+    foreach ($product_ids as $product_id) {
+        $append_product(wc_get_product($product_id));
+    }
+    if (count($products) === 4) {
+        return $products;
+    }
+
+    foreach (array('theobroma-100-70', 'theobroma-30-raspberry', 'theobroma-cacao-200', 'theobroma-100-80') as $sku) {
+        $product_id = wc_get_product_id_by_sku($sku);
+        $append_product($product_id ? wc_get_product($product_id) : null);
+        if (count($products) === 4) {
+            return $products;
+        }
+    }
+
+    if (function_exists('wc_get_products')) {
+        $catalog_products = wc_get_products(array(
+            'status' => 'publish',
+            'limit' => -1,
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+            'return' => 'objects',
+        ));
+        foreach (is_array($catalog_products) ? $catalog_products : array() as $product) {
+            $append_product($product instanceof WC_Product ? $product : null);
+            if (count($products) === 4) {
+                break;
+            }
+        }
+    }
+
+    return array_slice($products, 0, 4);
 }
 
 /** @return array<int,array{products:WC_Product[],representative:WC_Product,minimum_price:float}> */

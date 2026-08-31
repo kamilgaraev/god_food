@@ -60,6 +60,12 @@ final class Theobroma_Admin_Tools {
             return;
         }
         $groups = array(
+            'Товары на главной' => array(
+                'homepage_product_1' => array('Карточка 1 — слева', 'product'),
+                'homepage_product_2' => array('Карточка 2', 'product'),
+                'homepage_product_3' => array('Карточка 3', 'product'),
+                'homepage_product_4' => array('Карточка 4 — справа', 'product'),
+            ),
             'Шапка и первый экран' => array(
                 'shipping_text' => array('Текст верхней плашки', 'text'),
                 'hero_line_1' => array('Hero: строка 1', 'text'),
@@ -122,6 +128,19 @@ final class Theobroma_Admin_Tools {
                 'social_dzen' => array('Дзен', 'url'),
             ),
         );
+        $product_choices = function_exists('wc_get_products') ? wc_get_products(array(
+            'status' => 'publish',
+            'limit' => -1,
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'return' => 'objects',
+        )) : array();
+        $product_choices = array_values(array_filter(
+            is_array($product_choices) ? $product_choices : array(),
+            static fn($product): bool => $product instanceof WC_Product
+                && (!function_exists('theobroma_product_is_home_eligible') || theobroma_product_is_home_eligible($product))
+        ));
+        $current_homepage_products = function_exists('theobroma_homepage_products') ? theobroma_homepage_products() : array();
         echo '<div class="wrap"><h1>Общие блоки сайта</h1><p>Эти значения используются на всех страницах. Пустое поле возвращает исходный текст.</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>Настройки сохранены.</p></div>';
@@ -129,12 +148,32 @@ final class Theobroma_Admin_Tools {
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '"><input type="hidden" name="action" value="theobroma_save_content_settings">';
         wp_nonce_field('theobroma_save_content_settings');
         foreach ($groups as $title => $fields) {
-            echo '<h2>' . esc_html($title) . '</h2><table class="form-table"><tbody>';
+            echo '<h2>' . esc_html($title) . '</h2>';
+            if ($title === 'Товары на главной') {
+                echo '<p>Выберите четыре карточки и задайте их порядок слева направо. Если товар станет недоступен, витрина автоматически подставит другой опубликованный товар.</p>';
+            }
+            echo '<table class="form-table"><tbody>';
             foreach ($fields as $key => $definition) {
                 $value = function_exists('theobroma_content') ? theobroma_content($key) : '';
+                if ($definition[1] === 'product') {
+                    $slot = (int) substr($key, -1) - 1;
+                    $current_product = $current_homepage_products[$slot] ?? null;
+                    $value = $current_product instanceof WC_Product ? (string) $current_product->get_id() : '';
+                }
                 echo '<tr><th scope="row"><label for="theobroma_' . esc_attr($key) . '">' . esc_html($definition[0]) . '</label></th><td>';
                 if ($definition[1] === 'textarea') {
                     echo '<textarea class="large-text" rows="4" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']">' . esc_textarea($value) . '</textarea>';
+                } elseif ($definition[1] === 'product') {
+                    echo '<select class="regular-text" required id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']"><option value="">Выберите товар</option>';
+                    foreach ($product_choices as $product) {
+                        $product_id = (string) $product->get_id();
+                        $label = $product->get_name();
+                        if ($product->get_sku() !== '') {
+                            $label .= ' — ' . $product->get_sku();
+                        }
+                        echo '<option value="' . esc_attr($product_id) . '"' . ($product_id === $value ? ' selected' : '') . '>' . esc_html($label) . '</option>';
+                    }
+                    echo '</select>';
                 } else {
                     echo '<input class="regular-text" type="' . esc_attr($definition[1]) . '" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']" value="' . esc_attr($value) . '">';
                 }
@@ -176,9 +215,29 @@ final class Theobroma_Admin_Tools {
                 $clean[$key] = sanitize_text_field($value);
             }
         }
+        $clean = self::normalize_homepage_product_settings($clean);
         update_option('theobroma_content_settings', $clean, false);
         wp_safe_redirect(add_query_arg('updated', '1', admin_url('admin.php?page=theobroma-settings')));
         exit;
+    }
+
+    /** @param array<string,string> $settings @return array<string,string> */
+    public static function normalize_homepage_product_settings(array $settings): array {
+        $used_product_ids = array();
+        for ($slot = 1; $slot <= 4; $slot++) {
+            $key = 'homepage_product_' . $slot;
+            $product_id = absint($settings[$key] ?? 0);
+            $product = $product_id && function_exists('wc_get_product') ? wc_get_product($product_id) : null;
+            $eligible = $product instanceof WC_Product
+                && (!function_exists('theobroma_product_is_home_eligible') || theobroma_product_is_home_eligible($product));
+            if (!$eligible || in_array($product_id, $used_product_ids, true)) {
+                $settings[$key] = '';
+                continue;
+            }
+            $settings[$key] = (string) $product_id;
+            $used_product_ids[] = $product_id;
+        }
+        return $settings;
     }
 
     public static function use_classic_recipe_editor(bool $use_block_editor, string $post_type): bool {

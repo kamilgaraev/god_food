@@ -211,7 +211,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-product-card__heading { margin-top: 1.125rem; }
 .home-product-card h3 { min-height: 0; margin: 0; font: 400 clamp(1.4375rem, 2vw, 1.9375rem)/1 'Cormorant', Georgia, serif; text-transform: none; }
 .home-product-card h3 a { color: var(--home-ink); }
-.home-product-card__purchase { display: grid; gap: 0.75rem; }
+.home-product-card__purchase { margin-top: auto; display: grid; gap: 0.75rem; }
 .home-product-card__price { display: block; color: var(--home-ink); font: 600 1.125rem/1.25 'Montserrat', Arial, sans-serif; letter-spacing: -.02em; }
 .home-product-card__price del { color: var(--home-muted); }
 .home-product-card__price ins { text-decoration: none; }

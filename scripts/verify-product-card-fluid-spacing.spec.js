@@ -92,6 +92,7 @@ function assertClose(actual, expected, message, tolerance = 1) {
             title: bounds('h3'),
             description: bounds(':scope > p'),
             price: bounds('.home-product-card__price'),
+            button: bounds('.home-product-card__button'),
             titleLineHeight: Number.parseFloat(titleStyle.lineHeight),
             descriptionLineHeight: Number.parseFloat(descriptionStyle.lineHeight),
           };
@@ -106,12 +107,13 @@ function assertClose(actual, expected, message, tolerance = 1) {
           const descriptionGap = card.description.top - card.heading.bottom;
           const purchaseGap = card.price.top - card.description.bottom;
             assert.ok(descriptionGap >= 0 && descriptionGap <= 12, `${label} card ${index + 1} description must follow its title without a reserved row (${descriptionGap}px).`);
-            assert.ok(purchaseGap >= 0 && purchaseGap <= 20, `${label} card ${index + 1} purchase block must follow its description without flexible empty space (${purchaseGap}px).`);
+            assert.ok(purchaseGap >= 0, `${label} card ${index + 1} purchase block must not overlap its description (${purchaseGap}px).`);
         });
 
-        const compactTextSpan = metrics[0].price.top - metrics[0].heading.top;
-        const longTextSpan = metrics[1].price.top - metrics[1].heading.top;
-          assert.ok(longTextSpan > compactTextSpan + metrics[0].titleLineHeight, `${label} card height must grow from actual text content.`);
+          if (width > 600) {
+            assertClose(metrics[0].price.top, metrics[1].price.top, `${label} prices must align across the row`, 0.5);
+            assertClose(metrics[0].button.top, metrics[1].button.top, `${label} buttons must align across the row`, 0.5);
+          }
         }
       } finally {
         await page.close();
