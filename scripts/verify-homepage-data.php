@@ -73,6 +73,36 @@ if (!is_file($module)) {
 }
 require_once $module;
 
+assert_same('Ваш процент какао', theobroma_cacao_settings()['heading'], 'Uses the current cacao heading when no settings were saved');
+assert_same('Купить', theobroma_cacao_settings()['button_label'], 'Uses the current cacao call-to-action when no settings were saved');
+assert_same(array(59, 65, 68, 70, 80), theobroma_enabled_cacao_percentages(), 'Enables every cacao profile by default');
+assert_same('мягкий', theobroma_cacao_profiles()[59]['label'], 'Uses the current profile labels by default');
+assert_same('От 59% до 80%. Выберите крепость, а мы подберем вкус, идеально подходящий вам.', theobroma_cacao_intro(59, 80), 'Expands the default cacao range placeholders');
+
+$test_options['theobroma_content_settings'] = array(
+    'cacao_enabled' => '1',
+    'cacao_heading' => 'Найдите свой вкус',
+    'cacao_button_label' => 'Выбрать шоколад',
+    'cacao_intro' => 'Шкала от {min}% до {max}%.',
+    'cacao_default_percentage' => '80',
+    'cacao_59_enabled' => '0',
+    'cacao_65_enabled' => '1',
+    'cacao_68_enabled' => '0',
+    'cacao_70_enabled' => '0',
+    'cacao_80_enabled' => '1',
+    'cacao_65_label' => 'с пряностями',
+    'cacao_65_description' => 'Настраиваемое описание вкуса.',
+);
+assert_same('Найдите свой вкус', theobroma_cacao_settings()['heading'], 'Reads a configured cacao heading');
+assert_same('Выбрать шоколад', theobroma_cacao_settings()['button_label'], 'Reads a configured cacao call-to-action');
+assert_same(array(65, 80), theobroma_enabled_cacao_percentages(), 'Shows only administrator-enabled cacao profiles');
+assert_same('с пряностями', theobroma_cacao_profiles()[65]['label'], 'Reads a configured profile label');
+assert_same('Настраиваемое описание вкуса.', theobroma_cacao_profiles()[65]['description'], 'Reads a configured profile description');
+assert_same('Шкала от 65% до 80%.', theobroma_cacao_intro(65, 80), 'Expands configured cacao range placeholders');
+assert_same(80, theobroma_home_cacao_default_percentage(array(65 => array(), 80 => array())), 'Uses an available configured default percentage');
+assert_same(65, theobroma_home_cacao_default_percentage(array(65 => array())), 'Falls back to the first available percentage');
+$test_options = array();
+
 assert_same(70, theobroma_normalize_cacao_percentage('70'), 'Accepts an allowed percentage');
 assert_same(80, theobroma_normalize_cacao_percentage(80), 'Accepts an allowed integer');
 assert_same(null, theobroma_normalize_cacao_percentage('70foo'), 'Rejects a malformed percentage');

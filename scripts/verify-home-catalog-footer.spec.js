@@ -17,6 +17,11 @@ function theobroma_page_url($title) { return '/' . rawurlencode($title) . '/'; }
 function theobroma_homepage_products() { return []; }
 function theobroma_home_cacao_groups() { return []; }
 function theobroma_cacao_profiles() { return []; }
+function theobroma_cacao_settings() { return ['enabled' => false, 'heading' => '', 'intro' => '', 'default_percentage' => 70]; }
+function theobroma_enabled_cacao_percentages() { return []; }
+function theobroma_home_cacao_options() { return []; }
+function theobroma_home_cacao_default_percentage() { return 0; }
+function theobroma_cacao_intro() { return ''; }
 function is_front_page() { return true; }
 function esc_attr($value) { return htmlspecialchars((string) $value, ENT_QUOTES); }
 function esc_html($value) { return htmlspecialchars((string) $value, ENT_QUOTES); }

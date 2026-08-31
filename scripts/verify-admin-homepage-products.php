@@ -27,6 +27,13 @@ function theobroma_content(string $key): string {
         'homepage_product_2' => '11',
         'homepage_product_3' => '14',
         'homepage_product_4' => '12',
+        'cacao_enabled' => '1',
+        'cacao_default_percentage' => '80',
+        'cacao_59_enabled' => '1',
+        'cacao_65_enabled' => '1',
+        'cacao_68_enabled' => '1',
+        'cacao_70_enabled' => '1',
+        'cacao_80_enabled' => '1',
     )[$key] ?? '';
 }
 function wc_get_products(array $args): array {
@@ -75,6 +82,31 @@ foreach (array(13, 11, 14, 12) as $slot => $product_id) {
 }
 if (!str_contains($html, 'Шоколад с малиной') || !str_contains($html, 'sku-raspberry')) {
     throw new RuntimeException('Homepage product selectors must identify products by name and SKU.');
+}
+if (!str_contains($html, 'Ваш процент какао')
+    || !str_contains($html, 'name="settings[cacao_heading]"')
+    || !str_contains($html, 'name="settings[cacao_intro]"')
+    || !str_contains($html, 'name="settings[cacao_button_label]"')
+    || substr_count($html, 'name="settings[cacao_59_enabled]"') !== 2
+    || !str_contains($html, 'name="settings[cacao_59_label]"')
+    || !str_contains($html, 'name="settings[cacao_59_description]"')) {
+    throw new RuntimeException('Cacao block settings must expose section copy and profile controls.');
+}
+$defaultPattern = '~<select[^>]*name="settings\[cacao_default_percentage\]"[^>]*>(.*?)</select>~s';
+if (preg_match($defaultPattern, $html, $defaultMatches) !== 1 || !str_contains($defaultMatches[1], 'value="80" selected')) {
+    throw new RuntimeException('Cacao block settings must preserve the configured default percentage.');
+}
+$normalizedCacao = Theobroma_Admin_Tools::normalize_cacao_settings(array(
+    'cacao_enabled' => 'yes',
+    'cacao_default_percentage' => '99',
+    'cacao_59_enabled' => '1',
+    'cacao_65_enabled' => 'unexpected',
+));
+if (($normalizedCacao['cacao_enabled'] ?? null) !== '0'
+    || ($normalizedCacao['cacao_59_enabled'] ?? null) !== '1'
+    || ($normalizedCacao['cacao_65_enabled'] ?? null) !== '0'
+    || ($normalizedCacao['cacao_default_percentage'] ?? null) !== '59') {
+    throw new RuntimeException('Cacao settings must normalize flags and choose an enabled default percentage.');
 }
 
 if (!method_exists(Theobroma_Admin_Tools::class, 'normalize_homepage_product_settings')) {

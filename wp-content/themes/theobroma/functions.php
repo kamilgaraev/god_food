@@ -303,6 +303,7 @@ function theobroma_content(string $key): string {
         'social_whatsapp' => 'https://wa.me/79257555626',
         'social_dzen' => 'https://dzen.ru/pishchabogov',
     );
+    $defaults = array_merge($defaults, theobroma_cacao_default_settings());
     $settings = get_option('theobroma_content_settings', array());
     return isset($settings[$key]) && is_string($settings[$key]) && $settings[$key] !== '' ? $settings[$key] : ($defaults[$key] ?? '');
 }

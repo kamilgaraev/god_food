@@ -3,6 +3,67 @@ declare(strict_types=1);
 
 defined('ABSPATH') || (PHP_SAPI === 'cli') || exit;
 
+/** @return array<string,string> */
+function theobroma_cacao_default_settings(): array {
+    return array(
+        'cacao_enabled' => '1',
+        'cacao_heading' => 'Ваш процент какао',
+        'cacao_intro' => 'От {min}% до {max}%. Выберите крепость, а мы подберем вкус, идеально подходящий вам.',
+        'cacao_button_label' => 'Купить',
+        'cacao_default_percentage' => '70',
+        'cacao_59_enabled' => '1',
+        'cacao_59_label' => 'мягкий',
+        'cacao_59_description' => 'Мягкий шоколад с ягодными, ореховыми и фруктовыми сочетаниями.',
+        'cacao_65_enabled' => '1',
+        'cacao_65_label' => 'пряный',
+        'cacao_65_description' => 'Тёплый вкус какао с выразительной нотой натуральной корицы.',
+        'cacao_68_enabled' => '1',
+        'cacao_68_label' => 'характерный',
+        'cacao_68_description' => 'Чистый шоколадный вкус, раскрытый тонким ароматом кориандра.',
+        'cacao_70_enabled' => '1',
+        'cacao_70_label' => 'классический',
+        'cacao_70_description' => 'Баланс насыщенного какао и деликатной сладости кокосового сахара.',
+        'cacao_80_enabled' => '1',
+        'cacao_80_label' => 'глубокий',
+        'cacao_80_description' => 'Глубокий, строгий вкус с долгим шоколадным послевкусием.',
+    );
+}
+
+/**
+ * @return array{enabled:bool,heading:string,intro:string,button_label:string,default_percentage:int,profiles:array<int,array{enabled:bool,label:string,description:string}>}
+ */
+function theobroma_cacao_settings(): array {
+    $defaults = theobroma_cacao_default_settings();
+    $saved = function_exists('get_option') ? get_option('theobroma_content_settings', array()) : array();
+    $saved = is_array($saved) ? $saved : array();
+    $values = $defaults;
+    foreach ($defaults as $key => $default) {
+        if (isset($saved[$key]) && is_string($saved[$key]) && $saved[$key] !== '') {
+            $values[$key] = $saved[$key];
+        }
+    }
+
+    $profiles = array();
+    foreach (theobroma_allowed_cacao_percentages() as $percentage) {
+        $prefix = 'cacao_' . $percentage . '_';
+        $profiles[$percentage] = array(
+            'enabled' => $values[$prefix . 'enabled'] === '1',
+            'label' => $values[$prefix . 'label'],
+            'description' => $values[$prefix . 'description'],
+        );
+    }
+
+    $default_percentage = theobroma_normalize_cacao_percentage($values['cacao_default_percentage']) ?? 70;
+    return array(
+        'enabled' => $values['cacao_enabled'] === '1',
+        'heading' => $values['cacao_heading'],
+        'intro' => $values['cacao_intro'],
+        'button_label' => $values['cacao_button_label'],
+        'default_percentage' => $default_percentage,
+        'profiles' => $profiles,
+    );
+}
+
 /** @return int[] */
 function theobroma_allowed_cacao_percentages(): array {
     return array(59, 65, 68, 70, 80);
@@ -238,13 +299,34 @@ if (function_exists('add_filter')) {
 
 /** @return array<int,array{label:string,description:string}> */
 function theobroma_cacao_profiles(): array {
-    return array(
-        59 => array('label' => 'мягкий', 'description' => 'Мягкий шоколад с ягодными, ореховыми и фруктовыми сочетаниями.'),
-        65 => array('label' => 'пряный', 'description' => 'Тёплый вкус какао с выразительной нотой натуральной корицы.'),
-        68 => array('label' => 'характерный', 'description' => 'Чистый шоколадный вкус, раскрытый тонким ароматом кориандра.'),
-        70 => array('label' => 'классический', 'description' => 'Баланс насыщенного какао и деликатной сладости кокосового сахара.'),
-        80 => array('label' => 'глубокий', 'description' => 'Глубокий, строгий вкус с долгим шоколадным послевкусием.'),
+    return array_map(
+        static fn(array $profile): array => array('label' => $profile['label'], 'description' => $profile['description']),
+        theobroma_cacao_settings()['profiles']
     );
+}
+
+/** @return int[] */
+function theobroma_enabled_cacao_percentages(): array {
+    return array_keys(array_filter(
+        theobroma_cacao_settings()['profiles'],
+        static fn(array $profile): bool => $profile['enabled']
+    ));
+}
+
+function theobroma_cacao_intro(int $minimum, int $maximum): string {
+    return strtr(theobroma_cacao_settings()['intro'], array(
+        '{min}' => (string) $minimum,
+        '{max}' => (string) $maximum,
+    ));
+}
+
+/** @param array<int,mixed> $available */
+function theobroma_home_cacao_default_percentage(array $available): int {
+    if (!$available) {
+        return 0;
+    }
+    $configured = theobroma_cacao_settings()['default_percentage'];
+    return isset($available[$configured]) ? $configured : (int) array_key_first($available);
 }
 
 /**
@@ -254,10 +336,14 @@ function theobroma_cacao_profiles(): array {
  */
 function theobroma_home_cacao_options(array $groups, array $profiles): array {
     ksort($groups, SORT_NUMERIC);
+    $enabled = theobroma_enabled_cacao_percentages();
 
     $options = array();
     foreach ($groups as $percentage => $group) {
         $percentage = (int) $percentage;
+        if (!in_array($percentage, $enabled, true)) {
+            continue;
+        }
         $options[$percentage] = array(
             'percentage' => $percentage,
             'label' => $profiles[$percentage]['label'] ?? '',

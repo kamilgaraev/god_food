@@ -6,14 +6,17 @@ $gift_url = theobroma_page_url('Корпоративные подарки');
 $where_url = theobroma_page_url('Где купить');
 $cooperation_url = theobroma_page_url('Сотрудничество');
 $homepage_products = theobroma_homepage_products();
+$cacao_settings = theobroma_cacao_settings();
+$enabled_cacao_percentages = theobroma_enabled_cacao_percentages();
 $cacao_groups = theobroma_home_cacao_groups();
 $cacao_profiles = theobroma_cacao_profiles();
 $cacao_options = theobroma_home_cacao_options($cacao_groups, $cacao_profiles);
 $cacao_percentages = array_keys($cacao_options);
-$minimum_cacao_percentage = $cacao_percentages[0] ?? null;
-$maximum_cacao_percentage = $cacao_percentages ? $cacao_percentages[array_key_last($cacao_percentages)] : null;
-$default_percentage = isset($cacao_groups[70]) ? 70 : (int) (array_key_first($cacao_groups) ?? 0);
-$default_group = $default_percentage > 0 ? $cacao_groups[$default_percentage] : null;
+$displayed_cacao_percentages = $cacao_percentages ?: $enabled_cacao_percentages;
+$minimum_cacao_percentage = $displayed_cacao_percentages[0] ?? 0;
+$maximum_cacao_percentage = $displayed_cacao_percentages ? $displayed_cacao_percentages[array_key_last($displayed_cacao_percentages)] : 0;
+$default_percentage = theobroma_home_cacao_default_percentage($cacao_options);
+$default_group = $default_percentage > 0 ? ($cacao_options[$default_percentage]['group'] ?? null) : null;
 $default_product = is_array($default_group) ? $default_group['representative'] : null;
 $default_profile = $cacao_profiles[$default_percentage] ?? array('label' => '', 'description' => '');
 $default_display = $cacao_options[$default_percentage] ?? array('percentage' => $default_percentage, 'label' => $default_profile['label']);
@@ -87,12 +90,13 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         <?php endif; ?>
     </section>
 
+    <?php if ($cacao_settings['enabled'] && $enabled_cacao_percentages) : ?>
     <section class="home-cacao" id="cacao-selector" aria-labelledby="home-cacao-title">
         <div class="home-cacao__shell">
             <div class="home-cacao__selector">
                 <p class="home-kicker">Дегустационная шкала — выберите процент</p>
-                <h2 id="home-cacao-title">Ваш процент какао</h2>
-                <p class="home-cacao__intro"><?php if ($minimum_cacao_percentage !== null && $maximum_cacao_percentage !== null) : ?>От <?php echo esc_html((string) $minimum_cacao_percentage); ?>% до <?php echo esc_html((string) $maximum_cacao_percentage); ?>%. <?php endif; ?>Выберите крепость, а мы подберем вкус, идеально подходящий вам.</p>
+                <h2 id="home-cacao-title"><?php echo esc_html($cacao_settings['heading']); ?></h2>
+                <p class="home-cacao__intro"><?php echo esc_html(theobroma_cacao_intro($minimum_cacao_percentage, $maximum_cacao_percentage)); ?></p>
                 <?php if ($cacao_options) : ?>
                     <div class="home-cacao__tabs" role="tablist" aria-label="Процент какао">
                         <?php foreach ($cacao_options as $percentage => $option) : ?>
@@ -138,7 +142,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                         <p class="home-cacao__description" data-cacao-description><?php echo esc_html($default_profile['description']); ?></p>
                         <p class="home-cacao__fact" data-cacao-fact><?php echo esc_html(wp_strip_all_tags($default_product->get_short_description())); ?></p>
                         <div class="home-cacao__buy">
-                            <a class="home-button home-button--primary" href="<?php echo esc_url(theobroma_cacao_catalog_url($default_percentage)); ?>">Купить</a>
+                            <a class="home-button home-button--primary" href="<?php echo esc_url(theobroma_cacao_catalog_url($default_percentage)); ?>"><?php echo esc_html($cacao_settings['button_label']); ?></a>
                             <strong><?php echo wp_kses_post('от ' . wc_price($default_group['minimum_price'])); ?></strong>
                         </div>
                     </div>
@@ -153,6 +157,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
             <?php endif; ?>
         </div>
     </section>
+    <?php endif; ?>
 
     <section class="home-composition" aria-labelledby="home-composition-title">
         <div class="home-composition__shell">

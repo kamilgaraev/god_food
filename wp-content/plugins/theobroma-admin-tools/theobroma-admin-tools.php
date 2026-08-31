@@ -87,6 +87,28 @@ final class Theobroma_Admin_Tools {
                 'reviews_accent' => array('Отзывы: акцент заголовка', 'text'),
                 'reviews_heading' => array('Отзывы: продолжение заголовка', 'text'),
             ),
+            'Ваш процент какао' => array(
+                'cacao_enabled' => array('Показывать блок на главной', 'checkbox'),
+                'cacao_heading' => array('Заголовок блока', 'text'),
+                'cacao_intro' => array('Текст под заголовком', 'textarea', null, 'Используйте {min} и {max}, чтобы автоматически подставлять границы доступной шкалы.'),
+                'cacao_button_label' => array('Текст кнопки', 'text'),
+                'cacao_default_percentage' => array('Процент по умолчанию', 'select', array('59' => '59%', '65' => '65%', '68' => '68%', '70' => '70%', '80' => '80%')),
+                'cacao_59_enabled' => array('Показывать 59%', 'checkbox'),
+                'cacao_59_label' => array('59% — название вкуса', 'text'),
+                'cacao_59_description' => array('59% — описание', 'textarea'),
+                'cacao_65_enabled' => array('Показывать 65%', 'checkbox'),
+                'cacao_65_label' => array('65% — название вкуса', 'text'),
+                'cacao_65_description' => array('65% — описание', 'textarea'),
+                'cacao_68_enabled' => array('Показывать 68%', 'checkbox'),
+                'cacao_68_label' => array('68% — название вкуса', 'text'),
+                'cacao_68_description' => array('68% — описание', 'textarea'),
+                'cacao_70_enabled' => array('Показывать 70%', 'checkbox'),
+                'cacao_70_label' => array('70% — название вкуса', 'text'),
+                'cacao_70_description' => array('70% — описание', 'textarea'),
+                'cacao_80_enabled' => array('Показывать 80%', 'checkbox'),
+                'cacao_80_label' => array('80% — название вкуса', 'text'),
+                'cacao_80_description' => array('80% — описание', 'textarea'),
+            ),
             'Форма связи' => array(
                 'contact_heading' => array('Заголовок', 'text'),
                 'contact_accent' => array('Акцентная часть', 'text'),
@@ -151,6 +173,8 @@ final class Theobroma_Admin_Tools {
             echo '<h2>' . esc_html($title) . '</h2>';
             if ($title === 'Товары на главной') {
                 echo '<p>Выберите четыре карточки и задайте их порядок слева направо. Если товар станет недоступен, витрина автоматически подставит другой опубликованный товар.</p>';
+            } elseif ($title === 'Ваш процент какао') {
+                echo '<p>Настройте текст и видимые варианты. Фото, короткая подпись и цена автоматически берутся из подходящих товаров WooCommerce.</p>';
             }
             echo '<table class="form-table"><tbody>';
             foreach ($fields as $key => $definition) {
@@ -174,8 +198,20 @@ final class Theobroma_Admin_Tools {
                         echo '<option value="' . esc_attr($product_id) . '"' . ($product_id === $value ? ' selected' : '') . '>' . esc_html($label) . '</option>';
                     }
                     echo '</select>';
+                } elseif ($definition[1] === 'checkbox') {
+                    echo '<input type="hidden" name="settings[' . esc_attr($key) . ']" value="0">';
+                    echo '<label><input type="checkbox" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']" value="1"' . ($value === '1' ? ' checked' : '') . '> Включено</label>';
+                } elseif ($definition[1] === 'select') {
+                    echo '<select class="regular-text" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']">';
+                    foreach (($definition[2] ?? array()) as $option_value => $option_label) {
+                        echo '<option value="' . esc_attr((string) $option_value) . '"' . ((string) $option_value === $value ? ' selected' : '') . '>' . esc_html((string) $option_label) . '</option>';
+                    }
+                    echo '</select>';
                 } else {
                     echo '<input class="regular-text" type="' . esc_attr($definition[1]) . '" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']" value="' . esc_attr($value) . '">';
+                }
+                if (isset($definition[3]) && is_string($definition[3])) {
+                    echo '<p class="description">' . esc_html($definition[3]) . '</p>';
                 }
                 echo '</td></tr>';
             }
@@ -196,6 +232,7 @@ final class Theobroma_Admin_Tools {
             'corporate_branding_1_text', 'corporate_branding_2_text', 'corporate_branding_3_text',
             'corporate_case_1_text', 'corporate_case_2_text', 'corporate_case_3_text',
             'footer_address', 'footer_info_note', 'footer_opt_note', 'footer_press_note', 'footer_company', 'footer_bank',
+            'cacao_intro', 'cacao_59_description', 'cacao_65_description', 'cacao_68_description', 'cacao_70_description', 'cacao_80_description',
         );
         $emails = array('footer_info_email', 'footer_opt_email', 'footer_press_email');
         $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen');
@@ -216,6 +253,7 @@ final class Theobroma_Admin_Tools {
             }
         }
         $clean = self::normalize_homepage_product_settings($clean);
+        $clean = self::normalize_cacao_settings($clean);
         update_option('theobroma_content_settings', $clean, false);
         wp_safe_redirect(add_query_arg('updated', '1', admin_url('admin.php?page=theobroma-settings')));
         exit;
@@ -237,6 +275,28 @@ final class Theobroma_Admin_Tools {
             $settings[$key] = (string) $product_id;
             $used_product_ids[] = $product_id;
         }
+        return $settings;
+    }
+
+    /** @param array<string,string> $settings @return array<string,string> */
+    public static function normalize_cacao_settings(array $settings): array {
+        $percentages = function_exists('theobroma_allowed_cacao_percentages')
+            ? theobroma_allowed_cacao_percentages()
+            : array(59, 65, 68, 70, 80);
+        $settings['cacao_enabled'] = ($settings['cacao_enabled'] ?? '0') === '1' ? '1' : '0';
+        $enabled = array();
+        foreach ($percentages as $percentage) {
+            $key = 'cacao_' . $percentage . '_enabled';
+            $settings[$key] = ($settings[$key] ?? '0') === '1' ? '1' : '0';
+            if ($settings[$key] === '1') {
+                $enabled[] = $percentage;
+            }
+        }
+        $default = absint($settings['cacao_default_percentage'] ?? 0);
+        if (!in_array($default, $enabled, true)) {
+            $default = (int) ($enabled[0] ?? 70);
+        }
+        $settings['cacao_default_percentage'] = (string) $default;
         return $settings;
     }
 
