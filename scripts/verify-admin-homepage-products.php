@@ -46,8 +46,8 @@ function theobroma_cacao_settings(): array {
         'button_label' => 'Купить',
         'default_percentage' => 80,
         'profiles' => array(
-            59 => array('enabled' => true, 'label' => 'мягкий', 'description' => 'Мягкий вкус.'),
-            80 => array('enabled' => true, 'label' => 'глубокий', 'description' => 'Глубокий вкус.'),
+            59 => array('enabled' => true, 'label' => 'мягкий', 'description' => 'Мягкий вкус.', 'product_id' => 0),
+            80 => array('enabled' => true, 'label' => 'глубокий', 'description' => 'Глубокий вкус.', 'product_id' => 14),
         ),
     );
 }
@@ -75,7 +75,7 @@ function wc_get_product(int $id): WC_Product|false {
     }
     return false;
 }
-function theobroma_product_is_home_eligible(WC_Product $product): bool {
+function theobroma_product_is_home_eligible(WC_Product $product, bool $requirePrice = false): bool {
     return $product->get_id() !== 15;
 }
 
@@ -106,9 +106,14 @@ if (!str_contains($html, 'Ваш процент какао')
     || !str_contains($html, 'data-add-cacao-profile')
     || substr_count($html, 'name="settings[cacao_profiles][0][enabled]"') !== 2
     || !str_contains($html, 'name="settings[cacao_profiles][0][percentage]"')
+    || !str_contains($html, 'name="settings[cacao_profiles][0][product_id]"')
     || !str_contains($html, 'name="settings[cacao_profiles][0][label]"')
     || !str_contains($html, 'name="settings[cacao_profiles][0][description]"')) {
     throw new RuntimeException('Cacao block settings must expose section copy and profile controls.');
+}
+$profileProductPattern = '~<select[^>]*name="settings\[cacao_profiles\]\[1\]\[product_id\]"[^>]*>(.*?)</select>~s';
+if (preg_match($profileProductPattern, $html, $profileProductMatches) !== 1 || !str_contains($profileProductMatches[1], 'value="14" selected')) {
+    throw new RuntimeException('Cacao profile must preserve its manually selected WooCommerce product.');
 }
 if (!str_contains($html, 'name="settings[cacao_default_percentage]" value="80"')) {
     throw new RuntimeException('Cacao block settings must preserve the configured default percentage.');
@@ -117,9 +122,9 @@ $normalizedCacao = Theobroma_Admin_Tools::normalize_cacao_settings(array(
     'cacao_enabled' => 'yes',
     'cacao_default_percentage' => '99',
     'cacao_profiles' => array(
-        array('percentage' => '85', 'enabled' => '1', 'label' => ' новый <b>вкус</b> ', 'description' => "Описание\nвкуса"),
+        array('percentage' => '85', 'enabled' => '1', 'label' => ' новый <b>вкус</b> ', 'description' => "Описание\nвкуса", 'product_id' => '14'),
         array('percentage' => '85', 'enabled' => '1', 'label' => 'дубликат', 'description' => ''),
-        array('percentage' => '72', 'enabled' => 'unexpected', 'label' => 'деликатный', 'description' => ''),
+        array('percentage' => '72', 'enabled' => 'unexpected', 'label' => 'деликатный', 'description' => '', 'product_id' => '15'),
         array('percentage' => '101', 'enabled' => '1', 'label' => 'ошибка', 'description' => ''),
         array('percentage' => '90', 'enabled' => '1', 'label' => array('ошибка'), 'description' => array('ошибка')),
     ),
@@ -127,8 +132,8 @@ $normalizedCacao = Theobroma_Admin_Tools::normalize_cacao_settings(array(
 if (($normalizedCacao['cacao_enabled'] ?? null) !== '0'
     || ($normalizedCacao['cacao_default_percentage'] ?? null) !== '85'
     || ($normalizedCacao['cacao_profiles'] ?? null) !== array(
-        array('percentage' => 72, 'enabled' => '0', 'label' => 'деликатный', 'description' => ''),
-        array('percentage' => 85, 'enabled' => '1', 'label' => 'новый вкус', 'description' => "Описание\nвкуса"),
+        array('percentage' => 72, 'enabled' => '0', 'label' => 'деликатный', 'description' => '', 'product_id' => 0),
+        array('percentage' => 85, 'enabled' => '1', 'label' => 'новый вкус', 'description' => "Описание\nвкуса", 'product_id' => 14),
     )) {
     throw new RuntimeException('Cacao settings must sanitize dynamic profiles, reject duplicates, and choose an enabled default percentage.');
 }
