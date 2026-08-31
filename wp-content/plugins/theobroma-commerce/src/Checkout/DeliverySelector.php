@@ -103,7 +103,7 @@ final class DeliverySelector
 
     public function assets(): void
     {
-        if (!is_checkout() && !is_cart()) {
+        if (!$this->shouldLoadAssets(is_admin())) {
             return;
         }
         $settings = (array) get_option('theobroma_commerce_settings', []);
@@ -111,9 +111,9 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_MAPS_JS_KEY')
             : (string) ($settings['yandex_maps_js_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.1');
-        wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.0', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.0', true);
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.2');
+        wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.2', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'quoteUrl' => rest_url('theobroma-commerce/v1/delivery/quote'),
@@ -125,6 +125,11 @@ final class DeliverySelector
         if ($mapKey !== '') {
             wp_enqueue_script('yandex-maps', 'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=' . rawurlencode($mapKey), [], null, true);
         }
+    }
+
+    public function shouldLoadAssets(bool $admin): bool
+    {
+        return !$admin;
     }
 
     private function provider(string $method): string

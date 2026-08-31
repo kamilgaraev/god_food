@@ -54,6 +54,29 @@ const css = fs.readFileSync(path.join(__dirname, '../wp-content/themes/theobroma
     assert.ok(parseFloat(styles.radioHeight) >= 19.5 && parseFloat(styles.radioHeight) <= 21);
     assert.equal(styles.boxBackground, 'rgba(0, 0, 0, 0)');
     assert.ok(styles.gap >= 10, `Payment cards need breathing room, received ${styles.gap}px`);
+
+    for (const width of [320, 390, 620]) {
+      await page.setViewportSize({ width, height: 700 });
+      const layout = await page.evaluate(() => {
+        const card = document.querySelector('.payment_method_yookassa');
+        const label = card.querySelector('label').getBoundingClientRect();
+        const logo = card.querySelector('img').getBoundingClientRect();
+        const box = card.querySelector('.payment_box').getBoundingClientRect();
+        const codLabel = document.querySelector('.payment_method_cod label');
+        const codRect = codLabel.getBoundingClientRect();
+        const codLineHeight = parseFloat(getComputedStyle(codLabel).lineHeight);
+        return {
+          cardOverflow: card.scrollWidth - card.clientWidth,
+          labelWidth: label.width,
+          descriptionGap: box.top - Math.max(label.bottom, logo.bottom),
+          codLines: codRect.height / codLineHeight,
+        };
+      });
+      assert.ok(layout.cardOverflow <= 1, `Payment card overflows at ${width}px`);
+      assert.ok(layout.labelWidth >= 200, `Payment label is squeezed at ${width}px`);
+      assert.ok(layout.descriptionGap >= 8, `Logo overlaps description at ${width}px`);
+      assert.ok(layout.codLines <= 1.2, `COD label wraps at ${width}px`);
+    }
   } finally {
     await browser.close();
   }
