@@ -10,15 +10,15 @@ const script = fs.readFileSync(path.join(themeRoot, 'assets/js/homepage.js'), 'u
 const styles = fs.readFileSync(path.join(themeRoot, 'style.css'), 'utf8')
   + fs.readFileSync(path.join(themeRoot, 'assets/css/home-redesign.css'), 'utf8');
 const hero = homepage.match(/<section class="home-hero"[\s\S]*?<\/section>/)?.[0];
-const poster = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-poster.webp'));
+const poster = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-poster-v2.webp'));
 const videoAsset = fs.readFileSync(path.join(themeRoot, 'assets/video/hero-chocolate.webm'));
-const webkitAnimation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v2.webp'));
+const webkitAnimation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v3.webp'));
 
 function renderHeroDocument() {
   const markup = hero
-    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>", `data:image/webp;base64,${poster.toString('base64')}`)
+    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster-v2.webp'); ?>", `data:image/webp;base64,${poster.toString('base64')}`)
     .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.webm'); ?>", `data:video/webm;base64,${videoAsset.toString('base64')}`)
-    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated-v2.webp'); ?>", `data:image/webp;base64,${webkitAnimation.toString('base64')}`)
+    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated-v3.webp'); ?>", `data:image/webp;base64,${webkitAnimation.toString('base64')}`)
     .replace(/<\?php[\s\S]*?\?>/g, '#');
   return `<body class="home"><main>${markup}</main><style>${styles}</style></body>`;
 }
@@ -26,7 +26,7 @@ function renderHeroDocument() {
 function visibleChocolateGap(png) {
   const background = Array.from(png.data.subarray(0, 3));
   let lowestChocolatePixel = -1;
-  for (let y = 0; y < png.height - 3; y += 1) {
+  for (let y = 0; y < png.height; y += 1) {
     for (let x = Math.floor(png.width * 0.5); x < png.width; x += 1) {
       const offset = (y * png.width + x) * 4;
       const distance = Math.abs(png.data[offset] - background[0])
@@ -55,7 +55,7 @@ function visibleChocolateGap(png) {
     'Hero must use the transparent WebM animation');
   assert.match(triggerMarkup, /type="video\/webm"/,
     'Hero animation source must declare the WebM media type');
-  assert(triggerMarkup.includes('/assets/images/hero-chocolate-animated-v2.webp'),
+  assert(triggerMarkup.includes('/assets/images/hero-chocolate-animated-v3.webp'),
     'Hero must include an alpha-safe animated WebP fallback for WebKit');
   const animationChunk = webkitAnimation.indexOf(Buffer.from('ANIM'));
   assert(animationChunk >= 0, 'WebKit fallback must be an animated WebP');
@@ -170,9 +170,10 @@ function visibleChocolateGap(png) {
     assert(desktopLayout.playingZIndex > desktopLayout.copyZIndex,
       'While playing, chocolate pieces must layer above the left hero copy');
 
+    await trigger.evaluate((node) => { node.dataset.state = 'idle'; });
     const desktopHeroPng = PNG.sync.read(await page.locator('.home-hero').screenshot());
     const desktopChocolateGap = visibleChocolateGap(desktopHeroPng);
-    assert(desktopChocolateGap >= 4 && desktopChocolateGap <= 14,
+    assert(desktopChocolateGap >= 0 && desktopChocolateGap <= 2,
       `Visible chocolate must sit intact against the benefit strip (gap ${desktopChocolateGap}px)`);
 
     const responsiveChocolateGaps = [];
@@ -197,7 +198,7 @@ function visibleChocolateGap(png) {
         responsiveChocolateGaps.push({ width, gap: responsiveChocolateGap });
       }
     }
-    const invalidChocolateGaps = responsiveChocolateGaps.filter(({ gap }) => gap < 4 || gap > 14);
+    const invalidChocolateGaps = responsiveChocolateGaps.filter(({ gap }) => gap < 0 || gap > 2);
     assert.deepEqual(invalidChocolateGaps, [],
       `Chocolate must remain intact and visually attached to the benefit strip: ${JSON.stringify(responsiveChocolateGaps)}`);
 
@@ -229,7 +230,7 @@ function visibleChocolateGap(png) {
       image.onerror = () => reject(new Error('Animated WebP fallback failed to decode'));
       image.src = node.dataset.animatedSrc;
     }));
-    assert.deepEqual(fallbackMetrics, [960, 540],
+    assert.deepEqual(fallbackMetrics, [720, 405],
       'WebKit fallback must retain the same wide, uncropped composition');
     await webkitPage.evaluate(() => {
       Object.defineProperty(navigator, 'userAgent', { configurable: true, value: 'Mozilla/5.0 AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1' });

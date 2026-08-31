@@ -8,7 +8,7 @@ const themeRoot = path.join(root, 'wp-content/themes/theobroma');
 const baseCss = fs.readFileSync(path.join(themeRoot, 'style.css'), 'utf8');
 const homeCss = fs.readFileSync(path.join(themeRoot, 'assets/css/home-redesign.css'), 'utf8');
 const headerScript = fs.readFileSync(path.join(themeRoot, 'assets/js/site-header.js'), 'utf8');
-const animation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v2.webp'));
+const animation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v3.webp'));
 
 function animationFrames(buffer) {
   const frames = [];
@@ -17,7 +17,11 @@ function animationFrames(buffer) {
     const size = buffer.readUInt32LE(offset + 4);
     if (type === 'ANMF') {
       const flags = buffer[offset + 8 + 15];
-      frames.push({ dispose: flags & 1, noBlend: Boolean(flags & 2) });
+      frames.push({
+        duration: buffer.readUIntLE(offset + 8 + 12, 3),
+        dispose: flags & 1,
+        noBlend: Boolean(flags & 2),
+      });
     }
     offset += 8 + size + (size & 1);
   }
@@ -26,7 +30,13 @@ function animationFrames(buffer) {
 
 (async () => {
   const frames = animationFrames(animation);
-  assert(frames.length > 100, 'Safari fallback must contain the complete animation');
+  assert(animation.length <= 1_500_000,
+    `Safari fallback must stay lightweight enough for smooth decoding (got ${animation.length} bytes)`);
+  assert(frames.length >= 65 && frames.length <= 80,
+    `Safari fallback must reduce decode work while retaining fluid motion (got ${frames.length} frames)`);
+  const fallbackDuration = frames.reduce((total, frame) => total + frame.duration, 0);
+  assert(fallbackDuration >= 6000 && fallbackDuration <= 6200,
+    `Optimized Safari fallback must retain the complete animation duration (got ${fallbackDuration}ms)`);
   assert(frames.every((frame) => frame.noBlend),
     'Every transparent WebP frame must replace the full canvas instead of smearing over previous frames');
 
