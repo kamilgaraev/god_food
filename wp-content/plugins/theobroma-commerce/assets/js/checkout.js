@@ -34,7 +34,7 @@
   function request(url, options) {
     options = options || {};
     options.credentials = 'same-origin';
-    options.headers = Object.assign({ 'X-Theobroma-Nonce': config.nonce || '' }, options.headers || {});
+    options.headers = Object.assign({}, options.headers || {});
     return fetch(url, options).then(function (response) {
       return response.json().catch(function () { return {}; }).then(function (data) {
         if (!response.ok) throw new Error(data.message || 'Сервис доставки временно недоступен.');

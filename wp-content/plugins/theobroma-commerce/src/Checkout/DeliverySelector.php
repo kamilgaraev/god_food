@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Theobroma\Commerce\Checkout;
 
-use Theobroma\Commerce\Rest\DeliveryCheckoutController;
-
 final class DeliverySelector
 {
     private bool $rendered = false;
@@ -117,13 +115,12 @@ final class DeliverySelector
 
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.4');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.4', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.5', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
             'quoteUrl' => rest_url('theobroma-commerce/v1/delivery/quote'),
             'selectionUrl' => rest_url('theobroma-commerce/v1/delivery/selection'),
-            'nonce' => wp_create_nonce(DeliveryCheckoutController::NONCE_ACTION),
             'mapEnabled' => $mapKey !== '',
             'mapKey' => $mapKey,
         ]);

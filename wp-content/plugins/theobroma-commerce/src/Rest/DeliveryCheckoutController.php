@@ -20,8 +20,6 @@ use Theobroma\Commerce\Shipping\CdekPackageBuilder;
 
 final class DeliveryCheckoutController
 {
-    public const NONCE_ACTION = 'theobroma_delivery_checkout';
-
     public function register(): void
     {
         add_action('rest_api_init', [$this, 'routes']);
@@ -32,27 +30,27 @@ final class DeliveryCheckoutController
         register_rest_route('theobroma-commerce/v1', '/delivery/points', [
             'methods' => 'GET',
             'callback' => [$this, 'points'],
-            'permission_callback' => [$this, 'permission'],
+            'permission_callback' => [$this, 'publicAccess'],
         ]);
         register_rest_route('theobroma-commerce/v1', '/delivery/suggestions', [
             'methods' => 'GET',
             'callback' => [$this, 'suggestions'],
-            'permission_callback' => [$this, 'permission'],
+            'permission_callback' => [$this, 'publicAccess'],
         ]);
         register_rest_route('theobroma-commerce/v1', '/delivery/quote', [
             'methods' => 'POST',
             'callback' => [$this, 'quote'],
-            'permission_callback' => [$this, 'permission'],
+            'permission_callback' => [$this, 'publicAccess'],
         ]);
         register_rest_route('theobroma-commerce/v1', '/delivery/selection', [
-            ['methods' => 'GET', 'callback' => [$this, 'selection'], 'permission_callback' => [$this, 'permission']],
-            ['methods' => 'DELETE', 'callback' => [$this, 'clear'], 'permission_callback' => [$this, 'permission']],
+            ['methods' => 'GET', 'callback' => [$this, 'selection'], 'permission_callback' => [$this, 'publicAccess']],
+            ['methods' => 'DELETE', 'callback' => [$this, 'clear'], 'permission_callback' => [$this, 'publicAccess']],
         ]);
     }
 
-    public function permission(\WP_REST_Request $request): bool
+    public function publicAccess(): bool
     {
-        return wp_verify_nonce((string) $request->get_header('X-Theobroma-Nonce'), self::NONCE_ACTION) !== false;
+        return true;
     }
 
     public function points(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
