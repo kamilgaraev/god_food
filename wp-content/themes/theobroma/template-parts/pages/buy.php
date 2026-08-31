@@ -8,7 +8,6 @@
 
         <nav class="buy-tabs" role="tablist" aria-label="Тип магазина">
             <button id="buy-tab-1" type="button" role="tab" aria-controls="bulletcities1" aria-selected="true">Бутики</button>
-            <button id="buy-tab-2" type="button" role="tab" aria-controls="bulletcities2" aria-selected="false" tabindex="-1">Маркетплейсы</button>
             <button id="buy-tab-3" type="button" role="tab" aria-controls="bulletcities3" aria-selected="false" tabindex="-1">Вся Россия</button>
         </nav>
 
@@ -20,13 +19,6 @@
                     <p>Ежедневно 10:00–22:00</p>
                     <a class="button" href="https://yandex.ru/maps/?text=%D0%A2%D0%A6%20%D0%90%D0%B2%D0%B8%D0%B0%D0%BF%D0%B0%D1%80%D0%BA" target="_blank" rel="noopener">Как добраться</a>
                 </article>
-            </section>
-
-            <section class="buy-panel" id="bulletcities2" role="tabpanel" aria-labelledby="buy-tab-2" hidden>
-                <div class="buy-partner-grid buy-marketplace-grid">
-                    <a class="buy-partner-card" href="https://www.ozon.ru/seller/theobroma-pishcha-bogov/produkty-pitaniya-9200/?miniapp=seller_60476" target="_blank" rel="noopener"><img class="buy-partner-logo" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/partners/ozon.png'); ?>" width="160" height="80" alt="Ozon"><span>· Москва ·</span></a>
-                    <a class="buy-partner-card" href="https://www.wildberries.ru/seller/260547" target="_blank" rel="noopener"><img class="buy-partner-logo" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/partners/wildberries.png'); ?>" width="160" height="80" alt="Wildberries"><span>· Москва ·</span></a>
-                </div>
             </section>
 
             <section class="buy-panel" id="bulletcities3" role="tabpanel" aria-labelledby="buy-tab-3" hidden>

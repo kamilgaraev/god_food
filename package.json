@@ -64,6 +64,7 @@
     "test:product-image-quality": "php scripts/verify-product-image-quality.php",
     "test:marketplace-products": "php scripts/verify-marketplace-product-links.php",
     "test:marketplace-card-heights": "node scripts/verify-marketplace-card-heights.spec.js",
+    "test:marketplace-hidden": "node scripts/verify-marketplace-removal.spec.js",
     "test:recipe-products": "node scripts/verify-recipe-products.spec.js",
     "test:recipe-card-mobile-alignment": "node scripts/verify-recipe-card-mobile-alignment.spec.js",
     "test:reviews": "node scripts/verify-review-carousel.spec.js",

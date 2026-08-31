@@ -39,6 +39,7 @@ function theobroma_redirect_legacy_wordpress_routes(): void {
     } elseif (is_page()) {
         $page = get_queried_object();
         $page_redirects = array(
+            'marketplace' => theobroma_page_url('Где купить'),
             'sample-page' => home_url('/'),
             'offer' => home_url('/oferta/'),
             'policy-2' => home_url('/policy/'),

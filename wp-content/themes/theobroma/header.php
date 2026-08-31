@@ -23,7 +23,6 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
         <div class="nav-links nav-links-study">
             <a href="<?php echo esc_url($shop_url); ?>">Каталог</a>
             <a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a>
-            <a href="<?php echo esc_url(theobroma_page_url('Маркетплейсы')); ?>">Маркетплейсы</a>
             <a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a>
         </div>
         <a class="brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Theobroma — Пища Богов, на главную">
@@ -52,7 +51,6 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
         <ul>
             <li><a href="<?php echo esc_url($shop_url); ?>">Каталог</a></li>
             <li><a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a></li>
-            <li><a href="<?php echo esc_url(theobroma_page_url('Маркетплейсы')); ?>">Маркетплейсы</a></li>
             <li><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a></li>
         </ul>
         <p class="mobile-menu-label">Покупателям</p>

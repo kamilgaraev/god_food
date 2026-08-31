@@ -495,7 +495,7 @@ body.account-modal-open { overflow:hidden; }
 .buy-intro > h1 { position:static; width:auto; margin:1.125rem 0 0; text-align:center; color:#000; font:500 3.25rem/3.25rem 'Cormorant',Arial,sans-serif; letter-spacing:normal; text-transform:uppercase; }
 .buy-intro > h1 em { color:#b0903d; font-weight:500; }
 .buy-lead { margin:1.25rem 0 0; text-align:center; color:#343434; font:400 1.125rem/1.4375rem 'Montserrat',Arial,sans-serif; }
-.buy-tabs { width:31.25rem; height:3.625rem; margin:1.8125rem auto 0; display:grid; grid-template-columns:repeat(3,1fr); align-items:start; border-bottom:1px solid #e0cfb8; }
+.buy-tabs { width:31.25rem; height:3.625rem; margin:1.8125rem auto 0; display:grid; grid-template-columns:repeat(2,1fr); align-items:start; border-bottom:1px solid #e0cfb8; }
 .buy-tabs button { height:3.625rem; padding:1.3125rem 0 0; border:0; border-bottom:1px solid transparent; color:#000; background:transparent; text-align:center; font:400 0.875rem/1.375rem 'Montserrat',Arial,sans-serif; cursor:pointer; }
 .buy-tabs button[aria-selected="true"] { border-bottom-color:#b0903d; }
 .buy-tabs button:focus-visible { outline:2px solid #b0903d; outline-offset:2px; }
