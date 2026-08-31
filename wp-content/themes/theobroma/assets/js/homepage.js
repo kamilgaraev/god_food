@@ -1,38 +1,76 @@
 (function () {
   'use strict';
 
-  const pyramid = document.querySelector('.home-chocolate-pyramid');
+  const heroVideoTrigger = document.querySelector('.home-hero__video-trigger');
+  const heroVideo = heroVideoTrigger ? heroVideoTrigger.querySelector('[data-home-hero-video]') : null;
+  const heroImageFallback = heroVideoTrigger ? heroVideoTrigger.querySelector('[data-home-hero-fallback]') : null;
 
-  if (pyramid) {
-    let animationTimers = [];
+  if (heroVideoTrigger && heroVideo) {
+    const userAgent = window.navigator.userAgent;
+    const iOSWebKit = /iPad|iPhone|iPod/i.test(userAgent)
+      || (/Macintosh/i.test(userAgent) && window.navigator.maxTouchPoints > 1);
+    const desktopSafari = /Safari/i.test(userAgent) && !/Chrome|Chromium|Edg|OPR|Android/i.test(userAgent);
+    const useImageFallback = Boolean(heroImageFallback && (iOSWebKit || desktopSafari));
+    const fallbackPoster = heroImageFallback ? heroImageFallback.src : '';
+    let fallbackTimer = 0;
+    let fallbackAwaitingLoad = false;
 
-    function setPyramidState(state, busy) {
-      pyramid.dataset.state = state;
-      pyramid.setAttribute('aria-busy', busy ? 'true' : 'false');
+    if (useImageFallback) heroVideoTrigger.classList.add('uses-image-fallback');
+
+    function setHeroVideoState(state) {
+      const playing = state === 'playing';
+      heroVideoTrigger.dataset.state = state;
+      heroVideoTrigger.setAttribute('aria-busy', playing ? 'true' : 'false');
     }
 
-    function schedulePyramidState(state, busy, delay) {
-      animationTimers.push(window.setTimeout(() => setPyramidState(state, busy), delay));
+    function resetHeroVideo() {
+      heroVideo.currentTime = 0;
+      setHeroVideoState('idle');
     }
 
-    pyramid.addEventListener('click', () => {
-      if (pyramid.dataset.state !== 'idle') return;
+    function resetImageFallback() {
+      window.clearTimeout(fallbackTimer);
+      fallbackTimer = 0;
+      fallbackAwaitingLoad = false;
+      heroImageFallback.src = fallbackPoster;
+      setHeroVideoState('idle');
+    }
 
-      animationTimers.forEach(window.clearTimeout);
-      animationTimers = [];
+    function startImageFallbackTimer() {
+      if (!fallbackAwaitingLoad || heroVideoTrigger.dataset.state !== 'playing') return;
+      fallbackAwaitingLoad = false;
+      const duration = Number(heroVideoTrigger.dataset.fallbackDuration) || 6100;
+      fallbackTimer = window.setTimeout(resetImageFallback, duration);
+    }
 
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reducedMotion) {
-        setPyramidState('reassembling', true);
-        schedulePyramidState('idle', false, 200);
+    if (heroImageFallback) {
+      heroImageFallback.addEventListener('load', startImageFallbackTimer);
+      heroImageFallback.addEventListener('error', () => {
+        if (fallbackAwaitingLoad) resetImageFallback();
+      });
+    }
+
+    heroVideoTrigger.addEventListener('click', () => {
+      if (heroVideoTrigger.dataset.state === 'playing') return;
+
+      if (useImageFallback) {
+        setHeroVideoState('playing');
+        fallbackAwaitingLoad = true;
+        heroImageFallback.src = heroImageFallback.dataset.animatedSrc;
         return;
       }
 
-      setPyramidState('anticipating', true);
-      schedulePyramidState('collapsed', true, 350);
-      schedulePyramidState('reassembling', true, 3500);
-      schedulePyramidState('idle', false, 6150);
+      heroVideo.currentTime = 0;
+      setHeroVideoState('playing');
+      const playback = heroVideo.play();
+      if (playback && typeof playback.catch === 'function') playback.catch(resetHeroVideo);
     });
+
+    heroVideo.addEventListener('ended', resetHeroVideo);
+    heroVideo.addEventListener('pause', () => {
+      if (heroVideoTrigger.dataset.state === 'playing' && !heroVideo.ended) resetHeroVideo();
+    });
+    heroVideo.addEventListener('error', () => setHeroVideoState('idle'));
   }
 
   const selector = document.querySelector('.home-cacao');

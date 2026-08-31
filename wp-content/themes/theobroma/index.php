@@ -25,35 +25,34 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
 <main<?php echo is_front_page() ? ' id="theobroma-main" tabindex="-1"' : ''; ?>>
     <section class="home-hero" aria-labelledby="home-hero-title">
         <div class="home-hero__shell">
-            <p class="home-eyebrow">Абсолютно натуральный</p>
             <h1 id="home-hero-title" class="screen-reader-text">Абсолютно натуральный шоколад</h1>
-            <button class="home-chocolate-pyramid" type="button" aria-label="Обрушить шоколадную пирамиду" aria-busy="false" data-state="idle">
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-1.webp'); ?>" alt="" width="351" height="420" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-2.webp'); ?>" alt="" width="321" height="420" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-3.webp'); ?>" alt="" width="306" height="420" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-4.webp'); ?>" alt="" width="417" height="420" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-5.webp'); ?>" alt="" width="405" height="420" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-6.webp'); ?>" alt="" width="420" height="363" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__piece" aria-hidden="true"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-pieces/piece-7.webp'); ?>" alt="" width="420" height="388" loading="eager" decoding="async" draggable="false"></span>
-                <span class="home-chocolate-pyramid__shadow" aria-hidden="true"></span>
+            <div class="home-hero__copy">
+                <p class="home-eyebrow">Абсолютно натуральный</p>
+                <div class="home-hero__lead">
+                    <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
+                    <div class="home-hero__actions">
+                        <a class="home-button home-button--primary" href="#cacao-selector">Выберите свой вкус</a>
+                        <a class="home-button home-button--secondary" href="<?php echo esc_url($gift_url); ?>">Подарочные наборы</a>
+                    </div>
+                </div>
+                <div class="home-hero__trust" aria-label="Гликемический индекс 35 вместо 70, рейтинг 4,9 по 1 200 отзывам">
+                    <div>
+                        <strong>ГИ 35</strong>
+                        <span>вместо 70</span>
+                    </div>
+                    <div>
+                        <strong>4,9</strong>
+                        <span>1 200 отзывов</span>
+                    </div>
+                </div>
+            </div>
+            <button class="home-hero__video-trigger" type="button" aria-label="Воспроизвести анимацию шоколада" aria-busy="false" data-state="idle" data-fallback-duration="6100">
+                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>">
+                    <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.webm'); ?>" type="video/webm">
+                </video>
+                <img data-home-hero-fallback src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>" data-animated-src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated.webp'); ?>" width="560" height="560" alt="" decoding="async">
+                <span class="home-hero__play-hint" aria-hidden="true"><i></i>Нажмите, чтобы оживить</span>
             </button>
-            <div class="home-hero__lead">
-                <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
-                <div class="home-hero__actions">
-                    <a class="home-button home-button--primary" href="#cacao-selector">Выберите свой вкус</a>
-                    <a class="home-button home-button--secondary" href="<?php echo esc_url($gift_url); ?>">Подарочные наборы</a>
-                </div>
-            </div>
-            <div class="home-hero__trust" aria-label="Гликемический индекс 35 вместо 70, рейтинг 4,9 по 1 200 отзывам">
-                <div>
-                    <strong>ГИ 35</strong>
-                    <span>вместо 70</span>
-                </div>
-                <div>
-                    <strong>4,9</strong>
-                    <span>1 200 отзывов</span>
-                </div>
-            </div>
         </div>
     </section>
 
