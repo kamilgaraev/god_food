@@ -92,6 +92,9 @@ function assertTemplateContract(templatePath, requiredMarkup) {
         ),
         pageTitleSize: Number.parseFloat(getComputedStyle(pageTitle).fontSize),
         cardTitleSize: Number.parseFloat(getComputedStyle(cardTitle).fontSize),
+        cardTitleFamily: getComputedStyle(cardTitle).fontFamily,
+        cardTitleWeight: getComputedStyle(cardTitle).fontWeight,
+        cardTitleTransform: getComputedStyle(cardTitle).textTransform,
       };
     });
 
@@ -100,6 +103,10 @@ function assertTemplateContract(templatePath, requiredMarkup) {
     assert.ok(metrics.buttonWidth <= 240, 'The desktop recovery action must remain compact.');
     assert.ok(metrics.buttonCenterDifference <= 1, 'The recovery action must be centered.');
     assert.ok(metrics.pageTitleSize >= metrics.cardTitleSize * 1.3, 'The page title must dominate the recovery title.');
+    assert.ok(metrics.cardTitleFamily.includes('Montserrat'), 'The recovery title must use the functional sans-serif typeface.');
+    assert.equal(metrics.cardTitleWeight, '500', 'The recovery title must use a restrained medium weight.');
+    assert.equal(metrics.cardTitleTransform, 'none', 'The recovery title must keep natural sentence case.');
+    assert.ok(metrics.cardTitleSize <= metrics.pageTitleSize * 0.45, 'The recovery title must not compete with the page heading.');
   } finally {
     await browser.close();
   }

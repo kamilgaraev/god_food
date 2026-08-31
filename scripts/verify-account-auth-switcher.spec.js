@@ -96,6 +96,9 @@ async function launchBrowser() {
         borderWidth: cardStyle.borderWidth,
         pageTitleSize: Number.parseFloat(getComputedStyle(pageTitle).fontSize),
         formTitleSize: Number.parseFloat(getComputedStyle(formTitle).fontSize),
+        formTitleFamily: getComputedStyle(formTitle).fontFamily,
+        formTitleWeight: getComputedStyle(formTitle).fontWeight,
+        formTitleTransform: getComputedStyle(formTitle).textTransform,
         pageTitleAlignment: getComputedStyle(pageTitle).textAlign,
         eyebrowLetterSpacing: getComputedStyle(eyebrow).letterSpacing,
         eyebrowTextTransform: getComputedStyle(eyebrow).textTransform,
@@ -115,6 +118,10 @@ async function launchBrowser() {
       initial.pageTitleSize >= initial.formTitleSize * 1.3,
       'The page title must clearly dominate the form title.',
     );
+    assert.ok(initial.formTitleFamily.includes('Montserrat'), 'The form title must use the functional sans-serif typeface.');
+    assert.equal(initial.formTitleWeight, '500', 'The form title must use a restrained medium weight.');
+    assert.equal(initial.formTitleTransform, 'none', 'The form title must keep natural sentence case.');
+    assert.ok(initial.formTitleSize <= initial.pageTitleSize * 0.45, 'The form title must read as a label, not a second display heading.');
     assert.equal(initial.pageTitleAlignment, 'center', 'The guest page title must align with the auth card.');
     assert.equal(initial.eyebrowLetterSpacing, 'normal', 'The welcome copy must use natural letter spacing.');
     assert.equal(initial.eyebrowTextTransform, 'none', 'The welcome copy must keep natural sentence case.');

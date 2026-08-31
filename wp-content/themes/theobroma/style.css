@@ -237,7 +237,7 @@ ul.products li.product > a.add_to_cart_button { display:none !important; }
 .woocommerce-account .account-page-auth { width:min(32rem,100%); margin:0 auto; padding:2.625rem 2.75rem 2.5rem; border:0; background:#f3ebe4; box-shadow:0 1.5rem 4rem rgba(52,42,35,.07); animation:account-auth-reveal .45s cubic-bezier(.22,.61,.36,1) both; }
 .woocommerce-account .account-page-auth__view[hidden] { display:none !important; }
 .woocommerce-account .account-page-auth__eyebrow { margin:0 0 0.625rem; color:#6f655e; font:400 0.8125rem/1.25rem 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-align:center; text-transform:none; }
-.woocommerce-account .account-page-auth h2 { margin:0; font:400 clamp(2.125rem,3.5vw,2.5rem)/1 'Cormorant',Arial,sans-serif; text-align:center; }
+.woocommerce-account .account-page-auth h2 { margin:0; font:500 1.25rem/1.625rem 'Montserrat',Arial,sans-serif; text-align:center; text-transform:none; }
 .woocommerce-account .account-page-auth__intro { max-width:23rem; margin:0.875rem auto 1.75rem; color:#6f655e; font:400 0.8125rem/1.3125rem 'Montserrat',Arial,sans-serif; text-align:center; }
 .woocommerce-account .account-page-auth .woocommerce-form-login,
 .woocommerce-account .account-page-auth .woocommerce-form-register { margin:0; padding:0; border:0; background:transparent; }
@@ -264,7 +264,7 @@ ul.products li.product > a.add_to_cart_button { display:none !important; }
 .woocommerce-account:not(.logged-in) .shop-shell .woocommerce-error { margin-right:auto; margin-left:auto; }
 
 .woocommerce-account .account-recovery-card { width:min(32rem,100%); margin:0 auto; padding:2.625rem 2.75rem 2.5rem; border:0; background:#f3ebe4; box-shadow:0 1.5rem 4rem rgba(52,42,35,.07); animation:account-auth-reveal .45s cubic-bezier(.22,.61,.36,1) both; }
-.woocommerce-account .account-recovery-card h2 { margin:0; font:400 clamp(2.125rem,3.5vw,2.5rem)/1 'Cormorant',Arial,sans-serif; text-align:center; text-transform:uppercase; }
+.woocommerce-account .account-recovery-card h2 { margin:0; font:500 1.25rem/1.625rem 'Montserrat',Arial,sans-serif; text-align:center; text-transform:none; }
 .woocommerce-account .account-recovery-card__intro { max-width:23rem; margin:0.875rem auto 1.75rem; color:#6f655e; font:400 0.8125rem/1.3125rem 'Montserrat',Arial,sans-serif; text-align:center; }
 .woocommerce-account .account-recovery-card .lost_reset_password { margin:0; }
 .woocommerce-account .account-recovery-card .form-row { width:100%; margin:0 0 1rem; padding:0; float:none; }
