@@ -3,8 +3,19 @@
 
   const heroVideoTrigger = document.querySelector('.home-hero__video-trigger');
   const heroVideo = heroVideoTrigger ? heroVideoTrigger.querySelector('[data-home-hero-video]') : null;
+  const heroImageFallback = heroVideoTrigger ? heroVideoTrigger.querySelector('[data-home-hero-fallback]') : null;
 
   if (heroVideoTrigger && heroVideo) {
+    const userAgent = window.navigator.userAgent;
+    const iOSWebKit = /iPad|iPhone|iPod/i.test(userAgent)
+      || (/Macintosh/i.test(userAgent) && window.navigator.maxTouchPoints > 1);
+    const desktopSafari = /Safari/i.test(userAgent) && !/Chrome|Chromium|Edg|OPR|Android/i.test(userAgent);
+    const useImageFallback = Boolean(heroImageFallback && (iOSWebKit || desktopSafari));
+    const fallbackPoster = heroImageFallback ? heroImageFallback.src : '';
+    let fallbackTimer = 0;
+
+    if (useImageFallback) heroVideoTrigger.classList.add('uses-image-fallback');
+
     function setHeroVideoState(state) {
       const playing = state === 'playing';
       heroVideoTrigger.dataset.state = state;
@@ -16,8 +27,23 @@
       setHeroVideoState('idle');
     }
 
+    function resetImageFallback() {
+      window.clearTimeout(fallbackTimer);
+      fallbackTimer = 0;
+      heroImageFallback.src = fallbackPoster;
+      setHeroVideoState('idle');
+    }
+
     heroVideoTrigger.addEventListener('click', () => {
       if (heroVideoTrigger.dataset.state === 'playing') return;
+
+      if (useImageFallback) {
+        const duration = Number(heroVideoTrigger.dataset.fallbackDuration) || 6100;
+        heroImageFallback.src = heroImageFallback.dataset.animatedSrc;
+        setHeroVideoState('playing');
+        fallbackTimer = window.setTimeout(resetImageFallback, duration);
+        return;
+      }
 
       heroVideo.currentTime = 0;
       setHeroVideoState('playing');
@@ -26,6 +52,9 @@
     });
 
     heroVideo.addEventListener('ended', resetHeroVideo);
+    heroVideo.addEventListener('pause', () => {
+      if (heroVideoTrigger.dataset.state === 'playing' && !heroVideo.ended) resetHeroVideo();
+    });
     heroVideo.addEventListener('error', () => setHeroVideoState('idle'));
   }
 
