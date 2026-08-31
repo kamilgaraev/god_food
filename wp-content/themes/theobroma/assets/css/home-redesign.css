@@ -8,6 +8,7 @@
   --home-container: var(--layout-container, 72.5rem);
   --home-gutter: var(--layout-gutter, clamp(1.125rem, 4vw, 4rem));
   --home-shipping-height: min(calc(2.5vw - .2px), 3.1875rem);
+  --home-sticky-nav-height: 4.875rem;
 }
 
 html { scroll-behavior: smooth; }
@@ -213,7 +214,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-catalog__footer { display: none; width: 100%; max-width: var(--home-container); margin: 2.25rem auto 0; justify-content: center; }
 .home-empty-state { padding: 2.5rem; border: 1px solid var(--home-line); color: var(--home-muted); text-align: center; }
 
-.home-cacao { padding: 2.375rem var(--home-gutter) 2.375rem; border-block: 1px solid var(--home-line); background: #fffdf9; }
+.home-cacao { padding: 2.375rem var(--home-gutter) 2.375rem; scroll-margin-top: var(--home-sticky-nav-height); border-block: 1px solid var(--home-line); background: #fffdf9; }
 .home-cacao__shell { width: 100%; max-width: var(--home-container); min-width: 0; margin-inline: auto; display: grid; grid-template-columns: minmax(26.875rem, .94fr) minmax(28.75rem, 1.06fr); gap: clamp(4rem, 6vw, 5.375rem); align-items: start; }
 .home-cacao__selector,
 .home-cacao__panel { min-width: 0; }
@@ -342,7 +343,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 }
 
 @media (max-width: 600px) {
-  :root { --home-shipping-height: 8.372093vw; }
+  :root { --home-shipping-height: 8.372093vw; --home-sticky-nav-height: 4.25rem; }
   html { scroll-behavior: auto; }
   .site-header { height: calc(4.25rem + var(--home-shipping-height)); }
   .nav,
