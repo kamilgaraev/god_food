@@ -48,6 +48,37 @@ async function checkboxMetrics(page, fixture) {
   });
 }
 
+async function checkoutDividerSpacing(page) {
+  await page.setContent(`
+    <style>${stylesheet}</style>
+    <div class="commerce-cart-checkout">
+      <form class="checkout">
+        <div id="payment">
+          <div class="form-row place-order" style="border-top: 1px solid #ddd">
+            <div class="woocommerce-terms-and-conditions-wrapper">
+              <p class="commerce-checkout-consent">
+                <label class="consent"><input type="checkbox"><span>Согласие на обработку данных</span></label>
+              </p>
+              <label class="woocommerce-form__label-for-checkbox">
+                <input class="woocommerce-form__input-checkbox" type="checkbox"><span>Публичная оферта</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  `);
+
+  return page.evaluate(() => {
+    const divider = document.querySelector('.place-order').getBoundingClientRect();
+    const consents = document.querySelector('.woocommerce-terms-and-conditions-wrapper').getBoundingClientRect();
+    return {
+      rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
+      spacing: consents.top - divider.top,
+    };
+  });
+}
+
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
 
@@ -78,6 +109,12 @@ async function checkboxMetrics(page, fixture) {
             assert.equal(metrics.labelMarginTop, fixture.expectedLabelMarginTop, 'Shared checkbox styling must preserve the form layout');
           }
         }
+
+        const dividerSpacing = await checkoutDividerSpacing(page);
+        assert.ok(
+          dividerSpacing.spacing >= dividerSpacing.rootFontSize,
+          `Checkout consent controls must start at least 1rem below the divider (received ${dividerSpacing.spacing}px)`,
+        );
 
         await page.close();
       }

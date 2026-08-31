@@ -33,6 +33,18 @@ async function openHomepage(browser, options = {}) {
     assert.equal(await track.count(), 1, 'benefit strip must expose one animated track');
     assert.equal(await groups.count(), 2, 'benefit strip must duplicate its content for a seamless loop');
 
+    const labelTypography = await desktop.page.locator('.home-benefit-strip span').first().evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        fontSize: parseFloat(style.fontSize),
+        letterSpacing: parseFloat(style.letterSpacing) || 0,
+        textTransform: style.textTransform,
+      };
+    });
+    assert.ok(labelTypography.fontSize >= 10, `benefit strip labels must remain comfortably readable, got ${labelTypography.fontSize}px`);
+    assert.ok(Math.abs(labelTypography.letterSpacing) < 0.2, 'benefit strip labels must use natural letter spacing');
+    assert.equal(labelTypography.textTransform, 'none', 'benefit strip labels must preserve natural text casing');
+
     const coverage = await groups.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().width));
     assert.ok(coverage.every((width) => width >= 1440), 'each repeated group must cover the desktop viewport');
 
@@ -57,6 +69,15 @@ async function openHomepage(browser, options = {}) {
     await desktop.page.waitForTimeout(350);
     const endX = translationX(await track.evaluate((node) => getComputedStyle(node).transform));
     assert.ok(endX > startX, `benefit track must move left to right, got ${startX}px -> ${endX}px`);
+
+    await desktop.page.setViewportSize({ width: 3182, height: 900 });
+    const seamGap = await desktop.page.locator('.home-benefit-strip__track').evaluate((node) => {
+      const groups = [...node.querySelectorAll('.home-benefit-strip__group')];
+      const lastItem = groups[0].lastElementChild.getBoundingClientRect();
+      const firstItem = groups[1].firstElementChild.getBoundingClientRect();
+      return firstItem.left - lastItem.right;
+    });
+    assert.ok(seamGap > 0 && seamGap <= 24, `benefit strip copies must join without a wide blank seam, got ${seamGap}px`);
     await desktop.context.close();
 
     const mobile = await openHomepage(browser, { viewport: { width: 390, height: 844 } });
@@ -68,6 +89,10 @@ async function openHomepage(browser, options = {}) {
       await mobile.page.locator('.home-benefit-strip__track').evaluate((node) => getComputedStyle(node).animationName),
       'none',
       'benefit strip must animate on mobile',
+    );
+    assert.ok(
+      await mobile.page.locator('.home-benefit-strip span').first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize)) >= 9,
+      'benefit strip labels must remain readable on mobile',
     );
     await mobile.context.close();
 
