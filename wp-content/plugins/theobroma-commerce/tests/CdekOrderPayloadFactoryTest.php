@@ -48,4 +48,23 @@ final class CdekOrderPayloadFactoryTest extends TestCase
             ]],
         ]), \InvalidArgumentException::class);
     }
+
+    public function testAddsItemPaymentForCashOnDelivery(): void
+    {
+        $factory = new CdekOrderPayloadFactory(44, 'Москва, ул. Фабричная, 1');
+        $payload = $factory->build([
+            'number' => '1003',
+            'tariff_code' => 136,
+            'delivery_kind' => 'pickup',
+            'pickup_code' => 'KZN1',
+            'cod' => true,
+            'recipient' => ['name' => 'Иван Иванов', 'phone' => '+79990000000'],
+            'items' => [[
+                'sku' => 'CHOCO-1', 'name' => 'Шоколад', 'quantity' => 1,
+                'unit_price' => 500.0, 'weight_g' => 200,
+            ]],
+        ]);
+
+        $this->assertSame(500.0, $payload['packages'][0]['items'][0]['payment']);
+    }
 }

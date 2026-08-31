@@ -27,7 +27,7 @@ final class CdekOrderPayloadFactory
                 'ware_key' => (string) ($item['sku'] ?? ''),
                 'name' => (string) ($item['name'] ?? ''),
                 'cost' => (float) ($item['unit_price'] ?? 0),
-                'payment' => 0.0,
+                'payment' => !empty($data['cod']) ? (float) ($item['unit_price'] ?? 0) : 0.0,
                 'weight' => $weight,
                 'amount' => $quantity,
             ];

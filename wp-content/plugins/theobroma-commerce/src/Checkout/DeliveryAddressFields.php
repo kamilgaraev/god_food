@@ -54,10 +54,10 @@ final class DeliveryAddressFields
             return;
         }
         if (trim((string) ($data['billing_postcode'] ?? '')) === '') {
-            $errors->add('theobroma_cdek_postcode', __('Укажите индекс для доставки курьером СДЭК.', 'theobroma-commerce'));
+            $errors->add('theobroma_delivery_postcode', __('Укажите индекс для доставки курьером.', 'theobroma-commerce'));
         }
         if (trim((string) ($data['billing_address_1'] ?? '')) === '') {
-            $errors->add('theobroma_cdek_address', __('Укажите адрес для доставки курьером СДЭК.', 'theobroma-commerce'));
+            $errors->add('theobroma_delivery_address', __('Укажите адрес для доставки курьером.', 'theobroma-commerce'));
         }
     }
 
@@ -65,7 +65,7 @@ final class DeliveryAddressFields
     private function hasCourier(array $methods): bool
     {
         foreach ($methods as $method) {
-            if (str_contains($method, 'theobroma_cdek') && str_contains($method, 'courier')) {
+            if ((str_contains($method, 'theobroma_cdek') || str_contains($method, 'theobroma_ozon')) && str_contains($method, 'courier')) {
                 return true;
             }
         }

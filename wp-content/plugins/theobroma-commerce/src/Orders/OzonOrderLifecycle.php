@@ -14,12 +14,26 @@ final class OzonOrderLifecycle
     public function register(): void
     {
         add_action('woocommerce_order_status_processing', [$this, 'createShipment'], 20);
+        add_action('woocommerce_checkout_order_processed', [$this, 'createCodShipment'], 20, 3);
     }
 
     public function createShipment(int $orderId): void
     {
-        $order = wc_get_order($orderId);
-        if (!$order instanceof \WC_Order || !$order->is_paid() || !$this->usesOzonDelivery($order)) {
+        $this->dispatch($orderId, 'processing');
+    }
+
+    /** @param array<string,mixed> $postedData */
+    public function createCodShipment(int $orderId, array $postedData = [], ?\WC_Order $order = null): void
+    {
+        $this->dispatch($orderId, 'checkout', $order);
+    }
+
+    private function dispatch(int $orderId, string $event, ?\WC_Order $knownOrder = null): void
+    {
+        $order = $knownOrder ?? wc_get_order($orderId);
+        if (!$order instanceof \WC_Order
+            || !(new ShipmentDispatchPolicy())->shouldDispatch($event, $order->get_payment_method(), $order->is_paid())
+            || !$this->usesOzonDelivery($order)) {
             return;
         }
 
