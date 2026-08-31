@@ -77,6 +77,7 @@ $pages = array(
     array('title' => 'Публичная оферта', 'slug' => 'oferta', 'source' => 'https://theobroma.one/oferta'),
     array('title' => 'Медиа', 'slug' => 'media'),
     array('title' => 'Корпоративные подарки', 'slug' => 'corporate-gifts'),
+    array('title' => 'Пробники шоколада', 'slug' => 'chocolate-samples'),
 );
 
 foreach ($pages as $data) {

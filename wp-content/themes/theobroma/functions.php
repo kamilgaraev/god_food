@@ -5,6 +5,7 @@ require_once get_template_directory() . '/inc/homepage.php';
 require_once get_template_directory() . '/inc/checkout-order-button.php';
 require_once get_template_directory() . '/inc/product-images.php';
 require_once get_template_directory() . '/inc/contact-request-validation.php';
+require_once get_template_directory() . '/inc/chocolate-sample-request.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
 
 function theobroma_setup(): void {
@@ -576,6 +577,21 @@ function theobroma_handle_contact_request(): void {
     $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
     $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
     $request_type = sanitize_key(wp_unslash($_POST['request_type'] ?? 'contact'));
+    if ($request_type === 'chocolate_samples') {
+        $sample_request = theobroma_chocolate_sample_request_from_post($_POST);
+        if (!theobroma_chocolate_sample_request_is_valid($sample_request, time())) {
+            wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')) . '#contact-form');
+            exit;
+        }
+        $client_address = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
+        $sample_request_id = theobroma_save_chocolate_sample_request($sample_request, $client_address);
+        if (is_wp_error($sample_request_id)) {
+            wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')) . '#contact-form');
+            exit;
+        }
+        wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contact-form');
+        exit;
+    }
     $form_id = sanitize_key(wp_unslash($_POST['form_id'] ?? 'home'));
     $form_id = in_array($form_id, array('home', 'cooperation'), true) ? $form_id : 'home';
     $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
@@ -595,32 +611,35 @@ function theobroma_handle_contact_request(): void {
         'started_at' => $started_at,
         'custom' => $custom,
     );
-    $valid = $request_type === 'corporate_gift'
+    $is_corporate_request = $request_type === 'corporate_gift';
+    $valid = $is_corporate_request
         ? theobroma_contact_request_is_valid($request, time())
         : theobroma_standard_contact_request_is_valid($request, $form_id, time());
     if (!$valid) {
         wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')));
         exit;
     }
-    $standard_lines = $request_type === 'corporate_gift'
+    $standard_lines = $is_corporate_request
         ? array()
         : theobroma_standard_contact_request_lines($form_id, $request);
-    $standard_values = $request_type === 'corporate_gift'
+    $standard_values = $is_corporate_request
         ? array()
         : theobroma_standard_contact_request_values($form_id, $request);
-    $title_parts = $request_type === 'corporate_gift'
-        ? array_values(array_filter(array($name, $phone, $email)))
-        : array_values(array_filter(array(
+    if ($is_corporate_request) {
+        $title_parts = array_values(array_filter(array($name, $phone, $email)));
+    } else {
+        $title_parts = array_values(array_filter(array(
             $standard_values['name'] ?? '',
             $standard_values['phone'] ?? '',
             $standard_values['email'] ?? '',
         )));
+    }
     $request_id = wp_insert_post(
         array(
             'post_type' => 'contact_request',
             'post_status' => 'publish',
             'post_title' => $title_parts !== array() ? implode(' — ', $title_parts) : 'Заявка с сайта',
-            'post_content' => $request_type === 'corporate_gift' ? $message : implode("\n", $standard_lines),
+            'post_content' => $is_corporate_request ? $message : implode("\n", $standard_lines),
         ),
         true
     );
@@ -628,7 +647,7 @@ function theobroma_handle_contact_request(): void {
         wp_safe_redirect(add_query_arg('contact', 'error', wp_get_referer() ?: home_url('/')) . '#contact-form');
         exit;
     }
-    if ($request_type === 'corporate_gift') {
+    if ($is_corporate_request) {
         $corporate_fields = array(
             'company' => sanitize_text_field(wp_unslash($_POST['company'] ?? '')),
             'gift_type' => sanitize_text_field(wp_unslash($_POST['gift_type'] ?? '')),

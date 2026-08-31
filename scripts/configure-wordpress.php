@@ -36,6 +36,7 @@ $page_slugs = array(
     'Маркетплейсы' => 'marketplace',
     'Где купить' => 'buy',
     'Сотрудничество' => 'cooperation',
+    'Пробники шоколада' => 'chocolate-samples',
     'Доставка и оплата' => 'delivery',
 );
 foreach ($page_slugs as $title => $slug) {

@@ -44,7 +44,7 @@ verify_value(get_option('woocommerce_allowed_countries') === 'specific', 'sales 
 verify_value(get_option('woocommerce_specific_allowed_countries') === array('RU'), 'Russia is the allowed sales country');
 verify_value(get_option('woocommerce_ship_to_countries') === '', 'shipping follows allowed sales countries');
 
-$expected_pages = array('catalog', 'recipes', 'marketplace', 'buy', 'cooperation', 'corporate-gifts', 'delivery', 'media', 'policy', 'agreement', 'oferta');
+$expected_pages = array('catalog', 'recipes', 'marketplace', 'buy', 'cooperation', 'corporate-gifts', 'chocolate-samples', 'delivery', 'media', 'policy', 'agreement', 'oferta');
 foreach ($expected_pages as $slug) {
     $page = get_page_by_path($slug, OBJECT, 'page');
     verify_value($page instanceof WP_Post, 'page /' . $slug . '/');
