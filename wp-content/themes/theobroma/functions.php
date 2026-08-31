@@ -39,6 +39,7 @@ function theobroma_redirect_legacy_wordpress_routes(): void {
     } elseif (is_page()) {
         $page = get_queried_object();
         $page_redirects = array(
+            'marketplace' => theobroma_page_url('Где купить'),
             'sample-page' => home_url('/'),
             'offer' => home_url('/oferta/'),
             'policy-2' => home_url('/policy/'),
@@ -162,6 +163,16 @@ function theobroma_assets(): void {
                 (string) filemtime($theme_dir . '/assets/js/account-modal.js'),
                 array('strategy' => 'defer', 'in_footer' => true)
             );
+
+            if (is_account_page()) {
+                wp_enqueue_script(
+                    'theobroma-account-page-auth',
+                    get_template_directory_uri() . '/assets/js/account-page-auth.js',
+                    array(),
+                    (string) filemtime($theme_dir . '/assets/js/account-page-auth.js'),
+                    array('strategy' => 'defer', 'in_footer' => true)
+                );
+            }
         }
     }
 }

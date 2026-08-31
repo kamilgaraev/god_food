@@ -35,10 +35,6 @@ $product_benefits = array_values(array_filter(array_map(static function ($benefi
         'content' => (string) ($benefit['content'] ?? ''),
     ) : array('title' => '', 'content' => '');
 }, $product_benefits), static fn(array $benefit): bool => $benefit['title'] !== '' && $benefit['content'] !== ''));
-$marketplaces = $product->get_meta('_theobroma_marketplaces', true);
-if (!is_array($marketplaces)) {
-    $marketplaces = array();
-}
 $product_image_ids = array_values(array_unique(array_filter(array_merge(
     array($product->get_image_id()),
     $product->get_gallery_image_ids()
@@ -93,7 +89,6 @@ get_header();
             <h1><?php echo esc_html(theobroma_product_modal_title($product)); ?></h1>
             <div class="product-detail-price"><?php echo esc_html(number_format((float) $product->get_price(), 0, '', ' ') . ' р.'); ?></div>
             <div class="product-detail-buy"><?php woocommerce_template_single_add_to_cart(); ?><button class="product-detail-favorite" type="button" data-wishlist-toggle data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>" aria-label="Добавить в избранное" aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 21 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6.32647C20 11.4974 10.5 17 10.5 17C10.5 17 1 11.4974 1 6.32647C1 -0.694364 10.5 -0.599555 10.5 5.57947C10.5 -0.599555 20 -0.507124 20 6.32647Z" stroke="currentColor" stroke-linejoin="round"/></svg></button></div>
-            <div class="product-detail-marketplaces"><a href="<?php echo esc_url($marketplaces['wb'] ?? 'https://www.wildberries.ru/'); ?>" rel="noopener">WB</a><a href="<?php echo esc_url($marketplaces['ozon'] ?? 'https://www.ozon.ru/'); ?>" rel="noopener">Ozon</a></div>
             <div class="product-detail-copy"><?php foreach ($detail_copy as $paragraph) : ?><p><?php echo nl2br(esc_html($paragraph)); ?></p><?php endforeach; ?></div>
         </div>
     </section>
