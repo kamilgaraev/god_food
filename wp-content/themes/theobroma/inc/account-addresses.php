@@ -16,7 +16,7 @@ function theobroma_account_delivery_address_title(string $title, string $address
 {
     return $address_type === 'billing' ? __('Адрес доставки', 'theobroma') : $title;
 }
-add_filter('woocommerce_account_edit_address_title', 'theobroma_account_delivery_address_title', 20, 2);
+add_filter('woocommerce_my_account_edit_address_title', 'theobroma_account_delivery_address_title', 20, 2);
 
 function theobroma_redirect_legacy_shipping_address(): void
 {

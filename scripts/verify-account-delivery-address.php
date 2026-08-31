@@ -62,7 +62,7 @@ expect_true(is_file($policy_file), 'The theme must define its customer delivery-
 require $policy_file;
 
 expect_true(isset($registered_filters['woocommerce_my_account_get_addresses']), 'The delivery-address policy must filter the account address list.');
-expect_true(isset($registered_filters['woocommerce_account_edit_address_title']), 'The delivery-address policy must rename the edit form.');
+expect_true(isset($registered_filters['woocommerce_my_account_edit_address_title']), 'The delivery-address policy must rename the WooCommerce edit-address form.');
 expect_true(isset($registered_actions['template_redirect']), 'The delivery-address policy must handle legacy shipping links.');
 
 $addresses = theobroma_account_delivery_addresses(array(
