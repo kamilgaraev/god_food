@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Theobroma\Commerce\Shipping;
 
 use Theobroma\Commerce\Infrastructure\WpTransport;
-use Theobroma\Commerce\Integrations\Ozon\OzonClient;
 use Theobroma\Commerce\Integrations\Ozon\OzonClientFactory;
 use Theobroma\Commerce\Integrations\Ozon\WordPressTokenStore;
 use Theobroma\Commerce\Support\ProviderException;
+use Theobroma\Commerce\Checkout\DeliveryRateResolver;
+use Theobroma\Commerce\Checkout\DeliveryRuntime;
+use Theobroma\Commerce\Checkout\DeliverySelectionStore;
 
 final class OzonShippingMethod extends \WC_Shipping_Method
 {
@@ -40,8 +42,6 @@ final class OzonShippingMethod extends \WC_Shipping_Method
             $factory = new OzonClientFactory($transport, new WordPressTokenStore());
             $authenticator = $factory->authenticatorFromSettings($settings);
             $authenticator->token();
-            $client = new OzonClient($transport, $authenticator);
-            $quote = apply_filters('theobroma_ozon_confirmed_quote', null, $package, $this, $client);
         } catch (\Throwable $exception) {
             wc_get_logger()->error('Ozon shipping quote unavailable', [
                 'source' => 'theobroma-ozon',
@@ -49,18 +49,13 @@ final class OzonShippingMethod extends \WC_Shipping_Method
             ]);
             return;
         }
-        if (!is_array($quote) || !isset($quote['cost'], $quote['label'], $quote['create_payload'])) {
-            return;
-        }
+        $quote = (new DeliveryRateResolver(new DeliverySelectionStore()))->resolve('ozon', DeliveryRuntime::fingerprint((array) $package));
 
         $this->add_rate([
-            'id' => $this->get_rate_id('delivery'),
+            'id' => $this->get_rate_id((string) $quote['kind']),
             'label' => sanitize_text_field((string) $quote['label']),
             'cost' => max(0.0, (float) $quote['cost']),
-            'meta_data' => [
-                'theobroma_provider' => 'ozon',
-                'theobroma_ozon_create_payload' => wp_json_encode((array) $quote['create_payload']),
-            ],
+            'meta_data' => (array) $quote['meta_data'],
             'package' => $package,
         ]);
     }

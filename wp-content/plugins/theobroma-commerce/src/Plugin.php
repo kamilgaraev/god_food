@@ -15,6 +15,7 @@ use Theobroma\Commerce\Checkout\DeliveryAddressFields;
 use Theobroma\Commerce\Rest\CdekPointsController;
 use Theobroma\Commerce\Rest\CdekWebhookController;
 use Theobroma\Commerce\Rest\OzonOAuthCallbackController;
+use Theobroma\Commerce\Rest\DeliveryCheckoutController;
 use Theobroma\Commerce\Orders\CdekOrderLifecycle;
 use Theobroma\Commerce\Orders\OzonOrderLifecycle;
 use Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle;
@@ -48,6 +49,7 @@ final class Plugin
         (new CdekPointsController())->register();
         (new CdekWebhookController())->register();
         (new OzonOAuthCallbackController())->register();
+        (new DeliveryCheckoutController())->register();
         (new CdekOrderLifecycle())->register();
         (new OzonOrderLifecycle())->register();
         (new WooLoyaltyLifecycle())->register();

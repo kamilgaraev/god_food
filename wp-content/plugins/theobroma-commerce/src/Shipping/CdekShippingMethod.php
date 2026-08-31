@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Theobroma\Commerce\Shipping;
 
-use Theobroma\Commerce\Infrastructure\WpTransport;
-use Theobroma\Commerce\Integrations\Cdek\CdekClient;
-use Theobroma\Commerce\Integrations\Cdek\WordPressTokenStore;
+use Theobroma\Commerce\Checkout\DeliveryRateResolver;
+use Theobroma\Commerce\Checkout\DeliveryRuntime;
+use Theobroma\Commerce\Checkout\DeliverySelectionStore;
 
 final class CdekShippingMethod extends \WC_Shipping_Method
 {
@@ -37,77 +37,14 @@ final class CdekShippingMethod extends \WC_Shipping_Method
         if ($clientId === '' || $secret === '' || $senderCode <= 0) {
             return;
         }
-
-        try {
-            $lines = $this->productLines($package['contents'] ?? []);
-            $destination = $package['destination'] ?? [];
-            $payload = (new CdekPackageBuilder($senderCode))->build([
-                'postal_code' => (string) ($destination['postcode'] ?? ''),
-                'city' => (string) ($destination['city'] ?? ''),
-                'address' => trim((string) ($destination['address'] ?? '') . ' ' . (string) ($destination['address_2'] ?? '')),
-            ], $lines);
-
-            $cacheKey = 'theobroma_cdek_rates_' . md5((string) wp_json_encode($payload));
-            $rates = get_transient($cacheKey);
-            if (!is_array($rates)) {
-                $rates = (new CdekClient(new WpTransport(), new WordPressTokenStore(), $clientId, $secret))->calculateTariffs($payload);
-                set_transient($cacheKey, $rates, 5 * MINUTE_IN_SECONDS);
-            }
-
-            $selector = new CdekRateSelector();
-            foreach (['pickup' => __('СДЭК — пункт выдачи', 'theobroma-commerce'), 'courier' => __('СДЭК — курьер', 'theobroma-commerce')] as $kind => $label) {
-                $rate = $selector->cheapest($rates, $kind);
-                if ($rate === null) {
-                    continue;
-                }
-                $days = $this->deliveryPeriod($rate);
-                $this->add_rate([
-                    'id' => $this->get_rate_id($kind),
-                    'label' => $label . ($days !== '' ? ', ' . $days : ''),
-                    'cost' => (float) $rate['delivery_sum'],
-                    'meta_data' => [
-                        'theobroma_provider' => 'cdek',
-                        'theobroma_delivery_kind' => $kind,
-                        'theobroma_tariff_code' => (int) ($rate['tariff_code'] ?? 0),
-                    ],
-                    'package' => $package,
-                ]);
-            }
-        } catch (\Throwable $exception) {
-            wc_get_logger()->error($exception->getMessage(), ['source' => 'theobroma-cdek']);
-        }
+        $quote = (new DeliveryRateResolver(new DeliverySelectionStore()))->resolve('cdek', DeliveryRuntime::fingerprint((array) $package));
+        $this->add_rate([
+            'id' => $this->get_rate_id((string) $quote['kind']),
+            'label' => sanitize_text_field((string) $quote['label']),
+            'cost' => max(0.0, (float) $quote['cost']),
+            'meta_data' => (array) $quote['meta_data'],
+            'package' => $package,
+        ]);
     }
 
-    /** @param array<mixed> $contents
-     *  @return list<array{quantity:int,weight_kg:float,length_cm:float,width_cm:float,height_cm:float}>
-     */
-    private function productLines(array $contents): array
-    {
-        $lines = [];
-        foreach ($contents as $item) {
-            $product = $item['data'] ?? null;
-            if (!$product instanceof \WC_Product || !$product->needs_shipping()) {
-                continue;
-            }
-            $lines[] = [
-                'quantity' => max(1, (int) ($item['quantity'] ?? 1)),
-                'weight_kg' => (float) wc_get_weight((float) $product->get_weight(), 'kg'),
-                'length_cm' => (float) wc_get_dimension((float) $product->get_length(), 'cm'),
-                'width_cm' => (float) wc_get_dimension((float) $product->get_width(), 'cm'),
-                'height_cm' => (float) wc_get_dimension((float) $product->get_height(), 'cm'),
-            ];
-        }
-        return $lines;
-    }
-
-    /** @param array<mixed> $rate */
-    private function deliveryPeriod(array $rate): string
-    {
-        $min = (int) ($rate['period_min'] ?? 0);
-        $max = (int) ($rate['period_max'] ?? 0);
-        if ($min <= 0 && $max <= 0) {
-            return '';
-        }
-        return sprintf(_n('%s день', '%s дней', max($min, $max), 'theobroma-commerce'), $min === $max ? (string) $max : $min . '–' . $max);
-    }
 }
