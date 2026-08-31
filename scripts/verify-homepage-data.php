@@ -34,20 +34,26 @@ function add_query_arg(string $key, string|int $value, string $url): string {
 
 $test_products_by_sku = array();
 $test_catalog_products = array();
+$test_options = array();
+
+function get_option(string $name, mixed $default = false): mixed {
+    global $test_options;
+    return $test_options[$name] ?? $default;
+}
 
 function wc_get_product_id_by_sku(string $sku): int {
     global $test_products_by_sku;
     return isset($test_products_by_sku[$sku]) ? $test_products_by_sku[$sku]->get_id() : 0;
 }
 
-function wc_get_product(int $id): ?WC_Product {
+function wc_get_product(int $id): WC_Product|false {
     global $test_products_by_sku;
     foreach ($test_products_by_sku as $product) {
         if ($product->get_id() === $id) {
             return $product;
         }
     }
-    return null;
+    return false;
 }
 
 function wc_get_products(array $args): array {
@@ -104,8 +110,26 @@ $test_products_by_sku = array(
     'theobroma-100-80' => new WC_Product(23, '80% горький шоколад 100г', 'theobroma-100-80', '814'),
 );
 assert_same(array(20, 21, 22, 23), array_map(static fn(WC_Product $product): int => $product->get_id(), theobroma_homepage_products()), 'Loads curated homepage products in editorial order');
+$test_options['theobroma_content_settings'] = array(
+    'homepage_product_1' => '23',
+    'homepage_product_2' => '20',
+    'homepage_product_3' => '22',
+    'homepage_product_4' => '21',
+);
+assert_same(array(23, 20, 22, 21), array_map(static fn(WC_Product $product): int => $product->get_id(), theobroma_homepage_products()), 'Uses the four administrator-selected products in configured order');
 $test_products_by_sku['theobroma-100-70'] = new WC_Product(24, '70% скрытый шоколад 100г', 'theobroma-100-70', '768', 0, true, 'draft');
-assert_same(array(21, 22, 23), array_map(static fn(WC_Product $product): int => $product->get_id(), theobroma_homepage_products()), 'Does not expose unpublished curated products');
+$test_options['theobroma_content_settings'] = array(
+    'homepage_product_1' => '23',
+    'homepage_product_2' => '24',
+    'homepage_product_3' => '23',
+    'homepage_product_4' => '999',
+);
+assert_same(array(23, 21, 22), array_map(static fn(WC_Product $product): int => $product->get_id(), theobroma_homepage_products()), 'Replaces unavailable and duplicate selections with eligible defaults');
+$test_catalog_products = array(
+    new WC_Product(30, 'Запасной шоколад', 'fallback-30', '500'),
+    new WC_Product(31, 'Запасное какао', 'fallback-31', '550'),
+);
+assert_same(array(23, 21, 22, 30), array_map(static fn(WC_Product $product): int => $product->get_id(), theobroma_homepage_products()), 'Fills an empty homepage slot from the eligible catalogue');
 
 $test_catalog_products = $products;
 assert_same(array(59, 70, 80), array_keys(theobroma_home_cacao_groups()), 'Builds homepage cacao groups from the WooCommerce catalogue');
