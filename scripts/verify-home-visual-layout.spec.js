@@ -54,7 +54,8 @@ async function metricsFor(page) {
       rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
       nav: rect('.nav'),
       hero: rect('.home-hero'),
-      pyramid: rect('.home-chocolate-pyramid'),
+      heroCopy: rect('.home-hero__copy'),
+      heroVideo: rect('.home-hero__video-trigger'),
       trust: rect('.home-hero__trust'),
       lead: rect('.home-hero__lead'),
       leadText: rect('.home-hero__lead > p'),
@@ -92,13 +93,12 @@ async function run() {
         check(metrics.productCards.every(({ width: cardWidth }) => cardWidth >= metrics.productGrid.width - 2), `${width}px mobile homepage products must fill their row`);
         check(metrics.productCards.every(({ left, right }) => left >= -1 && right <= metrics.viewport + 1), `${width}px mobile homepage products must fit the viewport`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px mobile content sections must use one column`);
-        check(metrics.pyramid.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px mobile hero content must keep pyramid, trust and actions in order`);
+        check(metrics.lead.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.heroVideo.top + 1, `${width}px mobile hero content must keep copy, trust and video in order`);
       } else if (width < 1200) {
         check(metrics.productColumns === 2, `${width}px tablet catalog must use two columns`);
         check(metrics.cacaoColumns === 1 && metrics.compositionColumns === 1, `${width}px tablet content sections must use one column`);
-        check(metrics.pyramid.bottom <= metrics.trust.top + 1 && metrics.trust.bottom <= metrics.lead.top + 1, `${width}px tablet hero content must keep pyramid, trust and actions in order`);
-        check(metrics.lead.bottom <= metrics.hero.bottom - metrics.rootFontSize + 1, `${width}px tablet hero actions must keep a 1rem bottom inset`);
-        check(metrics.leadText.right <= metrics.heroActions.left - metrics.rootFontSize + 1, `${width}px tablet hero copy and actions must keep a 1rem gap`);
+        check(metrics.heroCopy.right <= metrics.heroVideo.left + 1, `${width}px tablet hero copy must stay to the left of the video`);
+        check(metrics.heroVideo.bottom <= metrics.hero.bottom + 1, `${width}px tablet hero video must fit inside the hero`);
       } else {
         check(metrics.productColumns === 4, `${width}px desktop catalog must use four columns`);
         check(metrics.cacaoColumns === 2 && metrics.compositionColumns === 2, `${width}px desktop content sections must use two columns`);
@@ -107,6 +107,7 @@ async function run() {
         check(Math.max(...lefts) - Math.min(...lefts) <= 2, `${width}px desktop sections must share one left container edge`);
         check(Math.max(...rights) - Math.min(...rights) <= 2, `${width}px desktop sections must share one right container edge`);
         check(metrics.promoCards.length === 2 && Math.abs(metrics.promoCards[0].left - lefts[0]) <= 2 && Math.abs(metrics.promoCards[1].right - rights[0]) <= 2, `${width}px promo cards must align to the shared container`);
+        check(metrics.heroCopy.right <= metrics.heroVideo.left + 1, `${width}px desktop hero copy must stay to the left of the video`);
       }
 
       await page.close();
