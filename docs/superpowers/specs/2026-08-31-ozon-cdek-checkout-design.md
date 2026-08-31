@@ -79,4 +79,3 @@ The selected provider snapshot and confirmed quote are copied from session to or
 - JavaScript tests cover list fallback, map enhancement, restored selection after `updated_checkout`, and stale-request suppression.
 - Existing commerce unit and smoke suites must remain green.
 - Live Ozon acceptance still requires merchant OAuth and real SKUs because Ozon Delivery has no sandbox.
-

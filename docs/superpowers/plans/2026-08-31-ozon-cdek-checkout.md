@@ -154,4 +154,3 @@
 - [ ] Run delivery-selector and existing checkout UI tests.
 - [ ] Review the final diff for secrets, stale placeholders, and unrelated changes.
 - [ ] Commit verification documentation.
-
