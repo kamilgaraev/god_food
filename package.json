@@ -42,6 +42,7 @@
     "test:checkout-button-spacing": "node scripts/verify-checkout-button-spacing.spec.js",
     "test:account-auth-forms": "node scripts/verify-account-auth-forms.spec.js",
     "test:account-error-notice": "node scripts/verify-account-error-notice.spec.js",
+    "test:account-auth-switcher": "node scripts/verify-account-auth-switcher.spec.js",
     "test:account-heading": "php scripts/verify-account-page-heading.php",
     "test:account-square-layout": "node scripts/verify-account-square-layout.spec.js",
     "test:account-empty-state": "node scripts/verify-account-empty-state-alignment.spec.js",

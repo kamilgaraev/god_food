@@ -163,6 +163,16 @@ function theobroma_assets(): void {
                 (string) filemtime($theme_dir . '/assets/js/account-modal.js'),
                 array('strategy' => 'defer', 'in_footer' => true)
             );
+
+            if (is_account_page()) {
+                wp_enqueue_script(
+                    'theobroma-account-page-auth',
+                    get_template_directory_uri() . '/assets/js/account-page-auth.js',
+                    array(),
+                    (string) filemtime($theme_dir . '/assets/js/account-page-auth.js'),
+                    array('strategy' => 'defer', 'in_footer' => true)
+                );
+            }
         }
     }
 }
