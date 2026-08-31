@@ -12,7 +12,7 @@ const routes = [
   { path: '/my-account/', marker: '.theobroma-account-dashboard' },
   { path: '/my-account/orders/', marker: '.woocommerce-orders-table, .woocommerce-info' },
   { path: '/my-account/bonuses/', marker: '.theobroma-bonuses' },
-  { path: '/my-account/edit-address/', marker: '.woocommerce-Addresses' },
+  { path: '/my-account/edit-address/', marker: '.theobroma-address-book' },
   { path: '/my-account/edit-address/billing/', marker: 'form h2, form h3, .woocommerce-address-fields' },
   { path: '/my-account/edit-address/shipping/', marker: 'form h2, form h3, .woocommerce-address-fields' },
   { path: '/my-account/edit-account/', marker: 'form.woocommerce-EditAccountForm' },

@@ -5,6 +5,7 @@ require_once get_template_directory() . '/inc/homepage.php';
 require_once get_template_directory() . '/inc/checkout-order-button.php';
 require_once get_template_directory() . '/inc/product-images.php';
 require_once get_template_directory() . '/inc/contact-request-validation.php';
+require_once get_template_directory() . '/inc/account-addresses.php';
 
 function theobroma_setup(): void {
     add_theme_support('title-tag');
@@ -756,7 +757,7 @@ function theobroma_account_menu_items(array $items): array {
         'dashboard'       => __('Главная', 'theobroma'),
         'orders'          => __('Заказы', 'theobroma'),
         'bonuses'         => __('Бонусы', 'theobroma'),
-        'edit-address'    => __('Адреса', 'theobroma'),
+        'edit-address'    => __('Адрес доставки', 'theobroma'),
         'edit-account'    => __('Профиль', 'theobroma'),
         'customer-logout' => $items['customer-logout'] ?? __('Выйти', 'theobroma'),
     ));
