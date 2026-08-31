@@ -43,6 +43,7 @@
     "test:lead-forms": "php scripts/verify-lead-form-simplification.spec.php && php scripts/verify-contact-request-validation.spec.php",
     "test:cooperation-form-layout": "node scripts/verify-cooperation-configurable-layout.spec.js",
     "test:chocolate-samples": "php scripts/verify-chocolate-samples.spec.php",
+    "test:chocolate-samples-layout": "node scripts/verify-chocolate-samples-layout.spec.js",
     "test:cart-checkout-ui": "node scripts/verify-cart-checkout-ui.spec.js",
     "test:commerce-modal-backdrop": "node scripts/verify-commerce-modal-backdrop.spec.js",
     "test:cart-order-typography": "node scripts/verify-cart-order-typography.spec.js",
