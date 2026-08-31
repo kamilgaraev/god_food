@@ -41,6 +41,10 @@ function renderHeroDocument() {
     'Hero animation source must declare the WebM media type');
   assert(triggerMarkup.includes('/assets/images/hero-chocolate-animated.webp'),
     'Hero must include an alpha-safe animated WebP fallback for WebKit');
+  const animationChunk = webkitAnimation.indexOf(Buffer.from('ANIM'));
+  assert(animationChunk >= 0, 'WebKit fallback must be an animated WebP');
+  assert.equal(webkitAnimation.readUInt16LE(animationChunk + 12), 1,
+    'WebKit fallback must play one cycle instead of looping indefinitely');
 
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
@@ -142,6 +146,13 @@ function renderHeroDocument() {
     await webkitPage.setContent(renderHeroDocument());
     await webkitPage.evaluate(() => {
       Object.defineProperty(navigator, 'userAgent', { configurable: true, value: 'Mozilla/5.0 AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1' });
+      const fallback = document.querySelector('[data-home-hero-fallback]');
+      let fallbackSource = fallback.src;
+      Object.defineProperty(fallback, 'src', {
+        configurable: true,
+        get: () => fallbackSource,
+        set: (value) => { fallbackSource = value; },
+      });
       window.__heroTimers = [];
       window.setTimeout = (callback, delay) => {
         window.__heroTimers.push({ callback, delay });
@@ -150,17 +161,26 @@ function renderHeroDocument() {
     });
     await webkitPage.addScriptTag({ content: script });
     const webkitTrigger = webkitPage.locator('.home-hero__video-trigger');
+    const webkitFallback = webkitPage.locator('[data-home-hero-fallback]');
     await webkitTrigger.click();
     assert.equal(await webkitTrigger.getAttribute('data-state'), 'playing',
       'WebKit fallback must expose its playing state');
-    assert.equal(await webkitPage.locator('[data-home-hero-fallback]').evaluate((node) => node.src.startsWith('data:image/webp')), true,
+    assert.equal(await webkitFallback.evaluate((node) => node.src.startsWith('data:image/webp')), true,
       'WebKit fallback must switch to the transparent animated WebP');
+    assert.equal(await webkitPage.evaluate(() => window.__heroTimers.length), 0,
+      'WebKit fallback timer must wait for the animation to finish loading');
+    await webkitFallback.dispatchEvent('load');
     const fallbackDelay = await webkitPage.evaluate(() => window.__heroTimers[0]?.delay);
     assert(fallbackDelay >= 6042 && fallbackDelay <= 6200,
       `WebKit fallback must reset after one playback (got ${fallbackDelay}ms)`);
     await webkitPage.evaluate(() => window.__heroTimers[0].callback());
     assert.equal(await webkitTrigger.getAttribute('data-state'), 'idle',
       'WebKit fallback must become clickable again after one playback');
+
+    await webkitTrigger.click();
+    await webkitFallback.dispatchEvent('error');
+    assert.equal(await webkitTrigger.getAttribute('data-state'), 'idle',
+      'WebKit fallback must recover immediately when the animated image fails to load');
     await webkitPage.close();
   } finally {
     await browser.close();
