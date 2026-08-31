@@ -67,8 +67,12 @@ final class DeliveryCheckoutController
             }
             return rest_ensure_response(['points' => $points]);
         } catch (\Throwable $exception) {
-            wc_get_logger()->error('Delivery points unavailable', ['source' => 'theobroma-delivery', 'provider' => sanitize_key((string) $request->get_param('provider'))]);
-            return new \WP_Error('delivery_points_unavailable', __('Не удалось загрузить пункты выдачи.', 'theobroma-commerce'), ['status' => 502]);
+            $failure = DeliveryProviderFailure::fromException(
+                sanitize_key((string) $request->get_param('provider')),
+                $exception
+            );
+            wc_get_logger()->error('Delivery points unavailable', $failure->logContext());
+            return new \WP_Error('delivery_points_unavailable', $failure->publicMessage(), ['status' => 502]);
         }
     }
 

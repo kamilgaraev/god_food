@@ -22,7 +22,10 @@ const deliveryCss = fs.readFileSync(path.join(root, 'wp-content/plugins/theobrom
             <tr class="cart-subtotal"><th>Подытог</th><td>1000 ₽</td></tr>
             <tr class="woocommerce-shipping-totals shipping">
               <th>Доставка</th>
-              <td><ul class="woocommerce-shipping-methods"><li><input type="radio" checked><label>Ozon Доставка — выбрать способ</label><button class="theobroma-delivery-open">Выбрать доставку</button></li></ul></td>
+              <td><ul class="woocommerce-shipping-methods">
+                <li><input type="radio" checked><label>Ozon Доставка</label><button class="theobroma-delivery-open">Выбрать пункт или курьера</button></li>
+                <li><input type="radio"><label>СДЭК</label><button class="theobroma-delivery-open">Выбрать пункт или курьера</button></li>
+              </ul></td>
             </tr>
             <tr class="order-total"><th>Итого</th><td>1000 ₽</td></tr>
           </tfoot>
@@ -40,12 +43,16 @@ const deliveryCss = fs.readFileSync(path.join(root, 'wp-content/plugins/theobrom
         cartItemVisible: document.querySelector('.cart_item').getClientRects().length > 0,
         subtotal: getComputedStyle(document.querySelector('.cart-subtotal')).display,
         shipping: getComputedStyle(row).display,
-        headingBorder: getComputedStyle(row.querySelector('th')).borderTopWidth,
+        headingVisible: row.querySelector('th').getClientRects().length > 0,
         cardRadius: parseFloat(getComputedStyle(card).borderRadius),
         cardBorder: getComputedStyle(card).borderTopWidth,
+        cardBackground: getComputedStyle(card).backgroundColor,
         buttonRadius: parseFloat(getComputedStyle(button).borderRadius),
         buttonDecoration: getComputedStyle(button).textDecorationLine,
+        buttonText: button.textContent.trim(),
         buttonVisible: button.getClientRects().length > 0,
+        methodLabels: [...document.querySelectorAll('.woocommerce-shipping-methods label')].map((label) => label.textContent.trim()),
+        visibleButtons: [...document.querySelectorAll('.theobroma-delivery-open')].filter((item) => item.getClientRects().length > 0).length,
       };
     });
 
@@ -54,12 +61,16 @@ const deliveryCss = fs.readFileSync(path.join(root, 'wp-content/plugins/theobrom
     assert.equal(visibility.cartItemVisible, false);
     assert.equal(visibility.subtotal, 'none');
     assert.equal(visibility.shipping, 'table-row');
-    assert.equal(visibility.headingBorder, '0px');
-    assert.ok(visibility.cardRadius >= 12);
-    assert.equal(visibility.cardBorder, '1px');
+    assert.equal(visibility.headingVisible, false);
+    assert.equal(visibility.cardRadius, 0);
+    assert.equal(visibility.cardBorder, '0px');
+    assert.equal(visibility.cardBackground, 'rgba(0, 0, 0, 0)');
     assert.ok(visibility.buttonRadius >= 8);
     assert.equal(visibility.buttonDecoration, 'none');
+    assert.equal(visibility.buttonText, 'Выбрать пункт или курьера');
     assert.equal(visibility.buttonVisible, true);
+    assert.deepEqual(visibility.methodLabels, ['Ozon Доставка', 'СДЭК']);
+    assert.equal(visibility.visibleButtons, 2);
   } finally {
     await browser.close();
   }

@@ -17,7 +17,7 @@ final class DeliveryRateResolver
         if (!$selection instanceof DeliverySelection) {
             return [
                 'kind' => 'bootstrap',
-                'label' => $provider === 'ozon' ? 'Ozon Доставка — выбрать способ' : 'СДЭК — выбрать способ',
+                'label' => $provider === 'ozon' ? 'Ozon Доставка' : 'СДЭК',
                 'cost' => 0.0,
                 'requires_selection' => true,
                 'meta_data' => [

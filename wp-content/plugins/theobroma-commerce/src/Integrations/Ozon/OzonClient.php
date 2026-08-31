@@ -166,7 +166,9 @@ final class OzonClient implements OzonOrderApi
             $this->tokens->forget();
         }
         if ($response['status'] !== 200) {
-            throw ProviderException::fromResponse('Ozon request failed', $response['status']);
+            throw ProviderException::fromResponse('Ozon request failed', $response['status'], [
+                'response' => $response['body'],
+            ]);
         }
 
         $body = $response['body'];

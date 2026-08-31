@@ -11,6 +11,24 @@ use Theobroma\Commerce\Tests\Fakes\StaticAccessTokenProvider;
 
 final class OzonClientTest extends TestCase
 {
+    public function testKeepsRedactedProviderErrorForDiagnostics(): void
+    {
+        $transport = new RecordingTransport([[
+            'status' => 403,
+            'body' => ['message' => 'forbidden', 'client_secret' => 'do-not-log'],
+        ]]);
+        $client = new OzonClient($transport, new StaticAccessTokenProvider(['token']));
+
+        try {
+            $client->deliveryPointList([]);
+            $this->assertTrue(false, 'Expected provider exception.');
+        } catch (ProviderException $exception) {
+            $this->assertSame(403, $exception->statusCode());
+            $this->assertSame('forbidden', $exception->context()['response']['message']);
+            $this->assertSame('[redacted]', $exception->context()['response']['client_secret']);
+        }
+    }
+
     public function testUsesPrivateApplicationBearerTokenForDeliveryMethods(): void
     {
         $transport = new RecordingTransport([
@@ -131,6 +149,6 @@ final class OzonClientTest extends TestCase
 
         $this->assertSame(2, count($transport->requests));
         $this->assertSame(1, $tokens->forgetCalls);
-        $this->assertSame([], $exception->context());
+        $this->assertSame(['response' => ['message' => 'denied']], $exception->context());
     }
 }

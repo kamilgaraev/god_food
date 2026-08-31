@@ -18,8 +18,12 @@ final class DeliveryRateResolverTest extends TestCase
         $rate = $resolver->resolve('ozon', 'fingerprint-1');
 
         $this->assertSame('bootstrap', $rate['kind']);
+        $this->assertSame('Ozon Доставка', $rate['label']);
         $this->assertSame(0.0, $rate['cost']);
         $this->assertSame(true, $rate['requires_selection']);
+
+        $cdekRate = $resolver->resolve('cdek', 'fingerprint-1');
+        $this->assertSame('СДЭК', $cdekRate['label']);
     }
 
     public function testReturnsOnlyServerConfirmedQuoteForMatchingFingerprint(): void
