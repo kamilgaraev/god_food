@@ -23,6 +23,9 @@ const cases = [
         const images = [...document.querySelectorAll('.media-card-image img')];
         const intro = document.querySelector('.media-intro').getBoundingClientRect();
         const firstHeading = document.querySelector('.media-card h2');
+        const firstCardStyle = getComputedStyle(cards[0]);
+        const firstImageStyle = getComputedStyle(document.querySelector('.media-card-image'));
+        const firstArrowStyle = getComputedStyle(document.querySelector('.media-card-arrow'));
         return {
           scrollWidth: document.documentElement.scrollWidth,
           cardCount: cards.length,
@@ -34,6 +37,10 @@ const cases = [
           intrinsicSizes: images.map((image) => ({ width: image.naturalWidth, height: image.naturalHeight })),
           loading: images.map((image) => image.loading),
           links: document.querySelectorAll('.media-card > .media-card-link').length,
+          cardRadius: parseFloat(firstCardStyle.borderTopLeftRadius),
+          cardBorderWidth: parseFloat(firstCardStyle.borderTopWidth),
+          imageRadius: parseFloat(firstImageStyle.borderTopLeftRadius),
+          arrowRadius: parseFloat(firstArrowStyle.borderTopLeftRadius),
         };
       });
 
@@ -43,6 +50,10 @@ const cases = [
       assert.ok(metrics.introCentered < 1, `${testCase.width}px: intro must be centered`);
       assert.match(metrics.headingFont, /Cormorant/i, `${testCase.width}px: card headings must use the editorial face`);
       assert.equal(metrics.links, metrics.cardCount, `${testCase.width}px: each card must be one clear link target`);
+      assert.ok(metrics.cardRadius >= 16, `${testCase.width}px: cards need soft brand-consistent rounding`);
+      assert.ok(metrics.cardBorderWidth >= 1, `${testCase.width}px: cards need a defined warm edge`);
+      assert.ok(metrics.imageRadius >= 16, `${testCase.width}px: image frame must follow the card rounding`);
+      assert.ok(metrics.arrowRadius >= 20, `${testCase.width}px: reading action must use the site's pill language`);
       metrics.imageRatios.forEach((ratio, index) => assert.ok(Math.abs(ratio - 4 / 3) < 0.01, `${testCase.width}px: image ${index + 1} must use a 4:3 frame`));
       metrics.intrinsicSizes.forEach((size, index) => {
         assert.equal(size.width / size.height, 4 / 3, `${testCase.width}px: image ${index + 1} must use the generated 4:3 derivative (${metrics.imageSources[index]})`);

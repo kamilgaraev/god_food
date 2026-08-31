@@ -16,7 +16,6 @@ get_header();
         <a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span aria-hidden="true">/</span><a href="<?php echo esc_url(theobroma_page_url('Медиа')); ?>">Медиа</a><span aria-hidden="true">/</span><strong aria-current="page">Статья</strong>
     </nav>
     <header class="media-article-hero">
-        <p class="media-article-kicker">Редакция Theobroma</p>
         <h1><?php the_title(); ?></h1>
         <div class="media-article-meta">
             <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(get_the_date('d.m.Y')); ?></time>
