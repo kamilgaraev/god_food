@@ -101,6 +101,20 @@ assert_same('Настраиваемое описание вкуса.', theobroma
 assert_same('Шкала от 65% до 80%.', theobroma_cacao_intro(65, 80), 'Expands configured cacao range placeholders');
 assert_same(80, theobroma_home_cacao_default_percentage(array(65 => array(), 80 => array())), 'Uses an available configured default percentage');
 assert_same(65, theobroma_home_cacao_default_percentage(array(65 => array())), 'Falls back to the first available percentage');
+
+$test_options['theobroma_content_settings'] = array(
+    'cacao_default_percentage' => '85',
+    'cacao_profiles' => array(
+        array('percentage' => '72', 'enabled' => '0', 'label' => 'деликатный', 'description' => 'Первый новый вкус.'),
+        array('percentage' => '85', 'enabled' => '1', 'label' => 'насыщенный', 'description' => 'Второй новый вкус.'),
+    ),
+);
+assert_same(array(72, 85), theobroma_allowed_cacao_percentages(), 'Accepts administrator-created cacao percentages');
+assert_same(array(85), theobroma_enabled_cacao_percentages(), 'Honors enabled flags on administrator-created profiles');
+assert_same('насыщенный', theobroma_cacao_profiles()[85]['label'], 'Reads an administrator-created profile');
+assert_same(85, theobroma_normalize_cacao_percentage('85'), 'Accepts a configured public catalogue percentage');
+assert_same(85, theobroma_product_cacao_percentage(new WC_Product(3, '85% горький шоколад 100г', 'theobroma-100-85', '820')), 'Maps products to an administrator-created percentage');
+assert_same(85, theobroma_home_cacao_default_percentage(array(85 => array())), 'Uses an administrator-created default percentage');
 $test_options = array();
 
 assert_same(70, theobroma_normalize_cacao_percentage('70'), 'Accepts an allowed percentage');

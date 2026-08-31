@@ -3,30 +3,60 @@ declare(strict_types=1);
 
 defined('ABSPATH') || (PHP_SAPI === 'cli') || exit;
 
+/** @return array<int,array{enabled:bool,label:string,description:string}> */
+function theobroma_cacao_default_profiles(): array {
+    return array(
+        59 => array('enabled' => true, 'label' => 'мягкий', 'description' => 'Мягкий шоколад с ягодными, ореховыми и фруктовыми сочетаниями.'),
+        65 => array('enabled' => true, 'label' => 'пряный', 'description' => 'Тёплый вкус какао с выразительной нотой натуральной корицы.'),
+        68 => array('enabled' => true, 'label' => 'характерный', 'description' => 'Чистый шоколадный вкус, раскрытый тонким ароматом кориандра.'),
+        70 => array('enabled' => true, 'label' => 'классический', 'description' => 'Баланс насыщенного какао и деликатной сладости кокосового сахара.'),
+        80 => array('enabled' => true, 'label' => 'глубокий', 'description' => 'Глубокий, строгий вкус с долгим шоколадным послевкусием.'),
+    );
+}
+
 /** @return array<string,string> */
 function theobroma_cacao_default_settings(): array {
-    return array(
+    $settings = array(
         'cacao_enabled' => '1',
         'cacao_heading' => 'Ваш процент какао',
         'cacao_intro' => 'От {min}% до {max}%. Выберите крепость, а мы подберем вкус, идеально подходящий вам.',
         'cacao_button_label' => 'Купить',
         'cacao_default_percentage' => '70',
-        'cacao_59_enabled' => '1',
-        'cacao_59_label' => 'мягкий',
-        'cacao_59_description' => 'Мягкий шоколад с ягодными, ореховыми и фруктовыми сочетаниями.',
-        'cacao_65_enabled' => '1',
-        'cacao_65_label' => 'пряный',
-        'cacao_65_description' => 'Тёплый вкус какао с выразительной нотой натуральной корицы.',
-        'cacao_68_enabled' => '1',
-        'cacao_68_label' => 'характерный',
-        'cacao_68_description' => 'Чистый шоколадный вкус, раскрытый тонким ароматом кориандра.',
-        'cacao_70_enabled' => '1',
-        'cacao_70_label' => 'классический',
-        'cacao_70_description' => 'Баланс насыщенного какао и деликатной сладости кокосового сахара.',
-        'cacao_80_enabled' => '1',
-        'cacao_80_label' => 'глубокий',
-        'cacao_80_description' => 'Глубокий, строгий вкус с долгим шоколадным послевкусием.',
     );
+    foreach (theobroma_cacao_default_profiles() as $percentage => $profile) {
+        $prefix = 'cacao_' . $percentage . '_';
+        $settings[$prefix . 'enabled'] = $profile['enabled'] ? '1' : '0';
+        $settings[$prefix . 'label'] = $profile['label'];
+        $settings[$prefix . 'description'] = $profile['description'];
+    }
+    return $settings;
+}
+
+/** @param array<int,mixed> $rows @return array<int,array{enabled:bool,label:string,description:string}> */
+function theobroma_normalize_cacao_profiles(array $rows): array {
+    $profiles = array();
+    foreach ($rows as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        $raw_percentage = $row['percentage'] ?? null;
+        if (is_int($raw_percentage)) {
+            $percentage = $raw_percentage;
+        } elseif (is_string($raw_percentage) && preg_match('/^\d{1,3}$/D', trim($raw_percentage)) === 1) {
+            $percentage = (int) trim($raw_percentage);
+        } else {
+            continue;
+        }
+        $label = is_string($row['label'] ?? null) ? trim(strip_tags($row['label'])) : '';
+        if ($percentage < 1 || $percentage > 100 || $label === '' || isset($profiles[$percentage])) {
+            continue;
+        }
+        $description = is_string($row['description'] ?? null) ? trim(strip_tags($row['description'])) : '';
+        $enabled = in_array($row['enabled'] ?? '0', array('1', 1, true), true);
+        $profiles[$percentage] = array('enabled' => $enabled, 'label' => $label, 'description' => $description);
+    }
+    ksort($profiles, SORT_NUMERIC);
+    return $profiles;
 }
 
 /**
@@ -43,17 +73,27 @@ function theobroma_cacao_settings(): array {
         }
     }
 
-    $profiles = array();
-    foreach (theobroma_allowed_cacao_percentages() as $percentage) {
-        $prefix = 'cacao_' . $percentage . '_';
-        $profiles[$percentage] = array(
-            'enabled' => $values[$prefix . 'enabled'] === '1',
-            'label' => $values[$prefix . 'label'],
-            'description' => $values[$prefix . 'description'],
-        );
+    if (isset($saved['cacao_profiles']) && is_array($saved['cacao_profiles'])) {
+        $profile_rows = $saved['cacao_profiles'];
+    } else {
+        $profile_rows = array();
+        foreach (theobroma_cacao_default_profiles() as $percentage => $profile) {
+            $prefix = 'cacao_' . $percentage . '_';
+            $profile_rows[] = array(
+                'percentage' => $percentage,
+                'enabled' => $values[$prefix . 'enabled'],
+                'label' => $values[$prefix . 'label'],
+                'description' => $values[$prefix . 'description'],
+            );
+        }
     }
+    $profiles = theobroma_normalize_cacao_profiles($profile_rows);
 
-    $default_percentage = theobroma_normalize_cacao_percentage($values['cacao_default_percentage']) ?? 70;
+    $raw_default = $values['cacao_default_percentage'];
+    $default_percentage = preg_match('/^\d{1,3}$/D', $raw_default) === 1 ? (int) $raw_default : 0;
+    if (!isset($profiles[$default_percentage])) {
+        $default_percentage = isset($profiles[70]) ? 70 : (int) (array_key_first($profiles) ?? 0);
+    }
     return array(
         'enabled' => $values['cacao_enabled'] === '1',
         'heading' => $values['cacao_heading'],
@@ -66,13 +106,13 @@ function theobroma_cacao_settings(): array {
 
 /** @return int[] */
 function theobroma_allowed_cacao_percentages(): array {
-    return array(59, 65, 68, 70, 80);
+    return array_keys(theobroma_cacao_settings()['profiles']);
 }
 
 function theobroma_normalize_cacao_percentage(mixed $value): ?int {
     if (is_int($value)) {
         $percentage = $value;
-    } elseif (is_string($value) && preg_match('/^\d{2,3}$/D', trim($value)) === 1) {
+    } elseif (is_string($value) && preg_match('/^\d{1,3}$/D', trim($value)) === 1) {
         $percentage = (int) trim($value);
     } else {
         return null;
@@ -82,7 +122,7 @@ function theobroma_normalize_cacao_percentage(mixed $value): ?int {
 }
 
 function theobroma_product_cacao_percentage(WC_Product $product): ?int {
-    if (preg_match('/^\s*(\d{2,3})\s*%/u', $product->get_name(), $matches) !== 1) {
+    if (preg_match('/^\s*(\d{1,3})\s*%/u', $product->get_name(), $matches) !== 1) {
         return null;
     }
 

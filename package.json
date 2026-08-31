@@ -13,6 +13,7 @@
     "test:home-containers": "node scripts/verify-home-containers.spec.js",
     "test:homepage-data": "php scripts/verify-homepage-data.php",
     "test:admin-home-products": "php scripts/verify-admin-homepage-products.php",
+    "test:admin-cacao-profiles": "php scripts/verify-homepage-data.php && php scripts/verify-admin-homepage-products.php && node scripts/verify-admin-cacao-repeater.spec.js",
     "test:home-catalog-footer": "node scripts/verify-home-catalog-footer.spec.js",
     "test:site-layout": "node scripts/verify-site-layout-system.spec.js",
     "test:home-visual": "node scripts/verify-home-visual-layout.spec.js",
