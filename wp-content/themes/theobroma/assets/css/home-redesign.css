@@ -518,6 +518,11 @@ body { overflow-x: clip; background: var(--home-paper); }
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Media articles select three products, so the row must not reserve a fourth catalog track. */
+.media-article-products-grid.home-product-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 @media (min-width: 1200px) {
   .recipe-product-grid--count-1.home-product-grid {
     grid-template-columns: minmax(0, calc((100% - 3rem) / 3));

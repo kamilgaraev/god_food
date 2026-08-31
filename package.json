@@ -67,7 +67,8 @@
     "test:recipe-products": "node scripts/verify-recipe-products.spec.js",
     "test:recipe-card-mobile-alignment": "node scripts/verify-recipe-card-mobile-alignment.spec.js",
     "test:reviews": "node scripts/verify-review-carousel.spec.js",
-    "test:mobile-secondary": "node scripts/verify-mobile-secondary-content.spec.js"
+    "test:mobile-secondary": "node scripts/verify-mobile-secondary-content.spec.js",
+    "test:media-editorial": "node scripts/verify-media-editorial-ui.spec.js && node scripts/verify-media-listing-responsive.spec.js && node scripts/verify-media-article.spec.js"
   },
   "devDependencies": {
     "pixelmatch": "7.1.0",

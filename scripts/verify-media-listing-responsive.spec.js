@@ -1,62 +1,62 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
-const cases = {
-  390: { height: 3451, titleY: 192.90625, image: { x: 20, y: 356, width: 350, height: 269.21875 }, footerY: 2136.75 },
-  430: { height: 3745, titleY: 213.40625, image: { x: 20, y: 393, width: 390, height: 300 }, footerY: 2296.875 },
-  768: { height: 3627, titleY: 226, image: { x: 84, y: 390, width: 600, height: 461.515625 }, footerY: 2828 },
-};
-
-const expectedImageRatios = [1080 / 1350, 1080 / 1350, 1080 / 1350, 900 / 600];
-
-const closeEnough = (actual, expected, tolerance, label) => {
-  assert.ok(Math.abs(actual - expected) <= tolerance, `${label}: expected ${expected}px, got ${actual}px`);
-};
+const cases = [
+  { width: 390, height: 844, columns: 1 },
+  { width: 768, height: 1024, columns: 2 },
+  { width: 1440, height: 1000, columns: 3 },
+];
 
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
-    for (const [widthKey, expected] of Object.entries(cases)) {
-      const width = Number(widthKey);
-      const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : (width === 430 ? 932 : 1024) }, reducedMotion: 'reduce' });
-      const page = await context.newPage();
+    for (const testCase of cases) {
+      const page = await browser.newPage({ viewport: testCase });
       await page.goto('http://localhost:8080/media/', { waitUntil: 'networkidle' });
       await page.evaluate(async () => document.fonts?.ready);
+      await page.locator('.media-card').last().scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => [...document.querySelectorAll('.media-card-image img')].every((image) => image.complete && image.naturalWidth > 0));
+
       const metrics = await page.evaluate(() => {
-        const title = document.querySelector('.media-page > h1').getBoundingClientRect();
-        const image = document.querySelector('.media-card-image').getBoundingClientRect();
-        const images = [...document.querySelectorAll('.media-card-image img')].map((item) => ({
-          currentSrc: item.currentSrc,
-          naturalRatio: item.naturalWidth / item.naturalHeight,
-        }));
-        const footer = document.querySelector('.site-footer').getBoundingClientRect();
+        const grid = document.querySelector('.media-grid');
+        const cards = [...document.querySelectorAll('.media-card')];
+        const images = [...document.querySelectorAll('.media-card-image img')];
+        const intro = document.querySelector('.media-intro').getBoundingClientRect();
+        const firstHeading = document.querySelector('.media-card h2');
         return {
-          height: document.documentElement.scrollHeight,
           scrollWidth: document.documentElement.scrollWidth,
-          titleY: title.y + scrollY,
-          image: { x: image.x, y: image.y + scrollY, width: image.width, height: image.height },
-          images,
-          footerY: footer.y + scrollY,
+          cardCount: cards.length,
+          columnCount: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
+          introCentered: Math.abs((intro.left + intro.width / 2) - innerWidth / 2),
+          headingFont: getComputedStyle(firstHeading).fontFamily,
+          imageRatios: images.map((image) => image.getBoundingClientRect().width / image.getBoundingClientRect().height),
+          imageSources: images.map((image) => image.currentSrc),
+          intrinsicSizes: images.map((image) => ({ width: image.naturalWidth, height: image.naturalHeight })),
+          loading: images.map((image) => image.loading),
+          links: document.querySelectorAll('.media-card > .media-card-link').length,
         };
       });
-      assert.equal(metrics.scrollWidth, width, `${width}px: horizontal overflow`);
-      closeEnough(metrics.height, expected.height, 2, `${width}px document height`);
-      closeEnough(metrics.titleY, expected.titleY, 2, `${width}px title position`);
-      closeEnough(metrics.image.x, expected.image.x, 2, `${width}px card x`);
-      closeEnough(metrics.image.y, expected.image.y, 2, `${width}px card y`);
-      closeEnough(metrics.image.width, expected.image.width, 2, `${width}px card width`);
-      closeEnough(metrics.image.height, expected.image.height, width === 768 ? 0.1 : 2, `${width}px card height`);
-      closeEnough(metrics.footerY, expected.footerY, 2, `${width}px footer boundary`);
-      assert.equal(metrics.images.length, expectedImageRatios.length, `${width}px media image count`);
-      metrics.images.forEach((item, index) => {
-        closeEnough(item.naturalRatio, expectedImageRatios[index], 0.001, `${width}px image ${index + 1} source aspect ratio`);
-        assert.ok(!/-480x360\.(?:jpe?g|webp)(?:\?|$)/i.test(item.currentSrc), `${width}px image ${index + 1} must not use the hard-cropped media thumbnail`);
+
+      assert.equal(metrics.scrollWidth, testCase.width, `${testCase.width}px: horizontal overflow`);
+      assert.equal(metrics.cardCount, 4, `${testCase.width}px: expected four media cards`);
+      assert.equal(metrics.columnCount, testCase.columns, `${testCase.width}px: incorrect editorial grid`);
+      assert.ok(metrics.introCentered < 1, `${testCase.width}px: intro must be centered`);
+      assert.match(metrics.headingFont, /Cormorant/i, `${testCase.width}px: card headings must use the editorial face`);
+      assert.equal(metrics.links, metrics.cardCount, `${testCase.width}px: each card must be one clear link target`);
+      metrics.imageRatios.forEach((ratio, index) => assert.ok(Math.abs(ratio - 4 / 3) < 0.01, `${testCase.width}px: image ${index + 1} must use a 4:3 frame`));
+      metrics.intrinsicSizes.forEach((size, index) => {
+        assert.equal(size.width / size.height, 4 / 3, `${testCase.width}px: image ${index + 1} must use the generated 4:3 derivative (${metrics.imageSources[index]})`);
+        assert.ok(size.width <= 480, `${testCase.width}px: image ${index + 1} derivative is larger than required`);
       });
-      await context.close();
+      assert.equal(metrics.loading[0], 'eager', `${testCase.width}px: first image should be prioritized`);
+      metrics.loading.slice(1).forEach((loading, index) => assert.equal(loading, 'lazy', `${testCase.width}px: image ${index + 2} should load lazily`));
+      await page.close();
     }
   } finally {
     await browser.close();
   }
+
+  console.log('Media listing editorial layout verified at 390, 768 and 1440px.');
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;

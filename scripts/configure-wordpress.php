@@ -85,6 +85,30 @@ foreach ($required_plugins as $plugin) {
     echo 'plugin=' . $plugin . PHP_EOL;
 }
 
+// Existing media attachments predate the editorial card size. Backfill only
+// the missing derivative during explicit environment configuration, never on
+// a visitor request.
+require_once ABSPATH . 'wp-admin/includes/image.php';
+add_image_size('theobroma-media-card', 480, 360, true);
+$media_posts = get_posts(array(
+    'post_type' => 'post',
+    'post_status' => 'publish',
+    'category_name' => 'media',
+    'numberposts' => -1,
+));
+foreach ($media_posts as $media_post) {
+    $thumbnail_id = get_post_thumbnail_id($media_post);
+    $metadata = $thumbnail_id ? wp_get_attachment_metadata($thumbnail_id) : array();
+    if (!$thumbnail_id || (is_array($metadata) && !empty($metadata['sizes']['theobroma-media-card']))) {
+        continue;
+    }
+    $updated_metadata = wp_update_image_subsizes($thumbnail_id);
+    if (is_wp_error($updated_metadata)) {
+        throw new RuntimeException($updated_metadata->get_error_message());
+    }
+    echo 'media-thumbnail=' . $thumbnail_id . PHP_EOL;
+}
+
 require __DIR__ . '/sync-seo.php';
 
 if ((string) get_option('permalink_structure') !== '/%postname%/') {
