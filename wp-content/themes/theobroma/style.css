@@ -263,22 +263,42 @@ ul.products li.product > a.add_to_cart_button { display:none !important; }
 .woocommerce-account .account-page-auth__switch button { margin:0 0 0 0.25rem; padding:0; border:0; border-bottom:1px solid currentColor; color:#8c6c1e; background:transparent; font:inherit; font-weight:600; cursor:pointer; }
 .woocommerce-account:not(.logged-in) .shop-shell .woocommerce-error { margin-right:auto; margin-left:auto; }
 
+.woocommerce-account .account-recovery-card { width:min(32rem,100%); margin:0 auto; padding:2.625rem 2.75rem 2.5rem; border:0; background:#f3ebe4; box-shadow:0 1.5rem 4rem rgba(52,42,35,.07); animation:account-auth-reveal .45s cubic-bezier(.22,.61,.36,1) both; }
+.woocommerce-account .account-recovery-card h2 { margin:0; font:400 clamp(2.125rem,3.5vw,2.5rem)/1 'Cormorant',Arial,sans-serif; text-align:center; text-transform:uppercase; }
+.woocommerce-account .account-recovery-card__intro { max-width:23rem; margin:0.875rem auto 1.75rem; color:#6f655e; font:400 0.8125rem/1.3125rem 'Montserrat',Arial,sans-serif; text-align:center; }
+.woocommerce-account .account-recovery-card .lost_reset_password { margin:0; }
+.woocommerce-account .account-recovery-card .form-row { width:100%; margin:0 0 1rem; padding:0; float:none; }
+.woocommerce-account .account-recovery-card label { display:block; margin:0 0 0.5rem; color:#343434; font:400 0.875rem/1.25rem 'Montserrat',Arial,sans-serif; }
+.woocommerce-account .account-recovery-card input[type="text"],
+.woocommerce-account .account-recovery-card input[type="password"] { width:100%; height:3.25rem; padding:0 1.125rem; border:1px solid transparent; border-bottom-color:#b0903d; border-radius:0; background:#fcf9f7; color:#241d19; font:400 0.9375rem/1.375rem 'Montserrat',Arial,sans-serif; transition:border-color .2s ease,background-color .2s ease; }
+.woocommerce-account .account-recovery-card input[type="text"]:focus,
+.woocommerce-account .account-recovery-card input[type="password"]:focus { border-color:#b0903d; background:#fff; }
+.woocommerce-account .account-recovery-card__submit { margin:1.5rem 0 0 !important; display:flex; justify-content:center; }
+.woocommerce-account .account-recovery-card__submit button { width:13.75rem; min-height:3rem; margin:0; padding:0 1.5rem; border:0; border-radius:62.4375rem; color:#fff; background:#b0903d; font:500 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; cursor:pointer; transition:background-color .2s ease,transform .2s ease; }
+.woocommerce-account .account-recovery-card__submit button:hover { background:#98731d; transform:translateY(-1px); }
+.woocommerce-account .account-recovery-card__back { margin:1.375rem 0 0; color:#6f655e; font:400 0.8125rem/1.25rem 'Montserrat',Arial,sans-serif; text-align:center; }
+.woocommerce-account .account-recovery-card__back a { color:#8c6c1e; border-bottom:1px solid currentColor; }
+
 @keyframes account-auth-reveal {
   from { opacity:0; transform:translateY(0.75rem); }
   to { opacity:1; transform:translateY(0); }
 }
 
 @media (prefers-reduced-motion:reduce) {
-  .woocommerce-account .account-page-auth { animation:none; }
+  .woocommerce-account .account-page-auth,.woocommerce-account .account-recovery-card { animation:none; }
   .woocommerce-account .account-page-auth__submit button[type="submit"] { transition:none; }
+  .woocommerce-account .account-recovery-card__submit button { transition:none; }
 }
 
 @media (max-width:600px) {
   .woocommerce-account:not(.logged-in) .account-page-title { margin-bottom:2rem; }
   .woocommerce-account .account-page-auth { padding:1.75rem 1.25rem 1.625rem; box-shadow:none; }
+  .woocommerce-account .account-recovery-card { padding:1.75rem 1.25rem 1.625rem; box-shadow:none; }
   .woocommerce-account .account-page-auth__intro { margin-bottom:1.5rem; }
+  .woocommerce-account .account-recovery-card__intro { margin-bottom:1.5rem; }
   .woocommerce-account .account-page-auth__options { align-items:flex-start; flex-direction:column; gap:0.75rem; }
   .woocommerce-account .account-page-auth__submit button[type="submit"] { width:100%; }
+  .woocommerce-account .account-recovery-card__submit button { width:100%; }
 }
 
 /* Native WooCommerce account, progressively presented like the source members panel. */
