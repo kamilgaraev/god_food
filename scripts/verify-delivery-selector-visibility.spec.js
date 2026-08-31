@@ -22,7 +22,7 @@ const deliveryCss = fs.readFileSync(path.join(root, 'wp-content/plugins/theobrom
             <tr class="cart-subtotal"><th>Подытог</th><td>1000 ₽</td></tr>
             <tr class="woocommerce-shipping-totals shipping">
               <th>Доставка</th>
-              <td><ul class="woocommerce-shipping-methods"><li><button class="theobroma-delivery-open">Выбрать доставку</button></li></ul></td>
+              <td><ul class="woocommerce-shipping-methods"><li><input type="radio" checked><label>Ozon Доставка — выбрать способ</label><button class="theobroma-delivery-open">Выбрать доставку</button></li></ul></td>
             </tr>
             <tr class="order-total"><th>Итого</th><td>1000 ₽</td></tr>
           </tfoot>
@@ -30,20 +30,35 @@ const deliveryCss = fs.readFileSync(path.join(root, 'wp-content/plugins/theobrom
       </div>
     `);
 
-    const visibility = await page.evaluate(() => ({
-      table: getComputedStyle(document.querySelector('.shop_table')).display,
-      header: getComputedStyle(document.querySelector('thead')).display,
-      cartItemVisible: document.querySelector('.cart_item').getClientRects().length > 0,
-      subtotal: getComputedStyle(document.querySelector('.cart-subtotal')).display,
-      shipping: getComputedStyle(document.querySelector('.woocommerce-shipping-totals')).display,
-      buttonVisible: document.querySelector('.theobroma-delivery-open').getClientRects().length > 0,
-    }));
+    const visibility = await page.evaluate(() => {
+      const row = document.querySelector('.woocommerce-shipping-totals');
+      const card = document.querySelector('.woocommerce-shipping-methods li');
+      const button = document.querySelector('.theobroma-delivery-open');
+      return {
+        table: getComputedStyle(document.querySelector('.shop_table')).display,
+        header: getComputedStyle(document.querySelector('thead')).display,
+        cartItemVisible: document.querySelector('.cart_item').getClientRects().length > 0,
+        subtotal: getComputedStyle(document.querySelector('.cart-subtotal')).display,
+        shipping: getComputedStyle(row).display,
+        headingBorder: getComputedStyle(row.querySelector('th')).borderTopWidth,
+        cardRadius: parseFloat(getComputedStyle(card).borderRadius),
+        cardBorder: getComputedStyle(card).borderTopWidth,
+        buttonRadius: parseFloat(getComputedStyle(button).borderRadius),
+        buttonDecoration: getComputedStyle(button).textDecorationLine,
+        buttonVisible: button.getClientRects().length > 0,
+      };
+    });
 
     assert.equal(visibility.table, 'table');
     assert.equal(visibility.header, 'none');
     assert.equal(visibility.cartItemVisible, false);
     assert.equal(visibility.subtotal, 'none');
     assert.equal(visibility.shipping, 'table-row');
+    assert.equal(visibility.headingBorder, '0px');
+    assert.ok(visibility.cardRadius >= 12);
+    assert.equal(visibility.cardBorder, '1px');
+    assert.ok(visibility.buttonRadius >= 8);
+    assert.equal(visibility.buttonDecoration, 'none');
     assert.equal(visibility.buttonVisible, true);
   } finally {
     await browser.close();

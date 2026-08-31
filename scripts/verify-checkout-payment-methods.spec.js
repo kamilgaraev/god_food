@@ -34,6 +34,7 @@ const css = fs.readFileSync(path.join(__dirname, '../wp-content/themes/theobroma
       const label = getComputedStyle(card.querySelector('label'));
       const radio = getComputedStyle(card.querySelector('input'));
       const box = getComputedStyle(card.querySelector('.payment_box'));
+      const logo = getComputedStyle(card.querySelector('img'));
       const second = card.nextElementSibling.getBoundingClientRect();
       const first = card.getBoundingClientRect();
       return {
@@ -43,24 +44,30 @@ const css = fs.readFileSync(path.join(__dirname, '../wp-content/themes/theobroma
         radioWidth: radio.width,
         radioHeight: radio.height,
         boxBackground: box.backgroundColor,
+        logoDisplay: logo.display,
         gap: second.top - first.bottom,
       };
     });
 
     assert.ok(parseFloat(styles.radius) >= 13.5 && parseFloat(styles.radius) <= 15, `Unexpected card radius: ${styles.radius}`);
     assert.equal(styles.borderWidth, '1px');
-    assert.equal(styles.labelDisplay, 'flex');
+    assert.equal(styles.labelDisplay, 'block');
     assert.ok(parseFloat(styles.radioWidth) >= 19.5 && parseFloat(styles.radioWidth) <= 21);
     assert.ok(parseFloat(styles.radioHeight) >= 19.5 && parseFloat(styles.radioHeight) <= 21);
     assert.equal(styles.boxBackground, 'rgba(0, 0, 0, 0)');
+    assert.equal(styles.logoDisplay, 'none');
     assert.ok(styles.gap >= 10, `Payment cards need breathing room, received ${styles.gap}px`);
 
     for (const width of [320, 390, 620]) {
       await page.setViewportSize({ width, height: 700 });
       const layout = await page.evaluate(() => {
         const card = document.querySelector('.payment_method_yookassa');
-        const label = card.querySelector('label').getBoundingClientRect();
-        const logo = card.querySelector('img').getBoundingClientRect();
+        const labelElement = card.querySelector('label');
+        const label = labelElement.getBoundingClientRect();
+        const radio = card.querySelector('input').getBoundingClientRect();
+        const textRange = document.createRange();
+        textRange.selectNodeContents(labelElement.firstChild);
+        const text = textRange.getBoundingClientRect();
         const box = card.querySelector('.payment_box').getBoundingClientRect();
         const codLabel = document.querySelector('.payment_method_cod label');
         const codRect = codLabel.getBoundingClientRect();
@@ -68,13 +75,17 @@ const css = fs.readFileSync(path.join(__dirname, '../wp-content/themes/theobroma
         return {
           cardOverflow: card.scrollWidth - card.clientWidth,
           labelWidth: label.width,
-          descriptionGap: box.top - Math.max(label.bottom, logo.bottom),
+          radioTextGap: text.left - radio.right,
+          radioCenterDelta: Math.abs((radio.top + radio.height / 2) - (text.top + text.height / 2)),
+          descriptionGap: box.top - label.bottom,
           codLines: codRect.height / codLineHeight,
         };
       });
       assert.ok(layout.cardOverflow <= 1, `Payment card overflows at ${width}px`);
       assert.ok(layout.labelWidth >= 200, `Payment label is squeezed at ${width}px`);
-      assert.ok(layout.descriptionGap >= 8, `Logo overlaps description at ${width}px`);
+      assert.ok(layout.radioTextGap >= 8 && layout.radioTextGap <= 20, `Radio is detached from its label at ${width}px`);
+      assert.ok(layout.radioCenterDelta <= 3, `Radio is not vertically aligned at ${width}px`);
+      assert.ok(layout.descriptionGap >= 8, `Description overlaps the label at ${width}px`);
       assert.ok(layout.codLines <= 1.2, `COD label wraps at ${width}px`);
     }
   } finally {

@@ -8,23 +8,29 @@
 }
 
 .theobroma-delivery-open {
+  align-items: center;
   appearance: none;
-  background: transparent;
-  border: 0;
-  color: var(--theobroma-accent-dark);
+  background: var(--theobroma-accent-dark);
+  border: 1px solid var(--theobroma-accent-dark);
+  border-radius: 10px;
+  color: #fff;
   cursor: pointer;
-  display: block;
-  font: inherit;
-  font-size: .88rem;
-  margin: .35rem 0 0 1.55rem;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: .2em;
+  display: inline-flex;
+  font: 600 .88rem/1.2 'Montserrat', sans-serif;
+  justify-content: center;
+  margin: 12px 0 0;
+  min-height: 40px;
+  padding: 9px 16px;
+  text-decoration: none;
 }
+.theobroma-delivery-open:hover { background: #59361f; border-color: #59361f; color: #fff; }
 
 /* The storefront hides the order summary table; expose only its shipping row. */
 .commerce-cart-checkout .woocommerce-checkout-review-order-table {
-  border: 0;
+  background: transparent !important;
+  border: 0 !important;
+  border-collapse: separate !important;
+  box-shadow: none !important;
   display: table !important;
   margin: 20px 0 24px;
   width: 100%;
@@ -47,21 +53,53 @@
 .commerce-cart-checkout .woocommerce-shipping-totals { display: table-row !important; }
 .commerce-cart-checkout .woocommerce-shipping-totals > th,
 .commerce-cart-checkout .woocommerce-shipping-totals > td {
-  border: 0;
+  border: 0 !important;
   display: block;
-  padding: 0;
-  text-align: left;
+  padding: 0 !important;
+  text-align: left !important;
 }
 .commerce-cart-checkout .woocommerce-shipping-totals > th {
-  font-size: 1.15rem;
-  margin-bottom: 10px;
+  color: var(--theobroma-ink);
+  font: 600 1.2rem/1.35 'Montserrat', sans-serif;
+  margin-bottom: 12px;
 }
 .commerce-cart-checkout .woocommerce-shipping-methods {
+  display: grid;
+  gap: 10px;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 !important;
 }
-.commerce-cart-checkout .woocommerce-shipping-methods li { margin: 0 0 12px; }
+.commerce-cart-checkout .woocommerce-shipping-methods li {
+  background: #fcfaf7;
+  border: 1px solid var(--theobroma-line);
+  border-radius: 14px;
+  color: var(--theobroma-ink);
+  margin: 0 !important;
+  padding: 16px;
+  position: relative;
+}
+.commerce-cart-checkout .woocommerce-shipping-methods li:has(> input[type="radio"]:checked) {
+  background: #f8f2e9;
+  border-color: var(--theobroma-accent);
+  box-shadow: 0 4px 16px rgba(116, 82, 38, .08);
+}
+.commerce-cart-checkout .woocommerce-shipping-methods li > input[type="radio"] {
+  accent-color: var(--theobroma-accent-dark);
+  height: 18px;
+  left: 16px;
+  margin: 0;
+  position: absolute;
+  top: 18px;
+  width: 18px;
+}
+.commerce-cart-checkout .woocommerce-shipping-methods li > label {
+  color: var(--theobroma-ink) !important;
+  display: block !important;
+  font: 500 1rem/1.4 'Montserrat', sans-serif !important;
+  margin: 0 !important;
+}
+.commerce-cart-checkout .woocommerce-shipping-methods li:has(> input[type="radio"]) > label { padding-left: 30px; }
 .commerce-cart-checkout .woocommerce-shipping-totals span {
   inset: auto;
   position: static;
