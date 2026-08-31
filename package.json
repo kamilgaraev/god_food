@@ -45,6 +45,7 @@
     "test:account-auth-switcher": "node scripts/verify-account-auth-switcher.spec.js",
     "test:account-password-recovery": "node scripts/verify-account-password-recovery.spec.js",
     "test:account-heading": "php scripts/verify-account-page-heading.php",
+    "test:account-profile": "php scripts/verify-account-profile-form.php",
     "test:account-square-layout": "node scripts/verify-account-square-layout.spec.js",
     "test:account-empty-state": "node scripts/verify-account-empty-state-alignment.spec.js",
     "test:header-hover": "node scripts/verify-header-nav-hover.spec.js",
