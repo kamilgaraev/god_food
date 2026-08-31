@@ -25,8 +25,8 @@ function renderHeroDocument() {
 
 (async () => {
   assert(hero, 'Homepage hero must exist');
-  assert.match(hero, /<p class="home-eyebrow">Абсолютно натуральный<\/p>/,
-    'Hero must keep the Absolutely Natural statement visible');
+  assert.match(hero, /<p class="home-eyebrow">Абсолютно натуральный шоколад<\/p>/,
+    'Hero must identify the product as absolutely natural chocolate');
 
   const triggerMarkup = hero.match(/<button class="home-hero__video-trigger"[\s\S]*?<\/button>/)?.[0];
   assert(triggerMarkup, 'Hero must contain a button that starts the chocolate video');
@@ -132,12 +132,14 @@ function renderHeroDocument() {
       trigger.dataset.state = 'playing';
       const visual = trigger.getBoundingClientRect();
       const media = document.querySelector('[data-home-hero-video]').getBoundingClientRect();
+      const hero = document.querySelector('.home-hero').getBoundingClientRect();
       return {
         labelRight: label.right,
         copyRight: copy.right,
         visualLeft: visual.left,
         visualWidth: visual.width,
         mediaLeft: media.left,
+        mediaBottomGap: hero.bottom - media.bottom,
         copyZIndex: Number(getComputedStyle(copyNode).zIndex),
         playingZIndex: Number(getComputedStyle(trigger).zIndex),
       };
@@ -148,6 +150,8 @@ function renderHeroDocument() {
       `Desktop video must remain visually dominant (got ${desktopLayout.visualWidth}px)`);
     assert(desktopLayout.mediaLeft < desktopLayout.visualLeft - 100 && desktopLayout.mediaLeft < desktopLayout.copyRight,
       'The wide video layer must extend over the left hero column instead of clipping at the trigger boundary');
+    assert(Math.abs(desktopLayout.mediaBottomGap) <= 32,
+      `The video composition must sit against the benefit strip (gap ${desktopLayout.mediaBottomGap}px)`);
     assert(desktopLayout.playingZIndex > desktopLayout.copyZIndex,
       'While playing, chocolate pieces must layer above the left hero copy');
 

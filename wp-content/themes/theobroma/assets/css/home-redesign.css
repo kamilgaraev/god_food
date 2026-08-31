@@ -143,7 +143,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-eyebrow { max-width: 9.5ch; margin: 0; color: var(--home-gold); text-align: left; font: italic 400 clamp(3.75rem, 5.2vw, 5.5rem)/.82 'Cormorant', Georgia, serif; letter-spacing: -.045em; text-wrap: balance; }
 .home-hero__video-trigger { position: relative; z-index: 2; width: min(100%, 38rem); aspect-ratio: 1; justify-self: center; padding: 0; border: 0; appearance: none; background: radial-gradient(circle at 56% 50%, rgba(176,144,61,.12), rgba(176,144,61,.035) 42%, transparent 70%); cursor: pointer; isolation: isolate; overflow: visible; transition: transform .45s cubic-bezier(.22,.61,.36,1), filter .45s ease; }
 .home-hero__video-trigger video,
-.home-hero__video-trigger [data-home-hero-fallback] { position: absolute; top: 50%; right: -6%; width: clamp(52rem, 76vw, 80rem); max-width: none; height: auto; aspect-ratio: 16 / 9; display: block; object-fit: contain; transform: translateY(-50%); filter: drop-shadow(0 1.1rem 1.25rem rgba(51,22,11,.18)); pointer-events: none; }
+.home-hero__video-trigger [data-home-hero-fallback] { position: absolute; right: -6%; bottom: -1rem; width: clamp(52rem, 76vw, 80rem); max-width: none; height: auto; aspect-ratio: 16 / 9; display: block; object-fit: contain; filter: drop-shadow(0 1.1rem 1.25rem rgba(51,22,11,.18)); pointer-events: none; }
 .home-hero__video-trigger [data-home-hero-fallback] { display: none; }
 .home-hero__video-trigger.uses-image-fallback video { display: none; }
 .home-hero__video-trigger.uses-image-fallback [data-home-hero-fallback] { display: block; }
@@ -375,7 +375,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-eyebrow { max-width: 9.5ch; font-size: clamp(3rem, 15vw, 4.125rem); text-align: left; }
   .home-hero__video-trigger { width: min(24rem, 100%); height: min(26rem, 106vw); aspect-ratio: auto; grid-row: 2; }
   .home-hero__video-trigger video,
-  .home-hero__video-trigger [data-home-hero-fallback] { right: calc(50% + 1rem); width: min(39rem, 158vw); transform: translate(50%, -50%); }
+  .home-hero__video-trigger [data-home-hero-fallback] { right: calc(50% + 1rem); width: min(39rem, 158vw); transform: translateX(50%); }
   .home-hero__play-hint { right: 3%; bottom: 4%; }
   .home-hero__lead { width: auto; margin-top: 1.5rem; }
   .home-hero__lead > p { width: 100%; margin-bottom: 1rem; font-size: 0.75rem; line-height: 1.5; }

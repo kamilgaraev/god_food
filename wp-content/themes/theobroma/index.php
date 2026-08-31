@@ -27,7 +27,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
         <div class="home-hero__shell">
             <h1 id="home-hero-title" class="screen-reader-text">Абсолютно натуральный шоколад</h1>
             <div class="home-hero__copy">
-                <p class="home-eyebrow">Абсолютно натуральный</p>
+                <p class="home-eyebrow">Абсолютно натуральный шоколад</p>
                 <div class="home-hero__lead">
                     <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
                     <div class="home-hero__actions">
