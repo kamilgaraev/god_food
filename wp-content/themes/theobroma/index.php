@@ -157,12 +157,12 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
 
     <section class="home-composition" aria-labelledby="home-composition-title">
         <div class="home-composition__shell">
-            <div class="home-composition__intro"><h2 id="home-composition-title">Читать этикетку приятно</h2><p>Какао-бобы, какао-масло, натуральный сахар и ваниль. Всё.</p></div>
+            <div class="home-composition__intro"><h2 id="home-composition-title">Читать этикетку приятно</h2><p>Какао-бобы, масло какао, натуральный подсластитель и экстракт ванили</p></div>
             <dl>
                 <div><dt>0%</dt><dd>белого сахара</dd></div>
                 <div><dt>0</dt><dd>заменителей какао-масла</dd></div>
                 <div><dt>35</dt><dd>гликемический индекс</dd></div>
-                <div><dt>4</dt><dd>ингредиента в плитке</dd></div>
+                <div><dt>4</dt><dd>ингредиента</dd></div>
             </dl>
         </div>
     </section>
