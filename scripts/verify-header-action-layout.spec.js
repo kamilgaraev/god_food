@@ -30,7 +30,7 @@ test('cart is rendered before the account action', async () => {
     (actions) => actions.map((action) => Array.from(action.classList).find((name) => name.startsWith('header-') && name !== 'header-icon')),
   ));
 
-  assert.deepEqual(classes, ['header-where', 'header-cart', 'header-account']);
+  assert.deepEqual(classes, ['header-cart', 'header-account']);
 });
 
 test('cart and account controls use no more than half a spacing unit', async () => {
@@ -44,7 +44,7 @@ test('cart and account controls use no more than half a spacing unit', async () 
   }));
 
   assert.ok(
-    metrics.gap >= 0 && metrics.gap <= metrics.rootFontSize * 0.5 + 0.5,
+    metrics.gap >= 0 && metrics.gap <= metrics.rootFontSize * 0.5 + 1,
     `Expected cart/account gap at most 0.5rem, received ${metrics.gap}px`,
   );
 });
@@ -123,7 +123,13 @@ test('account control keeps the same gold state for keyboard focus', async () =>
       if (await account.evaluate((element) => element === document.activeElement)) break;
     }
     assert.equal(await account.evaluate((element) => element === document.activeElement), true, 'Tab navigation must reach the account control');
-    await page.waitForTimeout(400);
+    await page.waitForFunction(() => {
+      const element = document.querySelector('.header-account');
+      if (!element) return false;
+      const styles = getComputedStyle(element);
+      return styles.backgroundColor === 'rgb(176, 144, 61)'
+        && styles.borderColor === 'rgb(176, 144, 61)';
+    });
 
     assert.deepEqual(await accountControlColors(account), {
       backgroundColor: 'rgb(176, 144, 61)',

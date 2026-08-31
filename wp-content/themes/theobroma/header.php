@@ -23,13 +23,13 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
         <div class="nav-links nav-links-study">
             <a href="<?php echo esc_url($shop_url); ?>">Каталог</a>
             <a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a>
+            <a class="header-where" href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a>
             <a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a>
         </div>
         <a class="brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Theobroma — Пища Богов, на главную">
             <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" decoding="async" fetchpriority="high" alt="Theobroma — Пища Богов">
         </a>
         <div class="nav-links nav-links-transactional floating-actions">
-            <a class="header-where" href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a>
             <a class="header-icon header-cart" href="<?php echo esc_url($cart_url); ?>" data-commerce-cart-open aria-label="Корзина, товаров: <?php echo esc_attr((string) $cart_count); ?>">
                 <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/cart.svg'); ?>" alt="">
                 <span class="cart-count" aria-hidden="true"><?php echo esc_html((string) $cart_count); ?></span>
