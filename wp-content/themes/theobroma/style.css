@@ -251,7 +251,14 @@ body.account-modal-open { overflow:hidden; }
 .account-email-error { margin:0.5rem 0 -1.0625rem; color:#8c3b2f; font:400 0.6875rem/0.9375rem 'Montserrat',Arial,sans-serif; }
 .account-modal-notices:empty { display:none; }
 .account-modal-notices { margin:0 0 1.125rem; color:#8c3b2f; font:400 0.75rem/1.0625rem 'Montserrat',Arial,sans-serif; }
-.account-modal-notices ul { margin:0; padding:0.625rem 0.75rem; border:1px solid currentColor; list-style:none; }
+.woocommerce-account .shop-shell .woocommerce-error,
+.account-modal-notices .woocommerce-error { box-sizing:border-box; width:fit-content; max-width:min(52rem,100%); margin:0 0 1.5rem; padding:0.875rem 1rem 0.875rem 3rem; border:0; border-left:3px solid #b82a31; background:#f8f3f1; color:#554b45; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; list-style:none; }
+.woocommerce-account .shop-shell .woocommerce-error::before,
+.account-modal-notices .woocommerce-error::before { content:'!'; width:1.25rem; height:1.25rem; position:absolute; top:50%; left:1rem; display:grid; place-items:center; border-radius:50%; background:#b82a31; color:#fff; font:700 0.75rem/1 'Montserrat',Arial,sans-serif; transform:translateY(-50%); }
+.woocommerce-account .shop-shell .woocommerce-error strong,
+.account-modal-notices .woocommerce-error strong { color:#343434; font-weight:600; }
+.account-modal-notices .woocommerce-error { width:100%; margin:0; padding:0.75rem 0.875rem 0.75rem 2.75rem; border-left-width:2px; font-size:0.75rem; line-height:1.125rem; }
+.account-modal-notices .woocommerce-error::before { width:1.125rem; height:1.125rem; left:0.875rem; font-size:0.6875rem; }
 .account-auth-form label:not(:first-child) { margin-top:1.0625rem; }
 .account-auth-links { margin-top:1.0625rem; display:flex; justify-content:center; gap:1.25rem; color:#7b716a; font:400 0.75rem/1.0625rem 'Montserrat',Arial,sans-serif; }
 .account-auth-links a,.account-auth-links button { padding:0; border:0; border-bottom:1px solid currentColor; color:inherit; background:transparent; font:inherit; cursor:pointer; }
