@@ -24,7 +24,16 @@ final class OzonCheckoutServiceTest extends TestCase
                     'map_point_id' => 125,
                     'name' => 'Ozon ПВЗ',
                     'address' => 'Казань, проспект Космонавтов, 42А',
-                    'working_hours' => [['date' => 'Пн–Вс', 'periods' => []]],
+                    'working_hours' => [
+                        ['date' => '2026-08-31T00:00:00Z', 'periods' => [[
+                            'min' => ['hours' => 9, 'minutes' => 0],
+                            'max' => ['hours' => 21, 'minutes' => 0],
+                        ]]],
+                        ['date' => '2026-09-01T00:00:00Z', 'periods' => [[
+                            'min' => ['hours' => 9, 'minutes' => 0],
+                            'max' => ['hours' => 21, 'minutes' => 0],
+                        ]]],
+                    ],
                     'coordinates' => ['lat' => 55.79, 'long' => 49.20],
                 ],
             ]]]]],
@@ -39,6 +48,7 @@ final class OzonCheckoutServiceTest extends TestCase
         $this->assertSame('125', $points[0]['id']);
         $this->assertSame('Казань, проспект Космонавтов, 42А', $points[0]['address']);
         $this->assertSame(55.79, $points[0]['latitude']);
+        $this->assertSame('Ежедневно 09:00–21:00', $points[0]['work_time']);
         $this->assertSame('/v1/delivery/map', parse_url($transport->requests[0]['url'], PHP_URL_PATH));
         $this->assertSame(14, $transport->requests[0]['options']['json']['zoom']);
         $this->assertSame('/v1/delivery/point/info', parse_url($transport->requests[1]['url'], PHP_URL_PATH));

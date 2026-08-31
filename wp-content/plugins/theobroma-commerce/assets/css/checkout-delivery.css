@@ -8,6 +8,7 @@
 }
 
 .commerce-cart-checkout .theobroma-delivery-address[hidden] { display: none !important; }
+.commerce-cart-checkout .woocommerce-checkout-review-order-table[hidden] { display: none !important; }
 
 .theobroma-delivery-open {
   align-items: center;
@@ -107,6 +108,31 @@
   zoom: 1;
 }
 
+.commerce-cart-checkout .theobroma-delivery-methods { margin: 2px 0 24px; }
+.commerce-cart-checkout .theobroma-delivery-methods .woocommerce-shipping-methods { gap: 0; }
+.commerce-cart-checkout .theobroma-delivery-methods .woocommerce-shipping-methods li {
+  align-items: center;
+  border-bottom: 1px solid var(--theobroma-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 0;
+}
+.commerce-cart-checkout .theobroma-delivery-methods .woocommerce-shipping-methods li > input[type="radio"] {
+  flex: 0 0 18px;
+  left: auto;
+  position: static;
+  top: auto;
+}
+.commerce-cart-checkout .theobroma-delivery-methods .woocommerce-shipping-methods li > label {
+  flex: 1 1 180px;
+  padding-left: 0;
+}
+.commerce-cart-checkout .theobroma-delivery-methods .theobroma-delivery-open {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 .theobroma-delivery-dialog {
   background: var(--theobroma-paper);
   border: 1px solid rgba(90, 63, 45, .15);
@@ -162,6 +188,8 @@
 .theobroma-delivery-suggestions button:focus-visible { background: #f7f0e7; }
 
 .theobroma-delivery-grid { display: grid; gap: 18px; grid-template-columns: minmax(260px, 2fr) minmax(300px, 3fr); }
+.theobroma-delivery-grid:has(.theobroma-delivery-map[hidden]) { grid-template-columns: minmax(0, 1fr); }
+.theobroma-delivery-grid:has(.theobroma-delivery-map[hidden]) .theobroma-delivery-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .theobroma-delivery-list { display: grid; gap: 8px; max-height: 390px; overflow: auto; padding-right: 4px; }
 .theobroma-delivery-point { background: #fff; border: 1px solid var(--theobroma-line); border-radius: 12px; color: var(--theobroma-ink); cursor: pointer; display: grid; font: inherit; gap: 4px; padding: 13px 14px; text-align: left; }
 .theobroma-delivery-point:hover { border-color: #c8aa8e; }
@@ -190,6 +218,8 @@
   .theobroma-delivery-grid { grid-template-columns: 1fr; }
   .theobroma-delivery-map { min-height: 260px; order: -1; }
   .theobroma-delivery-list { max-height: 300px; }
+  .theobroma-delivery-grid:has(.theobroma-delivery-map[hidden]) .theobroma-delivery-list { grid-template-columns: 1fr; }
+  .commerce-cart-checkout .theobroma-delivery-methods .theobroma-delivery-open { flex-basis: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

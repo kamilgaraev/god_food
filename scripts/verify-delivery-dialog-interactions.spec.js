@@ -14,6 +14,7 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     await page.setContent(`
       <style>${styles}</style>
       <div class="commerce-cart-checkout">
+        <div class="woocommerce-billing-fields__field-wrapper">
         <p id="billing_first_name_field"><input id="billing_first_name"></p>
         <p id="billing_phone_field"><input id="billing_phone"></p>
         <p id="billing_email_field"><input id="billing_email"></p>
@@ -21,6 +22,12 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
         <p id="billing_address_1_field" class="theobroma-delivery-address"><input id="billing_address_1"></p>
         <p id="billing_postcode_field" class="theobroma-delivery-address"><input id="billing_postcode"></p>
         <p id="billing_address_2_field" class="theobroma-delivery-address"><input id="billing_address_2"></p>
+        </div>
+        <table class="woocommerce-checkout-review-order-table">
+          <tfoot><tr class="woocommerce-shipping-totals"><th>Доставка</th><td>
+            <ul class="woocommerce-shipping-methods"><li><label>Ozon Доставка</label><button class="theobroma-delivery-open">Выбрать пункт или курьера</button></li></ul>
+          </td></tr></tfoot>
+        </table>
       </div>
       <button type="button" data-delivery-open="ozon">Выбрать доставку</button>
       <dialog class="theobroma-delivery-dialog" data-delivery-dialog aria-labelledby="delivery-title">
@@ -37,7 +44,10 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
             <button type="button" class="theobroma-delivery-search-clear" data-delivery-search-clear aria-label="Очистить поиск"><span aria-hidden="true"></span></button>
           </div>
           <span class="theobroma-delivery-suggestions" data-delivery-suggestions role="listbox" hidden></span>
-          <div data-delivery-list></div>
+          <div class="theobroma-delivery-grid">
+            <div class="theobroma-delivery-list" data-delivery-list></div>
+            <div class="theobroma-delivery-map" data-delivery-map hidden></div>
+          </div>
           <p data-delivery-status></p>
           <footer class="theobroma-delivery-footer"><button type="button" class="button alt" data-delivery-confirm>Рассчитать и выбрать</button></footer>
         </div>
@@ -71,6 +81,10 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     assert.equal(await page.$eval('#billing_address_1_field', (node) => node.hidden), false, 'street appears after city is entered');
     assert.equal(await page.$eval('#billing_postcode_field', (node) => node.hidden), false, 'postcode appears after city is entered');
     assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), false, 'comment appears after city is entered');
+    assert.equal(await page.$eval('.theobroma-delivery-methods', (node) => node.parentElement.classList.contains('woocommerce-billing-fields__field-wrapper')), true, 'delivery methods move inside the address form');
+    assert.equal(await page.$eval('.woocommerce-checkout-review-order-table', (node) => node.hidden), true, 'empty WooCommerce shipping table is hidden after integration');
+    assert.equal(await page.$eval('.theobroma-delivery-methods .theobroma-delivery-open', (node) => getComputedStyle(node).marginTop), '0px', 'integrated delivery action aligns with its provider');
+    assert.equal(await page.$eval('.theobroma-delivery-methods label', (node) => getComputedStyle(node).paddingLeft), '0px', 'integrated provider label has no leftover card indentation');
 
     await page.evaluate(() => document.querySelector('[data-delivery-dialog]').showModal());
     await page.click('[data-delivery-close]');
@@ -97,17 +111,21 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
       const eyebrow = getComputedStyle(document.querySelector('.theobroma-delivery-eyebrow'));
       const action = getComputedStyle(document.querySelector('[data-delivery-confirm]'));
       const clear = getComputedStyle(document.querySelector('[data-delivery-search-clear]'));
+      const grid = document.querySelector('.theobroma-delivery-grid');
+      const list = document.querySelector('[data-delivery-list]');
       return {
         textTransform: eyebrow.textTransform,
         letterSpacing: eyebrow.letterSpacing,
         actionBackground: action.backgroundColor,
         clearPosition: clear.position,
+        listOnlyWidthDifference: Math.abs(grid.getBoundingClientRect().width - list.getBoundingClientRect().width),
       };
     });
     assert.equal(visual.textTransform, 'none');
     assert.ok(visual.letterSpacing === 'normal' || visual.letterSpacing === '0px');
     assert.equal(visual.actionBackground, 'rgb(113, 71, 39)');
     assert.equal(visual.clearPosition, 'absolute');
+    assert.ok(visual.listOnlyWidthDifference <= 1, 'pickup list must use the full dialog width when the map is unavailable');
   } finally {
     await browser.close();
   }

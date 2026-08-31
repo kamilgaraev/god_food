@@ -15,6 +15,7 @@ final class DeliverySelector
         add_action('woocommerce_after_cart', [$this, 'dialog']);
         add_action('woocommerce_checkout_process', [$this, 'validate']);
         add_action('wp_enqueue_scripts', [$this, 'assets']);
+        add_filter('woocommerce_cart_shipping_method_full_label', [$this, 'rateLabel'], 20, 2);
     }
 
     public function button(\WC_Shipping_Rate $rate, int $index): void
@@ -113,9 +114,9 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_MAPS_JS_KEY')
             : (string) ($settings['yandex_maps_js_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.6');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.7');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.6', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.7', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
@@ -132,6 +133,24 @@ final class DeliverySelector
     public function shouldLoadAssets(bool $admin): bool
     {
         return !$admin;
+    }
+
+    public function rateLabel(string $label, \WC_Shipping_Rate $rate): string
+    {
+        return $this->bootstrapRateLabel($rate->get_id(), $rate->get_meta_data(), $label);
+    }
+
+    /** @param array<string,mixed> $meta */
+    public function bootstrapRateLabel(string $rateId, array $meta, string $fallback): string
+    {
+        if (($meta['theobroma_requires_selection'] ?? '') !== 'yes') {
+            return $fallback;
+        }
+        $provider = $this->provider($rateId);
+        if ($provider === 'ozon') {
+            return 'Ozon Доставка';
+        }
+        return $provider === 'cdek' ? 'СДЭК' : $fallback;
     }
 
     private function provider(string $method): string

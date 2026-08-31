@@ -15,4 +15,26 @@ final class DeliverySelectorTest extends TestCase
         $this->assertTrue($selector->shouldLoadAssets(false));
         $this->assertSame(false, $selector->shouldLoadAssets(true));
     }
+
+    public function testReplacesCachedBootstrapRateLabel(): void
+    {
+        $selector = new DeliverySelector();
+
+        $this->assertSame(
+            'Ozon Доставка',
+            $selector->bootstrapRateLabel(
+                'theobroma_ozon:1',
+                ['theobroma_requires_selection' => 'yes'],
+                'Ozon Доставка — выбрать способ'
+            )
+        );
+        $this->assertSame(
+            'СДЭК',
+            $selector->bootstrapRateLabel(
+                'theobroma_cdek:2',
+                ['theobroma_requires_selection' => 'yes'],
+                'СДЭК — выбрать способ'
+            )
+        );
+    }
 }

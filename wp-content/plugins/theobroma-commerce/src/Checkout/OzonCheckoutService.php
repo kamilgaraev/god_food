@@ -144,13 +144,7 @@ final class OzonCheckoutService
         $coordinate = is_array($point['coordinates'] ?? null)
             ? $point['coordinates']
             : (is_array($point['coordinate'] ?? null) ? $point['coordinate'] : []);
-        $workingHours = $point['work_time'] ?? $point['working_hours'] ?? '';
-        if (is_array($workingHours)) {
-            $workingHours = implode(', ', array_values(array_filter(array_map(
-                static fn (array $row): string => trim((string) ($row['date'] ?? '')),
-                array_values(array_filter($workingHours, 'is_array'))
-            ))));
-        }
+        $workingHours = $this->workingHours($point['work_time'] ?? $point['working_hours'] ?? '');
         return [
             'id' => trim((string) ($point['map_point_id'] ?? $point['id'] ?? '')),
             'name' => trim((string) ($point['name'] ?? 'Пункт выдачи Ozon')),
@@ -159,6 +153,46 @@ final class OzonCheckoutService
             'latitude' => isset($coordinate['lat']) ? (float) $coordinate['lat'] : null,
             'longitude' => isset($coordinate['long']) ? (float) $coordinate['long'] : null,
         ];
+    }
+
+    private function workingHours(mixed $workingHours): string
+    {
+        if (is_string($workingHours)) {
+            return trim($workingHours);
+        }
+        if (!is_array($workingHours)) {
+            return '';
+        }
+
+        $schedules = [];
+        foreach (array_values(array_filter($workingHours, 'is_array')) as $day) {
+            $periods = [];
+            foreach (array_values(array_filter((array) ($day['periods'] ?? []), 'is_array')) as $period) {
+                $from = $this->clock((array) ($period['min'] ?? []));
+                $to = $this->clock((array) ($period['max'] ?? []));
+                if ($from !== '' && $to !== '') {
+                    $periods[] = $from . '–' . $to;
+                }
+            }
+            if ($periods !== []) {
+                $schedules[] = implode(', ', $periods);
+            }
+        }
+
+        $unique = array_values(array_unique($schedules));
+        if (count($unique) === 1) {
+            return 'Ежедневно ' . $unique[0];
+        }
+        return $schedules === [] ? '' : 'Сегодня ' . $schedules[0];
+    }
+
+    /** @param array<string,mixed> $time */
+    private function clock(array $time): string
+    {
+        if (!is_numeric($time['hours'] ?? null) || !is_numeric($time['minutes'] ?? null)) {
+            return '';
+        }
+        return sprintf('%02d:%02d', (int) $time['hours'], (int) $time['minutes']);
     }
 
     /** @param array<string,mixed> $viewport */

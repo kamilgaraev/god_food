@@ -229,6 +229,23 @@
     });
   }
 
+  function syncDeliveryPlacement() {
+    var fields = document.querySelector('.commerce-cart-checkout .woocommerce-billing-fields__field-wrapper');
+    var methods = document.querySelector('.commerce-cart-checkout .woocommerce-shipping-totals .woocommerce-shipping-methods');
+    var table = document.querySelector('.commerce-cart-checkout .woocommerce-checkout-review-order-table');
+    if (!fields || !methods || !table) return;
+
+    var host = fields.querySelector('.theobroma-delivery-methods');
+    if (!host) {
+      host = document.createElement('div');
+      host.className = 'theobroma-delivery-methods';
+      host.setAttribute('aria-label', 'Способ доставки');
+      fields.appendChild(host);
+    }
+    host.replaceChildren(methods);
+    table.hidden = true;
+  }
+
   function confirm() {
     if (state.kind === 'pickup' && !state.selected) {
       setStatus('Сначала выберите пункт выдачи.', true);
@@ -293,8 +310,10 @@
   var checkoutEvents = $(document.body);
   if (checkoutEvents && typeof checkoutEvents.on === 'function') {
     checkoutEvents.on('updated_checkout', syncAddressFieldVisibility);
+    checkoutEvents.on('updated_checkout', syncDeliveryPlacement);
   }
   syncAddressFieldVisibility();
+  syncDeliveryPlacement();
   document.addEventListener('input', function (event) {
     if (event.target.matches('[data-delivery-search]')) {
       var value = event.target.value;
