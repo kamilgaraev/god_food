@@ -33,6 +33,16 @@ async function openHomepage(browser, options = {}) {
     assert.equal(await track.count(), 1, 'benefit strip must expose one animated track');
     assert.equal(await groups.count(), 2, 'benefit strip must duplicate its content for a seamless loop');
 
+    const labelTypography = await desktop.page.locator('.home-benefit-strip span').first().evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        letterSpacing: parseFloat(style.letterSpacing) || 0,
+        textTransform: style.textTransform,
+      };
+    });
+    assert.ok(Math.abs(labelTypography.letterSpacing) < 0.2, 'benefit strip labels must use natural letter spacing');
+    assert.equal(labelTypography.textTransform, 'none', 'benefit strip labels must preserve natural text casing');
+
     const coverage = await groups.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().width));
     assert.ok(coverage.every((width) => width >= 1440), 'each repeated group must cover the desktop viewport');
 

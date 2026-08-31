@@ -44,6 +44,8 @@ function parseColor(value) {
         backgroundColor: style.backgroundColor,
         fontSize: parseFloat(style.fontSize),
         paddingInline: parseFloat(style.paddingLeft) + parseFloat(style.paddingRight),
+        letterSpacing: parseFloat(style.letterSpacing) || 0,
+        textTransform: style.textTransform,
       };
     }));
 
@@ -63,6 +65,8 @@ function parseColor(value) {
       assert.ok(badgeBackground.alpha >= 0.9, 'Bestseller badge must not depend on the product image for contrast');
       assert.ok(metric.fontSize >= 9, `Bestseller badge text must be at least 9px; received ${metric.fontSize}px`);
       assert.ok(metric.paddingInline >= 12, 'Bestseller badge must have a visible padded background');
+      assert.ok(Math.abs(metric.letterSpacing) < 0.2, 'Bestseller badge must use natural letter spacing');
+      assert.equal(metric.textTransform, 'none', 'Bestseller badge must preserve natural text casing');
     }
   } finally {
     await browser.close();
