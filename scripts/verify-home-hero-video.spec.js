@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
+const { PNG } = require('pngjs');
 
 const themeRoot = path.resolve(__dirname, '../wp-content/themes/theobroma');
 const homepage = fs.readFileSync(path.join(themeRoot, 'index.php'), 'utf8');
@@ -64,8 +65,8 @@ function renderHeroDocument() {
       height: node.videoHeight,
       duration: node.duration,
     }));
-    assert.deepEqual([mediaMetrics.width, mediaMetrics.height], [800, 800],
-      'Hero WebM must decode at the intended square dimensions');
+    assert.deepEqual([mediaMetrics.width, mediaMetrics.height], [1280, 720],
+      'Hero WebM must retain a wide canvas so falling pieces are not cropped');
     assert(mediaMetrics.duration > 6 && mediaMetrics.duration < 6.1,
       `Hero WebM must retain the source duration (got ${mediaMetrics.duration})`);
 
@@ -90,15 +91,20 @@ function renderHeroDocument() {
       const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
       let transparent = 0;
       let opaque = 0;
+      let opaqueSidePixels = 0;
       for (let index = 3; index < pixels.length; index += 4) {
         if (pixels[index] < 10) transparent += 1;
         if (pixels[index] > 245) opaque += 1;
+        const x = ((index - 3) / 4) % canvas.width;
+        if (pixels[index] > 20 && (x < 4 || x >= canvas.width - 4)) opaqueSidePixels += 1;
       }
       const pixelCount = pixels.length / 4;
-      return { transparent: transparent / pixelCount, opaque: opaque / pixelCount };
+      return { transparent: transparent / pixelCount, opaque: opaque / pixelCount, opaqueSidePixels };
     });
     assert(alphaCoverage.transparent > 0.55 && alphaCoverage.opaque > 0.05,
       `Hero WebM must contain both transparent background and opaque chocolate pixels (got ${JSON.stringify(alphaCoverage)})`);
+    assert.equal(alphaCoverage.opaqueSidePixels, 0,
+      'Falling chocolate pieces must keep transparent breathing room at both side edges');
 
     const timeBeforeRepeatedClick = await video.evaluate((node) => node.currentTime);
     await trigger.click();
@@ -120,13 +126,30 @@ function renderHeroDocument() {
 
     const desktopLayout = await page.evaluate(() => {
       const label = document.querySelector('.home-eyebrow').getBoundingClientRect();
-      const visual = document.querySelector('.home-hero__video-trigger').getBoundingClientRect();
-      return { labelRight: label.right, visualLeft: visual.left, visualWidth: visual.width };
+      const copyNode = document.querySelector('.home-hero__copy');
+      const copy = copyNode.getBoundingClientRect();
+      const trigger = document.querySelector('.home-hero__video-trigger');
+      trigger.dataset.state = 'playing';
+      const visual = trigger.getBoundingClientRect();
+      const media = document.querySelector('[data-home-hero-video]').getBoundingClientRect();
+      return {
+        labelRight: label.right,
+        copyRight: copy.right,
+        visualLeft: visual.left,
+        visualWidth: visual.width,
+        mediaLeft: media.left,
+        copyZIndex: Number(getComputedStyle(copyNode).zIndex),
+        playingZIndex: Number(getComputedStyle(trigger).zIndex),
+      };
     });
     assert(desktopLayout.labelRight < desktopLayout.visualLeft,
       'At desktop width the statement must sit to the left of the video');
     assert(desktopLayout.visualWidth >= 420,
       `Desktop video must remain visually dominant (got ${desktopLayout.visualWidth}px)`);
+    assert(desktopLayout.mediaLeft < desktopLayout.visualLeft - 100 && desktopLayout.mediaLeft < desktopLayout.copyRight,
+      'The wide video layer must extend over the left hero column instead of clipping at the trigger boundary');
+    assert(desktopLayout.playingZIndex > desktopLayout.copyZIndex,
+      'While playing, chocolate pieces must layer above the left hero copy');
 
     for (const width of [320, 390, 600, 601, 768, 1199, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
@@ -142,8 +165,36 @@ function renderHeroDocument() {
         `${width}px video must remain inside the viewport`);
     }
 
+    await page.setViewportSize({ width: 390, height: 844 });
+    await video.evaluate((node) => new Promise((resolve) => {
+      node.currentTime = 4.5;
+      node.addEventListener('seeked', resolve, { once: true });
+    }));
+    const mobileHeroPng = PNG.sync.read(await page.locator('.home-hero').screenshot());
+    const background = Array.from(mobileHeroPng.data.subarray(0, 3));
+    let paintedEdgePixels = 0;
+    for (let y = 2; y < mobileHeroPng.height - 3; y += 1) {
+      for (const x of [0, 1, mobileHeroPng.width - 2, mobileHeroPng.width - 1]) {
+        const offset = (y * mobileHeroPng.width + x) * 4;
+        const distance = Math.abs(mobileHeroPng.data[offset] - background[0])
+          + Math.abs(mobileHeroPng.data[offset + 1] - background[1])
+          + Math.abs(mobileHeroPng.data[offset + 2] - background[2]);
+        if (distance > 24) paintedEdgePixels += 1;
+      }
+    }
+    assert(paintedEdgePixels <= 4,
+      `Mobile falling pieces must remain visibly inside the hero edges (got ${paintedEdgePixels} painted edge pixels)`);
+
     const webkitPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await webkitPage.setContent(renderHeroDocument());
+    const fallbackMetrics = await webkitPage.locator('[data-home-hero-fallback]').evaluate((node) => new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
+      image.onerror = () => reject(new Error('Animated WebP fallback failed to decode'));
+      image.src = node.dataset.animatedSrc;
+    }));
+    assert.deepEqual(fallbackMetrics, [960, 540],
+      'WebKit fallback must retain the same wide, uncropped composition');
     await webkitPage.evaluate(() => {
       Object.defineProperty(navigator, 'userAgent', { configurable: true, value: 'Mozilla/5.0 AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1' });
       const fallback = document.querySelector('[data-home-hero-fallback]');
