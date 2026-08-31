@@ -514,6 +514,12 @@
             return;
         }
 
+        if (modal.dataset.commerceType === 'cart' && modal.contains(event.target) && !event.target.closest('.commerce-modal-content')) {
+            event.preventDefault();
+            closeModal();
+            return;
+        }
+
         const cartLink = event.target.closest('[data-commerce-cart-open]');
         if (cartLink && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
             event.preventDefault();
