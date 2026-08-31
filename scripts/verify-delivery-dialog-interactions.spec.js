@@ -48,6 +48,12 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
             <div class="theobroma-delivery-list" data-delivery-list></div>
             <div class="theobroma-delivery-map" data-delivery-map hidden></div>
           </div>
+          <section data-delivery-courier hidden>
+            <input data-delivery-field="city" value="Старый город">
+            <input data-delivery-field="postcode" value="000000">
+            <input data-delivery-field="address" value="Старый адрес">
+            <input data-delivery-field="address_2" value="Старый комментарий">
+          </section>
           <p data-delivery-status></p>
           <footer class="theobroma-delivery-footer"><button type="button" class="button alt" data-delivery-confirm>Рассчитать и выбрать</button></footer>
         </div>
@@ -78,6 +84,7 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     assert.equal(await page.$eval('#billing_postcode_field', (node) => node.hidden), true, 'postcode stays hidden until city is entered');
     assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), true, 'comment stays hidden until city is entered');
     await page.fill('#billing_city', 'Казань');
+    await page.fill('#billing_address_1', 'Спартаковская улица, 1');
     assert.equal(await page.$eval('#billing_address_1_field', (node) => node.hidden), false, 'street appears after city is entered');
     assert.equal(await page.$eval('#billing_postcode_field', (node) => node.hidden), false, 'postcode appears after city is entered');
     assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), false, 'comment appears after city is entered');
@@ -100,12 +107,12 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     assert.equal(await page.$eval('[data-delivery-search]', (node) => document.activeElement === node), true, 'search keeps focus after clearing');
 
     await page.click('[data-delivery-close]');
+    await page.evaluate(() => { window.deliveryRequests = []; });
     await page.click('[data-delivery-open="ozon"]');
-    await page.fill('[data-delivery-search]', 'Космонавтов 42А');
-    await page.waitForSelector('[data-delivery-suggestions] button');
-    await page.click('[data-delivery-suggestions] button');
+    assert.equal(await page.inputValue('[data-delivery-search]'), 'Казань, Спартаковская улица, 1', 'pickup search reuses the checkout address');
+    await page.waitForFunction(() => window.deliveryRequests.some((url) => url.indexOf('left_bottom_lat=55.78') !== -1));
     const viewportRequest = await page.evaluate(() => window.deliveryRequests.find((url) => url.indexOf('left_bottom_lat=55.78') !== -1));
-    assert.ok(viewportRequest, 'selected address suggestion must load Ozon points for its viewport');
+    assert.ok(viewportRequest, 'checkout address automatically loads Ozon points for its viewport');
 
     const visual = await page.evaluate(() => {
       const eyebrow = getComputedStyle(document.querySelector('.theobroma-delivery-eyebrow'));

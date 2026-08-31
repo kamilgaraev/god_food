@@ -116,7 +116,7 @@ final class DeliverySelector
 
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.7');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.7', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.8', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),

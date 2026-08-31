@@ -11,19 +11,26 @@
     var element = document.querySelector(selector);
     return element ? element.value.trim() : '';
   }
-  function customer() {
+  function checkoutCustomer() {
     return {
       country: checkoutValue('#billing_country') || 'RU',
       state: checkoutValue('#billing_state'),
-      city: (field('city') && field('city').value.trim()) || checkoutValue('#billing_city'),
-      postcode: (field('postcode') && field('postcode').value.trim()) || checkoutValue('#billing_postcode'),
-      address: (field('address') && field('address').value.trim()) || checkoutValue('#billing_address_1'),
-      address_2: (field('address_2') && field('address_2').value.trim()) || checkoutValue('#billing_address_2'),
+      city: checkoutValue('#billing_city'),
+      postcode: checkoutValue('#billing_postcode'),
+      address: checkoutValue('#billing_address_1'),
+      address_2: checkoutValue('#billing_address_2'),
       first_name: checkoutValue('#billing_first_name'),
       last_name: checkoutValue('#billing_last_name'),
       middle_name: checkoutValue('#billing_middle_name'),
       phone: checkoutValue('#billing_phone')
     };
+  }
+  function customer() {
+    var details = checkoutCustomer();
+    ['city', 'postcode', 'address', 'address_2'].forEach(function (name) {
+      if (field(name) && field(name).value.trim()) details[name] = field(name).value.trim();
+    });
+    return details;
   }
   function setStatus(message, error) {
     var element = document.querySelector('[data-delivery-status]');
@@ -56,7 +63,7 @@
     var root = dialog();
     if (!root) return;
     root.querySelector('[data-delivery-provider]').textContent = providerTitle();
-    var initial = customer();
+    var initial = checkoutCustomer();
     ['city', 'postcode', 'address', 'address_2'].forEach(function (name) {
       if (field(name)) field(name).value = initial[name] || '';
     });
@@ -64,11 +71,15 @@
     setStatus('');
     var search = root.querySelector('[data-delivery-search]');
     var clear = root.querySelector('[data-delivery-search-clear]');
-    if (search) search.value = '';
-    if (clear) clear.hidden = true;
+    var pickupAddress = initial.address && initial.city
+      && initial.address.toLocaleLowerCase('ru-RU').indexOf(initial.city.toLocaleLowerCase('ru-RU')) === -1
+      ? initial.city + ', ' + initial.address
+      : (initial.address || initial.city);
+    if (search) search.value = pickupAddress;
+    if (clear) clear.hidden = pickupAddress === '';
     renderSuggestions([]);
     if (typeof root.showModal === 'function') root.showModal(); else root.setAttribute('open', '');
-    loadPoints();
+    loadPointsForCheckoutAddress(pickupAddress);
   }
 
   function switchKind(kind) {
@@ -110,6 +121,22 @@
       state.points = [];
       renderPoints([]);
       setStatus(error.message, true);
+    });
+  }
+
+  function loadPointsForCheckoutAddress(value) {
+    if (state.provider !== 'ozon' || !config.suggestionsUrl || value.trim().length < 3) {
+      loadPoints();
+      return;
+    }
+    setStatus('Ищем пункты рядом с адресом…');
+    request(config.suggestionsUrl + '?query=' + encodeURIComponent(value)).then(function (data) {
+      var suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      var first = suggestions[0] || null;
+      renderSuggestions([]);
+      loadPoints(first && first.viewport ? first.viewport : null);
+    }).catch(function () {
+      loadPoints();
     });
   }
 
