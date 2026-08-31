@@ -180,8 +180,8 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero__trust span { margin-top: 0.5rem; color: var(--home-muted); font: 500 clamp(0.5625rem, 0.5rem + 0.18vw, 0.6875rem)/1.3 'Montserrat', Arial, sans-serif; white-space: nowrap; }
 .home-benefit-strip { height: 3rem; min-height: 3rem; display: flex; align-items: center; border-bottom: 1px solid var(--home-line); overflow: hidden; }
 .home-benefit-strip__track { width: max-content; display: flex; flex: none; will-change: transform; animation: home-benefit-marquee 42s linear infinite; }
-.home-benefit-strip__group { min-width: 100vw; padding-right: 1rem; display: flex; flex: none; align-items: center; gap: 1rem; }
-.home-benefit-strip span { color: #988c7f; font: 500 0.5625rem/1.3 'Montserrat', Arial, sans-serif; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.home-benefit-strip__group { width: max-content; min-width: 0; padding-right: 1rem; display: flex; flex: none; align-items: center; gap: 1rem; }
+.home-benefit-strip span { color: #988c7f; font: 500 0.625rem/1.3 'Montserrat', Arial, sans-serif; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 .home-benefit-strip i { width: 0.25rem; height: 0.25rem; flex: 0 0 0.25rem; transform: rotate(45deg); background: var(--home-line); }
 @keyframes home-benefit-marquee {
   from { transform: translateX(-50%); }
@@ -392,7 +392,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-hero__trust span { max-width: 7.8125rem; }
   .home-benefit-strip__track { animation-duration: 34s; }
   .home-benefit-strip__group { gap: 0.75rem; padding-right: 0.75rem; }
-  .home-benefit-strip span { font-size: 0.5rem; }
+  .home-benefit-strip span { font-size: 0.5625rem; }
 
   #catalog.home-catalog { padding: 4.125rem 0 4.25rem; overflow: hidden; }
   .home-section-heading { padding: 0 1.125rem; margin-bottom: 1.5625rem; }
