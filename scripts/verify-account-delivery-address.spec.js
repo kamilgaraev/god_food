@@ -13,7 +13,7 @@ const select2BaseStyles = `
   .select2-selection--single { box-sizing:border-box; cursor:pointer; display:block; height:28px; user-select:none; }
   .select2-selection__rendered { display:block; overflow:hidden; padding-left:8px; padding-right:20px; text-overflow:ellipsis; white-space:nowrap; }
   .select2-selection__arrow { height:26px; position:absolute; top:1px; right:1px; width:20px; }
-  .select2-selection__arrow b { border-color:#888 transparent transparent; border-style:solid; border-width:5px 4px 0; height:0; left:50%; margin-left:-4px; margin-top:-2px; position:absolute; top:50%; width:0; }
+  .select2-container--default .select2-selection--single .select2-selection__arrow b { border-color:#888 transparent transparent; border-style:solid; border-width:5px 4px 0; height:0; left:50%; margin-left:-4px; margin-top:-2px; position:absolute; top:50%; width:0; }
   .select2-dropdown { background:#fff; border:1px solid #aaa; box-sizing:border-box; position:absolute; z-index:1051; }
   .select2-search--dropdown { display:block; padding:4px; }
   .select2-search__field { box-sizing:border-box; width:100%; }
@@ -45,7 +45,7 @@ const select2BaseStyles = `
                     <option value="RU">Россия</option>
                     <option value="BY">Беларусь</option>
                   </select>
-                  <span class="select2 select2-container select2-container--default select2-container--open">
+                  <span class="select2 select2-container select2-container--default">
                     <span class="selection">
                       <span class="select2-selection select2-selection--single" role="combobox" aria-expanded="true">
                         <span class="select2-selection__rendered">Выберите страну/регион…</span>
@@ -93,6 +93,7 @@ const select2BaseStyles = `
         const arrowElement = document.querySelector('.select2-selection__arrow');
         const arrow = arrowElement.getBoundingClientRect();
         const arrowIconStyle = getComputedStyle(arrowElement.querySelector('b'));
+        const arrowChevronStyle = getComputedStyle(arrowElement, '::before');
         const dropdownElement = document.querySelector('[data-test-country-dropdown] .select2-dropdown');
         const dropdownStyle = getComputedStyle(dropdownElement);
         const searchElement = dropdownElement.querySelector('.select2-search__field');
@@ -131,8 +132,13 @@ const select2BaseStyles = `
           arrowTopOffset: arrow.top - country.top,
           arrowRightOffset: country.right - arrow.right,
           arrowHeight: arrow.height,
-          arrowBorderRight: arrowIconStyle.borderRight,
-          arrowBorderBottom: arrowIconStyle.borderBottom,
+          arrowIconDisplay: arrowIconStyle.display,
+          arrowChevronContent: arrowChevronStyle.content,
+          arrowChevronWidth: arrowChevronStyle.width,
+          arrowChevronHeight: arrowChevronStyle.height,
+          arrowBorderRight: arrowChevronStyle.borderRight,
+          arrowBorderBottom: arrowChevronStyle.borderBottom,
+          arrowTransform: arrowChevronStyle.transform,
           dropdownBackground: dropdownStyle.backgroundColor,
           dropdownBorder: dropdownStyle.borderTop,
           dropdownFontFamily: dropdownStyle.fontFamily,
@@ -168,8 +174,13 @@ const select2BaseStyles = `
       assert.ok(Math.abs(metrics.arrowTopOffset) <= 0.5, `${width}px: country arrow must start at the field top edge`);
       assert.ok(Math.abs(metrics.arrowRightOffset) <= 0.5, `${width}px: country arrow must stay inside the field's right edge`);
       assert.ok(Math.abs(metrics.arrowHeight - metrics.countryHeight) <= 0.5, `${width}px: country arrow must be vertically aligned with the field`);
+      assert.equal(metrics.arrowIconDisplay, 'none', `${width}px: the conflicting WooCommerce arrow must be hidden`);
+      assert.equal(metrics.arrowChevronContent, '""', `${width}px: country field must render its own chevron`);
+      assert.ok(parseFloat(metrics.arrowChevronWidth) >= 7.5, `${width}px: country chevron must keep its intended width`);
+      assert.ok(parseFloat(metrics.arrowChevronHeight) >= 7.5, `${width}px: country chevron must keep its intended height`);
       assert.match(metrics.arrowBorderRight, /^1px solid rgb\(52, 52, 52\)/, `${width}px: country arrow must use the custom dark chevron`);
       assert.match(metrics.arrowBorderBottom, /^1px solid rgb\(52, 52, 52\)/, `${width}px: country arrow must use the custom dark chevron`);
+      assert.match(metrics.arrowTransform, /^matrix\(0\.70710[67], 0\.70710[67], -0\.70710[67], 0\.70710[67]/, `${width}px: country chevron must point down when closed`);
       assert.equal(metrics.dropdownBackground, 'rgb(252, 249, 247)', `${width}px: country dropdown must use the account surface`);
       assert.match(metrics.dropdownBorder, /^1px solid rgba?\(176, 144, 61/, `${width}px: country dropdown must use a gold boundary`);
       assert.match(metrics.dropdownFontFamily, /Montserrat/i, `${width}px: country dropdown must use account typography`);
