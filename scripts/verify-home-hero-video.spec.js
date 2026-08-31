@@ -12,15 +12,30 @@ const styles = fs.readFileSync(path.join(themeRoot, 'style.css'), 'utf8')
 const hero = homepage.match(/<section class="home-hero"[\s\S]*?<\/section>/)?.[0];
 const poster = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-poster.webp'));
 const videoAsset = fs.readFileSync(path.join(themeRoot, 'assets/video/hero-chocolate.webm'));
-const webkitAnimation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated.webp'));
+const webkitAnimation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v2.webp'));
 
 function renderHeroDocument() {
   const markup = hero
     .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>", `data:image/webp;base64,${poster.toString('base64')}`)
     .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.webm'); ?>", `data:video/webm;base64,${videoAsset.toString('base64')}`)
-    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated.webp'); ?>", `data:image/webp;base64,${webkitAnimation.toString('base64')}`)
+    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated-v2.webp'); ?>", `data:image/webp;base64,${webkitAnimation.toString('base64')}`)
     .replace(/<\?php[\s\S]*?\?>/g, '#');
   return `<body class="home"><main>${markup}</main><style>${styles}</style></body>`;
+}
+
+function visibleChocolateGap(png) {
+  const background = Array.from(png.data.subarray(0, 3));
+  let lowestChocolatePixel = -1;
+  for (let y = 0; y < png.height - 3; y += 1) {
+    for (let x = Math.floor(png.width * 0.5); x < png.width; x += 1) {
+      const offset = (y * png.width + x) * 4;
+      const distance = Math.abs(png.data[offset] - background[0])
+        + Math.abs(png.data[offset + 1] - background[1])
+        + Math.abs(png.data[offset + 2] - background[2]);
+      if (distance > 90 && png.data[offset] < 170) lowestChocolatePixel = y;
+    }
+  }
+  return png.height - 1 - lowestChocolatePixel;
 }
 
 (async () => {
@@ -40,7 +55,7 @@ function renderHeroDocument() {
     'Hero must use the transparent WebM animation');
   assert.match(triggerMarkup, /type="video\/webm"/,
     'Hero animation source must declare the WebM media type');
-  assert(triggerMarkup.includes('/assets/images/hero-chocolate-animated.webp'),
+  assert(triggerMarkup.includes('/assets/images/hero-chocolate-animated-v2.webp'),
     'Hero must include an alpha-safe animated WebP fallback for WebKit');
   const animationChunk = webkitAnimation.indexOf(Buffer.from('ANIM'));
   assert(animationChunk >= 0, 'WebKit fallback must be an animated WebP');
@@ -155,7 +170,13 @@ function renderHeroDocument() {
     assert(desktopLayout.playingZIndex > desktopLayout.copyZIndex,
       'While playing, chocolate pieces must layer above the left hero copy');
 
-    for (const width of [320, 390, 600, 601, 768, 1199, 1440, 1920]) {
+    const desktopHeroPng = PNG.sync.read(await page.locator('.home-hero').screenshot());
+    const desktopChocolateGap = visibleChocolateGap(desktopHeroPng);
+    assert(desktopChocolateGap >= 4 && desktopChocolateGap <= 14,
+      `Visible chocolate must sit intact against the benefit strip (gap ${desktopChocolateGap}px)`);
+
+    const responsiveChocolateGaps = [];
+    for (const width of [320, 390, 600, 601, 768, 1199, 1200, 1250, 1300, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       const geometry = await page.evaluate(() => ({
         overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -170,8 +191,15 @@ function renderHeroDocument() {
         `${width}px video must remain inside the viewport`);
       if (width <= 600) {
         assert.equal(geometry.visualDisplay, 'none', `${width}px hero video must be removed from the compact mobile layout`);
+      } else {
+        const responsiveHeroPng = PNG.sync.read(await page.locator('.home-hero').screenshot());
+        const responsiveChocolateGap = visibleChocolateGap(responsiveHeroPng);
+        responsiveChocolateGaps.push({ width, gap: responsiveChocolateGap });
       }
     }
+    const invalidChocolateGaps = responsiveChocolateGaps.filter(({ gap }) => gap < 4 || gap > 14);
+    assert.deepEqual(invalidChocolateGaps, [],
+      `Chocolate must remain intact and visually attached to the benefit strip: ${JSON.stringify(responsiveChocolateGaps)}`);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await video.evaluate((node) => new Promise((resolve) => {
@@ -231,10 +259,13 @@ function renderHeroDocument() {
     await webkitFallback.dispatchEvent('load');
     const fallbackDelay = await webkitPage.evaluate(() => window.__heroTimers[0]?.delay);
     assert(fallbackDelay >= 6042 && fallbackDelay <= 6200,
-      `WebKit fallback must reset after one playback (got ${fallbackDelay}ms)`);
+      `WebKit fallback must become replayable after one nominal playback (got ${fallbackDelay}ms)`);
+    const animatedSourceBeforeTimer = await webkitFallback.evaluate((node) => node.src);
     await webkitPage.evaluate(() => window.__heroTimers[0].callback());
     assert.equal(await webkitTrigger.getAttribute('data-state'), 'idle',
       'WebKit fallback must become clickable again after one playback');
+    assert.equal(await webkitFallback.evaluate((node) => node.src), animatedSourceBeforeTimer,
+      'The nominal timer must not replace an animated frame while Safari is still decoding it');
 
     await webkitTrigger.click();
     await webkitFallback.dispatchEvent('error');

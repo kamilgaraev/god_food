@@ -36,11 +36,17 @@
       setHeroVideoState('idle');
     }
 
+    function finishImageFallback() {
+      fallbackTimer = 0;
+      fallbackAwaitingLoad = false;
+      setHeroVideoState('idle');
+    }
+
     function startImageFallbackTimer() {
       if (!fallbackAwaitingLoad || heroVideoTrigger.dataset.state !== 'playing') return;
       fallbackAwaitingLoad = false;
       const duration = Number(heroVideoTrigger.dataset.fallbackDuration) || 6100;
-      fallbackTimer = window.setTimeout(resetImageFallback, duration);
+      fallbackTimer = window.setTimeout(finishImageFallback, duration);
     }
 
     if (heroImageFallback) {

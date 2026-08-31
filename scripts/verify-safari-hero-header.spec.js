@@ -8,7 +8,7 @@ const themeRoot = path.join(root, 'wp-content/themes/theobroma');
 const baseCss = fs.readFileSync(path.join(themeRoot, 'style.css'), 'utf8');
 const homeCss = fs.readFileSync(path.join(themeRoot, 'assets/css/home-redesign.css'), 'utf8');
 const headerScript = fs.readFileSync(path.join(themeRoot, 'assets/js/site-header.js'), 'utf8');
-const animation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated.webp'));
+const animation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v2.webp'));
 
 function animationFrames(buffer) {
   const frames = [];
