@@ -18,9 +18,12 @@ final class SettingsTest extends TestCase
             'cdek_sender_city_code' => '-44',
             'ozon_client_id' => ' ozon-client ',
             'ozon_client_secret' => '',
+            'yandex_maps_js_key' => ' js-key ',
+            'yandex_geocoder_key' => '',
         ], [
             'cdek_client_secret' => 'secret-old',
             'ozon_client_secret' => 'ozon-secret-old',
+            'yandex_geocoder_key' => 'geocoder-secret-old',
             'ozon_access_token' => 'legacy-token',
             'ozon_approved' => 'yes',
         ]);
@@ -31,6 +34,8 @@ final class SettingsTest extends TestCase
         $this->assertSame(0, $actual['cdek_sender_city_code']);
         $this->assertSame('ozon-client', $actual['ozon_client_id']);
         $this->assertSame('ozon-secret-old', $actual['ozon_client_secret']);
+        $this->assertSame('js-key', $actual['yandex_maps_js_key']);
+        $this->assertSame('geocoder-secret-old', $actual['yandex_geocoder_key']);
         $this->assertSame(false, array_key_exists('ozon_access_token', $actual));
         $this->assertSame(false, array_key_exists('ozon_approved', $actual));
     }
@@ -42,6 +47,8 @@ final class SettingsTest extends TestCase
         $this->assertSame('', $defaults['ozon_client_id']);
         $this->assertSame('', $defaults['cdek_client_secret']);
         $this->assertSame('', $defaults['ozon_client_secret']);
+        $this->assertSame('', $defaults['yandex_maps_js_key']);
+        $this->assertSame('', $defaults['yandex_geocoder_key']);
         $this->assertSame(false, array_key_exists('ozon_access_token', $defaults));
     }
 

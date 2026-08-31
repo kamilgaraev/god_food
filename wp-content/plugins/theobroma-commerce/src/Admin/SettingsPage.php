@@ -56,6 +56,10 @@ final class SettingsPage
         if (is_array($cdekNotice)) {
             delete_transient(CdekConnectionAction::NOTICE_PREFIX . get_current_user_id());
         }
+        $mapsNotice = get_transient(YandexMapsConnectionAction::NOTICE_PREFIX . get_current_user_id());
+        if (is_array($mapsNotice)) {
+            delete_transient(YandexMapsConnectionAction::NOTICE_PREFIX . get_current_user_id());
+        }
         $catalogAudit = (new OzonCatalogAudit())->audit(wc_get_products([
             'status' => 'publish',
             'limit' => -1,
@@ -96,7 +100,25 @@ final class SettingsPage
                 <?php endif; ?>
                 <?php $this->text('ozon_client_id', __('Client ID частного приложения', 'theobroma-commerce'), $values); ?>
                 <?php $this->secret('ozon_client_secret', __('Secret частного приложения', 'theobroma-commerce'), $values, defined('THEOBROMA_OZON_CLIENT_SECRET')); ?>
+
+                <h2><?php esc_html_e('Карты пунктов выдачи', 'theobroma-commerce'); ?></h2>
+                <p><?php esc_html_e('Ключи необязательны: без них покупатель выберет ПВЗ из списка.', 'theobroma-commerce'); ?></p>
+                <?php $this->text('yandex_maps_js_key', __('Ключ JavaScript API Яндекс Карт', 'theobroma-commerce'), $values); ?>
+                <?php $this->secret('yandex_geocoder_key', __('Ключ HTTP Геокодера Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_GEOCODER_KEY')); ?>
+                <?php if (is_array($mapsNotice)) : ?>
+                    <?php foreach (['javascript', 'geocoder'] as $mapService) : ?>
+                        <?php if (isset($mapsNotice[$mapService]['status'], $mapsNotice[$mapService]['message'])) : ?>
+                            <?php $mapStatus = (string) $mapsNotice[$mapService]['status']; ?>
+                            <div class="notice notice-<?php echo $mapStatus === 'valid' ? 'success' : ($mapStatus === 'invalid' ? 'error' : 'warning'); ?> inline"><p><?php echo esc_html((string) $mapsNotice[$mapService]['message']); ?></p></div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <p><button type="submit" class="button" form="theobroma-yandex-maps-check"><?php esc_html_e('Проверить ключи карт', 'theobroma-commerce'); ?></button></p>
                 <?php submit_button(); ?>
+            </form>
+            <form id="theobroma-yandex-maps-check" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:none">
+                <input type="hidden" name="action" value="<?php echo esc_attr(YandexMapsConnectionAction::ACTION); ?>">
+                <?php wp_nonce_field(YandexMapsConnectionAction::ACTION); ?>
             </form>
             <form id="theobroma-cdek-connection-check" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:none">
                 <input type="hidden" name="action" value="<?php echo esc_attr(CdekConnectionAction::ACTION); ?>">

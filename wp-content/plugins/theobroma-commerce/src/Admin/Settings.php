@@ -18,6 +18,8 @@ final class Settings
             'cdek_order_status' => 'processing',
             'ozon_client_id' => '',
             'ozon_client_secret' => '',
+            'yandex_maps_js_key' => '',
+            'yandex_geocoder_key' => '',
         ];
     }
 
@@ -34,11 +36,12 @@ final class Settings
 
         $result['cdek_client_id'] = trim((string) ($input['cdek_client_id'] ?? ''));
         $result['ozon_client_id'] = trim((string) ($input['ozon_client_id'] ?? ''));
+        $result['yandex_maps_js_key'] = trim((string) ($input['yandex_maps_js_key'] ?? ''));
         $result['cdek_sender_city_code'] = max(0, (int) ($input['cdek_sender_city_code'] ?? 0));
         $result['cdek_sender_address'] = trim((string) ($input['cdek_sender_address'] ?? ''));
         $result['cdek_order_status'] = preg_replace('/[^a-z0-9_-]/', '', (string) ($input['cdek_order_status'] ?? 'processing')) ?: 'processing';
 
-        foreach (['cdek_client_secret', 'ozon_client_secret'] as $secret) {
+        foreach (['cdek_client_secret', 'ozon_client_secret', 'yandex_geocoder_key'] as $secret) {
             $newValue = trim((string) ($input[$secret] ?? ''));
             $result[$secret] = $newValue !== '' ? $newValue : (string) ($existing[$secret] ?? '');
         }

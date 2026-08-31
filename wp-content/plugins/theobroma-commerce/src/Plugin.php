@@ -8,6 +8,7 @@ use Theobroma\Commerce\Admin\SettingsPage;
 use Theobroma\Commerce\Admin\CdekConnectionAction;
 use Theobroma\Commerce\Admin\OzonConnectionAction;
 use Theobroma\Commerce\Admin\OzonAuthorizationAction;
+use Theobroma\Commerce\Admin\YandexMapsConnectionAction;
 use Theobroma\Commerce\Catalog\ProductWeightBackfill;
 use Theobroma\Commerce\Checkout\PickupPointFields;
 use Theobroma\Commerce\Checkout\DeliveryAddressFields;
@@ -41,6 +42,7 @@ final class Plugin
         (new CdekConnectionAction())->register();
         (new OzonConnectionAction())->register();
         (new OzonAuthorizationAction())->register();
+        (new YandexMapsConnectionAction())->register();
         (new PickupPointFields())->register();
         (new DeliveryAddressFields())->register();
         (new CdekPointsController())->register();
