@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 defined('ABSPATH') || (PHP_SAPI === 'cli') || exit;
 
-/** @return array<int,array{enabled:bool,label:string,description:string}> */
+/** @return array<int,array{enabled:bool,label:string,description:string,product_id:int}> */
 function theobroma_cacao_default_profiles(): array {
     return array(
-        59 => array('enabled' => true, 'label' => 'мягкий', 'description' => 'Мягкий шоколад с ягодными, ореховыми и фруктовыми сочетаниями.'),
-        65 => array('enabled' => true, 'label' => 'пряный', 'description' => 'Тёплый вкус какао с выразительной нотой натуральной корицы.'),
-        68 => array('enabled' => true, 'label' => 'характерный', 'description' => 'Чистый шоколадный вкус, раскрытый тонким ароматом кориандра.'),
-        70 => array('enabled' => true, 'label' => 'классический', 'description' => 'Баланс насыщенного какао и деликатной сладости кокосового сахара.'),
-        80 => array('enabled' => true, 'label' => 'глубокий', 'description' => 'Глубокий, строгий вкус с долгим шоколадным послевкусием.'),
+        59 => array('enabled' => true, 'label' => 'мягкий', 'description' => 'Мягкий шоколад с ягодными, ореховыми и фруктовыми сочетаниями.', 'product_id' => 0),
+        65 => array('enabled' => true, 'label' => 'пряный', 'description' => 'Тёплый вкус какао с выразительной нотой натуральной корицы.', 'product_id' => 0),
+        68 => array('enabled' => true, 'label' => 'характерный', 'description' => 'Чистый шоколадный вкус, раскрытый тонким ароматом кориандра.', 'product_id' => 0),
+        70 => array('enabled' => true, 'label' => 'классический', 'description' => 'Баланс насыщенного какао и деликатной сладости кокосового сахара.', 'product_id' => 0),
+        80 => array('enabled' => true, 'label' => 'глубокий', 'description' => 'Глубокий, строгий вкус с долгим шоколадным послевкусием.', 'product_id' => 0),
     );
 }
 
@@ -32,7 +32,7 @@ function theobroma_cacao_default_settings(): array {
     return $settings;
 }
 
-/** @param array<int,mixed> $rows @return array<int,array{enabled:bool,label:string,description:string}> */
+/** @param array<int,mixed> $rows @return array<int,array{enabled:bool,label:string,description:string,product_id:int}> */
 function theobroma_normalize_cacao_profiles(array $rows): array {
     $profiles = array();
     foreach ($rows as $row) {
@@ -53,14 +53,17 @@ function theobroma_normalize_cacao_profiles(array $rows): array {
         }
         $description = is_string($row['description'] ?? null) ? trim(strip_tags($row['description'])) : '';
         $enabled = in_array($row['enabled'] ?? '0', array('1', 1, true), true);
-        $profiles[$percentage] = array('enabled' => $enabled, 'label' => $label, 'description' => $description);
+        $product_id = is_int($row['product_id'] ?? null) || (is_string($row['product_id'] ?? null) && ctype_digit($row['product_id']))
+            ? max(0, (int) $row['product_id'])
+            : 0;
+        $profiles[$percentage] = array('enabled' => $enabled, 'label' => $label, 'description' => $description, 'product_id' => $product_id);
     }
     ksort($profiles, SORT_NUMERIC);
     return $profiles;
 }
 
 /**
- * @return array{enabled:bool,heading:string,intro:string,button_label:string,default_percentage:int,profiles:array<int,array{enabled:bool,label:string,description:string}>}
+ * @return array{enabled:bool,heading:string,intro:string,button_label:string,default_percentage:int,profiles:array<int,array{enabled:bool,label:string,description:string,product_id:int}>}
  */
 function theobroma_cacao_settings(): array {
     $defaults = theobroma_cacao_default_settings();
@@ -84,6 +87,7 @@ function theobroma_cacao_settings(): array {
                 'enabled' => $values[$prefix . 'enabled'],
                 'label' => $values[$prefix . 'label'],
                 'description' => $values[$prefix . 'description'],
+                'product_id' => 0,
             );
         }
     }
@@ -282,13 +286,14 @@ function theobroma_homepage_products(): array {
     return array_slice($products, 0, 4);
 }
 
-/** @return array<int,array{products:WC_Product[],representative:WC_Product,minimum_price:float}> */
+/** @return array<int,array{products:WC_Product[],representative:WC_Product,minimum_price:float,url?:string}> */
 function theobroma_home_cacao_groups(): array {
-    if (!function_exists('wc_get_products')) {
+    if (!function_exists('wc_get_products') && !function_exists('wc_get_product')) {
         return array();
     }
 
-    if (function_exists('get_posts')) {
+    $products = array();
+    if (function_exists('get_posts') && function_exists('wc_get_product')) {
         $product_ids = get_posts(array(
             'post_type' => 'product',
             'post_status' => 'publish',
@@ -305,7 +310,7 @@ function theobroma_home_cacao_groups(): array {
             'theobroma_cacao_percentages' => theobroma_allowed_cacao_percentages(),
         ));
         $products = array_filter(array_map('wc_get_product', $product_ids));
-    } else {
+    } elseif (function_exists('wc_get_products')) {
         $products = wc_get_products(array(
             'status' => 'publish',
             'limit' => -1,
@@ -314,7 +319,27 @@ function theobroma_home_cacao_groups(): array {
             'order' => 'ASC',
         ));
     }
-    return theobroma_group_cacao_products(is_array($products) ? $products : array());
+    $groups = theobroma_group_cacao_products(is_array($products) ? $products : array());
+    if (function_exists('wc_get_product')) {
+        foreach (theobroma_cacao_settings()['profiles'] as $percentage => $profile) {
+            $product_id = (int) ($profile['product_id'] ?? 0);
+            if ($product_id < 1) {
+                continue;
+            }
+            $product = wc_get_product($product_id);
+            if (!$product instanceof WC_Product || !theobroma_product_is_home_eligible($product, true)) {
+                continue;
+            }
+            $groups[(int) $percentage] = array(
+                'products' => array($product),
+                'representative' => $product,
+                'minimum_price' => (float) $product->get_price(),
+                'url' => $product->get_permalink(),
+            );
+        }
+    }
+    ksort($groups, SORT_NUMERIC);
+    return $groups;
 }
 
 function theobroma_cacao_posts_where(string $where, WP_Query $query): string {
@@ -370,9 +395,9 @@ function theobroma_home_cacao_default_percentage(array $available): int {
 }
 
 /**
- * @param array<int,array{products:WC_Product[],representative:WC_Product,minimum_price:float}> $groups
+ * @param array<int,array{products:WC_Product[],representative:WC_Product,minimum_price:float,url?:string}> $groups
  * @param array<int,array{label:string,description:string}> $profiles
- * @return array<int,array{percentage:int,label:string,group:array{products:WC_Product[],representative:WC_Product,minimum_price:float}}>
+ * @return array<int,array{percentage:int,label:string,group:array{products:WC_Product[],representative:WC_Product,minimum_price:float,url?:string}}>
  */
 function theobroma_home_cacao_options(array $groups, array $profiles): array {
     ksort($groups, SORT_NUMERIC);

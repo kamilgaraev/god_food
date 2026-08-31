@@ -22,6 +22,7 @@ final class WC_Product {
     public function is_in_stock(): bool { return $this->inStock; }
     public function get_status(): string { return $this->status; }
     public function is_visible(): bool { return $this->visible; }
+    public function get_permalink(): string { return 'https://example.test/product/' . $this->id . '/'; }
 }
 
 function wc_get_page_permalink(string $page): string {
@@ -106,12 +107,13 @@ $test_options['theobroma_content_settings'] = array(
     'cacao_default_percentage' => '85',
     'cacao_profiles' => array(
         array('percentage' => '72', 'enabled' => '0', 'label' => 'деликатный', 'description' => 'Первый новый вкус.'),
-        array('percentage' => '85', 'enabled' => '1', 'label' => 'насыщенный', 'description' => 'Второй новый вкус.'),
+        array('percentage' => '85', 'enabled' => '1', 'label' => 'насыщенный', 'description' => 'Второй новый вкус.', 'product_id' => '3'),
     ),
 );
 assert_same(array(72, 85), theobroma_allowed_cacao_percentages(), 'Accepts administrator-created cacao percentages');
 assert_same(array(85), theobroma_enabled_cacao_percentages(), 'Honors enabled flags on administrator-created profiles');
 assert_same('насыщенный', theobroma_cacao_profiles()[85]['label'], 'Reads an administrator-created profile');
+assert_same(3, theobroma_cacao_settings()['profiles'][85]['product_id'], 'Keeps the product selected for an administrator-created profile');
 assert_same(85, theobroma_normalize_cacao_percentage('85'), 'Accepts a configured public catalogue percentage');
 assert_same(85, theobroma_product_cacao_percentage(new WC_Product(3, '85% горький шоколад 100г', 'theobroma-100-85', '820')), 'Maps products to an administrator-created percentage');
 assert_same(85, theobroma_home_cacao_default_percentage(array(85 => array())), 'Uses an administrator-created default percentage');
@@ -146,6 +148,24 @@ assert_same(null, theobroma_cacao_filter_product_ids($products, '99'), 'Ignores 
 assert_same('https://example.test/catalog/?cacao_percentage=80', theobroma_cacao_catalog_url(80), 'Builds the public catalogue filter URL');
 assert_same('https://example.test/catalog/', theobroma_cacao_catalog_url(55), 'Falls back to the catalogue for unsupported values');
 assert_same(array(59, 65, 68, 70, 80), theobroma_cacao_title_prefixes(), 'Builds only supported canonical title prefixes');
+
+$test_options['theobroma_content_settings'] = array(
+    'cacao_default_percentage' => '43',
+    'cacao_profiles' => array(
+        array('percentage' => '43', 'enabled' => '1', 'label' => 'молочный', 'description' => 'Очень молочный.', 'product_id' => '15'),
+    ),
+);
+$test_products_by_sku['manual-milk'] = $products[5];
+$test_catalog_products = array();
+$manualGroups = theobroma_home_cacao_groups();
+assert_same(array(43), array_keys($manualGroups), 'Builds a homepage group from a manually selected product whose title has no percentage');
+assert_same(15, $manualGroups[43]['representative']->get_id(), 'Uses the manually selected product as the profile representative');
+assert_same(674.0, $manualGroups[43]['minimum_price'], 'Uses the manually selected product price');
+assert_same('https://example.test/product/15/', $manualGroups[43]['url'], 'Links a manually selected profile directly to its product');
+assert_same(array(43), array_keys(theobroma_home_cacao_options($manualGroups, theobroma_cacao_profiles())), 'Shows a manually configured percentage on the homepage');
+$test_options = array();
+$test_products_by_sku = array();
+$test_catalog_products = array();
 
 $test_products_by_sku = array(
     'theobroma-100-70' => new WC_Product(20, '70% горький шоколад 100г', 'theobroma-100-70', '768'),

@@ -149,6 +149,10 @@ final class Theobroma_Admin_Tools {
             static fn($product): bool => $product instanceof WC_Product
                 && (!function_exists('theobroma_product_is_home_eligible') || theobroma_product_is_home_eligible($product))
         ));
+        $cacao_product_choices = array_values(array_filter(
+            $product_choices,
+            static fn($product): bool => !function_exists('theobroma_product_is_home_eligible') || theobroma_product_is_home_eligible($product, true)
+        ));
         $current_homepage_products = function_exists('theobroma_homepage_products') ? theobroma_homepage_products() : array();
         $cacao_settings = function_exists('theobroma_cacao_settings') ? theobroma_cacao_settings() : array('profiles' => array());
         echo '<div class="wrap"><h1>Общие блоки сайта</h1><p>Эти значения используются на всех страницах. Пустое поле возвращает исходный текст.</p>';
@@ -162,7 +166,7 @@ final class Theobroma_Admin_Tools {
             if ($title === 'Товары на главной') {
                 echo '<p>Выберите четыре карточки и задайте их порядок слева направо. Если товар станет недоступен, витрина автоматически подставит другой опубликованный товар.</p>';
             } elseif ($title === 'Ваш процент какао') {
-                echo '<p>Добавляйте любые проценты от 1 до 100. Чтобы новый вариант появился на главной, создайте опубликованный товар в категории шоколада и начните его название с процента, например «85%».</p><p>Фото, короткая подпись и цена автоматически берутся из подходящих товаров WooCommerce.</p>';
+                echo '<p>Добавляйте любые проценты от 1 до 100 и при необходимости выбирайте для них конкретный товар WooCommerce.</p><p>Если товар не выбран, блок автоматически ищет опубликованный шоколад, название которого начинается с процента, например «85%».</p>';
             }
             echo '<table class="form-table"><tbody>';
             foreach ($fields as $key => $definition) {
@@ -198,7 +202,7 @@ final class Theobroma_Admin_Tools {
                     }
                     echo '</select>';
                 } elseif ($definition[1] === 'cacao_profiles') {
-                    self::render_cacao_profile_fields($value);
+                    self::render_cacao_profile_fields($value, $cacao_product_choices);
                 } else {
                     echo '<input class="regular-text" type="' . esc_attr($definition[1]) . '" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']" value="' . esc_attr($value) . '">';
                 }
@@ -213,8 +217,8 @@ final class Theobroma_Admin_Tools {
         echo '</form></div>';
     }
 
-    /** @param array<int,array{enabled:bool,label:string,description:string}> $profiles */
-    private static function render_cacao_profile_fields(array $profiles): void {
+    /** @param array<int,array{enabled:bool,label:string,description:string,product_id:int}> $profiles @param WC_Product[] $product_choices */
+    private static function render_cacao_profile_fields(array $profiles, array $product_choices): void {
         echo '<div data-cacao-profiles data-next-index="' . esc_attr((string) count($profiles)) . '">';
         echo '<div data-cacao-profile-list>';
         $index = 0;
@@ -224,22 +228,30 @@ final class Theobroma_Admin_Tools {
                 'enabled' => !empty($profile['enabled']),
                 'label' => (string) ($profile['label'] ?? ''),
                 'description' => (string) ($profile['description'] ?? ''),
-            ));
+                'product_id' => (int) ($profile['product_id'] ?? 0),
+            ), $product_choices);
         }
         echo '</div>';
         echo '<p><button type="button" class="button button-secondary" data-add-cacao-profile>Добавить процент</button></p>';
         echo '<template data-cacao-profile-template>';
-        self::render_cacao_profile_row('__INDEX__', array('percentage' => '', 'enabled' => true, 'label' => '', 'description' => ''));
+        self::render_cacao_profile_row('__INDEX__', array('percentage' => '', 'enabled' => true, 'label' => '', 'description' => '', 'product_id' => 0), $product_choices);
         echo '</template></div>';
     }
 
-    /** @param int|string $index @param array{percentage:int|string,enabled:bool,label:string,description:string} $profile */
-    private static function render_cacao_profile_row(int|string $index, array $profile): void {
+    /** @param int|string $index @param array{percentage:int|string,enabled:bool,label:string,description:string,product_id:int} $profile @param WC_Product[] $product_choices */
+    private static function render_cacao_profile_row(int|string $index, array $profile, array $product_choices): void {
         $prefix = 'settings[cacao_profiles][' . $index . ']';
         echo '<fieldset class="postbox" data-cacao-profile-row><div class="inside">';
         echo '<p><label><strong>Процент какао</strong><br><input class="small-text" type="number" min="1" max="100" required name="' . esc_attr($prefix . '[percentage]') . '" value="' . esc_attr((string) $profile['percentage']) . '">%</label></p>';
         echo '<input type="hidden" name="' . esc_attr($prefix . '[enabled]') . '" value="0">';
         echo '<p><label><input type="checkbox" name="' . esc_attr($prefix . '[enabled]') . '" value="1"' . ($profile['enabled'] ? ' checked' : '') . '> Показывать на главной</label></p>';
+        echo '<p><label><strong>Товар для блока</strong><br><select class="regular-text" name="' . esc_attr($prefix . '[product_id]') . '"><option value="0">Автоматически по проценту в названии</option>';
+        foreach ($product_choices as $product) {
+            $product_id = (int) $product->get_id();
+            $label = $product->get_name() . ($product->get_sku() !== '' ? ' — ' . $product->get_sku() : '');
+            echo '<option value="' . esc_attr((string) $product_id) . '"' . ($product_id === $profile['product_id'] ? ' selected' : '') . '>' . esc_html($label) . '</option>';
+        }
+        echo '</select></label><br><span class="description">Выберите товар, если его название не начинается с указанного процента.</span></p>';
         echo '<p><label><strong>Название вкуса</strong><br><input class="regular-text" type="text" required name="' . esc_attr($prefix . '[label]') . '" value="' . esc_attr($profile['label']) . '"></label></p>';
         echo '<p><label><strong>Описание</strong><br><textarea class="large-text" rows="3" name="' . esc_attr($prefix . '[description]') . '">' . esc_textarea($profile['description']) . '</textarea></label></p>';
         echo '<p><button type="button" class="button-link-delete" data-remove-cacao-profile>Удалить процент</button></p>';
@@ -319,7 +331,7 @@ final class Theobroma_Admin_Tools {
         return $settings;
     }
 
-    /** @param array<int,mixed> $rows @return array<int,array{percentage:int,enabled:string,label:string,description:string}> */
+    /** @param array<int,mixed> $rows @return array<int,array{percentage:int,enabled:string,label:string,description:string,product_id:int}> */
     public static function normalize_cacao_profiles(array $rows): array {
         $profiles = array();
         $used = array();
@@ -339,11 +351,16 @@ final class Theobroma_Admin_Tools {
             if ($percentage < 1 || $percentage > 100 || $label === '' || in_array($percentage, $used, true)) {
                 continue;
             }
+            $product_id = absint($row['product_id'] ?? 0);
+            $product = $product_id && function_exists('wc_get_product') ? wc_get_product($product_id) : null;
+            $eligible_product = $product instanceof WC_Product
+                && (!function_exists('theobroma_product_is_home_eligible') || theobroma_product_is_home_eligible($product, true));
             $profiles[] = array(
                 'percentage' => $percentage,
                 'enabled' => ($row['enabled'] ?? '0') === '1' ? '1' : '0',
                 'label' => $label,
                 'description' => is_string($row['description'] ?? null) ? sanitize_textarea_field($row['description']) : '',
+                'product_id' => $eligible_product ? $product_id : 0,
             );
             $used[] = $percentage;
         }
