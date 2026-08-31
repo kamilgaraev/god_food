@@ -47,8 +47,8 @@ foreach (['account_first_name', 'account_last_name', 'account_email', 'password_
 }
 
 expect_true(
-    str_contains($html, '<label for="password_current">Current password</label>'),
-    'The current-password label must stay concise.'
+    str_contains($html, '<label for="password_current">Действующий пароль</label>'),
+    'The current-password label must be concise and localized.'
 );
 expect_true(
     str_contains($html, '<label for="password_1">New password</label>'),

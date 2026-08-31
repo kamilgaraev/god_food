@@ -37,7 +37,7 @@ do_action('woocommerce_before_edit_account_form');
         <legend><?php esc_html_e('Password change', 'woocommerce'); ?></legend>
 
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="password_current"><?php esc_html_e('Current password', 'woocommerce'); ?></label>
+            <label for="password_current"><?php esc_html_e('Действующий пароль', 'theobroma'); ?></label>
             <input type="password" class="woocommerce-Input woocommerce-Input--password input-text" name="password_current" id="password_current" autocomplete="off">
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
