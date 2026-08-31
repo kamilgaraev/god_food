@@ -232,39 +232,53 @@ ul.products li.product > a.add_to_cart_button { display:none !important; }
 .woocommerce-account .woocommerce-form-login button[type="submit"],
 .woocommerce-account .woocommerce-form-register button[type="submit"] { min-width:9.25rem; min-height:2.625rem; padding:0 1.5rem; border:0 !important; border-radius:62.4375rem !important; color:#fff !important; background:#b0903d !important; font:500 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif !important; }
 
-/* Guest account: one focused form at a time instead of competing columns. */
-.woocommerce-account .account-page-auth { width:min(35rem,100%); margin:0 auto; padding:clamp(1.75rem,4vw,3rem); border:1px solid #dfd2c3; background:#f3ebe4; }
+/* Guest account: a restrained editorial card with a clear heading hierarchy. */
+.woocommerce-account:not(.logged-in) .account-page-title { margin-bottom:3rem; text-align:center; }
+.woocommerce-account .account-page-auth { width:min(32rem,100%); margin:0 auto; padding:2.625rem 2.75rem 2.5rem; border:0; background:#f3ebe4; box-shadow:0 1.5rem 4rem rgba(52,42,35,.07); animation:account-auth-reveal .45s cubic-bezier(.22,.61,.36,1) both; }
 .woocommerce-account .account-page-auth__view[hidden] { display:none !important; }
-.woocommerce-account .account-page-auth__eyebrow { margin:0 0 0.625rem; color:#b0903d; font:600 0.6875rem/1rem 'Montserrat',Arial,sans-serif; letter-spacing:.12em; text-align:center; text-transform:uppercase; }
-.woocommerce-account .account-page-auth h2 { margin:0; font:400 clamp(2.25rem,5vw,3.25rem)/.95 'Cormorant',Arial,sans-serif; text-align:center; }
-.woocommerce-account .account-page-auth__intro { max-width:25rem; margin:1rem auto 2rem; color:#6f655e; font:400 0.875rem/1.375rem 'Montserrat',Arial,sans-serif; text-align:center; }
+.woocommerce-account .account-page-auth__eyebrow { margin:0 0 0.625rem; color:#6f655e; font:400 0.8125rem/1.25rem 'Montserrat',Arial,sans-serif; letter-spacing:normal; text-align:center; text-transform:none; }
+.woocommerce-account .account-page-auth h2 { margin:0; font:400 clamp(2.125rem,3.5vw,2.5rem)/1 'Cormorant',Arial,sans-serif; text-align:center; }
+.woocommerce-account .account-page-auth__intro { max-width:23rem; margin:0.875rem auto 1.75rem; color:#6f655e; font:400 0.8125rem/1.3125rem 'Montserrat',Arial,sans-serif; text-align:center; }
 .woocommerce-account .account-page-auth .woocommerce-form-login,
 .woocommerce-account .account-page-auth .woocommerce-form-register { margin:0; padding:0; border:0; background:transparent; }
-.woocommerce-account .account-page-auth .form-row { margin:0 0 1.125rem; padding:0; }
+.woocommerce-account .account-page-auth .form-row { margin:0 0 1rem; padding:0; }
 .woocommerce-account .account-page-auth label { display:block; margin:0 0 0.5rem; color:#343434; font:400 0.875rem/1.25rem 'Montserrat',Arial,sans-serif; }
 .woocommerce-account .account-page-auth input[type="text"],
 .woocommerce-account .account-page-auth input[type="email"],
-.woocommerce-account .account-page-auth input[type="password"] { width:100%; height:3.5rem; padding:0 1.125rem; border:1px solid transparent; border-bottom-color:#b0903d; background:#fcf9f7; color:#241d19; font:400 1rem/1.375rem 'Montserrat',Arial,sans-serif; transition:border-color .2s ease,background-color .2s ease; }
+.woocommerce-account .account-page-auth input[type="password"] { width:100%; height:3.25rem; padding:0 1.125rem; border:1px solid transparent; border-bottom-color:#b0903d; background:#fcf9f7; color:#241d19; font:400 0.9375rem/1.375rem 'Montserrat',Arial,sans-serif; transition:border-color .2s ease,background-color .2s ease; }
 .woocommerce-account .account-page-auth input[type="text"]:focus,
 .woocommerce-account .account-page-auth input[type="email"]:focus,
 .woocommerce-account .account-page-auth input[type="password"]:focus { border-color:#b0903d; background:#fff; }
-.woocommerce-account .account-page-auth__options { margin:-0.125rem 0 1.625rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; color:#6f655e; font:400 0.75rem/1.125rem 'Montserrat',Arial,sans-serif; }
+.woocommerce-account .account-page-auth__options { margin:0 0 1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; color:#6f655e; font:400 0.75rem/1.125rem 'Montserrat',Arial,sans-serif; }
 .woocommerce-account .account-page-auth__options .woocommerce-form-login__rememberme { margin:0; display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
 .woocommerce-account .account-page-auth__options input[type="checkbox"] { width:1rem; height:1rem; margin:0; accent-color:#b0903d; }
 .woocommerce-account .account-page-auth__options a { border-bottom:1px solid currentColor; }
-.woocommerce-account .account-page-auth__submit { margin:0 !important; }
-.woocommerce-account .account-page-auth__submit button[type="submit"] { width:100%; min-height:3.25rem; margin:0; font-size:0.875rem !important; }
+.woocommerce-account .account-page-auth__submit { margin:0 !important; display:flex; justify-content:center; }
+.woocommerce-account .account-page-auth__submit button[type="submit"] { width:13.75rem; min-height:3rem; margin:0; font-size:0.875rem !important; transition:background-color .2s ease,transform .2s ease; }
+.woocommerce-account .account-page-auth__submit button[type="submit"]:hover { transform:translateY(-1px); }
 .woocommerce-account .account-page-auth__privacy { margin:0 0 1.5rem; color:#6f655e; font:400 0.75rem/1.125rem 'Montserrat',Arial,sans-serif; }
 .woocommerce-account .account-page-auth__privacy p { margin:0; }
 .woocommerce-account .account-page-auth__privacy a { color:#8c6c1e; border-bottom:1px solid currentColor; }
-.woocommerce-account .account-page-auth__switch { margin:1.5rem 0 0; color:#6f655e; font:400 0.8125rem/1.25rem 'Montserrat',Arial,sans-serif; text-align:center; }
+.woocommerce-account .account-page-auth__switch { margin:1.375rem 0 0; color:#6f655e; font:400 0.8125rem/1.25rem 'Montserrat',Arial,sans-serif; text-align:center; }
 .woocommerce-account .account-page-auth__switch button { margin:0 0 0 0.25rem; padding:0; border:0; border-bottom:1px solid currentColor; color:#8c6c1e; background:transparent; font:inherit; font-weight:600; cursor:pointer; }
 .woocommerce-account:not(.logged-in) .shop-shell .woocommerce-error { margin-right:auto; margin-left:auto; }
 
+@keyframes account-auth-reveal {
+  from { opacity:0; transform:translateY(0.75rem); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .woocommerce-account .account-page-auth { animation:none; }
+  .woocommerce-account .account-page-auth__submit button[type="submit"] { transition:none; }
+}
+
 @media (max-width:600px) {
-  .woocommerce-account .account-page-auth { padding:1.5rem 1.25rem; }
+  .woocommerce-account:not(.logged-in) .account-page-title { margin-bottom:2rem; }
+  .woocommerce-account .account-page-auth { padding:1.75rem 1.25rem 1.625rem; box-shadow:none; }
   .woocommerce-account .account-page-auth__intro { margin-bottom:1.5rem; }
   .woocommerce-account .account-page-auth__options { align-items:flex-start; flex-direction:column; gap:0.75rem; }
+  .woocommerce-account .account-page-auth__submit button[type="submit"] { width:100%; }
 }
 
 /* Native WooCommerce account, progressively presented like the source members panel. */

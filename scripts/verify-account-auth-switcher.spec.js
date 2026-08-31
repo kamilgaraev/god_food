@@ -58,11 +58,15 @@ async function launchBrowser() {
     await page.setContent(`
       <style>${themeCss}</style>
       <body class="woocommerce-account">
-        <main class="shop-page"><div class="shop-shell"><div class="woocommerce">
+        <main class="shop-page"><div class="shop-shell">
+          <h1 class="account-page-title">Личный кабинет</h1>
+          <div class="woocommerce">
           <section class="account-page-auth" data-account-page-auth>
             <div class="account-page-auth__view" data-account-page-view="login">
+              <p class="account-page-auth__eyebrow">С возвращением</p>
               <h2>Вход</h2>
-              <form class="woocommerce-form woocommerce-form-login login"><input name="username"><input name="password"><button type="submit">Войти</button></form>
+              <p class="account-page-auth__intro">Войдите, чтобы посмотреть заказы и данные профиля.</p>
+              <form class="woocommerce-form woocommerce-form-login login"><input name="username"><input name="password"><p class="account-page-auth__submit"><button type="submit">Войти</button></p></form>
               <p class="account-page-auth__switch">Нет аккаунта? <button type="button" data-account-page-show="register">Зарегистрироваться</button></p>
             </div>
             <div class="account-page-auth__view" data-account-page-view="register" hidden>
@@ -80,14 +84,43 @@ async function launchBrowser() {
     const initial = await card.evaluate((element) => {
       const login = element.querySelector('[data-account-page-view="login"]');
       const register = element.querySelector('[data-account-page-view="register"]');
+      const pageTitle = document.querySelector('.account-page-title');
+      const formTitle = login.querySelector('h2');
+      const eyebrow = login.querySelector('.account-page-auth__eyebrow');
+      const submit = login.querySelector('button[type="submit"]');
+      const cardRect = element.getBoundingClientRect();
+      const submitRect = submit.getBoundingClientRect();
+      const cardStyle = getComputedStyle(element);
       return {
-        width: element.getBoundingClientRect().width,
+        width: cardRect.width,
+        borderWidth: cardStyle.borderWidth,
+        pageTitleSize: Number.parseFloat(getComputedStyle(pageTitle).fontSize),
+        formTitleSize: Number.parseFloat(getComputedStyle(formTitle).fontSize),
+        pageTitleAlignment: getComputedStyle(pageTitle).textAlign,
+        eyebrowLetterSpacing: getComputedStyle(eyebrow).letterSpacing,
+        eyebrowTextTransform: getComputedStyle(eyebrow).textTransform,
+        eyebrowFontWeight: getComputedStyle(eyebrow).fontWeight,
+        submitWidth: submitRect.width,
+        submitCenterDifference: Math.abs(
+          (submitRect.left + submitRect.width / 2) - (cardRect.left + cardRect.width / 2),
+        ),
         loginHidden: login.hidden,
         registerHidden: register.hidden,
       };
     });
 
-    assert.ok(initial.width <= 620, 'Authentication must be presented as one compact card.');
+    assert.ok(initial.width <= 520, 'Authentication must be presented as one compact card.');
+    assert.equal(initial.borderWidth, '0px', 'The card must feel like a calm surface, not a bordered form box.');
+    assert.ok(
+      initial.pageTitleSize >= initial.formTitleSize * 1.3,
+      'The page title must clearly dominate the form title.',
+    );
+    assert.equal(initial.pageTitleAlignment, 'center', 'The guest page title must align with the auth card.');
+    assert.equal(initial.eyebrowLetterSpacing, 'normal', 'The welcome copy must use natural letter spacing.');
+    assert.equal(initial.eyebrowTextTransform, 'none', 'The welcome copy must keep natural sentence case.');
+    assert.equal(initial.eyebrowFontWeight, '400', 'The welcome copy must not look like a decorative label.');
+    assert.ok(initial.submitWidth <= 240, 'The desktop submit button must not dominate the card width.');
+    assert.ok(initial.submitCenterDifference <= 1, 'The compact submit button must be centered.');
     assert.equal(initial.loginHidden, false, 'Login must be the initial view.');
     assert.equal(initial.registerHidden, true, 'Registration must not compete with login initially.');
 
