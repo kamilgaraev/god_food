@@ -114,17 +114,25 @@ const markup = `
     await desktop.close();
 
     const scrollLockPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
-    await scrollLockPage.setContent(`<body>${markup}<main style="height:3000px"></main></body>`);
+    await scrollLockPage.setContent(`<body><header class="site-header"><a class="shipping"></a></header>${markup}<main style="height:3000px"></main></body>`);
     await scrollLockPage.addStyleTag({ content: themeCss });
     await scrollLockPage.addStyleTag({ content: redesignCss });
     await scrollLockPage.addScriptTag({ path: scriptPath });
     await scrollLockPage.evaluate(() => window.scrollTo(0, 500));
     await scrollLockPage.waitForFunction(() => document.body.classList.contains('nav-sticky'));
     await scrollLockPage.locator('.menu-toggle').evaluate((element) => element.click());
+    const stickyShippingBottom = await scrollLockPage.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.height = 'var(--home-shipping-height)';
+      document.body.append(probe);
+      const height = probe.getBoundingClientRect().height;
+      probe.remove();
+      return height;
+    });
     assert.equal(
       await scrollLockPage.locator('.mobile-menu').evaluate((element) => element.getBoundingClientRect().top),
-      0,
-      'the drawer must stay flush with the viewport after the shipping banner scrolls away',
+      stickyShippingBottom,
+      'the drawer must stay attached below the visible sticky shipping banner',
     );
     const lockedScrollY = await scrollLockPage.evaluate(() => window.scrollY);
     await scrollLockPage.mouse.wheel(0, 600);

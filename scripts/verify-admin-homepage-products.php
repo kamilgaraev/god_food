@@ -19,6 +19,8 @@ function esc_html(string $value): string { return htmlspecialchars($value, ENT_Q
 function esc_attr(string $value): string { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
 function esc_textarea(string $value): string { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
 function absint(mixed $value): int { return abs((int) $value); }
+function sanitize_text_field(mixed $value): string { return trim(strip_tags((string) $value)); }
+function sanitize_textarea_field(mixed $value): string { return trim(strip_tags((string) $value)); }
 function wp_nonce_field(string $action): void { echo '<input type="hidden" value="' . esc_attr($action) . '">'; }
 function submit_button(string $label): void { echo '<button type="submit">' . esc_html($label) . '</button>'; }
 function theobroma_content(string $key): string {
@@ -35,6 +37,19 @@ function theobroma_content(string $key): string {
         'cacao_70_enabled' => '1',
         'cacao_80_enabled' => '1',
     )[$key] ?? '';
+}
+function theobroma_cacao_settings(): array {
+    return array(
+        'enabled' => true,
+        'heading' => 'Ваш процент какао',
+        'intro' => 'От {min}% до {max}%.',
+        'button_label' => 'Купить',
+        'default_percentage' => 80,
+        'profiles' => array(
+            59 => array('enabled' => true, 'label' => 'мягкий', 'description' => 'Мягкий вкус.'),
+            80 => array('enabled' => true, 'label' => 'глубокий', 'description' => 'Глубокий вкус.'),
+        ),
+    );
 }
 function wc_get_products(array $args): array {
     return array(
@@ -87,26 +102,35 @@ if (!str_contains($html, 'Ваш процент какао')
     || !str_contains($html, 'name="settings[cacao_heading]"')
     || !str_contains($html, 'name="settings[cacao_intro]"')
     || !str_contains($html, 'name="settings[cacao_button_label]"')
-    || substr_count($html, 'name="settings[cacao_59_enabled]"') !== 2
-    || !str_contains($html, 'name="settings[cacao_59_label]"')
-    || !str_contains($html, 'name="settings[cacao_59_description]"')) {
+    || !str_contains($html, 'data-cacao-profile-list')
+    || !str_contains($html, 'data-add-cacao-profile')
+    || substr_count($html, 'name="settings[cacao_profiles][0][enabled]"') !== 2
+    || !str_contains($html, 'name="settings[cacao_profiles][0][percentage]"')
+    || !str_contains($html, 'name="settings[cacao_profiles][0][label]"')
+    || !str_contains($html, 'name="settings[cacao_profiles][0][description]"')) {
     throw new RuntimeException('Cacao block settings must expose section copy and profile controls.');
 }
-$defaultPattern = '~<select[^>]*name="settings\[cacao_default_percentage\]"[^>]*>(.*?)</select>~s';
-if (preg_match($defaultPattern, $html, $defaultMatches) !== 1 || !str_contains($defaultMatches[1], 'value="80" selected')) {
+if (!str_contains($html, 'name="settings[cacao_default_percentage]" value="80"')) {
     throw new RuntimeException('Cacao block settings must preserve the configured default percentage.');
 }
 $normalizedCacao = Theobroma_Admin_Tools::normalize_cacao_settings(array(
     'cacao_enabled' => 'yes',
     'cacao_default_percentage' => '99',
-    'cacao_59_enabled' => '1',
-    'cacao_65_enabled' => 'unexpected',
+    'cacao_profiles' => array(
+        array('percentage' => '85', 'enabled' => '1', 'label' => ' новый <b>вкус</b> ', 'description' => "Описание\nвкуса"),
+        array('percentage' => '85', 'enabled' => '1', 'label' => 'дубликат', 'description' => ''),
+        array('percentage' => '72', 'enabled' => 'unexpected', 'label' => 'деликатный', 'description' => ''),
+        array('percentage' => '101', 'enabled' => '1', 'label' => 'ошибка', 'description' => ''),
+        array('percentage' => '90', 'enabled' => '1', 'label' => array('ошибка'), 'description' => array('ошибка')),
+    ),
 ));
 if (($normalizedCacao['cacao_enabled'] ?? null) !== '0'
-    || ($normalizedCacao['cacao_59_enabled'] ?? null) !== '1'
-    || ($normalizedCacao['cacao_65_enabled'] ?? null) !== '0'
-    || ($normalizedCacao['cacao_default_percentage'] ?? null) !== '59') {
-    throw new RuntimeException('Cacao settings must normalize flags and choose an enabled default percentage.');
+    || ($normalizedCacao['cacao_default_percentage'] ?? null) !== '85'
+    || ($normalizedCacao['cacao_profiles'] ?? null) !== array(
+        array('percentage' => 72, 'enabled' => '0', 'label' => 'деликатный', 'description' => ''),
+        array('percentage' => 85, 'enabled' => '1', 'label' => 'новый вкус', 'description' => "Описание\nвкуса"),
+    )) {
+    throw new RuntimeException('Cacao settings must sanitize dynamic profiles, reject duplicates, and choose an enabled default percentage.');
 }
 
 if (!method_exists(Theobroma_Admin_Tools::class, 'normalize_homepage_product_settings')) {

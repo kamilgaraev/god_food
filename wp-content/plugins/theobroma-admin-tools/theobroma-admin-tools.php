@@ -44,6 +44,7 @@ final class Theobroma_Admin_Tools {
         add_action('save_post_post', array(self::class, 'save_media_fields'));
         add_action('save_post_theobroma_recipe', array(self::class, 'save_recipe_fields'));
         add_action('admin_enqueue_scripts', array(self::class, 'enqueue_recipe_assets'));
+        add_action('admin_enqueue_scripts', array(self::class, 'enqueue_content_settings_assets'));
         add_filter('use_block_editor_for_post_type', array(self::class, 'use_classic_recipe_editor'), 10, 2);
         add_filter('wp_insert_post_data', array(self::class, 'append_new_recipe'), 10, 2);
         add_filter('manage_product_posts_columns', array(self::class, 'add_product_columns'));
@@ -92,22 +93,8 @@ final class Theobroma_Admin_Tools {
                 'cacao_heading' => array('Заголовок блока', 'text'),
                 'cacao_intro' => array('Текст под заголовком', 'textarea', null, 'Используйте {min} и {max}, чтобы автоматически подставлять границы доступной шкалы.'),
                 'cacao_button_label' => array('Текст кнопки', 'text'),
-                'cacao_default_percentage' => array('Процент по умолчанию', 'select', array('59' => '59%', '65' => '65%', '68' => '68%', '70' => '70%', '80' => '80%')),
-                'cacao_59_enabled' => array('Показывать 59%', 'checkbox'),
-                'cacao_59_label' => array('59% — название вкуса', 'text'),
-                'cacao_59_description' => array('59% — описание', 'textarea'),
-                'cacao_65_enabled' => array('Показывать 65%', 'checkbox'),
-                'cacao_65_label' => array('65% — название вкуса', 'text'),
-                'cacao_65_description' => array('65% — описание', 'textarea'),
-                'cacao_68_enabled' => array('Показывать 68%', 'checkbox'),
-                'cacao_68_label' => array('68% — название вкуса', 'text'),
-                'cacao_68_description' => array('68% — описание', 'textarea'),
-                'cacao_70_enabled' => array('Показывать 70%', 'checkbox'),
-                'cacao_70_label' => array('70% — название вкуса', 'text'),
-                'cacao_70_description' => array('70% — описание', 'textarea'),
-                'cacao_80_enabled' => array('Показывать 80%', 'checkbox'),
-                'cacao_80_label' => array('80% — название вкуса', 'text'),
-                'cacao_80_description' => array('80% — описание', 'textarea'),
+                'cacao_default_percentage' => array('Процент по умолчанию', 'number', null, 'Если такого товара нет, на главной автоматически выберется первый доступный вариант.'),
+                'cacao_profiles' => array('Варианты какао', 'cacao_profiles'),
             ),
             'Форма связи' => array(
                 'contact_heading' => array('Заголовок', 'text'),
@@ -163,6 +150,7 @@ final class Theobroma_Admin_Tools {
                 && (!function_exists('theobroma_product_is_home_eligible') || theobroma_product_is_home_eligible($product))
         ));
         $current_homepage_products = function_exists('theobroma_homepage_products') ? theobroma_homepage_products() : array();
+        $cacao_settings = function_exists('theobroma_cacao_settings') ? theobroma_cacao_settings() : array('profiles' => array());
         echo '<div class="wrap"><h1>Общие блоки сайта</h1><p>Эти значения используются на всех страницах. Пустое поле возвращает исходный текст.</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>Настройки сохранены.</p></div>';
@@ -174,7 +162,7 @@ final class Theobroma_Admin_Tools {
             if ($title === 'Товары на главной') {
                 echo '<p>Выберите четыре карточки и задайте их порядок слева направо. Если товар станет недоступен, витрина автоматически подставит другой опубликованный товар.</p>';
             } elseif ($title === 'Ваш процент какао') {
-                echo '<p>Настройте текст и видимые варианты. Фото, короткая подпись и цена автоматически берутся из подходящих товаров WooCommerce.</p>';
+                echo '<p>Добавляйте любые проценты от 1 до 100. Чтобы новый вариант появился на главной, создайте опубликованный товар в категории шоколада и начните его название с процента, например «85%».</p><p>Фото, короткая подпись и цена автоматически берутся из подходящих товаров WooCommerce.</p>';
             }
             echo '<table class="form-table"><tbody>';
             foreach ($fields as $key => $definition) {
@@ -183,6 +171,8 @@ final class Theobroma_Admin_Tools {
                     $slot = (int) substr($key, -1) - 1;
                     $current_product = $current_homepage_products[$slot] ?? null;
                     $value = $current_product instanceof WC_Product ? (string) $current_product->get_id() : '';
+                } elseif ($definition[1] === 'cacao_profiles') {
+                    $value = is_array($cacao_settings['profiles'] ?? null) ? $cacao_settings['profiles'] : array();
                 }
                 echo '<tr><th scope="row"><label for="theobroma_' . esc_attr($key) . '">' . esc_html($definition[0]) . '</label></th><td>';
                 if ($definition[1] === 'textarea') {
@@ -207,6 +197,8 @@ final class Theobroma_Admin_Tools {
                         echo '<option value="' . esc_attr((string) $option_value) . '"' . ((string) $option_value === $value ? ' selected' : '') . '>' . esc_html((string) $option_label) . '</option>';
                     }
                     echo '</select>';
+                } elseif ($definition[1] === 'cacao_profiles') {
+                    self::render_cacao_profile_fields($value);
                 } else {
                     echo '<input class="regular-text" type="' . esc_attr($definition[1]) . '" id="theobroma_' . esc_attr($key) . '" name="settings[' . esc_attr($key) . ']" value="' . esc_attr($value) . '">';
                 }
@@ -221,6 +213,39 @@ final class Theobroma_Admin_Tools {
         echo '</form></div>';
     }
 
+    /** @param array<int,array{enabled:bool,label:string,description:string}> $profiles */
+    private static function render_cacao_profile_fields(array $profiles): void {
+        echo '<div data-cacao-profiles data-next-index="' . esc_attr((string) count($profiles)) . '">';
+        echo '<div data-cacao-profile-list>';
+        $index = 0;
+        foreach ($profiles as $percentage => $profile) {
+            self::render_cacao_profile_row($index++, array(
+                'percentage' => (int) $percentage,
+                'enabled' => !empty($profile['enabled']),
+                'label' => (string) ($profile['label'] ?? ''),
+                'description' => (string) ($profile['description'] ?? ''),
+            ));
+        }
+        echo '</div>';
+        echo '<p><button type="button" class="button button-secondary" data-add-cacao-profile>Добавить процент</button></p>';
+        echo '<template data-cacao-profile-template>';
+        self::render_cacao_profile_row('__INDEX__', array('percentage' => '', 'enabled' => true, 'label' => '', 'description' => ''));
+        echo '</template></div>';
+    }
+
+    /** @param int|string $index @param array{percentage:int|string,enabled:bool,label:string,description:string} $profile */
+    private static function render_cacao_profile_row(int|string $index, array $profile): void {
+        $prefix = 'settings[cacao_profiles][' . $index . ']';
+        echo '<fieldset class="postbox" data-cacao-profile-row><div class="inside">';
+        echo '<p><label><strong>Процент какао</strong><br><input class="small-text" type="number" min="1" max="100" required name="' . esc_attr($prefix . '[percentage]') . '" value="' . esc_attr((string) $profile['percentage']) . '">%</label></p>';
+        echo '<input type="hidden" name="' . esc_attr($prefix . '[enabled]') . '" value="0">';
+        echo '<p><label><input type="checkbox" name="' . esc_attr($prefix . '[enabled]') . '" value="1"' . ($profile['enabled'] ? ' checked' : '') . '> Показывать на главной</label></p>';
+        echo '<p><label><strong>Название вкуса</strong><br><input class="regular-text" type="text" required name="' . esc_attr($prefix . '[label]') . '" value="' . esc_attr($profile['label']) . '"></label></p>';
+        echo '<p><label><strong>Описание</strong><br><textarea class="large-text" rows="3" name="' . esc_attr($prefix . '[description]') . '">' . esc_textarea($profile['description']) . '</textarea></label></p>';
+        echo '<p><button type="button" class="button-link-delete" data-remove-cacao-profile>Удалить процент</button></p>';
+        echo '</div></fieldset>';
+    }
+
     public static function save_content_settings(): void {
         if (!current_user_can('manage_options')) {
             wp_die('Недостаточно прав.');
@@ -232,10 +257,12 @@ final class Theobroma_Admin_Tools {
             'corporate_branding_1_text', 'corporate_branding_2_text', 'corporate_branding_3_text',
             'corporate_case_1_text', 'corporate_case_2_text', 'corporate_case_3_text',
             'footer_address', 'footer_info_note', 'footer_opt_note', 'footer_press_note', 'footer_company', 'footer_bank',
-            'cacao_intro', 'cacao_59_description', 'cacao_65_description', 'cacao_68_description', 'cacao_70_description', 'cacao_80_description',
+            'cacao_intro',
         );
         $emails = array('footer_info_email', 'footer_opt_email', 'footer_press_email');
         $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen');
+        $cacao_profiles = isset($input['cacao_profiles']) && is_array($input['cacao_profiles']) ? $input['cacao_profiles'] : array();
+        unset($input['cacao_profiles']);
         $clean = array();
         foreach ($input as $key => $value) {
             $key = sanitize_key($key);
@@ -252,6 +279,7 @@ final class Theobroma_Admin_Tools {
                 $clean[$key] = sanitize_text_field($value);
             }
         }
+        $clean['cacao_profiles'] = self::normalize_cacao_profiles($cacao_profiles);
         $clean = self::normalize_homepage_product_settings($clean);
         $clean = self::normalize_cacao_settings($clean);
         update_option('theobroma_content_settings', $clean, false);
@@ -278,26 +306,49 @@ final class Theobroma_Admin_Tools {
         return $settings;
     }
 
-    /** @param array<string,string> $settings @return array<string,string> */
+    /** @param array<string,mixed> $settings @return array<string,mixed> */
     public static function normalize_cacao_settings(array $settings): array {
-        $percentages = function_exists('theobroma_allowed_cacao_percentages')
-            ? theobroma_allowed_cacao_percentages()
-            : array(59, 65, 68, 70, 80);
         $settings['cacao_enabled'] = ($settings['cacao_enabled'] ?? '0') === '1' ? '1' : '0';
-        $enabled = array();
-        foreach ($percentages as $percentage) {
-            $key = 'cacao_' . $percentage . '_enabled';
-            $settings[$key] = ($settings[$key] ?? '0') === '1' ? '1' : '0';
-            if ($settings[$key] === '1') {
-                $enabled[] = $percentage;
-            }
-        }
+        $settings['cacao_profiles'] = self::normalize_cacao_profiles(is_array($settings['cacao_profiles'] ?? null) ? $settings['cacao_profiles'] : array());
+        $enabled = array_column(array_filter($settings['cacao_profiles'], static fn(array $profile): bool => $profile['enabled'] === '1'), 'percentage');
         $default = absint($settings['cacao_default_percentage'] ?? 0);
         if (!in_array($default, $enabled, true)) {
-            $default = (int) ($enabled[0] ?? 70);
+            $default = (int) ($enabled[0] ?? ($settings['cacao_profiles'][0]['percentage'] ?? 70));
         }
         $settings['cacao_default_percentage'] = (string) $default;
         return $settings;
+    }
+
+    /** @param array<int,mixed> $rows @return array<int,array{percentage:int,enabled:string,label:string,description:string}> */
+    public static function normalize_cacao_profiles(array $rows): array {
+        $profiles = array();
+        $used = array();
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $raw_percentage = $row['percentage'] ?? null;
+            if (is_int($raw_percentage)) {
+                $percentage = $raw_percentage;
+            } elseif (is_string($raw_percentage) && preg_match('/^\d{1,3}$/D', trim($raw_percentage)) === 1) {
+                $percentage = (int) trim($raw_percentage);
+            } else {
+                continue;
+            }
+            $label = is_string($row['label'] ?? null) ? sanitize_text_field($row['label']) : '';
+            if ($percentage < 1 || $percentage > 100 || $label === '' || in_array($percentage, $used, true)) {
+                continue;
+            }
+            $profiles[] = array(
+                'percentage' => $percentage,
+                'enabled' => ($row['enabled'] ?? '0') === '1' ? '1' : '0',
+                'label' => $label,
+                'description' => is_string($row['description'] ?? null) ? sanitize_textarea_field($row['description']) : '',
+            );
+            $used[] = $percentage;
+        }
+        usort($profiles, static fn(array $left, array $right): int => $left['percentage'] <=> $right['percentage']);
+        return $profiles;
     }
 
     public static function use_classic_recipe_editor(bool $use_block_editor, string $post_type): bool {
@@ -426,6 +477,19 @@ final class Theobroma_Admin_Tools {
             plugin_dir_url(__FILE__) . 'assets/recipe-admin.css',
             array(),
             (string) filemtime(plugin_dir_path(__FILE__) . 'assets/recipe-admin.css')
+        );
+    }
+
+    public static function enqueue_content_settings_assets(string $hook): void {
+        if (!str_ends_with($hook, '_page_theobroma-settings')) {
+            return;
+        }
+        wp_enqueue_script(
+            'theobroma-content-settings',
+            plugin_dir_url(__FILE__) . 'assets/content-settings.js',
+            array(),
+            (string) filemtime(plugin_dir_path(__FILE__) . 'assets/content-settings.js'),
+            true
         );
     }
 

@@ -161,12 +161,16 @@ function renderHeroDocument() {
         overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         label: document.querySelector('.home-eyebrow').getBoundingClientRect().toJSON(),
         visual: document.querySelector('.home-hero__video-trigger').getBoundingClientRect().toJSON(),
+        visualDisplay: getComputedStyle(document.querySelector('.home-hero__video-trigger')).display,
       }));
       assert(geometry.overflow <= 1, `${width}px hero must not create horizontal overflow (got ${geometry.overflow}px)`);
       assert(geometry.label.left >= 0 && geometry.label.right <= width,
         `${width}px statement must remain inside the viewport`);
       assert(geometry.visual.left >= 0 && geometry.visual.right <= width,
         `${width}px video must remain inside the viewport`);
+      if (width <= 600) {
+        assert.equal(geometry.visualDisplay, 'none', `${width}px hero video must be removed from the compact mobile layout`);
+      }
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -189,7 +193,7 @@ function renderHeroDocument() {
     assert(paintedEdgePixels <= 4,
       `Mobile falling pieces must remain visibly inside the hero edges (got ${paintedEdgePixels} painted edge pixels)`);
 
-    const webkitPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const webkitPage = await browser.newPage({ viewport: { width: 768, height: 900 } });
     await webkitPage.setContent(renderHeroDocument());
     const fallbackMetrics = await webkitPage.locator('[data-home-hero-fallback]').evaluate((node) => new Promise((resolve, reject) => {
       const image = new Image();

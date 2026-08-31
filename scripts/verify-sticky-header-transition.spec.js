@@ -34,6 +34,7 @@ const scriptPath = path.join(root, 'wp-content/themes/theobroma/assets/js/site-h
       await page.addScriptTag({ path: scriptPath });
 
       const nav = page.locator('.nav');
+      const header = page.locator('.site-header');
       const samples = [];
       for (let y = 0; y <= 160; y += 1) {
         await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), y);
@@ -47,11 +48,18 @@ const scriptPath = path.join(root, 'wp-content/themes/theobroma/assets/js/site-h
         scrollHeight: document.documentElement.scrollHeight,
         finalPosition: getComputedStyle(element).position,
         finalTop: element.getBoundingClientRect().top,
+        shippingBottom: document.querySelector('.shipping').getBoundingClientRect().bottom,
+      }));
+      result.header = await header.evaluate((element) => ({
+        position: getComputedStyle(element).position,
+        top: element.getBoundingClientRect().top,
       }));
       result.maxFrameJump = Math.max(...samples.slice(1).map((top, index) => Math.abs(top - samples[index])));
 
-      assert.equal(result.finalPosition, 'fixed', `${width}px: navigation must become sticky (scrollY ${result.finalScrollY}, height ${result.scrollHeight})`);
-      assert.ok(Math.abs(result.finalTop) <= 1, `${width}px: sticky navigation settled at ${result.finalTop}px instead of the viewport top`);
+      assert.equal(result.header.position, 'sticky', `${width}px: the complete header must use one stable sticky layer`);
+      assert.ok(Math.abs(result.header.top) <= 1, `${width}px: sticky header settled at ${result.header.top}px instead of the viewport top`);
+      assert.equal(result.finalPosition, 'absolute', `${width}px: navigation must stay inside the sticky header`);
+      assert.ok(Math.abs(result.finalTop - result.shippingBottom) <= 1, `${width}px: navigation detached from the free-shipping banner`);
       assert.ok(
         result.maxFrameJump <= 2,
         `${width}px: navigation jumps ${result.maxFrameJump.toFixed(2)}px while becoming sticky`,
