@@ -487,6 +487,7 @@ function theobroma_checkout_fields(array $fields): array {
     return $fields;
 }
 add_filter('woocommerce_checkout_fields', 'theobroma_checkout_fields', 20);
+add_filter('woocommerce_cart_needs_shipping_address', '__return_false');
 add_filter('woocommerce_checkout_registration_enabled', '__return_false');
 add_filter('woocommerce_checkout_privacy_policy_text', '__return_empty_string');
 
