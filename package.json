@@ -66,6 +66,7 @@
     "test:product-card-text-alignment:source": "node scripts/verify-product-card-text-alignment.spec.js --inject-source-styles",
     "test:product-card-fluid-spacing": "node scripts/verify-product-card-fluid-spacing.spec.js",
     "test:product-card-price-hierarchy": "node scripts/verify-product-card-price-hierarchy.spec.js",
+    "test:corporate-product-card-parity": "node scripts/verify-corporate-product-card-parity.spec.js",
     "test:product-image-quality": "php scripts/verify-product-image-quality.php",
     "test:marketplace-products": "php scripts/verify-marketplace-product-links.php",
     "test:marketplace-card-heights": "node scripts/verify-marketplace-card-heights.spec.js",
