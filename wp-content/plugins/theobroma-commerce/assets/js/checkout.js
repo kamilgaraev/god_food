@@ -219,6 +219,16 @@
     });
   }
 
+  function syncAddressFieldVisibility() {
+    var city = document.querySelector('#billing_city');
+    if (!city) return;
+    var reveal = city.value.trim() !== '';
+    document.querySelectorAll('.theobroma-delivery-address').forEach(function (row) {
+      row.hidden = !reveal;
+      row.setAttribute('aria-hidden', reveal ? 'false' : 'true');
+    });
+  }
+
   function confirm() {
     if (state.kind === 'pickup' && !state.selected) {
       setStatus('Сначала выберите пункт выдачи.', true);
@@ -273,6 +283,18 @@
     if (tab) { switchKind(tab.dataset.deliveryKind); return; }
     if (event.target.closest('[data-delivery-confirm]')) confirm();
   });
+
+  document.addEventListener('input', function (event) {
+    if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
+  });
+  document.addEventListener('change', function (event) {
+    if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
+  });
+  var checkoutEvents = $(document.body);
+  if (checkoutEvents && typeof checkoutEvents.on === 'function') {
+    checkoutEvents.on('updated_checkout', syncAddressFieldVisibility);
+  }
+  syncAddressFieldVisibility();
   document.addEventListener('input', function (event) {
     if (event.target.matches('[data-delivery-search]')) {
       var value = event.target.value;

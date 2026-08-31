@@ -11,6 +11,21 @@ use Theobroma\Commerce\Tests\Fakes\StaticAccessTokenProvider;
 
 final class OzonClientTest extends TestCase
 {
+    public function testSendsEmptyDeliveryPointRequestAsJsonObject(): void
+    {
+        $transport = new RecordingTransport([[
+            'status' => 200,
+            'body' => ['result' => ['points' => []]],
+        ]]);
+        $client = new OzonClient($transport, new StaticAccessTokenProvider(['token']));
+
+        $client->deliveryPointList([]);
+
+        $payload = $transport->requests[0]['options']['json'];
+        $this->assertTrue($payload instanceof \stdClass);
+        $this->assertSame('{}', json_encode($payload));
+    }
+
     public function testKeepsRedactedProviderErrorForDiagnostics(): void
     {
         $transport = new RecordingTransport([[

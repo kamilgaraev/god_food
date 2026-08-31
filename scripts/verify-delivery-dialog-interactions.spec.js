@@ -13,7 +13,15 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     const page = await browser.newPage({ viewport: { width: 1100, height: 760 } });
     await page.setContent(`
       <style>${styles}</style>
-      <input id="billing_city" value="Казань">
+      <div class="commerce-cart-checkout">
+        <p id="billing_first_name_field"><input id="billing_first_name"></p>
+        <p id="billing_phone_field"><input id="billing_phone"></p>
+        <p id="billing_email_field"><input id="billing_email"></p>
+        <p id="billing_city_field"><input id="billing_city" value=""></p>
+        <p id="billing_address_1_field" class="theobroma-delivery-address"><input id="billing_address_1"></p>
+        <p id="billing_postcode_field" class="theobroma-delivery-address"><input id="billing_postcode"></p>
+        <p id="billing_address_2_field" class="theobroma-delivery-address"><input id="billing_address_2"></p>
+      </div>
       <button type="button" data-delivery-open="ozon">Выбрать доставку</button>
       <dialog class="theobroma-delivery-dialog" data-delivery-dialog aria-labelledby="delivery-title">
         <div class="theobroma-delivery-shell">
@@ -38,7 +46,7 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
         window.deliveryRequests = [];
         window.theobromaDelivery = { pointsUrl: '/points', suggestionsUrl: '/suggestions', nonce: 'test' };
         window.TheobromaDeliveryCore = { filterPoints: (points) => points, canRenderMap: () => false };
-        window.jQuery = function () { return { trigger: function () {} }; };
+        window.jQuery = function () { return { trigger: function () {}, on: function () {} }; };
         window.fetch = function (url) {
           window.deliveryRequests.push(url);
           var body = url.indexOf('/suggestions') === 0
@@ -55,6 +63,14 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
       </script>
       <script>${script}</script>
     `);
+
+    assert.equal(await page.$eval('#billing_address_1_field', (node) => node.hidden), true, 'street stays hidden until city is entered');
+    assert.equal(await page.$eval('#billing_postcode_field', (node) => node.hidden), true, 'postcode stays hidden until city is entered');
+    assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), true, 'comment stays hidden until city is entered');
+    await page.fill('#billing_city', 'Казань');
+    assert.equal(await page.$eval('#billing_address_1_field', (node) => node.hidden), false, 'street appears after city is entered');
+    assert.equal(await page.$eval('#billing_postcode_field', (node) => node.hidden), false, 'postcode appears after city is entered');
+    assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), false, 'comment appears after city is entered');
 
     await page.evaluate(() => document.querySelector('[data-delivery-dialog]').showModal());
     await page.click('[data-delivery-close]');

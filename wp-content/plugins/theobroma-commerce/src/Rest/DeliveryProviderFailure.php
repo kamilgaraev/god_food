@@ -15,26 +15,28 @@ final class DeliveryProviderFailure
 
     public static function fromException(string $provider, \Throwable $exception): self
     {
+        return self::build($provider, $exception, 'points');
+    }
+
+    public static function forQuote(string $provider, \Throwable $exception): self
+    {
+        return self::build($provider, $exception, 'quote');
+    }
+
+    private static function build(string $provider, \Throwable $exception, string $operation): self
+    {
         $providerName = $provider === 'ozon' ? 'Ozon' : ($provider === 'cdek' ? 'СДЭК' : 'службой доставки');
         $status = $exception instanceof ProviderException ? $exception->statusCode() : 0;
         $providerContext = $exception instanceof ProviderException ? $exception->context() : [];
 
-        if ($exception instanceof ProviderException && $status === 0) {
-            $message = sprintf('Не удалось соединиться с %s API. Попробуйте ещё раз.', $providerName);
-        } elseif ($exception instanceof ProviderException && $status > 0) {
-            $message = sprintf(
-                '%s API отклонил запрос пунктов выдачи (HTTP %d). Проверьте подключение %s в настройках.',
-                $providerName,
-                $status,
-                $providerName
-            );
-        } else {
-            $message = 'Не удалось загрузить пункты выдачи. Попробуйте ещё раз.';
-        }
+        $message = $operation === 'quote'
+            ? 'Не удалось рассчитать доставку. Проверьте адрес и попробуйте ещё раз.'
+            : sprintf('Не удалось загрузить пункты выдачи %s. Попробуйте ещё раз или выберите другую службу доставки.', $providerName);
 
         return new self($message, [
             'source' => 'theobroma-delivery',
             'provider' => $provider,
+            'operation' => $operation,
             'status' => $status,
             'exception' => $exception::class,
             'error' => $exception->getMessage(),

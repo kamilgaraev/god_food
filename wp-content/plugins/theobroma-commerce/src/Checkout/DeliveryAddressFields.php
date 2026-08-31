@@ -16,12 +16,23 @@ final class DeliveryAddressFields
     public function fields(array $fields): array
     {
         $fields['billing'] ??= [];
+        foreach ([
+            'billing_first_name' => 10,
+            'billing_phone' => 20,
+            'billing_email' => 30,
+            'billing_city' => 40,
+        ] as $key => $priority) {
+            if (isset($fields['billing'][$key])) {
+                $fields['billing'][$key]['priority'] = $priority;
+                $fields['billing'][$key]['class'] = ['form-row-wide'];
+            }
+        }
         $fields['billing']['billing_postcode'] = [
             'type' => 'text',
             'label' => '',
             'placeholder' => 'Индекс',
             'required' => false,
-            'priority' => 45,
+            'priority' => 60,
             'class' => ['form-row-wide', 'theobroma-delivery-address'],
             'autocomplete' => 'postal-code',
         ];
@@ -30,16 +41,16 @@ final class DeliveryAddressFields
             'label' => '',
             'placeholder' => 'Улица, дом, квартира',
             'required' => false,
-            'priority' => 46,
+            'priority' => 50,
             'class' => ['form-row-wide', 'theobroma-delivery-address'],
             'autocomplete' => 'address-line1',
         ];
         $fields['billing']['billing_address_2'] = [
             'type' => 'text',
             'label' => '',
-            'placeholder' => 'Подъезд, этаж, комментарий курьеру',
+            'placeholder' => 'Комментарий к доставке',
             'required' => false,
-            'priority' => 47,
+            'priority' => 70,
             'class' => ['form-row-wide', 'theobroma-delivery-address'],
             'autocomplete' => 'address-line2',
         ];

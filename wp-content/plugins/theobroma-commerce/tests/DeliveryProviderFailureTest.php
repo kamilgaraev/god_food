@@ -18,7 +18,7 @@ final class DeliveryProviderFailureTest extends TestCase
             ])
         );
 
-        $this->assertSame('Ozon API отклонил запрос пунктов выдачи (HTTP 403). Проверьте подключение Ozon в настройках.', $failure->publicMessage());
+        $this->assertSame('Не удалось загрузить пункты выдачи Ozon. Попробуйте ещё раз или выберите другую службу доставки.', $failure->publicMessage());
         $this->assertSame(403, $failure->logContext()['status']);
         $this->assertSame('[redacted]', $failure->logContext()['provider_context']['response']['client_secret']);
     }
@@ -30,7 +30,7 @@ final class DeliveryProviderFailureTest extends TestCase
             ProviderException::fromResponse('Provider transport failed', 0)
         );
 
-        $this->assertSame('Не удалось соединиться с Ozon API. Попробуйте ещё раз.', $failure->publicMessage());
+        $this->assertSame('Не удалось загрузить пункты выдачи Ozon. Попробуйте ещё раз или выберите другую службу доставки.', $failure->publicMessage());
     }
 
     public function testUsesTheSameHelpfulFailureFormatForCdek(): void
@@ -40,6 +40,18 @@ final class DeliveryProviderFailureTest extends TestCase
             ProviderException::fromResponse('CDEK request failed', 401)
         );
 
-        $this->assertSame('СДЭК API отклонил запрос пунктов выдачи (HTTP 401). Проверьте подключение СДЭК в настройках.', $failure->publicMessage());
+        $this->assertSame('Не удалось загрузить пункты выдачи СДЭК. Попробуйте ещё раз или выберите другую службу доставки.', $failure->publicMessage());
+    }
+
+    public function testKeepsQuoteDiagnosticsOutOfTheCustomerMessage(): void
+    {
+        $failure = DeliveryProviderFailure::forQuote(
+            'ozon',
+            ProviderException::fromResponse('Internal provider failure code 17', 422)
+        );
+
+        $this->assertSame('Не удалось рассчитать доставку. Проверьте адрес и попробуйте ещё раз.', $failure->publicMessage());
+        $this->assertSame(422, $failure->logContext()['status']);
+        $this->assertSame('Internal provider failure code 17', $failure->logContext()['error']);
     }
 }

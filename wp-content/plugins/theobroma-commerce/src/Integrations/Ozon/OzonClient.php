@@ -158,7 +158,7 @@ final class OzonClient implements OzonOrderApi
                     'Authorization' => 'Bearer ' . $this->tokens->token(),
                     'Accept' => 'application/json',
                 ],
-                'json' => $payload,
+                'json' => $payload === [] ? new \stdClass() : $payload,
             ]);
             if ($response['status'] !== 401 || $attempt === 1) {
                 break;

@@ -164,8 +164,12 @@ final class DeliveryCheckoutController
                 'quote' => ['cost' => $quote->cost(), 'label' => $quote->label()],
             ]);
         } catch (\Throwable $exception) {
-            wc_get_logger()->error('Delivery quote unavailable', ['source' => 'theobroma-delivery', 'provider' => sanitize_key((string) $request->get_param('provider'))]);
-            return new \WP_Error('delivery_quote_unavailable', sanitize_text_field($exception->getMessage()), ['status' => 422]);
+            $failure = DeliveryProviderFailure::forQuote(
+                sanitize_key((string) $request->get_param('provider')),
+                $exception
+            );
+            wc_get_logger()->error('Delivery quote unavailable', $failure->logContext());
+            return new \WP_Error('delivery_quote_unavailable', $failure->publicMessage(), ['status' => 422]);
         }
     }
 

@@ -7,6 +7,8 @@
   --theobroma-accent-dark: #714727;
 }
 
+.commerce-cart-checkout .theobroma-delivery-address[hidden] { display: none !important; }
+
 .theobroma-delivery-open {
   align-items: center;
   appearance: none;
