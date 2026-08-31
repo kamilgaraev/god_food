@@ -28,6 +28,7 @@
     "test:corporate-gifts-cleanup": "node scripts/verify-corporate-gifts-cleanup.spec.js",
     "test:photo-showcases": "node scripts/verify-photo-showcases.spec.js && node scripts/verify-photo-showcase-heading-layout.spec.js && node scripts/verify-photo-showcase-lightbox.spec.js && node scripts/verify-photo-showcases-runtime.spec.js && php scripts/verify-photo-showcases-mu-loader.spec.php",
     "test:home-hero-video": "node scripts/verify-home-hero-video.spec.js",
+    "test:safari-hero-header": "node scripts/verify-safari-hero-header.spec.js",
     "test:home-bestseller": "node scripts/verify-home-bestseller-badge.spec.js",
     "test:home-gold-accents": "node scripts/verify-home-gold-accents.spec.js",
     "test:home-composition": "node scripts/verify-home-composition.spec.js",

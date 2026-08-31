@@ -13,7 +13,7 @@
 
 html { scroll-behavior: smooth; }
 body { overflow-x: clip; background: var(--home-paper); }
-.site-header { position: relative; z-index: 120; height: calc(4.875rem + var(--home-shipping-height)); }
+.site-header { position: sticky; z-index: 120; top: 0; height: calc(4.875rem + var(--home-shipping-height)); }
 .nav {
   position: absolute;
   z-index: 120;
@@ -32,8 +32,8 @@ body { overflow-x: clip; background: var(--home-paper); }
   transform: none;
 }
 .nav-sticky .nav {
-  position: fixed;
-  inset: 0 0 auto;
+  position: absolute;
+  inset: var(--home-shipping-height) 0 auto;
   width: 100%;
   min-height: 4.875rem;
   padding-inline: max(var(--home-gutter), calc((100% - var(--home-container)) / 2));
@@ -327,7 +327,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-composition dl > div:nth-child(even) { border-left: 1px solid var(--home-line); }
   .home-composition dl > div:nth-child(n + 3) { border-top: 1px solid var(--home-line); }
   .mobile-menu { inset: var(--home-shipping-height) 0 0; }
-  body.nav-sticky .mobile-menu { top: 0; }
+  body.nav-sticky .mobile-menu { top: var(--home-shipping-height); }
   .mobile-menu::before { width: 88vw; background: var(--home-paper); }
   .mobile-menu nav { top: 4.25rem; left: 1.75rem; width: calc(88vw - 3.5rem); }
   .mobile-menu-label { margin: 1.625rem 0 0.875rem; color: var(--home-gold); font: 500 0.5625rem/1.2 'Montserrat', Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
@@ -373,10 +373,7 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-hero__shell { padding-block: 2rem 1.75rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
   .home-hero__copy { display: block; }
   .home-eyebrow { max-width: 9.5ch; font-size: clamp(3rem, 15vw, 4.125rem); text-align: left; }
-  .home-hero__video-trigger { width: min(24rem, 100%); height: min(26rem, 106vw); aspect-ratio: auto; grid-row: 2; }
-  .home-hero__video-trigger video,
-  .home-hero__video-trigger [data-home-hero-fallback] { right: calc(50% + 1rem); width: min(39rem, 158vw); transform: translateX(50%); }
-  .home-hero__play-hint { right: 3%; bottom: 4%; }
+  .home-hero__video-trigger { display: none; }
   .home-hero__lead { width: auto; margin-top: 1.5rem; }
   .home-hero__lead > p { width: 100%; margin-bottom: 1rem; font-size: 0.75rem; line-height: 1.5; }
   .home-hero__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
