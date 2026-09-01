@@ -10,6 +10,7 @@ use Theobroma\Commerce\Checkout\DeliveryRuntime;
 use Theobroma\Commerce\Checkout\DeliverySelection;
 use Theobroma\Commerce\Checkout\DeliverySelectionStore;
 use Theobroma\Commerce\Checkout\OzonCheckoutService;
+use Theobroma\Commerce\Checkout\ShippingRateCache;
 use Theobroma\Commerce\Checkout\YandexGeocoder;
 use Theobroma\Commerce\Infrastructure\WpTransport;
 use Theobroma\Commerce\Integrations\Cdek\CdekClient;
@@ -178,6 +179,7 @@ final class DeliveryCheckoutController
                 'create_payload' => $quote->createPayload(),
             ]);
             (new DeliverySelectionStore())->save($selection);
+            (new ShippingRateCache())->invalidate();
             return rest_ensure_response([
                 'provider' => $provider,
                 'kind' => $kind,
