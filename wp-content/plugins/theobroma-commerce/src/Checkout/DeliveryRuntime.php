@@ -37,6 +37,9 @@ final class DeliveryRuntime
         }
         $customer = is_object($woocommerce) ? ($woocommerce->customer ?? null) : null;
         $contents = is_object($cart) && method_exists($cart, 'get_cart') ? $cart->get_cart() : [];
+        if ($contents === []) {
+            $contents = self::sessionContents(is_object($woocommerce) ? ($woocommerce->session ?? null) : null);
+        }
         $destination = [];
         if (is_object($customer)) {
             $destination = [
@@ -49,5 +52,34 @@ final class DeliveryRuntime
             ];
         }
         return ['contents' => is_array($contents) ? $contents : [], 'destination' => $destination];
+    }
+
+    /** @return array<string,array<string,mixed>> */
+    private static function sessionContents(mixed $session): array
+    {
+        if (!is_object($session) || !method_exists($session, 'get') || !function_exists('wc_get_product')) {
+            return [];
+        }
+
+        $stored = $session->get('cart', []);
+        if (!is_array($stored)) {
+            return [];
+        }
+
+        $contents = [];
+        foreach ($stored as $key => $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $productId = (int) ($item['variation_id'] ?? 0) ?: (int) ($item['product_id'] ?? 0);
+            $product = $productId > 0 ? wc_get_product($productId) : null;
+            if (!is_object($product) || (int) ($item['quantity'] ?? 0) <= 0) {
+                continue;
+            }
+            $item['data'] = $product;
+            $contents[(string) $key] = $item;
+        }
+
+        return $contents;
     }
 }

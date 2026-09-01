@@ -17,6 +17,13 @@ namespace {
             $GLOBALS['theobroma_delivery_runtime_wc']->cart = $GLOBALS['theobroma_delivery_runtime_loaded_cart'];
         }
     }
+
+    if (!function_exists('wc_get_product')) {
+        function wc_get_product(int $id): mixed
+        {
+            return $GLOBALS['theobroma_delivery_runtime_products'][$id] ?? null;
+        }
+    }
 }
 
 namespace Theobroma\Commerce\Tests {
@@ -39,6 +46,31 @@ namespace Theobroma\Commerce\Tests {
             $this->assertSame(1, $GLOBALS['theobroma_delivery_runtime_loads']);
             $this->assertSame([$item], $package['contents']);
         }
+
+        public function testRestoresItemsDirectlyFromWooSessionWhenLateCartInitializationStaysEmpty(): void
+        {
+            $product = new \stdClass();
+            $GLOBALS['theobroma_delivery_runtime_products'] = [29 => $product];
+            $GLOBALS['theobroma_delivery_runtime_loads'] = 0;
+            $GLOBALS['theobroma_delivery_runtime_wc'] = (object) [
+                'cart' => new DeliveryRuntimeCartStub([]),
+                'customer' => null,
+                'session' => new DeliveryRuntimeSessionStub([
+                    'line-key' => [
+                        'product_id' => 29,
+                        'variation_id' => 0,
+                        'quantity' => 2,
+                    ],
+                ]),
+            ];
+
+            $package = DeliveryRuntime::currentPackage();
+
+            $this->assertSame(0, $GLOBALS['theobroma_delivery_runtime_loads']);
+            $this->assertSame(29, $package['contents']['line-key']['product_id']);
+            $this->assertSame(2, $package['contents']['line-key']['quantity']);
+            $this->assertSame($product, $package['contents']['line-key']['data']);
+        }
     }
 
     final class DeliveryRuntimeCartStub
@@ -52,6 +84,19 @@ namespace Theobroma\Commerce\Tests {
         public function get_cart(): array
         {
             return $this->contents;
+        }
+    }
+
+    final class DeliveryRuntimeSessionStub
+    {
+        /** @param array<string,array<string,int>> $cart */
+        public function __construct(private array $cart)
+        {
+        }
+
+        public function get(string $key, mixed $default = null): mixed
+        {
+            return $key === 'cart' ? $this->cart : $default;
         }
     }
 }
