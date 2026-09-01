@@ -77,8 +77,18 @@ final class OzonCheckoutService
     public function quote(array $buyer, array $delivery, array $items, array $recipient): DeliveryQuote
     {
         $phone = preg_replace('/\D+/', '', (string) ($buyer['phone'] ?? '')) ?? '';
-        if ($phone === '' || $delivery === [] || $items === []) {
-            throw new \InvalidArgumentException('Ozon checkout data is incomplete');
+        $missing = [];
+        if ($phone === '') {
+            $missing[] = 'phone';
+        }
+        if ($delivery === []) {
+            $missing[] = 'delivery';
+        }
+        if ($items === []) {
+            $missing[] = 'items';
+        }
+        if ($missing !== []) {
+            throw new \InvalidArgumentException('Ozon checkout data is incomplete: missing=' . implode(',', $missing));
         }
 
         $availability = $this->client->deliveryCheck([

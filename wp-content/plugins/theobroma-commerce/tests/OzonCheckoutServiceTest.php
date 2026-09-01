@@ -11,6 +11,24 @@ use Theobroma\Commerce\Tests\Fakes\StaticAccessTokenProvider;
 
 final class OzonCheckoutServiceTest extends TestCase
 {
+    public function testReportsOnlyMissingCheckoutFieldNamesForServerDiagnostics(): void
+    {
+        $service = new OzonCheckoutService(new OzonClient(
+            new RecordingTransport([]),
+            new StaticAccessTokenProvider(['token'])
+        ));
+
+        $exception = $this->assertThrows(
+            static fn (): mixed => $service->quote([], [], [], []),
+            \InvalidArgumentException::class
+        );
+
+        $this->assertSame(
+            'Ozon checkout data is incomplete: missing=phone,delivery,items',
+            $exception->getMessage()
+        );
+    }
+
     public function testLoadsDetailedPickupPointsForMapViewport(): void
     {
         $transport = new RecordingTransport([
