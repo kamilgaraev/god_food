@@ -245,7 +245,7 @@ body.woocommerce-account .woocommerce .woocommerce-customer-details .woocommerce
   margin:0;
   padding:0;
   border:0;
-  color:var(--order-muted);
+  color:var(--order-ink);
   font:400 0.875rem/1.55 'Montserrat',Arial,sans-serif;
 }
 
