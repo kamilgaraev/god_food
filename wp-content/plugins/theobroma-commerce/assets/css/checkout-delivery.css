@@ -132,6 +132,44 @@
   flex: 0 0 auto;
   margin: 0;
 }
+.commerce-cart-checkout .theobroma-delivery-methods .theobroma-delivery-open.is-confirmed {
+  background: transparent;
+  border-color: #c9a681;
+  color: var(--theobroma-accent-dark);
+}
+.commerce-cart-checkout .theobroma-delivery-methods .theobroma-delivery-open.is-confirmed:hover {
+  background: #f4eade;
+  border-color: var(--theobroma-accent);
+  color: var(--theobroma-accent-dark);
+}
+.theobroma-delivery-selection {
+  align-items: flex-start;
+  background: #f8f1e7;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(113, 71, 39, .13), 0 2px 8px rgba(67, 42, 25, .05);
+  display: flex;
+  flex: 0 0 100%;
+  gap: 10px;
+  order: 3;
+  padding: 12px 14px;
+}
+.theobroma-delivery-selection-check {
+  align-items: center;
+  background: var(--theobroma-accent-dark);
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  flex: 0 0 22px;
+  font: 700 .78rem/1 'Montserrat', sans-serif;
+  height: 22px;
+  justify-content: center;
+  margin-top: 1px;
+  width: 22px;
+}
+.theobroma-delivery-selection-copy { display: grid; gap: 2px; min-width: 0; }
+.theobroma-delivery-selection-copy strong { color: var(--theobroma-accent-dark); font-size: .86rem; line-height: 1.35; }
+.theobroma-delivery-selection-copy > span { color: var(--theobroma-ink); font-size: .9rem; line-height: 1.4; }
+.theobroma-delivery-selection-copy small { color: var(--theobroma-muted); font-size: .82rem; line-height: 1.4; overflow-wrap: anywhere; }
 
 .theobroma-delivery-dialog {
   background: var(--theobroma-paper);

@@ -46,6 +46,7 @@ final class DeliveryRateResolverTest extends TestCase
         $this->assertSame(350.0, $rate['cost']);
         $this->assertSame(137, $rate['meta_data']['theobroma_tariff_code']);
         $this->assertSame('MSK1', $rate['meta_data']['theobroma_pickup_point']);
+        $this->assertSame('Москва', $rate['meta_data']['theobroma_pickup_address']);
         $this->assertSame(false, $rate['requires_selection']);
     }
 

@@ -33,6 +33,7 @@ final class DeliveryRateResolver
             'theobroma_provider' => $provider,
             'theobroma_delivery_kind' => (string) $data['kind'],
             'theobroma_pickup_point' => (string) ($data['point']['id'] ?? ''),
+            'theobroma_pickup_address' => (string) ($data['point']['address'] ?? ''),
         ];
         if ($provider === 'cdek') {
             $meta['theobroma_tariff_code'] = (int) ($payload['tariff_code'] ?? 0);

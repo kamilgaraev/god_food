@@ -26,12 +26,26 @@ final class DeliverySelector
         }
         $meta = $rate->get_meta_data();
         $requiresSelection = ($meta['theobroma_requires_selection'] ?? '') === 'yes';
-        $label = $requiresSelection ? __('Выбрать пункт или курьера', 'theobroma-commerce') : __('Изменить', 'theobroma-commerce');
+        $label = $requiresSelection ? __('Выбрать пункт или курьера', 'theobroma-commerce') : __('Изменить доставку', 'theobroma-commerce');
         printf(
-            '<button type="button" class="theobroma-delivery-open" data-delivery-open="%s">%s</button>',
+            '<button type="button" class="theobroma-delivery-open%s" data-delivery-open="%s">%s</button>',
+            $requiresSelection ? '' : ' is-confirmed',
             esc_attr($provider),
             esc_html($label)
         );
+        if (!$requiresSelection) {
+            $kind = (string) ($meta['theobroma_delivery_kind'] ?? '');
+            $address = trim((string) ($meta['theobroma_pickup_address'] ?? ''));
+            $kindLabel = $kind === 'pickup'
+                ? __('Пункт выдачи', 'theobroma-commerce')
+                : __('Курьерская доставка', 'theobroma-commerce');
+            printf(
+                '<div class="theobroma-delivery-selection" role="status"><span class="theobroma-delivery-selection-check" aria-hidden="true">&#10003;</span><span class="theobroma-delivery-selection-copy"><strong>%s</strong><span>%s</span>%s</span></div>',
+                esc_html(__('Доставка выбрана', 'theobroma-commerce')),
+                esc_html($kindLabel),
+                $address !== '' ? '<small>' . esc_html($address) . '</small>' : ''
+            );
+        }
     }
 
     public function dialog(): void
@@ -114,7 +128,7 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_MAPS_JS_KEY')
             : (string) ($settings['yandex_maps_js_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.7');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.8');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
         wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.9', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
