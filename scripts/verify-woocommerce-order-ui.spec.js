@@ -52,22 +52,27 @@ const markup = `
 
     const desktop = await page.evaluate(() => {
       const overview = getComputedStyle(document.querySelector('.woocommerce-order-overview'));
+      const successBadge = getComputedStyle(document.querySelector('.woocommerce-thankyou-order-received'), '::before');
       const heading = getComputedStyle(document.querySelector('.woocommerce-order-details__title'));
       const columns = getComputedStyle(document.querySelector('.woocommerce-customer-details .woocommerce-columns'));
       const button = getComputedStyle(document.querySelector('.woocommerce-orders-table .button'));
       return {
         overviewBackground: overview.backgroundColor,
+        successBadgeBackground: successBadge.backgroundColor,
         headingTransform: heading.textTransform,
         headingSpacing: heading.letterSpacing,
         columnCount: columns.gridTemplateColumns.split(' ').length,
+        buttonBackground: button.backgroundColor,
         buttonRadius: parseFloat(button.borderRadius),
       };
     });
 
     assert.equal(desktop.overviewBackground, 'rgb(243, 235, 228)');
+    assert.equal(desktop.successBadgeBackground, 'rgb(176, 144, 61)');
     assert.equal(desktop.headingTransform, 'none');
     assert.ok(desktop.headingSpacing === 'normal' || desktop.headingSpacing === '0px');
     assert.equal(desktop.columnCount, 2);
+    assert.equal(desktop.buttonBackground, 'rgb(176, 144, 61)');
     assert.ok(desktop.buttonRadius >= 20);
 
     await page.setViewportSize({ width: 390, height: 844 });

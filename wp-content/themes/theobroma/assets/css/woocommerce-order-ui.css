@@ -6,7 +6,6 @@
   --order-muted:#756a63;
   --order-gold:#b0903d;
   --order-gold-dark:#8c6c1e;
-  --order-brown:#714727;
   --order-cream:#f3ebe4;
   --order-paper:#fcf9f7;
   --order-line:#dfd2c3;
@@ -50,7 +49,7 @@
   display:grid;
   place-items:center;
   border-radius:50%;
-  background:var(--order-brown);
+  background:var(--order-gold);
   color:#fff;
   font:600 1rem/1 'Montserrat',Arial,sans-serif;
 }
@@ -260,14 +259,13 @@ body.woocommerce-account .woocommerce .woocommerce-customer-details .woocommerce
   --order-muted:#756a63;
   --order-gold:#b0903d;
   --order-gold-dark:#8c6c1e;
-  --order-brown:#714727;
   --order-cream:#f3ebe4;
   --order-paper:#fcf9f7;
   --order-line:#dfd2c3;
 }
 
 .woocommerce-orders-table .woocommerce-orders-table__cell-order-number a {
-  color:var(--order-brown);
+  color:var(--order-ink);
   font-weight:600;
 }
 
@@ -281,9 +279,9 @@ body.woocommerce-account .woocommerce .woocommerce-customer-details .woocommerce
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  border:1px solid var(--order-brown) !important;
+  border:1px solid var(--order-gold) !important;
   border-radius:999px !important;
-  background:var(--order-brown) !important;
+  background:var(--order-gold) !important;
   color:#fff !important;
   font:600 0.8125rem/1.25 'Montserrat',Arial,sans-serif !important;
   letter-spacing:normal;
