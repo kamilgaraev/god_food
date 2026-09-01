@@ -3,10 +3,13 @@
   --photo-muted: var(--home-muted, #756b63);
   --photo-gold: var(--home-gold, #b0903d);
   --photo-paper: var(--home-paper, #fbf7f1);
+  --photo-sand: var(--home-sand, #f1e6d5);
   --photo-line: var(--home-line, #ded0bd);
   width: 100%;
   overflow: clip;
   color: var(--photo-ink);
+  border-top: 1px solid var(--photo-line);
+  background: var(--photo-paper);
 }
 
 .theobroma-photo-showcase__shell {
@@ -53,7 +56,8 @@
   margin: 0;
   position: relative;
   overflow: hidden;
-  background: #ddd3c5;
+  border-radius: .25rem;
+  background: var(--photo-sand);
   isolation: isolate;
 }
 
@@ -67,33 +71,6 @@
   color: inherit;
   background: transparent;
   cursor: zoom-in;
-}
-
-.theobroma-photo-showcase__trigger::after {
-  content: '+';
-  width: 2.25rem;
-  height: 2.25rem;
-  position: absolute;
-  z-index: 3;
-  top: 1rem;
-  right: 1rem;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, .55);
-  border-radius: 50%;
-  color: #fff;
-  background: rgba(37, 31, 26, .36);
-  font: 300 1.25rem/1 'Montserrat', Arial, sans-serif;
-  opacity: 0;
-  transform: translateY(.375rem);
-  transition: opacity 220ms ease, transform 220ms ease, background 220ms ease;
-  backdrop-filter: blur(.375rem);
-}
-
-.theobroma-photo-showcase__trigger:hover::after,
-.theobroma-photo-showcase__trigger:focus-visible::after {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .theobroma-photo-showcase__trigger:focus-visible {
@@ -122,7 +99,7 @@
   left: 1rem;
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
   color: #fff;
   pointer-events: none;
@@ -137,23 +114,15 @@
   pointer-events: none;
 }
 
-.theobroma-photo-showcase__meta > span {
-  flex: 0 0 auto;
-  font: 600 .625rem/1 'Montserrat', Arial, sans-serif;
-  letter-spacing: .16em;
-}
-
 .theobroma-photo-showcase__meta figcaption {
   max-width: 18rem;
   color: inherit;
   font: 500 .75rem/1.35 'Montserrat', Arial, sans-serif;
-  text-align: right;
+  text-align: left;
 }
 
 .theobroma-photo-showcase--home {
-  background:
-    radial-gradient(circle at 88% 10%, rgba(176, 144, 61, .1) 0 1px, transparent 2px),
-    linear-gradient(128deg, #eee3d4 0%, #f7efe4 52%, #ede0cd 100%);
+  background: var(--photo-paper);
 }
 
 .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery {
@@ -175,8 +144,8 @@
 .theobroma-photo-showcase--home .theobroma-photo-showcase__item:nth-child(n + 6) { aspect-ratio: 4 / 3; }
 
 .theobroma-photo-showcase--corporate {
-  background: #34312c;
-  color: #fff;
+  background: var(--photo-paper);
+  color: var(--photo-ink);
 }
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__shell {
@@ -184,48 +153,33 @@
 }
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__intro h2 {
-  color: #fff;
+  color: var(--photo-ink);
 }
-.theobroma-photo-showcase--corporate .theobroma-photo-showcase__description { color: rgba(255, 255, 255, .66); }
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__description { color: var(--photo-muted); }
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  border: 1px solid rgba(255, 255, 255, .15);
-  background: rgba(255, 255, 255, .15);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(.75rem, 1.4vw, 1.25rem);
 }
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item {
   aspect-ratio: 3 / 4;
-  background: #24211d;
+  background: var(--photo-sand);
 }
 
-.theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(3n + 2) {
-  transform: translateY(clamp(1.25rem, 2.5vw, 2.25rem));
-}
-
-.theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery {
-  margin-bottom: clamp(1.25rem, 2.5vw, 2.25rem);
-}
+.theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(even) { aspect-ratio: 4 / 5; }
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__meta {
   right: 1.25rem;
   bottom: 1.25rem;
   left: 1.25rem;
-  align-items: flex-start;
-  flex-direction: column;
-  gap: .5rem;
-}
-
-.theobroma-photo-showcase--corporate .theobroma-photo-showcase__meta > span {
-  color: #dec588;
-  font-size: .6875rem;
+  align-items: flex-end;
 }
 
 .theobroma-photo-showcase--corporate .theobroma-photo-showcase__meta figcaption {
   max-width: 20rem;
-  font: 400 clamp(1.5rem, 2.5vw, 2.25rem)/.95 'Cormorant', Georgia, serif;
+  font: 400 clamp(1.25rem, 2vw, 1.75rem)/1 'Cormorant', Georgia, serif;
   text-align: left;
   text-wrap: balance;
 }
@@ -233,12 +187,16 @@
 .theobroma-photo-lightbox[hidden] { display: none; }
 
 .theobroma-photo-lightbox {
+  --photo-ink: var(--home-ink, #343434);
+  --photo-gold: var(--home-gold, #b0903d);
+  --photo-paper: var(--home-paper, #fbf7f1);
+  --photo-line: var(--home-line, #ded0bd);
   position: fixed;
   z-index: 100000;
   inset: 0;
   display: grid;
   place-items: center;
-  padding: clamp(1rem, 4vw, 3rem);
+  padding: 1rem;
 }
 
 .theobroma-photo-lightbox__backdrop {
@@ -248,32 +206,27 @@
   height: 100%;
   padding: 0;
   border: 0;
-  background: rgba(27, 23, 20, .94);
+  background: rgba(52, 52, 52, .94);
   cursor: zoom-out;
   backdrop-filter: blur(.5rem);
 }
 
 .theobroma-photo-lightbox__panel {
-  width: min(92vw, 76rem);
-  height: min(88vh, 52rem);
+  width: min(calc(100vw - 2rem), 90rem);
+  height: min(calc(100dvh - 2rem), 60rem);
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) 3rem;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: center;
 }
 
 .theobroma-photo-lightbox figure {
   min-width: 0;
   min-height: 0;
+  width: 100%;
   height: 100%;
   margin: 0;
+  position: relative;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
   place-items: center;
-  gap: .875rem;
 }
 
 .theobroma-photo-lightbox img {
@@ -281,14 +234,21 @@
   max-height: 100%;
   display: block;
   object-fit: contain;
-  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .28);
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .3);
 }
 
 .theobroma-photo-lightbox figcaption {
-  max-width: 42rem;
-  color: rgba(255, 255, 255, .78);
+  max-width: min(42rem, calc(100% - 7rem));
+  padding: .625rem .875rem;
+  position: absolute;
+  right: 50%;
+  bottom: .75rem;
+  color: var(--photo-ink);
+  background: rgba(251, 247, 241, .94);
   font: 400 .75rem/1.5 'Montserrat', Arial, sans-serif;
   text-align: center;
+  transform: translateX(50%);
+  backdrop-filter: blur(.5rem);
 }
 
 .theobroma-photo-lightbox__nav,
@@ -296,10 +256,10 @@
   padding: 0;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, .38);
+  border: 1px solid var(--photo-line);
   border-radius: 50%;
   color: #fff;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(251, 247, 241, .94);
   cursor: pointer;
   transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
 }
@@ -307,19 +267,28 @@
 .theobroma-photo-lightbox__nav {
   width: 3rem;
   height: 3rem;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: var(--photo-nav-previous-x, 1.5rem);
+  color: var(--photo-ink);
   font: 300 1.25rem/1 'Montserrat', Arial, sans-serif;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 .5rem 1.75rem rgba(52, 52, 52, .18);
 }
+
+.theobroma-photo-lightbox__nav--next { left: var(--photo-nav-next-x, calc(100% - 1.5rem)); }
 
 .theobroma-photo-lightbox__nav:hover,
 .theobroma-photo-lightbox__close:hover {
-  color: #2b251e;
-  border-color: #dec588;
-  background: #dec588;
+  color: #fff;
+  border-color: var(--photo-gold);
+  background: var(--photo-gold);
 }
 
 .theobroma-photo-lightbox__nav:focus-visible,
 .theobroma-photo-lightbox__close:focus-visible {
-  outline: 2px solid #dec588;
+  outline: 2px solid var(--photo-gold);
   outline-offset: .25rem;
 }
 
@@ -330,6 +299,8 @@
   z-index: 2;
   top: 1.25rem;
   right: 1.25rem;
+  color: var(--photo-ink);
+  box-shadow: 0 .5rem 1.75rem rgba(52, 52, 52, .18);
 }
 
 .theobroma-photo-lightbox__close::before,
@@ -344,21 +315,11 @@
 
 .theobroma-photo-lightbox__close::after { transform: rotate(-45deg); }
 
-.theobroma-photo-lightbox__counter {
-  grid-column: 2;
-  color: #dec588;
-  font: 600 .625rem/1 'Montserrat', Arial, sans-serif;
-  letter-spacing: .15em;
-  text-align: center;
-}
-
 html.theobroma-photo-lightbox-open { overflow: hidden; }
 
 @media (min-width: 601px) and (max-width: 1199px) {
   .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { grid-auto-rows: clamp(11rem, 22vw, 16rem); }
   .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(3n + 2) { transform: none; }
-  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__item:nth-child(even) { transform: translateY(1.5rem); }
 }
 
 @media (max-width: 600px) {
@@ -401,12 +362,10 @@ html.theobroma-photo-lightbox-open { overflow: hidden; }
     transform: none;
   }
 
-  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { border: 0; background: transparent; }
+  .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { background: transparent; }
 
-  .theobroma-photo-showcase__trigger::after { opacity: 1; transform: none; }
-
-  .theobroma-photo-lightbox { padding: 3.75rem 1rem 1.25rem; }
-  .theobroma-photo-lightbox__panel { width: 100%; height: 100%; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; gap: .5rem; }
+  .theobroma-photo-lightbox { padding: .5rem; }
+  .theobroma-photo-lightbox__panel { width: calc(100vw - 1rem); height: calc(100dvh - 1rem); }
   .theobroma-photo-lightbox__nav { width: 2.75rem; height: 2.75rem; }
   .theobroma-photo-lightbox__close { top: .75rem; right: .75rem; }
 }
@@ -415,7 +374,6 @@ html.theobroma-photo-lightbox-open { overflow: hidden; }
   .theobroma-photo-showcase__image { transition: none; }
   .theobroma-photo-showcase__item:hover .theobroma-photo-showcase__image { transform: none; }
   .theobroma-photo-showcase__gallery { scroll-behavior: auto; }
-  .theobroma-photo-showcase__trigger::after,
   .theobroma-photo-lightbox__nav,
   .theobroma-photo-lightbox__close { transition: none; }
 }

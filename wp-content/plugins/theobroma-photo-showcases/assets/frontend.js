@@ -8,7 +8,7 @@
 
     const image = lightbox.querySelector('[data-photo-lightbox-image]');
     const caption = lightbox.querySelector('[data-photo-lightbox-caption]');
-    const counter = lightbox.querySelector('[data-photo-lightbox-counter]');
+    const panel = lightbox.querySelector('.theobroma-photo-lightbox__panel');
     const closeButton = lightbox.querySelector('.theobroma-photo-lightbox__close');
     const previousButton = lightbox.querySelector('[data-photo-lightbox-previous]');
     const nextButton = lightbox.querySelector('[data-photo-lightbox-next]');
@@ -16,15 +16,24 @@
     let activeIndex = 0;
     let returnFocus = null;
 
+    const alignNavigation = () => {
+      if (lightbox.hidden || !image.complete || !panel) return;
+      const imageBox = image.getBoundingClientRect();
+      const panelBox = panel.getBoundingClientRect();
+      if (imageBox.width === 0) return;
+      panel.style.setProperty('--photo-nav-previous-x', `${imageBox.left - panelBox.left}px`);
+      panel.style.setProperty('--photo-nav-next-x', `${imageBox.right - panelBox.left}px`);
+    };
+
     const render = () => {
       const trigger = triggers[activeIndex];
       image.src = trigger.dataset.photoSrc || '';
       image.alt = trigger.dataset.photoAlt || '';
       caption.textContent = trigger.dataset.photoCaption || '';
       caption.hidden = caption.textContent === '';
-      counter.textContent = `${activeIndex + 1} / ${triggers.length}`;
       previousButton.hidden = triggers.length < 2;
       nextButton.hidden = triggers.length < 2;
+      window.requestAnimationFrame(alignNavigation);
     };
 
     const open = (trigger) => {
@@ -53,6 +62,8 @@
     };
 
     triggers.forEach((trigger) => trigger.addEventListener('click', () => open(trigger)));
+    image.addEventListener('load', alignNavigation);
+    window.addEventListener('resize', alignNavigation, { passive: true });
     lightbox.addEventListener('click', (event) => {
       if (event.target.closest('[data-photo-lightbox-close]')) close();
       else if (event.target.closest('[data-photo-lightbox-previous]')) move(-1);

@@ -285,10 +285,12 @@ $same(true, str_contains($homeHtml, 'loading="lazy"') && str_contains($homeHtml,
 $same(true, str_contains($homeHtml, 'tabindex="0"') && str_contains($homeHtml, 'aria-label="Фотогалерея"'), 'scrollable gallery is keyboard reachable and labelled');
 $same(true, str_contains($homeHtml, 'data-photo-lightbox-trigger') && str_contains($homeHtml, 'data-photo-src="https://example.test/uploads/photo-31.jpg"'), 'gallery images open their full attachment in the viewer');
 $same(true, str_contains($homeHtml, 'role="dialog"') && str_contains($homeHtml, 'data-photo-lightbox-previous') && str_contains($homeHtml, 'data-photo-lightbox-next'), 'renderer includes accessible gallery viewer controls');
+$same(false, str_contains($homeHtml, 'theobroma-photo-showcase__index'), 'home gallery omits visible image numbers');
+$same(false, str_contains($homeHtml, 'data-photo-lightbox-counter'), 'viewer omits the visible image counter');
 $corporateHtml = $renderer->html('corporate', $rendererSettings);
 $same(true, str_contains($corporateHtml, 'theobroma-photo-showcase--corporate'), 'corporate renderer uses business modifier');
 $same(false, str_contains($corporateHtml, 'theobroma-photo-showcase__eyebrow'), 'corporate renderer has no eyebrow');
-$same(true, str_contains($corporateHtml, '<span aria-hidden="true">01</span>'), 'corporate renderer numbers the photo series');
+$same(false, str_contains($corporateHtml, '<span aria-hidden="true">01</span>'), 'corporate gallery omits visible image numbers');
 $rendererSettings['corporate']['enabled'] = false;
 $same('', $renderer->html('corporate', $rendererSettings), 'disabled collection renders no empty section');
 $same('', $renderer->html('unknown', $rendererSettings), 'unknown location renders nothing');

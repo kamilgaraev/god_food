@@ -84,9 +84,7 @@ final class Renderer
             $displayIndex++;
             $caption = trim((string) ($image['caption'] ?? ''));
             $number = str_pad((string) $displayIndex, 2, '0', STR_PAD_LEFT);
-            $meta = $location === 'corporate'
-                ? '<span aria-hidden="true">' . esc_html($number) . '</span>'
-                : '<span class="theobroma-photo-showcase__index" aria-hidden="true">' . esc_html($number) . '</span>';
+            $meta = '';
             if ($caption !== '') {
                 $meta .= '<figcaption>' . esc_html($caption) . '</figcaption>';
             }
@@ -117,7 +115,6 @@ final class Renderer
             . '<button class="theobroma-photo-lightbox__close" type="button" data-photo-lightbox-close aria-label="Закрыть просмотр"></button>'
             . '<button class="theobroma-photo-lightbox__nav theobroma-photo-lightbox__nav--previous" type="button" data-photo-lightbox-previous aria-label="Предыдущая фотография">←</button>'
             . '<figure><img data-photo-lightbox-image alt=""><figcaption data-photo-lightbox-caption hidden></figcaption></figure>'
-            . '<span class="theobroma-photo-lightbox__counter" data-photo-lightbox-counter aria-live="polite"></span>'
             . '<button class="theobroma-photo-lightbox__nav theobroma-photo-lightbox__nav--next" type="button" data-photo-lightbox-next aria-label="Следующая фотография">→</button>'
             . '</div></div>';
     }
