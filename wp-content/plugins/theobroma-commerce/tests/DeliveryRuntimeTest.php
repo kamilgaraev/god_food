@@ -71,6 +71,32 @@ namespace Theobroma\Commerce\Tests {
             $this->assertSame(2, $package['contents']['line-key']['quantity']);
             $this->assertSame($product, $package['contents']['line-key']['data']);
         }
+
+        public function testQuoteUsesClientDestinationWithoutChangingCanonicalSelectionFingerprint(): void
+        {
+            $package = [
+                'contents' => [[
+                    'product_id' => 29,
+                    'variation_id' => 0,
+                    'quantity' => 1,
+                ]],
+                'destination' => [
+                    'country' => 'RU',
+                    'city' => 'Казань',
+                    'postcode' => '420021',
+                    'address' => 'Спартаковская улица, 12',
+                    'address_2' => '',
+                ],
+            ];
+            $clientDestination = $package['destination'];
+            $clientDestination['address_2'] = 'офис 223';
+
+            $context = DeliveryRuntime::quoteContext($package, $clientDestination);
+
+            $this->assertSame('офис 223', $context['package']['destination']['address_2']);
+            $this->assertSame(DeliveryRuntime::fingerprint($package), $context['fingerprint']);
+            $this->assertSame(false, $context['fingerprint'] === DeliveryRuntime::fingerprint($context['package']));
+        }
     }
 
     final class DeliveryRuntimeCartStub

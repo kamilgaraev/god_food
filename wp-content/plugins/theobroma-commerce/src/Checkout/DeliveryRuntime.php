@@ -26,6 +26,19 @@ final class DeliveryRuntime
         return DeliveryFingerprint::fromData($items, $destination);
     }
 
+    /**
+     * @param array<string,mixed> $package
+     * @param array<string,mixed> $quoteDestination
+     * @return array{package:array<string,mixed>,fingerprint:string}
+     */
+    public static function quoteContext(array $package, array $quoteDestination): array
+    {
+        $fingerprint = self::fingerprint($package);
+        $package['destination'] = $quoteDestination;
+
+        return ['package' => $package, 'fingerprint' => $fingerprint];
+    }
+
     /** @return array<string,mixed> */
     public static function currentPackage(): array
     {

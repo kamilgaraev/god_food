@@ -133,8 +133,9 @@ final class DeliveryCheckoutController
             $package = DeliveryRuntime::currentPackage();
             $contents = (array) $package['contents'];
             $destination = $this->destination($request, (array) $package['destination']);
-            $package['destination'] = $destination;
-            $fingerprint = DeliveryRuntime::fingerprint($package);
+            $quoteContext = DeliveryRuntime::quoteContext($package, $destination);
+            $package = $quoteContext['package'];
+            $fingerprint = $quoteContext['fingerprint'];
             $settings = (array) get_option('theobroma_commerce_settings', []);
             $point = [];
 
