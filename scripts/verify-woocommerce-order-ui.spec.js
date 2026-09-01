@@ -5,9 +5,11 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
 const stylesheet = path.join(root, 'wp-content/themes/theobroma/assets/css/woocommerce-order-ui.css');
+const baseStylesheet = path.join(root, 'wp-content/themes/theobroma/style.css');
 
 assert.equal(fs.existsSync(stylesheet), true, 'WooCommerce order UI stylesheet must exist');
 const styles = fs.readFileSync(stylesheet, 'utf8');
+const baseStyles = fs.readFileSync(baseStylesheet, 'utf8');
 
 const markup = `
   <main class="shop-page"><div class="shop-shell"><div class="woocommerce">
@@ -46,7 +48,7 @@ const markup = `
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
-    await page.setContent(`<style>${styles}</style>${markup}`);
+    await page.setContent(`<style>${baseStyles}</style><style>${styles}</style><body class="logged-in woocommerce-account woocommerce-view-order">${markup}</body>`);
 
     const desktop = await page.evaluate(() => {
       const overview = getComputedStyle(document.querySelector('.woocommerce-order-overview'));

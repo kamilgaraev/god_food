@@ -117,6 +117,13 @@
   text-transform:none;
 }
 
+body.woocommerce-account .woocommerce .woocommerce-order-details__title,
+body.woocommerce-account .woocommerce .woocommerce-customer-details > h2,
+body.woocommerce-account .woocommerce .woocommerce-customer-details .woocommerce-column__title {
+  letter-spacing:normal;
+  text-transform:none;
+}
+
 .woocommerce-order table.shop_table,
 .woocommerce-view-order table.shop_table,
 .woocommerce-orders-table,
