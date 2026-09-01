@@ -23,6 +23,27 @@ final class DeliveryCheckoutController
     public function register(): void
     {
         add_action('rest_api_init', [$this, 'routes']);
+        add_action('wc_ajax_theobroma_delivery_quote', [$this, 'ajaxQuote']);
+    }
+
+    public function ajaxQuote(): void
+    {
+        $decoded = json_decode((string) file_get_contents('php://input'), true);
+        $request = new \WP_REST_Request('POST');
+        $request->set_body_params(is_array($decoded) ? $decoded : []);
+        $response = $this->quote($request);
+
+        if (is_wp_error($response)) {
+            $data = $response->get_error_data();
+            $status = is_array($data) ? (int) ($data['status'] ?? 400) : 400;
+            wp_send_json([
+                'code' => $response->get_error_code(),
+                'message' => $response->get_error_message(),
+                'data' => $data,
+            ], $status);
+        }
+
+        wp_send_json($response->get_data(), $response->get_status());
     }
 
     public function routes(): void

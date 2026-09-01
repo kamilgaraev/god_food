@@ -120,7 +120,7 @@ final class DeliverySelector
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
-            'quoteUrl' => rest_url('theobroma-commerce/v1/delivery/quote'),
+            'quoteUrl' => $this->quoteUrl(),
             'selectionUrl' => rest_url('theobroma-commerce/v1/delivery/selection'),
             'mapEnabled' => $mapKey !== '',
             'mapKey' => $mapKey,
@@ -133,6 +133,13 @@ final class DeliverySelector
     public function shouldLoadAssets(bool $admin): bool
     {
         return !$admin;
+    }
+
+    public function quoteUrl(): string
+    {
+        return class_exists('WC_AJAX')
+            ? \WC_AJAX::get_endpoint('theobroma_delivery_quote')
+            : rest_url('theobroma-commerce/v1/delivery/quote');
     }
 
     public function rateLabel(string $label, \WC_Shipping_Rate $rate): string
