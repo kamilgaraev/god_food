@@ -66,6 +66,37 @@ final class DeliverySelectionStoreTest extends TestCase
         $this->assertSame('ozon', $store->confirmedFor('ozon', 'cart-1')?->provider());
     }
 
+    public function testReportsWhyAStoredSelectionCannotBeConfirmed(): void
+    {
+        $memory = [];
+        $events = [];
+        $store = new DeliverySelectionStore(
+            static function (string $key) use (&$memory): mixed { return $memory[$key] ?? null; },
+            static function (string $key, mixed $value) use (&$memory): void { $memory[$key] = $value; },
+            static function (string $key) use (&$memory): void { unset($memory[$key]); },
+            static function (string $message, array $context) use (&$events): void {
+                $events[] = [$message, $context];
+            }
+        );
+        $store->save(DeliverySelection::fromArray([
+            'provider' => 'ozon',
+            'kind' => 'pickup',
+            'fingerprint' => 'saved-fingerprint',
+            'point' => ['id' => '9001'],
+            'quote' => ['cost' => 349.5, 'label' => 'Ozon Доставка'],
+            'create_payload' => ['delivery_schema' => 'MIX'],
+        ]));
+
+        $store->confirmedFor('ozon', 'requested-fingerprint');
+
+        $this->assertSame('Delivery selection saved', $events[0][0] ?? null);
+        $this->assertSame('saved-fingerprint', $events[0][1]['fingerprint'] ?? null);
+        $this->assertSame('Delivery selection unavailable', $events[1][0] ?? null);
+        $this->assertSame('fingerprint_mismatch', $events[1][1]['reason'] ?? null);
+        $this->assertSame('requested-fingerprint', $events[1][1]['requested_fingerprint'] ?? null);
+        $this->assertSame('saved-fingerprint', $events[1][1]['saved_fingerprint'] ?? null);
+    }
+
     public function testFingerprintChangesWithQuantityOrDestination(): void
     {
         $base = DeliveryFingerprint::fromData(
