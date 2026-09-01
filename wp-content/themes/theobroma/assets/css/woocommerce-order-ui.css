@@ -212,6 +212,10 @@
   gap:1.5rem;
 }
 
+.woocommerce-customer-details .woocommerce-columns--1 {
+  grid-template-columns:minmax(0,1fr);
+}
+
 .woocommerce-customer-details .woocommerce-column {
   width:auto;
   margin:0;
