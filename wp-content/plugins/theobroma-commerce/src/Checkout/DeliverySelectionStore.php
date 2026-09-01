@@ -54,7 +54,10 @@ final class DeliverySelectionStore
         if (!$selection instanceof DeliverySelection) {
             return null;
         }
-        if ($selection->provider() !== $provider || $selection->fingerprint() !== $fingerprint || !$selection->isConfirmed()) {
+        if ($selection->provider() !== $provider) {
+            return null;
+        }
+        if ($selection->fingerprint() !== $fingerprint || !$selection->isConfirmed()) {
             $this->clear();
             return null;
         }

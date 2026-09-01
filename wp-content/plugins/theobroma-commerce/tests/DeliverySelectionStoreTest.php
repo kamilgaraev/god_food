@@ -49,6 +49,23 @@ final class DeliverySelectionStoreTest extends TestCase
         $this->assertSame(null, $store->load());
     }
 
+    public function testCheckingAnotherProviderDoesNotEraseConfirmedSelection(): void
+    {
+        $memory = [];
+        $store = $this->store($memory);
+        $store->save(DeliverySelection::fromArray([
+            'provider' => 'ozon',
+            'kind' => 'pickup',
+            'fingerprint' => 'cart-1',
+            'point' => ['id' => '9001', 'address' => 'Казань'],
+            'quote' => ['cost' => 349.5, 'label' => 'Ozon Доставка'],
+            'create_payload' => ['delivery_schema' => 'MIX'],
+        ]));
+
+        $this->assertSame(null, $store->confirmedFor('cdek', 'cart-1'));
+        $this->assertSame('ozon', $store->confirmedFor('ozon', 'cart-1')?->provider());
+    }
+
     public function testFingerprintChangesWithQuantityOrDestination(): void
     {
         $base = DeliveryFingerprint::fromData(
