@@ -104,9 +104,10 @@ final class SettingsPage
                 <h2><?php esc_html_e('Карты пунктов выдачи', 'theobroma-commerce'); ?></h2>
                 <p><?php esc_html_e('Ключи необязательны: без них покупатель выберет ПВЗ из списка.', 'theobroma-commerce'); ?></p>
                 <?php $this->text('yandex_maps_js_key', __('Ключ JavaScript API Яндекс Карт', 'theobroma-commerce'), $values); ?>
+                <?php $this->secret('yandex_suggest_key', __('Ключ API Геосаджеста Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_SUGGEST_KEY')); ?>
                 <?php $this->secret('yandex_geocoder_key', __('Ключ HTTP Геокодера Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_GEOCODER_KEY')); ?>
                 <?php if (is_array($mapsNotice)) : ?>
-                    <?php foreach (['javascript', 'geocoder'] as $mapService) : ?>
+                    <?php foreach (['javascript', 'suggest', 'geocoder'] as $mapService) : ?>
                         <?php if (isset($mapsNotice[$mapService]['status'], $mapsNotice[$mapService]['message'])) : ?>
                             <?php $mapStatus = (string) $mapsNotice[$mapService]['status']; ?>
                             <div class="notice notice-<?php echo $mapStatus === 'valid' ? 'success' : ($mapStatus === 'invalid' ? 'error' : 'warning'); ?> inline"><p><?php echo esc_html((string) $mapsNotice[$mapService]['message']); ?></p></div>

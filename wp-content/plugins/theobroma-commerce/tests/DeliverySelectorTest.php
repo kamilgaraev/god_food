@@ -80,6 +80,16 @@ namespace Theobroma\Commerce\Tests {
             );
         }
 
+        public function testConnectsYandexSuggestKeyWithoutExposingItToDeliveryConfig(): void
+        {
+            $selector = new DeliverySelector();
+
+            $url = $selector->mapScriptUrl('maps-key', 'suggest-key');
+
+            $this->assertTrue(str_contains($url, 'apikey=maps-key'));
+            $this->assertTrue(str_contains($url, 'suggest_apikey=suggest-key'));
+        }
+
         public function testShowsConfirmedDeliverySummaryNextToChangeAction(): void
         {
             $selector = new DeliverySelector();

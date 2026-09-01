@@ -16,6 +16,12 @@ final class DeliveryAddressFields
     public function fields(array $fields): array
     {
         $fields['billing'] ??= [];
+        $fields['billing']['billing_country'] = [
+            'type' => 'hidden',
+            'required' => false,
+            'default' => 'RU',
+            'priority' => 35,
+        ];
         foreach ([
             'billing_first_name' => 10,
             'billing_phone' => 20,

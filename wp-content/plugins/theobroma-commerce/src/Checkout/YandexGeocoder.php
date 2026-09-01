@@ -47,7 +47,7 @@ final class YandexGeocoder
         return ['latitude' => $position['lat'], 'longitude' => $position['long']];
     }
 
-    /** @return list<array{label:string,latitude:float,longitude:float,viewport:array<string,array{lat:float,long:float}>}> */
+    /** @return list<array{label:string,city:string,postcode:string,address:string,latitude:float,longitude:float,viewport:array<string,array{lat:float,long:float}>}> */
     public function suggestions(string $query, string $key, int $limit = 5): array
     {
         if (mb_strlen(trim($query)) < 3 || trim($key) === '') {
@@ -80,8 +80,26 @@ final class YandexGeocoder
             if ($label === '') {
                 continue;
             }
+            $addressMeta = is_array($object['metaDataProperty']['GeocoderMetaData']['Address'] ?? null)
+                ? $object['metaDataProperty']['GeocoderMetaData']['Address']
+                : [];
+            $components = [];
+            foreach ((array) ($addressMeta['Components'] ?? []) as $component) {
+                $kind = (string) ($component['kind'] ?? '');
+                $name = trim((string) ($component['name'] ?? ''));
+                if ($kind !== '' && $name !== '') {
+                    $components[$kind] = $name;
+                }
+            }
+            $streetAddress = trim(implode(', ', array_filter([
+                (string) ($components['street'] ?? ''),
+                (string) ($components['house'] ?? ''),
+            ])));
             $result[] = [
                 'label' => $label,
+                'city' => (string) ($components['locality'] ?? ''),
+                'postcode' => trim((string) ($addressMeta['postal_code'] ?? '')),
+                'address' => $streetAddress,
                 'latitude' => $position['lat'],
                 'longitude' => $position['long'],
                 'viewport' => [

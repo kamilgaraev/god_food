@@ -22,6 +22,16 @@ final class YandexGeocoderTest extends TestCase
                             'lowerCorner' => '49.191 55.783',
                             'upperCorner' => '49.211 55.803',
                         ]],
+                        'metaDataProperty' => ['GeocoderMetaData' => ['Address' => [
+                            'postal_code' => '420081',
+                            'Components' => [
+                                ['kind' => 'country', 'name' => 'Россия'],
+                                ['kind' => 'province', 'name' => 'Республика Татарстан'],
+                                ['kind' => 'locality', 'name' => 'Казань'],
+                                ['kind' => 'street', 'name' => 'проспект Космонавтов'],
+                                ['kind' => 'house', 'name' => '42А'],
+                            ],
+                        ]]],
                     ],
                 ]]]],
             ], JSON_UNESCAPED_UNICODE),
@@ -34,5 +44,8 @@ final class YandexGeocoderTest extends TestCase
         $this->assertSame(49.201, $suggestions[0]['longitude']);
         $this->assertSame(55.783, $suggestions[0]['viewport']['left_bottom']['lat']);
         $this->assertSame(49.211, $suggestions[0]['viewport']['right_top']['long']);
+        $this->assertSame('Казань', $suggestions[0]['city']);
+        $this->assertSame('420081', $suggestions[0]['postcode']);
+        $this->assertSame('проспект Космонавтов, 42А', $suggestions[0]['address']);
     }
 }

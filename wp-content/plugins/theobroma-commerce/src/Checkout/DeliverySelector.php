@@ -127,10 +127,13 @@ final class DeliverySelector
         $mapKey = defined('THEOBROMA_YANDEX_MAPS_JS_KEY')
             ? (string) constant('THEOBROMA_YANDEX_MAPS_JS_KEY')
             : (string) ($settings['yandex_maps_js_key'] ?? '');
+        $suggestKey = defined('THEOBROMA_YANDEX_SUGGEST_KEY')
+            ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
+            : (string) ($settings['yandex_suggest_key'] ?? '');
 
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.2.8');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.2.9', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.3.0', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
@@ -138,9 +141,10 @@ final class DeliverySelector
             'selectionUrl' => rest_url('theobroma-commerce/v1/delivery/selection'),
             'mapEnabled' => $mapKey !== '',
             'mapKey' => $mapKey,
+            'suggestEnabled' => $mapKey !== '' && $suggestKey !== '',
         ]);
         if ($mapKey !== '') {
-            wp_enqueue_script('yandex-maps', 'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=' . rawurlencode($mapKey), [], null, true);
+            wp_enqueue_script('yandex-maps', $this->mapScriptUrl($mapKey, $suggestKey), [], null, true);
         }
     }
 
@@ -154,6 +158,15 @@ final class DeliverySelector
         return class_exists('WC_AJAX')
             ? \WC_AJAX::get_endpoint('theobroma_delivery_quote')
             : rest_url('theobroma-commerce/v1/delivery/quote');
+    }
+
+    public function mapScriptUrl(string $mapKey, string $suggestKey): string
+    {
+        $url = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=' . rawurlencode(trim($mapKey));
+        if (trim($suggestKey) !== '') {
+            $url .= '&suggest_apikey=' . rawurlencode(trim($suggestKey));
+        }
+        return $url;
     }
 
     public function rateLabel(string $label, \WC_Shipping_Rate $rate): string

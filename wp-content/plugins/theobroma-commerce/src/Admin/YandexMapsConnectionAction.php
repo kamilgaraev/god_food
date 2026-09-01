@@ -28,10 +28,13 @@ final class YandexMapsConnectionAction
         $geocoderKey = defined('THEOBROMA_YANDEX_GEOCODER_KEY')
             ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY')
             : (string) ($settings['yandex_geocoder_key'] ?? '');
+        $suggestKey = defined('THEOBROMA_YANDEX_SUGGEST_KEY')
+            ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
+            : (string) ($settings['yandex_suggest_key'] ?? '');
 
         set_transient(
             self::NOTICE_PREFIX . get_current_user_id(),
-            (new YandexMapsConnectionChecker())->check($jsKey, $geocoderKey),
+            (new YandexMapsConnectionChecker())->check($jsKey, $suggestKey, $geocoderKey),
             60
         );
         wp_safe_redirect(admin_url('admin.php?page=theobroma-commerce'));

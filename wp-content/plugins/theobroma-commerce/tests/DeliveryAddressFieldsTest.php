@@ -18,10 +18,13 @@ final class DeliveryAddressFieldsTest extends TestCase
         ]]);
 
         $this->assertTrue(isset($fields['billing']['billing_postcode']));
+        $this->assertTrue(isset($fields['billing']['billing_country']));
         $this->assertTrue(isset($fields['billing']['billing_address_1']));
         $this->assertTrue(isset($fields['billing']['billing_address_2']));
         $this->assertSame(false, $fields['billing']['billing_postcode']['required']);
         $this->assertSame(false, $fields['billing']['billing_address_1']['required']);
+        $this->assertSame('hidden', $fields['billing']['billing_country']['type']);
+        $this->assertSame('RU', $fields['billing']['billing_country']['default']);
         $this->assertSame(10, $fields['billing']['billing_first_name']['priority']);
         $this->assertSame(20, $fields['billing']['billing_phone']['priority']);
         $this->assertSame(30, $fields['billing']['billing_email']['priority']);

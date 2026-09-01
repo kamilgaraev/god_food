@@ -10,30 +10,39 @@ final class YandexMapsConnectionChecker
     private $javascriptProbe;
 
     /** @var callable(string):array{status:int,body:string} */
+    private $suggestProbe;
+
+    /** @var callable(string):array{status:int,body:string} */
     private $geocoderProbe;
 
     /**
      * @param null|callable(string):array{status:int,body:string} $javascriptProbe
+     * @param null|callable(string):array{status:int,body:string} $suggestProbe
      * @param null|callable(string):array{status:int,body:string} $geocoderProbe
      */
-    public function __construct(?callable $javascriptProbe = null, ?callable $geocoderProbe = null)
+    public function __construct(?callable $javascriptProbe = null, ?callable $suggestProbe = null, ?callable $geocoderProbe = null)
     {
         $this->javascriptProbe = $javascriptProbe ?? static function (string $key): array {
             return self::request('https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=' . rawurlencode($key));
+        };
+        $this->suggestProbe = $suggestProbe ?? static function (string $key): array {
+            return self::request('https://suggest-maps.yandex.ru/v1/suggest?text=' . rawurlencode('Москва') . '&results=1&types=geo&apikey=' . rawurlencode($key));
         };
         $this->geocoderProbe = $geocoderProbe ?? static function (string $key): array {
             return self::request('https://geocode-maps.yandex.ru/1.x/?format=json&results=1&geocode=' . rawurlencode('Москва') . '&apikey=' . rawurlencode($key));
         };
     }
 
-    /** @return array{javascript:array{status:string,message:string},geocoder:array{status:string,message:string},list_fallback:bool} */
-    public function check(string $javascriptKey, string $geocoderKey): array
+    /** @return array{javascript:array{status:string,message:string},suggest:array{status:string,message:string},geocoder:array{status:string,message:string},list_fallback:bool} */
+    public function check(string $javascriptKey, string $suggestKey, string $geocoderKey): array
     {
         $javascript = $this->probe(trim($javascriptKey), $this->javascriptProbe, 'JavaScript API');
+        $suggest = $this->probe(trim($suggestKey), $this->suggestProbe, 'API Геосаджеста');
         $geocoder = $this->probe(trim($geocoderKey), $this->geocoderProbe, 'HTTP Геокодер');
 
         return [
             'javascript' => $javascript,
+            'suggest' => $suggest,
             'geocoder' => $geocoder,
             'list_fallback' => $javascript['status'] !== 'valid' || $geocoder['status'] !== 'valid',
         ];

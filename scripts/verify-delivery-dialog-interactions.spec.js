@@ -63,8 +63,15 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
       <script>
         window.deliveryRequests = [];
         window.deliveryQuoteBodies = [];
-        window.theobromaDelivery = { pointsUrl: '/points', suggestionsUrl: '/suggestions', quoteUrl: '/quote', nonce: 'test' };
+        window.theobromaDelivery = { pointsUrl: '/points', suggestionsUrl: '/suggestions', quoteUrl: '/quote', suggestEnabled: true, nonce: 'test' };
         window.jQuery = function () { return { trigger: function () {}, on: function () {} }; };
+        window.ymaps = {
+          ready: function (callback) { callback(); },
+          SuggestView: function (element) {
+            window.suggestInput = element;
+            this.events = { add: function (name, handler) { if (name === 'select') window.suggestSelectHandler = handler; } };
+          }
+        };
         window.fetch = function (url, options) {
           window.deliveryRequests.push(url);
           if (url.indexOf('/quote') === 0) {
@@ -74,6 +81,9 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
           var body = url.indexOf('/suggestions') === 0
             ? { configured: true, suggestions: [{
                 label: 'проспект Космонавтов, 42А, Казань',
+                city: 'Казань',
+                postcode: '420081',
+                address: 'проспект Космонавтов, 42А',
                 viewport: {
                   left_bottom: { lat: 55.78, long: 49.19 },
                   right_top: { lat: 55.81, long: 49.22 }
@@ -118,6 +128,12 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     await page.evaluate(() => { window.deliveryRequests = []; });
     await page.click('[data-delivery-open="ozon"]');
     assert.equal(await page.inputValue('[data-delivery-search]'), 'Казань, Спартаковская улица, 1', 'pickup search reuses the checkout address');
+    assert.equal(await page.evaluate(() => window.suggestInput === document.querySelector('[data-delivery-search]')), true, 'GeoSuggest attaches to the existing address input');
+    await page.evaluate(() => window.suggestSelectHandler({ get: function () { return { value: 'Казань, проспект Космонавтов, 42А' }; } }));
+    await page.waitForFunction(() => document.querySelector('#billing_postcode').value === '420081');
+    assert.equal(await page.inputValue('#billing_city'), 'Казань', 'selected suggestion fills checkout city');
+    assert.equal(await page.inputValue('#billing_address_1'), 'проспект Космонавтов, 42А', 'selected suggestion fills checkout street and house');
+    assert.equal(await page.inputValue('#billing_postcode'), '420081', 'selected suggestion fills checkout postcode');
     await page.waitForFunction(() => window.deliveryRequests.some((url) => url.indexOf('left_bottom_lat=55.78') !== -1));
     const viewportRequest = await page.evaluate(() => window.deliveryRequests.find((url) => url.indexOf('left_bottom_lat=55.78') !== -1));
     assert.ok(viewportRequest, 'checkout address automatically loads Ozon points for its viewport');

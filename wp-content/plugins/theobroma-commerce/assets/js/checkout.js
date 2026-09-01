@@ -3,7 +3,7 @@
 
   var config = window.theobromaDelivery || {};
   var core = window.TheobromaDeliveryCore;
-  var state = { provider: '', kind: 'pickup', points: [], selected: null, map: null, placemarks: null, suggestTimer: null };
+  var state = { provider: '', kind: 'pickup', points: [], selected: null, map: null, placemarks: null, suggestTimer: null, suggestView: null };
 
   function dialog() { return document.querySelector('[data-delivery-dialog]'); }
   function field(name) { return document.querySelector('[data-delivery-field="' + name + '"]'); }
@@ -83,6 +83,7 @@
     if (clear) clear.hidden = pickupAddress === '';
     renderSuggestions([]);
     if (typeof root.showModal === 'function') root.showModal(); else root.setAttribute('open', '');
+    initNativeSuggestions();
     loadPointsForCheckoutAddress(pickupAddress);
   }
 
@@ -155,20 +156,14 @@
       button.setAttribute('role', 'option');
       button.textContent = item.label || '';
       button.addEventListener('click', function () {
-        var search = document.querySelector('[data-delivery-search]');
-        var clear = document.querySelector('[data-delivery-search-clear]');
-        if (search) search.value = item.label || '';
-        if (clear) clear.hidden = false;
-        renderSuggestions([]);
-        state.selected = null;
-        loadPoints(item.viewport || null);
+        applyAddressSuggestion(item);
       });
       list.appendChild(button);
     });
   }
 
   function suggestAddress(value) {
-    if (state.provider !== 'ozon' || !config.suggestionsUrl || value.trim().length < 3) {
+    if (config.suggestEnabled || !config.suggestionsUrl || value.trim().length < 3) {
       renderSuggestions([]);
       return;
     }
@@ -182,6 +177,53 @@
         setStatus('Подсказки адреса доступны после настройки HTTP Геокодера. Пункты можно выбрать из списка.', false);
       }
     }).catch(function () { renderSuggestions([]); });
+  }
+
+  function setCheckoutValue(selector, value) {
+    var target = checkoutElement(selector);
+    if (target && value) target.value = value;
+  }
+
+  function applyAddressSuggestion(item) {
+    if (!item) return;
+    var search = document.querySelector('[data-delivery-search]');
+    var clear = document.querySelector('[data-delivery-search-clear]');
+    if (search) search.value = item.label || '';
+    if (clear) clear.hidden = false;
+    [['city', '#billing_city'], ['postcode', '#billing_postcode'], ['address', '#billing_address_1']].forEach(function (pair) {
+      var value = String(item[pair[0]] || '').trim();
+      if (!value) return;
+      if (field(pair[0])) field(pair[0]).value = value;
+      setCheckoutValue(pair[1], value);
+    });
+    setCheckoutValue('#billing_country', 'RU');
+    syncAddressFieldVisibility();
+    renderSuggestions([]);
+    state.selected = null;
+    loadPoints(item.viewport || null);
+  }
+
+  function resolveAddressSuggestion(value) {
+    if (!config.suggestionsUrl || String(value || '').trim().length < 3) return;
+    request(config.suggestionsUrl + '?query=' + encodeURIComponent(value)).then(function (data) {
+      var item = Array.isArray(data.suggestions) ? data.suggestions[0] : null;
+      if (item) applyAddressSuggestion(item);
+    }).catch(function () {
+      setStatus('Не удалось уточнить адрес. Проверьте его и попробуйте ещё раз.', true);
+    });
+  }
+
+  function initNativeSuggestions() {
+    if (!config.suggestEnabled || state.suggestView || !window.ymaps) return;
+    window.ymaps.ready(function () {
+      var search = document.querySelector('[data-delivery-search]');
+      if (!search || !window.ymaps.SuggestView || state.suggestView) return;
+      state.suggestView = new window.ymaps.SuggestView(search, { results: 5, zIndex: 100000 });
+      state.suggestView.events.add('select', function (event) {
+        var item = event.get('item') || {};
+        resolveAddressSuggestion(item.value || item.displayName || '');
+      });
+    });
   }
 
   function pointButton(point) {
