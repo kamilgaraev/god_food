@@ -5,6 +5,7 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
 const script = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-commerce/assets/js/checkout.js'), 'utf8');
+const coreScript = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-commerce/assets/js/delivery-selector-core.js'), 'utf8');
 const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-commerce/assets/css/checkout-delivery.css'), 'utf8');
 
 (async () => {
@@ -13,6 +14,7 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     const page = await browser.newPage({ viewport: { width: 1100, height: 760 } });
     await page.setContent(`
       <style>${styles}</style>
+      <form hidden><input id="billing_phone" value=""></form>
       <div class="commerce-cart-checkout">
         <div class="woocommerce-billing-fields__field-wrapper">
         <p id="billing_first_name_field"><input id="billing_first_name"></p>
@@ -60,11 +62,15 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
       </dialog>
       <script>
         window.deliveryRequests = [];
-        window.theobromaDelivery = { pointsUrl: '/points', suggestionsUrl: '/suggestions', nonce: 'test' };
-        window.TheobromaDeliveryCore = { filterPoints: (points) => points, canRenderMap: () => false };
+        window.deliveryQuoteBodies = [];
+        window.theobromaDelivery = { pointsUrl: '/points', suggestionsUrl: '/suggestions', quoteUrl: '/quote', nonce: 'test' };
         window.jQuery = function () { return { trigger: function () {}, on: function () {} }; };
-        window.fetch = function (url) {
+        window.fetch = function (url, options) {
           window.deliveryRequests.push(url);
+          if (url.indexOf('/quote') === 0) {
+            window.deliveryQuoteBodies.push(JSON.parse(options.body));
+            return Promise.resolve({ ok: true, json: function () { return Promise.resolve({ quote: { label: 'Ozon Доставка' } }); } });
+          }
           var body = url.indexOf('/suggestions') === 0
             ? { configured: true, suggestions: [{
                 label: 'проспект Космонавтов, 42А, Казань',
@@ -73,10 +79,11 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
                   right_top: { lat: 55.81, long: 49.22 }
                 }
               }] }
-            : { points: [] };
+            : { points: [{ id: 'KZN-1', name: 'Пункт Ozon', address: 'Казань, Спартаковская, 12' }] };
           return Promise.resolve({ ok: true, json: function () { return Promise.resolve(body); } });
         };
       </script>
+      <script>${coreScript}</script>
       <script>${script}</script>
     `);
 
@@ -85,6 +92,7 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), true, 'comment stays hidden until city is entered');
     await page.fill('#billing_city', 'Казань');
     await page.fill('#billing_address_1', 'Спартаковская улица, 1');
+    await page.locator('.commerce-cart-checkout #billing_phone').fill('+7 (987) 219-89-86');
     assert.equal(await page.$eval('#billing_address_1_field', (node) => node.hidden), false, 'street appears after city is entered');
     assert.equal(await page.$eval('#billing_postcode_field', (node) => node.hidden), false, 'postcode appears after city is entered');
     assert.equal(await page.$eval('#billing_address_2_field', (node) => node.hidden), false, 'comment appears after city is entered');
@@ -114,6 +122,40 @@ const styles = fs.readFileSync(path.join(root, 'wp-content/plugins/theobroma-com
     const viewportRequest = await page.evaluate(() => window.deliveryRequests.find((url) => url.indexOf('left_bottom_lat=55.78') !== -1));
     assert.ok(viewportRequest, 'checkout address automatically loads Ozon points for its viewport');
 
+    await page.click('[data-point-id="KZN-1"]');
+    await page.click('[data-delivery-confirm]');
+    await page.waitForTimeout(100);
+    assert.equal(
+      await page.evaluate(() => window.deliveryQuoteBodies.length),
+      1,
+      'confirming a selected point must send one delivery quote request'
+    );
+    assert.equal(
+      await page.evaluate(() => window.deliveryQuoteBodies[0].phone),
+      '+7 (987) 219-89-86',
+      'delivery quote must use the phone from the active checkout instead of a stale hidden field'
+    );
+
+    await page.waitForTimeout(350);
+    await page.locator('.commerce-cart-checkout #billing_phone').fill('');
+    await page.click('[data-delivery-open="ozon"]');
+    await page.waitForSelector('[data-point-id="KZN-1"]');
+    await page.click('[data-point-id="KZN-1"]');
+    await page.click('[data-delivery-confirm]');
+    await page.waitForTimeout(100);
+    assert.equal(
+      await page.evaluate(() => window.deliveryQuoteBodies.length),
+      1,
+      'an empty checkout phone must stop the delivery quote before another request'
+    );
+    assert.equal(
+      await page.$eval('[data-delivery-status]', (node) => node.textContent),
+      'Укажите номер телефона в оформлении заказа.',
+      'an empty checkout phone must show a useful customer-facing message'
+    );
+
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(250);
     const visual = await page.evaluate(() => {
       const eyebrow = getComputedStyle(document.querySelector('.theobroma-delivery-eyebrow'));
       const action = getComputedStyle(document.querySelector('[data-delivery-confirm]'));

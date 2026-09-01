@@ -7,8 +7,12 @@
 
   function dialog() { return document.querySelector('[data-delivery-dialog]'); }
   function field(name) { return document.querySelector('[data-delivery-field="' + name + '"]'); }
+  function checkoutElement(selector) {
+    var checkout = document.querySelector('.commerce-cart-checkout');
+    return (checkout && checkout.querySelector(selector)) || document.querySelector(selector);
+  }
   function checkoutValue(selector) {
-    var element = document.querySelector(selector);
+    var element = checkoutElement(selector);
     return element ? element.value.trim() : '';
   }
   function checkoutCustomer() {
@@ -279,6 +283,12 @@
       return;
     }
     var details = customer();
+    if (!details.phone) {
+      setStatus('Укажите номер телефона в оформлении заказа.', true);
+      var phone = checkoutElement('#billing_phone');
+      if (phone) phone.focus();
+      return;
+    }
     if (state.kind === 'courier' && (!details.city || !details.address)) {
       setStatus('Укажите город и адрес доставки.', true);
       return;
