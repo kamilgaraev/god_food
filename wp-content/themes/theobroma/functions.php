@@ -122,6 +122,15 @@ function theobroma_assets(): void {
     }
 
     if (class_exists('WooCommerce')) {
+        if (is_checkout() || is_account_page()) {
+            wp_enqueue_style(
+                'theobroma-woocommerce-order-ui',
+                get_template_directory_uri() . '/assets/css/woocommerce-order-ui.css',
+                array('theobroma-style'),
+                (string) filemtime($theme_dir . '/assets/css/woocommerce-order-ui.css')
+            );
+        }
+
         if (is_shop() || is_product_category()) {
             wp_enqueue_script(
                 'theobroma-catalog-filters',

@@ -49,6 +49,7 @@
     "test:cart-order-typography": "node scripts/verify-cart-order-typography.spec.js",
     "test:checkout-button-spacing": "node scripts/verify-checkout-button-spacing.spec.js",
     "test:checkout-single-address": "php scripts/verify-checkout-single-address.php",
+    "test:woocommerce-order-ui": "node scripts/verify-woocommerce-order-ui.spec.js",
     "test:account-auth-forms": "node scripts/verify-account-auth-forms.spec.js",
     "test:account-error-notice": "node scripts/verify-account-error-notice.spec.js",
     "test:account-auth-switcher": "node scripts/verify-account-auth-switcher.spec.js",
