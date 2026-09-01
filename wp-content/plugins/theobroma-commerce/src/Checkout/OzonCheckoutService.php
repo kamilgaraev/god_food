@@ -92,7 +92,7 @@ final class OzonCheckoutService
         }
 
         $availability = $this->client->deliveryCheck([
-            'buyer_phone' => $phone,
+            'client_phone' => $phone,
             'delivery_type' => $delivery,
         ]);
         if (($availability['available'] ?? true) === false) {
