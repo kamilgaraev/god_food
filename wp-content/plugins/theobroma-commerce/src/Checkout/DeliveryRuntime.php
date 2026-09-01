@@ -29,8 +29,13 @@ final class DeliveryRuntime
     /** @return array<string,mixed> */
     public static function currentPackage(): array
     {
-        $cart = function_exists('WC') ? WC()->cart : null;
-        $customer = function_exists('WC') ? WC()->customer : null;
+        $woocommerce = function_exists('WC') ? WC() : null;
+        $cart = is_object($woocommerce) ? ($woocommerce->cart ?? null) : null;
+        if ((!is_object($cart) || !method_exists($cart, 'get_cart')) && function_exists('wc_load_cart')) {
+            wc_load_cart();
+            $cart = is_object($woocommerce) ? ($woocommerce->cart ?? null) : null;
+        }
+        $customer = is_object($woocommerce) ? ($woocommerce->customer ?? null) : null;
         $contents = is_object($cart) && method_exists($cart, 'get_cart') ? $cart->get_cart() : [];
         $destination = [];
         if (is_object($customer)) {
