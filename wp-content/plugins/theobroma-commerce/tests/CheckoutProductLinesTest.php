@@ -14,9 +14,21 @@ final class CheckoutProductLinesTest extends TestCase
         $lines = new CheckoutProductLines();
         $contents = [['data' => $product, 'quantity' => 2, 'product_id' => 10, 'variation_id' => 0]];
 
-        $this->assertSame([['offer_id' => 'CHOCO-100', 'quantity' => 2, 'sku' => 100500]], $lines->ozon($contents));
+        $this->assertSame([['quantity' => 2, 'sku' => 100500]], $lines->ozon($contents));
         $this->assertSame(0.1, $lines->cdek($contents)[0]['weight_kg']);
         $this->assertSame(12.0, $lines->cdek($contents)[0]['length_cm']);
+    }
+
+    public function testRejectsZeroOzonSku(): void
+    {
+        $product = new CheckoutProductStub(10, '', '0', 7.99, 0.1, 12, 8, 2);
+
+        $this->assertThrows(
+            static fn () => (new CheckoutProductLines())->ozon([
+                ['data' => $product, 'quantity' => 1, 'product_id' => 10, 'variation_id' => 0],
+            ]),
+            \InvalidArgumentException::class
+        );
     }
 }
 

@@ -122,7 +122,7 @@ final class OzonCheckoutServiceTest extends TestCase
         $quote = $service->quote(
             ['first_name' => 'Иван', 'last_name' => 'Иванов', 'phone' => '+79990000000'],
             ['pick_up' => ['map_point_id' => 125]],
-            [['offer_id' => 'CHOCO', 'quantity' => 2, 'sku' => 100500]],
+            [['quantity' => 2, 'sku' => 100500]],
             ['first_name' => 'Иван', 'last_name' => 'Иванов', 'phone' => '+79990000000']
         );
 
@@ -135,5 +135,9 @@ final class OzonCheckoutServiceTest extends TestCase
         $this->assertSame(false, array_key_exists('buyer_phone', $transport->requests[0]['options']['json']));
         $this->assertSame('/v2/delivery/checkout', parse_url($transport->requests[1]['url'], PHP_URL_PATH));
         $this->assertSame('79990000000', $transport->requests[1]['options']['json']['buyer_phone'] ?? null);
+        $this->assertSame(
+            [['quantity' => 2, 'sku' => 100500]],
+            $transport->requests[1]['options']['json']['items'] ?? null
+        );
     }
 }

@@ -14,7 +14,7 @@ final class CheckoutProductLines
         $this->productLoader = $productLoader ?? static fn (int $id): mixed => function_exists('wc_get_product') ? wc_get_product($id) : null;
     }
 
-    /** @param list<array<string,mixed>> $contents @return list<array{offer_id:string,quantity:int,sku:int}> */
+    /** @param list<array<string,mixed>> $contents @return list<array{quantity:int,sku:int}> */
     public function ozon(array $contents): array
     {
         $result = [];
@@ -30,13 +30,10 @@ final class CheckoutProductLines
                     $ozonSku = trim((string) $parent->get_meta('_theobroma_ozon_sku', true));
                 }
             }
-            if ($ozonSku === '' || !ctype_digit($ozonSku)) {
-                throw new \InvalidArgumentException('Every cart product must have a numeric Ozon SKU');
+            if ($ozonSku === '' || !ctype_digit($ozonSku) || (int) $ozonSku < 1) {
+                throw new \InvalidArgumentException('Every cart product must have a positive numeric Ozon SKU');
             }
-            $offerId = method_exists($product, 'get_sku') ? trim((string) $product->get_sku()) : '';
-            $productId = method_exists($product, 'get_id') ? (int) $product->get_id() : (int) ($item['product_id'] ?? 0);
             $result[] = [
-                'offer_id' => $offerId !== '' ? $offerId : (string) $productId,
                 'quantity' => max(1, (int) ($item['quantity'] ?? 1)),
                 'sku' => (int) $ozonSku,
             ];

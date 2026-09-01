@@ -71,7 +71,7 @@ final class OzonCheckoutService
     /**
      * @param array{first_name?:string,last_name?:string,middle_name?:string,phone?:string} $buyer
      * @param array<string,mixed> $delivery
-     * @param list<array{offer_id:string,quantity:int,sku:int}> $items
+     * @param list<array{quantity:int,sku:int}> $items
      * @param array{first_name?:string,last_name?:string,middle_name?:string,phone?:string} $recipient
      */
     public function quote(array $buyer, array $delivery, array $items, array $recipient): DeliveryQuote
