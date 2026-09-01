@@ -10,15 +10,15 @@ const script = fs.readFileSync(path.join(themeRoot, 'assets/js/homepage.js'), 'u
 const styles = fs.readFileSync(path.join(themeRoot, 'style.css'), 'utf8')
   + fs.readFileSync(path.join(themeRoot, 'assets/css/home-redesign.css'), 'utf8');
 const hero = homepage.match(/<section class="home-hero"[\s\S]*?<\/section>/)?.[0];
-const poster = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-poster-v2.webp'));
-const videoAsset = fs.readFileSync(path.join(themeRoot, 'assets/video/hero-chocolate.webm'));
-const webkitAnimation = fs.readFileSync(path.join(themeRoot, 'assets/images/hero-chocolate-animated-v3.webp'));
+const posterPath = path.join(themeRoot, 'assets/images/hero-chocolate-poster.jpg');
+const videoPath = path.join(themeRoot, 'assets/video/hero-chocolate.mp4');
+const poster = fs.existsSync(posterPath) ? fs.readFileSync(posterPath) : Buffer.alloc(0);
+const videoAsset = fs.existsSync(videoPath) ? fs.readFileSync(videoPath) : Buffer.alloc(0);
 
 function renderHeroDocument() {
   const markup = hero
-    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster-v2.webp'); ?>", `data:image/webp;base64,${poster.toString('base64')}`)
-    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.webm'); ?>", `data:video/webm;base64,${videoAsset.toString('base64')}`)
-    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated-v3.webp'); ?>", `data:image/webp;base64,${webkitAnimation.toString('base64')}`)
+    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.jpg'); ?>", `data:image/jpeg;base64,${poster.toString('base64')}`)
+    .replaceAll("<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.mp4'); ?>", `data:video/mp4;base64,${videoAsset.toString('base64')}`)
     .replace(/<\?php[\s\S]*?\?>/g, '#');
   return `<body class="home"><main>${markup}</main><style>${styles}</style></body>`;
 }
@@ -51,16 +51,20 @@ function visibleChocolateGap(png) {
     'Hero video must be muted, inline, and load metadata only');
   assert.doesNotMatch(triggerMarkup, /\b(?:autoplay|loop)\b/,
     'Hero video must play only once after a click');
-  assert(triggerMarkup.includes('/assets/video/hero-chocolate.webm'),
-    'Hero must use the transparent WebM animation');
-  assert.match(triggerMarkup, /type="video\/webm"/,
-    'Hero animation source must declare the WebM media type');
-  assert(triggerMarkup.includes('/assets/images/hero-chocolate-animated-v3.webp'),
-    'Hero must include an alpha-safe animated WebP fallback for WebKit');
-  const animationChunk = webkitAnimation.indexOf(Buffer.from('ANIM'));
-  assert(animationChunk >= 0, 'WebKit fallback must be an animated WebP');
-  assert.equal(webkitAnimation.readUInt16LE(animationChunk + 12), 1,
-    'WebKit fallback must play one cycle instead of looping indefinitely');
+  assert(fs.existsSync(videoPath), 'Hero must ship the opaque MP4 animation');
+  assert(fs.existsSync(posterPath), 'Hero must ship a static JPEG poster without alpha');
+  assert(triggerMarkup.includes('/assets/video/hero-chocolate.mp4'),
+    'Hero must use the opaque MP4 animation');
+  assert.match(triggerMarkup, /type="video\/mp4"/,
+    'Hero animation source must declare the MP4 media type');
+  assert(triggerMarkup.includes('/assets/images/hero-chocolate-poster.jpg'),
+    'Hero must use the opaque JPEG poster');
+  assert.doesNotMatch(triggerMarkup, /data-home-hero-fallback|\.webm|animated-v3\.webp/,
+    'Hero must not retain an alpha video or WebP animation fallback');
+  assert.equal(videoAsset.subarray(4, 8).toString('ascii'), 'ftyp',
+    'Hero video must use an ISO MP4 container');
+  assert(videoAsset.includes(Buffer.from('avc1')),
+    'Hero video must contain an H.264/AVC track for hardware decoding');
 
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
@@ -69,7 +73,7 @@ function visibleChocolateGap(png) {
     await page.locator('[data-home-hero-video]').evaluate((node) => new Promise((resolve, reject) => {
       if (node.readyState >= 1) return resolve();
       node.addEventListener('loadedmetadata', resolve, { once: true });
-      node.addEventListener('error', () => reject(new Error('Hero WebM failed to decode')), { once: true });
+      node.addEventListener('error', () => reject(new Error('Hero MP4 failed to decode')), { once: true });
     }));
     await page.addScriptTag({ content: script });
 
@@ -81,9 +85,9 @@ function visibleChocolateGap(png) {
       duration: node.duration,
     }));
     assert.deepEqual([mediaMetrics.width, mediaMetrics.height], [1280, 720],
-      'Hero WebM must retain a wide canvas so falling pieces are not cropped');
+      'Hero MP4 must retain a wide canvas so falling pieces are not cropped');
     assert(mediaMetrics.duration > 6 && mediaMetrics.duration < 6.1,
-      `Hero WebM must retain the source duration (got ${mediaMetrics.duration})`);
+      `Hero MP4 must retain the source duration (got ${mediaMetrics.duration})`);
 
     await trigger.click();
     assert.equal(await trigger.getAttribute('data-state'), 'playing',
@@ -96,7 +100,7 @@ function visibleChocolateGap(png) {
       };
       if (!node.paused) seek(); else node.addEventListener('playing', seek, { once: true });
     }));
-    const alphaCoverage = await video.evaluate((node) => {
+    const pixelCoverage = await video.evaluate((node) => {
       const canvas = document.createElement('canvas');
       canvas.width = node.videoWidth;
       canvas.height = node.videoHeight;
@@ -105,21 +109,27 @@ function visibleChocolateGap(png) {
       context.drawImage(node, 0, 0);
       const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
       let transparent = 0;
-      let opaque = 0;
-      let opaqueSidePixels = 0;
+      let darkSidePixels = 0;
       for (let index = 3; index < pixels.length; index += 4) {
-        if (pixels[index] < 10) transparent += 1;
-        if (pixels[index] > 245) opaque += 1;
+        if (pixels[index] < 255) transparent += 1;
         const x = ((index - 3) / 4) % canvas.width;
-        if (pixels[index] > 20 && (x < 4 || x >= canvas.width - 4)) opaqueSidePixels += 1;
+        const rgbOffset = index - 3;
+        const darkness = 251 - pixels[rgbOffset] + 247 - pixels[rgbOffset + 1] + 241 - pixels[rgbOffset + 2];
+        if (darkness > 90 && (x < 4 || x >= canvas.width - 4)) darkSidePixels += 1;
       }
       const pixelCount = pixels.length / 4;
-      return { transparent: transparent / pixelCount, opaque: opaque / pixelCount, opaqueSidePixels };
+      return {
+        transparent: transparent / pixelCount,
+        darkSidePixels,
+        corner: Array.from(pixels.subarray(0, 3)),
+      };
     });
-    assert(alphaCoverage.transparent > 0.55 && alphaCoverage.opaque > 0.05,
-      `Hero WebM must contain both transparent background and opaque chocolate pixels (got ${JSON.stringify(alphaCoverage)})`);
-    assert.equal(alphaCoverage.opaqueSidePixels, 0,
-      'Falling chocolate pieces must keep transparent breathing room at both side edges');
+    assert.equal(pixelCoverage.transparent, 0,
+      'Hero MP4 decoded frame must be fully opaque');
+    assert(pixelCoverage.corner.every((channel, index) => Math.abs(channel - [251, 247, 241][index]) <= 4),
+      `Hero MP4 background must match #fbf7f1 (got rgb(${pixelCoverage.corner.join(', ')}))`);
+    assert.equal(pixelCoverage.darkSidePixels, 0,
+      'Falling chocolate pieces must keep background breathing room at both side edges');
 
     const timeBeforeRepeatedClick = await video.evaluate((node) => node.currentTime);
     await trigger.click();
@@ -147,6 +157,7 @@ function visibleChocolateGap(png) {
       trigger.dataset.state = 'playing';
       const visual = trigger.getBoundingClientRect();
       const media = document.querySelector('[data-home-hero-video]').getBoundingClientRect();
+      const mediaStyle = getComputedStyle(document.querySelector('[data-home-hero-video]'));
       const hero = document.querySelector('.home-hero').getBoundingClientRect();
       return {
         labelRight: label.right,
@@ -155,6 +166,7 @@ function visibleChocolateGap(png) {
         visualWidth: visual.width,
         mediaLeft: media.left,
         mediaBottomGap: hero.bottom - media.bottom,
+        mediaFilter: mediaStyle.filter,
         copyZIndex: Number(getComputedStyle(copyNode).zIndex),
         playingZIndex: Number(getComputedStyle(trigger).zIndex),
       };
@@ -167,8 +179,10 @@ function visibleChocolateGap(png) {
       'The wide video layer must extend over the left hero column instead of clipping at the trigger boundary');
     assert(Math.abs(desktopLayout.mediaBottomGap) <= 32,
       `The video composition must sit against the benefit strip (gap ${desktopLayout.mediaBottomGap}px)`);
-    assert(desktopLayout.playingZIndex > desktopLayout.copyZIndex,
-      'While playing, chocolate pieces must layer above the left hero copy');
+    assert.equal(desktopLayout.mediaFilter, 'none',
+      'Opaque video must not cast a shadow around its full rectangular canvas');
+    assert(desktopLayout.playingZIndex < desktopLayout.copyZIndex,
+      'While playing, the video must remain behind all hero copy');
 
     await trigger.evaluate((node) => { node.dataset.state = 'idle'; });
     const desktopHeroPng = PNG.sync.read(await page.locator('.home-hero').screenshot());
@@ -222,57 +236,6 @@ function visibleChocolateGap(png) {
     assert(paintedEdgePixels <= 4,
       `Mobile falling pieces must remain visibly inside the hero edges (got ${paintedEdgePixels} painted edge pixels)`);
 
-    const webkitPage = await browser.newPage({ viewport: { width: 768, height: 900 } });
-    await webkitPage.setContent(renderHeroDocument());
-    const fallbackMetrics = await webkitPage.locator('[data-home-hero-fallback]').evaluate((node) => new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
-      image.onerror = () => reject(new Error('Animated WebP fallback failed to decode'));
-      image.src = node.dataset.animatedSrc;
-    }));
-    assert.deepEqual(fallbackMetrics, [720, 405],
-      'WebKit fallback must retain the same wide, uncropped composition');
-    await webkitPage.evaluate(() => {
-      Object.defineProperty(navigator, 'userAgent', { configurable: true, value: 'Mozilla/5.0 AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1' });
-      const fallback = document.querySelector('[data-home-hero-fallback]');
-      let fallbackSource = fallback.src;
-      Object.defineProperty(fallback, 'src', {
-        configurable: true,
-        get: () => fallbackSource,
-        set: (value) => { fallbackSource = value; },
-      });
-      window.__heroTimers = [];
-      window.setTimeout = (callback, delay) => {
-        window.__heroTimers.push({ callback, delay });
-        return window.__heroTimers.length;
-      };
-    });
-    await webkitPage.addScriptTag({ content: script });
-    const webkitTrigger = webkitPage.locator('.home-hero__video-trigger');
-    const webkitFallback = webkitPage.locator('[data-home-hero-fallback]');
-    await webkitTrigger.click();
-    assert.equal(await webkitTrigger.getAttribute('data-state'), 'playing',
-      'WebKit fallback must expose its playing state');
-    assert.equal(await webkitFallback.evaluate((node) => node.src.startsWith('data:image/webp')), true,
-      'WebKit fallback must switch to the transparent animated WebP');
-    assert.equal(await webkitPage.evaluate(() => window.__heroTimers.length), 0,
-      'WebKit fallback timer must wait for the animation to finish loading');
-    await webkitFallback.dispatchEvent('load');
-    const fallbackDelay = await webkitPage.evaluate(() => window.__heroTimers[0]?.delay);
-    assert(fallbackDelay >= 6042 && fallbackDelay <= 6200,
-      `WebKit fallback must become replayable after one nominal playback (got ${fallbackDelay}ms)`);
-    const animatedSourceBeforeTimer = await webkitFallback.evaluate((node) => node.src);
-    await webkitPage.evaluate(() => window.__heroTimers[0].callback());
-    assert.equal(await webkitTrigger.getAttribute('data-state'), 'idle',
-      'WebKit fallback must become clickable again after one playback');
-    assert.equal(await webkitFallback.evaluate((node) => node.src), animatedSourceBeforeTimer,
-      'The nominal timer must not replace an animated frame while Safari is still decoding it');
-
-    await webkitTrigger.click();
-    await webkitFallback.dispatchEvent('error');
-    assert.equal(await webkitTrigger.getAttribute('data-state'), 'idle',
-      'WebKit fallback must recover immediately when the animated image fails to load');
-    await webkitPage.close();
   } finally {
     await browser.close();
   }

@@ -3,20 +3,8 @@
 
   const heroVideoTrigger = document.querySelector('.home-hero__video-trigger');
   const heroVideo = heroVideoTrigger ? heroVideoTrigger.querySelector('[data-home-hero-video]') : null;
-  const heroImageFallback = heroVideoTrigger ? heroVideoTrigger.querySelector('[data-home-hero-fallback]') : null;
 
   if (heroVideoTrigger && heroVideo) {
-    const userAgent = window.navigator.userAgent;
-    const iOSWebKit = /iPad|iPhone|iPod/i.test(userAgent)
-      || (/Macintosh/i.test(userAgent) && window.navigator.maxTouchPoints > 1);
-    const desktopSafari = /Safari/i.test(userAgent) && !/Chrome|Chromium|Edg|OPR|Android/i.test(userAgent);
-    const useImageFallback = Boolean(heroImageFallback && (iOSWebKit || desktopSafari));
-    const fallbackPoster = heroImageFallback ? heroImageFallback.src : '';
-    let fallbackTimer = 0;
-    let fallbackAwaitingLoad = false;
-
-    if (useImageFallback) heroVideoTrigger.classList.add('uses-image-fallback');
-
     function setHeroVideoState(state) {
       const playing = state === 'playing';
       heroVideoTrigger.dataset.state = state;
@@ -28,43 +16,8 @@
       setHeroVideoState('idle');
     }
 
-    function resetImageFallback() {
-      window.clearTimeout(fallbackTimer);
-      fallbackTimer = 0;
-      fallbackAwaitingLoad = false;
-      heroImageFallback.src = fallbackPoster;
-      setHeroVideoState('idle');
-    }
-
-    function finishImageFallback() {
-      fallbackTimer = 0;
-      fallbackAwaitingLoad = false;
-      setHeroVideoState('idle');
-    }
-
-    function startImageFallbackTimer() {
-      if (!fallbackAwaitingLoad || heroVideoTrigger.dataset.state !== 'playing') return;
-      fallbackAwaitingLoad = false;
-      const duration = Number(heroVideoTrigger.dataset.fallbackDuration) || 6100;
-      fallbackTimer = window.setTimeout(finishImageFallback, duration);
-    }
-
-    if (heroImageFallback) {
-      heroImageFallback.addEventListener('load', startImageFallbackTimer);
-      heroImageFallback.addEventListener('error', () => {
-        if (fallbackAwaitingLoad) resetImageFallback();
-      });
-    }
-
     heroVideoTrigger.addEventListener('click', () => {
       if (heroVideoTrigger.dataset.state === 'playing') return;
-
-      if (useImageFallback) {
-        setHeroVideoState('playing');
-        fallbackAwaitingLoad = true;
-        heroImageFallback.src = heroImageFallback.dataset.animatedSrc;
-        return;
-      }
 
       heroVideo.currentTime = 0;
       setHeroVideoState('playing');

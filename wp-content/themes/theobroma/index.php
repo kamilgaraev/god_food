@@ -49,11 +49,10 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                     </div>
                 </div>
             </div>
-            <button class="home-hero__video-trigger" type="button" aria-label="Воспроизвести анимацию шоколада" aria-busy="false" data-state="idle" data-fallback-duration="6100">
-                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster-v2.webp'); ?>">
-                    <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.webm'); ?>" type="video/webm">
+            <button class="home-hero__video-trigger" type="button" aria-label="Воспроизвести анимацию шоколада" aria-busy="false" data-state="idle">
+                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.jpg'); ?>">
+                    <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.mp4'); ?>" type="video/mp4">
                 </video>
-                <img data-home-hero-fallback src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster-v2.webp'); ?>" data-animated-src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-animated-v3.webp'); ?>" width="560" height="560" alt="" decoding="async">
                 <span class="home-hero__play-hint" aria-hidden="true"><i></i>Нажмите, чтобы оживить</span>
             </button>
         </div>
