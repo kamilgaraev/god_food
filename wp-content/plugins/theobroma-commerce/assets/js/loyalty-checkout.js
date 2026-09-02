@@ -1,6 +1,18 @@
 (function ($) {
   'use strict';
 
+  var draftAmount = null;
+
+  $(document.body).on('input', '#theobroma_bonus_amount', function () {
+    draftAmount = $(this).val();
+  });
+
+  $(document.body).on('updated_checkout', function () {
+    if (draftAmount !== null) {
+      $('#theobroma_bonus_amount').val(draftAmount);
+    }
+  });
+
   function setStatus($section, message, isError) {
     $section.find('.theobroma-loyalty-status')
       .toggleClass('is-error', Boolean(isError))
@@ -24,6 +36,7 @@
         setStatus($section, response && response.data ? response.data.message : 'Не удалось применить бонусы.', true);
         return;
       }
+      draftAmount = null;
       $input.val(response.data.accepted);
       setStatus($section, response.data.message, false);
       $(document.body).trigger('update_checkout');

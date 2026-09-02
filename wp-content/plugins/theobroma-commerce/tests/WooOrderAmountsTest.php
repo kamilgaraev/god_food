@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 namespace {
-    if (!class_exists('WC_Order')) {
-        class WC_Order
+    if (!class_exists('WC_Abstract_Order')) {
+        abstract class WC_Abstract_Order
         {
             /** @param list<object> $lineItems @param list<object> $shippingItems */
             public function __construct(
@@ -18,6 +18,12 @@ namespace {
                 return $type === 'line_item' ? $this->lineItems : $this->shippingItems;
             }
         }
+    }
+    if (!class_exists('WC_Order')) {
+        class WC_Order extends WC_Abstract_Order {}
+    }
+    if (!class_exists('WC_Order_Refund')) {
+        class WC_Order_Refund extends WC_Abstract_Order {}
     }
 }
 
@@ -38,7 +44,7 @@ namespace Theobroma\Commerce\Tests {
 
         public function testRefundedMerchandiseUsesAbsoluteRefundedLineTotals(): void
         {
-            $refund = new \WC_Order([
+            $refund = new \WC_Order_Refund([
                 new LoyaltyLineItem(-40.00, -8.00),
                 new LoyaltyLineItem(-10.00, -2.00),
             ], [new LoyaltyLineItem(-500.00, -100.00)]);

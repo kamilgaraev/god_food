@@ -11,12 +11,12 @@ final class WooOrderAmounts
         return $this->lineItemsKopecks($order);
     }
 
-    public function refundedMerchandiseKopecks(\WC_Order $refund): int
+    public function refundedMerchandiseKopecks(\WC_Order_Refund $refund): int
     {
         return abs($this->lineItemsKopecks($refund));
     }
 
-    private function lineItemsKopecks(\WC_Order $order): int
+    private function lineItemsKopecks(\WC_Abstract_Order $order): int
     {
         $total = 0.0;
         foreach ($order->get_items('line_item') as $item) {

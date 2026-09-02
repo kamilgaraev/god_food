@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+// The storefront loads checkout inside the cart modal via admin-ajax.php.
+define('DOING_AJAX', true);
+$_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
 require_once '/var/www/html/wp-load.php';
+add_filter('pre_wp_mail', '__return_true');
 
 Theobroma\Commerce\Installer::activate();
 
@@ -23,6 +27,7 @@ if (is_wp_error($userId)) {
 
 $product = null;
 $order = null;
+$seedOrder = null;
 try {
     wp_set_current_user((int) $userId);
     WC()->session = new WC_Session_Handler();
@@ -53,11 +58,61 @@ try {
 
     $store = new Theobroma\Commerce\Loyalty\WpdbLoyaltyStore($wpdb);
     $store->mutate((int) $userId, 'smoke:checkout-seed:' . $order->get_id(), 'accrue', 50000, 0, $order->get_id());
-    WC()->session->set('theobroma_bonus_requested_kopecks', 20000);
-
     $checkout = new Theobroma\Commerce\Loyalty\LoyaltyCheckout($store);
-    $checkout->syncCoupon();
-    WC()->cart->calculate_totals();
+
+    ob_start();
+    woocommerce_checkout_payment();
+    $paymentHtml = (string) ob_get_clean();
+    if (substr_count($paymentHtml, 'id="theobroma_bonus_amount"') !== 1) {
+        throw new RuntimeException('AJAX payment fragment must contain exactly one usable bonus input.');
+    }
+    if (str_contains($paymentHtml, '&lt;span class=')) {
+        throw new RuntimeException('Bonus balances must render as formatted prices, not escaped HTML.');
+    }
+    if (is_checkout()) {
+        throw new RuntimeException('This fixture must exercise the non-checkout modal entry point.');
+    }
+    $checkout->assets();
+    if (!wp_script_is('theobroma-loyalty-checkout', 'enqueued')) {
+        throw new RuntimeException('Bonus apply script must be available outside the checkout page.');
+    }
+    // Execute the actual AJAX handler, intercepting only WordPress's request termination.
+    $applyAmount = static function (string $amount) use ($checkout): array {
+        $originalPost = $_POST;
+        $originalRequest = $_REQUEST;
+        $_POST = ['amount' => $amount, 'nonce' => wp_create_nonce('theobroma_set_bonus')];
+        $_REQUEST = $_POST;
+        $jsonExit = new RuntimeException('Test-only JSON response termination');
+        $dieHandler = static fn () => static function () use ($jsonExit): void { throw $jsonExit; };
+        add_filter('wp_die_ajax_handler', $dieHandler);
+        ob_start();
+        try {
+            $checkout->ajaxSet();
+        } catch (RuntimeException $exception) {
+            if ($exception !== $jsonExit) {
+                throw $exception;
+            }
+        } finally {
+            $response = (string) ob_get_clean();
+            remove_filter('wp_die_ajax_handler', $dieHandler);
+            $_POST = $originalPost;
+            $_REQUEST = $originalRequest;
+        }
+        return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+    };
+    $response = $applyAmount('999');
+    if (empty($response['success']) || $response['data']['accepted_kopecks'] !== 20000) {
+        throw new RuntimeException('AJAX must cap redemption at 20 percent of merchandise.');
+    }
+    if ((int) round((float) WC()->cart->get_total('edit') * 100) !== 80000) {
+        throw new RuntimeException('Applying bonuses must reduce the actual checkout total.');
+    }
+    $response = $applyAmount('0');
+    if (empty($response['success']) || WC()->cart->has_discount('theobroma-bonus')
+        || (int) round((float) WC()->cart->get_total('edit') * 100) !== 100000) {
+        throw new RuntimeException('Removing bonuses must restore the checkout total.');
+    }
+    $applyAmount('200');
     if (!WC()->cart->has_discount('theobroma-bonus')) {
         throw new RuntimeException('Virtual loyalty coupon was not applied.');
     }
@@ -65,7 +120,19 @@ try {
         throw new RuntimeException('Virtual loyalty coupon has an unexpected amount.');
     }
 
-    $checkout->reserveForOrder($order);
+    $seedOrder = $order;
+    $orderId = WC()->checkout()->create_order([
+        'billing_first_name' => 'Loyalty smoke',
+        'billing_email' => $username . '@example.invalid',
+        'payment_method' => 'cod',
+    ]);
+    if (is_wp_error($orderId)) {
+        throw new RuntimeException($orderId->get_error_message());
+    }
+    $order = wc_get_order($orderId);
+    if (!$order instanceof WC_Order || (int) round((float) $order->get_total() * 100) !== 80000) {
+        throw new RuntimeException('The persisted order must retain the bonus discount.');
+    }
     if ((int) $order->get_meta('_theobroma_bonus_reserved_kopecks', true) !== 20000) {
         throw new RuntimeException('Accepted bonus amount was not persisted on the order.');
     }
@@ -82,6 +149,9 @@ try {
 } finally {
     if ($order instanceof WC_Order) {
         $order->delete(true);
+    }
+    if ($seedOrder instanceof WC_Order) {
+        $seedOrder->delete(true);
     }
     if ($product instanceof WC_Product) {
         $product->delete(true);

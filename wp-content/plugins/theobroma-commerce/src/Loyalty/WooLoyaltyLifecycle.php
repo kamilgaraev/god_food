@@ -46,12 +46,24 @@ final class WooLoyaltyLifecycle
                 $order->update_meta_data('_theobroma_bonus_spent_kopecks', $reserved);
             }
 
-            $accrual = $this->calculator->accrual($this->amounts->paidMerchandiseKopecks($order));
             $accrued = max(0, (int) $order->get_meta('_theobroma_bonus_accrued_kopecks', true));
-            if ($accrual > 0 && $accrued < $accrual) {
-                $this->service->accrue($userId, $orderId, $accrual);
-                $order->update_meta_data('_theobroma_bonus_accrued_kopecks', $accrual);
-                $order->add_order_note(sprintf('Начислено бонусов: %s.', wc_price($accrual / 100)));
+            // Payment consumes a reservation, but rewards become available only after fulfillment.
+            if ($order->has_status('completed') && $accrued === 0) {
+                $original = $this->amounts->paidMerchandiseKopecks($order);
+                $refunded = 0;
+                foreach ($order->get_refunds() as $refund) {
+                    if ($refund instanceof \WC_Order_Refund) {
+                        $refunded += $this->amounts->refundedMerchandiseKopecks($refund);
+                    }
+                }
+                $refunded = min($original, $refunded);
+                $accrual = $this->calculator->accrual($original - $refunded);
+                if ($accrual > 0) {
+                    $this->service->accrue($userId, $orderId, $accrual);
+                    $order->update_meta_data('_theobroma_bonus_accrued_kopecks', $accrual);
+                    $order->update_meta_data('_theobroma_bonus_refunded_before_accrual_kopecks', $refunded);
+                    $order->add_order_note(sprintf('Начислено бонусов: %s.', wc_price($accrual / 100)));
+                }
             }
             $order->save();
         } catch (\Throwable $exception) {
@@ -96,14 +108,16 @@ final class WooLoyaltyLifecycle
             return;
         }
 
-        $this->reverse($order, 0, $accrued, $spent);
+        $alreadyReversed = max(0, (int) $order->get_meta('_theobroma_bonus_reversed_kopecks', true));
+        $alreadyRestored = max(0, (int) $order->get_meta('_theobroma_bonus_restored_kopecks', true));
+        $this->reverse($order, 0, max(0, $accrued - $alreadyReversed), max(0, $spent - $alreadyRestored));
     }
 
     public function onRefunded(int $orderId, int $refundId): void
     {
         $order = wc_get_order($orderId);
         $refund = wc_get_order($refundId);
-        if (!$order instanceof \WC_Order || !$refund instanceof \WC_Order || $order->get_customer_id() < 1) {
+        if (!$order instanceof \WC_Order || !$refund instanceof \WC_Order_Refund || $order->get_customer_id() < 1) {
             return;
         }
 
@@ -114,7 +128,7 @@ final class WooLoyaltyLifecycle
 
         $refunded = 0;
         foreach ($order->get_refunds() as $existingRefund) {
-            if ($existingRefund instanceof \WC_Order) {
+            if ($existingRefund instanceof \WC_Order_Refund) {
                 $refunded += $this->amounts->refundedMerchandiseKopecks($existingRefund);
             }
         }
@@ -125,7 +139,13 @@ final class WooLoyaltyLifecycle
         $accrued = max(0, (int) $order->get_meta('_theobroma_bonus_accrued_kopecks', true));
         $spent = max(0, (int) $order->get_meta('_theobroma_bonus_spent_kopecks', true));
         $ratioNumerator = min($original, $refunded);
-        $targetAccrualReversal = intdiv($accrued * $ratioNumerator, $original);
+        // Earlier refunds were already excluded when rewards were first accrued.
+        // Legacy orders have no baseline and retain the original refund calculation.
+        $beforeAccrual = min($original, max(0, (int) $order->get_meta('_theobroma_bonus_refunded_before_accrual_kopecks', true)));
+        $accrualBase = $original - $beforeAccrual;
+        $targetAccrualReversal = $accrualBase > 0
+            ? intdiv($accrued * max(0, $ratioNumerator - $beforeAccrual), $accrualBase)
+            : 0;
         $targetSpendRestore = intdiv($spent * $ratioNumerator, $original);
         if ($ratioNumerator >= $original) {
             $targetAccrualReversal = $accrued;

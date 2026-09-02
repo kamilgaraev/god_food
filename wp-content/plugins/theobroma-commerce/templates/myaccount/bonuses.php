@@ -17,11 +17,11 @@ $typeLabels = [
         <div><span>Доступно</span><strong><?php echo wp_kses_post(wc_price($availableKopecks / 100)); ?></strong></div>
         <div><span>В резерве</span><strong><?php echo wp_kses_post(wc_price($reservedKopecks / 100)); ?></strong></div>
     </div>
-    <p class="theobroma-bonus-rules">Начисляем 5% от оплаченной стоимости товаров. При следующем заказе бонусами можно оплатить до 20% стоимости товаров. Один бонус равен одному рублю.</p>
+    <p class="theobroma-bonus-rules">Начисляем 5% от оплаченной стоимости товаров после перевода заказа в статус «Выполнено». При следующем заказе бонусами можно оплатить до 20% стоимости товаров: укажите сумму в блоке «Использовать бонусы» при оформлении и нажмите «Применить». Один бонус равен одному рублю.</p>
 
     <h2>История операций</h2>
     <?php if ($entries === []) : ?>
-        <p class="theobroma-bonus-empty">Операций пока нет. Бонусы появятся после первого оплаченного заказа.</p>
+        <p class="theobroma-bonus-empty">Операций пока нет. Бонусы появятся после первого выполненного заказа.</p>
     <?php else : ?>
         <div class="theobroma-bonus-history">
             <?php foreach ($entries as $entry) :

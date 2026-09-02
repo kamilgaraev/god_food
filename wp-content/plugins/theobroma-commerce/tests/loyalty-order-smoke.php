@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once '/var/www/html/wp-load.php';
+add_filter('pre_wp_mail', '__return_true');
 
 Theobroma\Commerce\Installer::activate();
 
@@ -43,6 +44,15 @@ try {
     $order->update_meta_data('_theobroma_bonus_reserved_kopecks', 2000);
     $order->save();
 
+    foreach (['pending', 'on-hold'] as $status) {
+        $order->set_status($status);
+        $order->save();
+        (new Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle($store))->onPaid($order->get_id());
+        if ($store->balance((int) $userId) !== ['available_kopecks' => 8000, 'reserved_kopecks' => 2000]) {
+            throw new RuntimeException('Unpaid order changed the reserved bonus balance.');
+        }
+    }
+
     $order->set_status('processing');
     $order->save();
     (new Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle($store))->onPaid($order->get_id());
@@ -54,6 +64,16 @@ try {
     if ((int) $freshOrder->get_meta('_theobroma_bonus_spent_kopecks', true) !== 2000) {
         throw new RuntimeException('Reserved bonuses were not converted to spent bonuses.');
     }
+    if ((int) $freshOrder->get_meta('_theobroma_bonus_accrued_kopecks', true) !== 0) {
+        throw new RuntimeException('Processing order must not accrue bonuses before completion.');
+    }
+    if ($store->balance((int) $userId) !== ['available_kopecks' => 8000, 'reserved_kopecks' => 0]) {
+        throw new RuntimeException('Processing order must spend the reservation without accruing new bonuses.');
+    }
+
+    $freshOrder->update_status('completed');
+    (new Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle($store))->onPaid($order->get_id());
+    $freshOrder = wc_get_order($order->get_id());
     $actualAccrual = (int) $freshOrder->get_meta('_theobroma_bonus_accrued_kopecks', true);
     if ($actualAccrual !== 500) {
         $savedItem = current($freshOrder->get_items('line_item'));

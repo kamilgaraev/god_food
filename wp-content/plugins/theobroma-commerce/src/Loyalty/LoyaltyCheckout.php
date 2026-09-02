@@ -27,7 +27,8 @@ final class LoyaltyCheckout
     public function register(): void
     {
         add_action('wp_loaded', [$this, 'syncCoupon'], 30);
-        add_action('woocommerce_review_order_before_payment', [$this, 'render']);
+        // This hook is inside the payment fragment and also runs for the AJAX cart modal.
+        add_action('woocommerce_checkout_before_terms_and_conditions', [$this, 'render'], 5);
         add_action('wp_ajax_theobroma_set_bonus', [$this, 'ajaxSet']);
         add_filter('woocommerce_get_shop_coupon_data', [$this, 'couponData'], 10, 2);
         add_action('woocommerce_after_checkout_validation', [$this, 'validate'], 30, 2);
@@ -67,8 +68,8 @@ final class LoyaltyCheckout
         <section class="theobroma-loyalty-checkout" aria-labelledby="theobroma-loyalty-title">
             <h3 id="theobroma-loyalty-title">Использовать бонусы</h3>
             <p class="theobroma-loyalty-balance">
-                Доступно: <strong><?php echo esc_html(wc_price($available / 100)); ?></strong>.
-                Можно списать до <strong><?php echo esc_html(wc_price($maximum / 100)); ?></strong>.
+                Доступно: <strong><?php echo wp_kses_post(wc_price($available / 100)); ?></strong>.
+                Можно списать до <strong><?php echo wp_kses_post(wc_price($maximum / 100)); ?></strong>.
             </p>
             <div class="theobroma-loyalty-control">
                 <label for="theobroma_bonus_amount">Сколько бонусов списать</label>
@@ -201,7 +202,8 @@ final class LoyaltyCheckout
 
     public function assets(): void
     {
-        if (!is_checkout() || !is_user_logged_in()) {
+        // Authenticated customers can open the AJAX checkout modal from any storefront page.
+        if (!is_user_logged_in()) {
             return;
         }
 
