@@ -59,13 +59,21 @@
   margin:0 0 3rem !important;
   padding:1.375rem 1.5rem !important;
   display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(0,1fr);
   gap:1.25rem;
   border:0;
   border-radius:1rem;
   background:var(--order-cream);
   box-shadow:0 1rem 2.5rem rgba(52,42,35,.055);
   list-style:none;
+}
+
+/* Legacy WooCommerce clearfix boxes must not become empty grid cells. */
+.woocommerce-order ul.order_details::before,
+.woocommerce-order ul.order_details::after {
+  content:none;
+  display:none;
 }
 
 .woocommerce-order-overview li,
@@ -318,6 +326,7 @@ body.woocommerce-account .woocommerce .woocommerce-customer-details .woocommerce
 @media (max-width:900px) {
   .woocommerce-order-overview,
   .woocommerce-order ul.order_details {
+    grid-auto-flow:row;
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
 

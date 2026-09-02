@@ -11,6 +11,15 @@ assert.equal(fs.existsSync(stylesheet), true, 'WooCommerce order UI stylesheet m
 const styles = fs.readFileSync(stylesheet, 'utf8');
 const baseStyles = fs.readFileSync(baseStylesheet, 'utf8');
 
+// WooCommerce's legacy clearfix participates in a theme's grid unless disabled.
+// Mirrors client/legacy/css/woocommerce.scss and _mixins.scss upstream.
+const legacyOrderStyles = `
+  .woocommerce ul.order_details::before,
+  .woocommerce ul.order_details::after { content: ' '; display: table; }
+  .woocommerce ul.order_details::after { clear: both; }
+  .woocommerce ul.order_details li { float: left; margin-right: 2em; padding-right: 2em; }
+`;
+
 const markup = `
   <main class="shop-page"><div class="shop-shell"><div class="woocommerce">
     <div class="woocommerce-order">
@@ -48,7 +57,7 @@ const markup = `
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
-    await page.setContent(`<style>${baseStyles}</style><style>${styles}</style><body class="logged-in woocommerce-account woocommerce-view-order">${markup}</body>`);
+    await page.setContent(`<style>${legacyOrderStyles}</style><style>${baseStyles}</style><style>${styles}</style><body class="logged-in woocommerce-account woocommerce-view-order">${markup}</body>`);
 
     const desktop = await page.evaluate(() => {
       const overview = getComputedStyle(document.querySelector('.woocommerce-order-overview'));
@@ -92,6 +101,41 @@ const markup = `
     assert.equal(mobile.rowDisplay, 'grid');
     assert.equal(mobile.columnCount, 1);
     assert.ok(mobile.overflow <= 0, `mobile order UI overflows by ${mobile.overflow}px`);
+
+    for (const fieldCount of [4, 5]) {
+      for (const width of [1440, 1270, 1024, 820, 390, 320]) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.setContent(`<style>${legacyOrderStyles}</style><style>${baseStyles}</style><style>${styles}</style><body class="woocommerce-checkout woocommerce-order-received">${markup}</body>`);
+        if (fieldCount === 4) {
+          await page.locator('.woocommerce-order-overview li').nth(2).evaluate((item) => item.remove());
+        }
+        const layout = await page.locator('.woocommerce-order-overview').evaluate((overview) => {
+          const style = getComputedStyle(overview);
+          const box = overview.getBoundingClientRect();
+          const items = Array.from(overview.children, (item) => {
+            const rect = item.getBoundingClientRect();
+            return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+          });
+          return {
+            left: box.left + parseFloat(style.paddingLeft),
+            right: box.right - parseFloat(style.paddingRight),
+            top: box.top + parseFloat(style.paddingTop),
+            bottom: box.bottom - parseFloat(style.paddingBottom),
+            items,
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          };
+        });
+        const context = `${fieldCount} fields at ${width}px`;
+        assert.ok(Math.abs(layout.items[0].left - layout.left) <= 1, `${context}: empty first column`);
+        assert.ok(Math.abs(layout.items[0].top - layout.top) <= 1, `${context}: empty first row`);
+        assert.ok(Math.abs(Math.max(...layout.items.map((item) => item.bottom)) - layout.bottom) <= 1, `${context}: empty trailing row`);
+        assert.ok(layout.overflow <= 0, `${context}: horizontal overflow`);
+        if (width > 900) {
+          assert.ok(layout.items.every((item) => Math.abs(item.top - layout.top) <= 1), `${context}: fields must share one row`);
+          assert.ok(Math.abs(layout.items.at(-1).right - layout.right) <= 1, `${context}: empty trailing column`);
+        }
+      }
+    }
   } finally {
     await browser.close();
   }
