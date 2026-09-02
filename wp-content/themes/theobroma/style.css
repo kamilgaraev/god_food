@@ -2252,20 +2252,30 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 }
 
 /* Loyalty is provided by the commerce plugin; the theme owns only its visual presentation. */
-.theobroma-loyalty-checkout { margin:1.75rem 0 1.5rem; padding:1.375rem 1.25rem; border:1px solid rgba(176,144,61,.35); background:#f3ebe4; color:#343434; font:400 0.8125rem/1.1875rem 'Montserrat',Arial,sans-serif; }
+.theobroma-loyalty-checkout { margin:1.25rem 0; padding:1.25rem; border:1px solid rgba(176,144,61,.35); border-radius:0.875rem; background:#f3ebe4; color:#343434; font:400 0.8125rem/1.1875rem 'Montserrat',Arial,sans-serif; }
+/* The AJAX payment fragment owns the divider gap; do not add card margins to it. */
+.commerce-cart-checkout #payment:has(.theobroma-loyalty-checkout) .wc_payment_methods { margin:0 !important; padding:0 0 1.25rem !important; border-bottom:1px solid #dfd2c3; }
+.commerce-cart-checkout #payment:has(.theobroma-loyalty-checkout) .wc_payment_methods::before,
+.commerce-cart-checkout #payment:has(.theobroma-loyalty-checkout) .wc_payment_methods::after { content:none; }
+.commerce-cart-checkout #payment:has(.theobroma-loyalty-checkout) .form-row.place-order { padding-top:1.25rem !important; }
+.commerce-cart-checkout #payment .theobroma-loyalty-checkout { margin:0 0 1.25rem; }
 .theobroma-loyalty-checkout h3 { margin:0 0 0.5rem !important; color:#111 !important; font:500 1.25rem/1.625rem 'Cormorant',Arial,sans-serif !important; }
-.theobroma-loyalty-balance { margin:0 0 1rem; }
+.theobroma-loyalty-checkout .theobroma-loyalty-balance { margin:0 0 1rem; }
 .theobroma-loyalty-balance strong { color:#9b7827; font-weight:500; }
-.theobroma-loyalty-control { display:grid; grid-template-columns:minmax(0,1fr) 8.125rem; gap:0.5rem 0.75rem; align-items:end; }
+.theobroma-loyalty-control { display:grid; grid-template-columns:minmax(0,1fr) 8.125rem; gap:0.5rem 0.75rem; align-items:stretch; min-width:0; }
 .theobroma-loyalty-control label { grid-column:1/-1; margin:0 !important; color:#6f655e !important; font:400 0.75rem/1.0625rem 'Montserrat',Arial,sans-serif !important; }
-.theobroma-loyalty-control input { width:100% !important; height:2.625rem !important; min-height:2.625rem !important; padding:0 0.875rem !important; border:0 !important; border-bottom:1px solid #b0903d !important; border-radius:0 !important; background:#fcf9f7 !important; color:#343434 !important; font:400 0.875rem/1.25rem 'Montserrat',Arial,sans-serif !important; }
-.theobroma-loyalty-control .button { width:8.125rem; height:2.625rem; min-height:2.625rem; margin:0; padding:0 0.9375rem; border:0; border-radius:62.4375rem; color:#fff; background:#b0903d; font:500 0.8125rem/1.125rem 'Montserrat',Arial,sans-serif; }
-.theobroma-loyalty-control .button:disabled { cursor:wait; opacity:.6; }
-.theobroma-loyalty-status { min-height:1.125rem; margin:0.5rem 0 0; color:#6d7d51; font-size:0.6875rem; line-height:1.125rem; }
-.theobroma-loyalty-status.is-error { color:#8c3b2f; }
+.theobroma-loyalty-control input { box-sizing:border-box !important; min-width:0 !important; width:100% !important; height:max(44px,3rem) !important; min-height:max(44px,3rem) !important; margin:0 !important; padding:0 0.875rem !important; border:1px solid #dfd2c3 !important; border-radius:0.625rem !important; background:#fcf9f7 !important; color:#343434 !important; font:400 0.875rem/1.25rem 'Montserrat',Arial,sans-serif !important; }
+.theobroma-loyalty-checkout .theobroma-loyalty-control button.button { box-sizing:border-box; display:flex; align-items:center; justify-content:center; float:none; min-width:0; width:100%; height:max(44px,3rem); min-height:max(44px,3rem); margin:0; padding:0 1rem; border:1px solid transparent; border-radius:62.4375rem; color:#fff; background:#754b2d; box-shadow:none; text-transform:none; letter-spacing:0; font:500 0.8125rem/1.125rem 'Montserrat',Arial,sans-serif; cursor:pointer; transition:background-color .15s ease; }
+.theobroma-loyalty-checkout .theobroma-loyalty-control button.button:hover { color:#fff; background:#5f3d25; }
+.theobroma-loyalty-checkout .theobroma-loyalty-control button.button:disabled { cursor:wait; opacity:.6; }
+.theobroma-loyalty-control input:focus-visible,
+.theobroma-loyalty-checkout .theobroma-loyalty-control button.button:focus-visible { outline:2px solid #754b2d; outline-offset:3px; }
+.theobroma-loyalty-checkout .theobroma-loyalty-status { margin:0.75rem 0 0; color:#6d7d51; font-size:0.75rem; line-height:1.125rem; }
+.theobroma-loyalty-checkout .theobroma-loyalty-status:empty { margin:0; }
+.theobroma-loyalty-checkout .theobroma-loyalty-status.is-error { color:#8c3b2f; }
 
 @media (max-width:600px) {
-  .theobroma-loyalty-checkout { margin:1.5rem 0 1.25rem; padding:1.25rem 1rem; }
+  .theobroma-loyalty-checkout { padding:1.25rem 1rem; }
   .theobroma-loyalty-control { grid-template-columns:1fr; }
   .theobroma-loyalty-control label { grid-column:auto; }
   .theobroma-loyalty-control .button { width:100%; }
