@@ -141,7 +141,11 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero__shell { position: relative; min-height: clamp(31rem, 39vw, 35rem); padding: clamp(3.5rem, 5vw, 4.75rem) max(calc((100% - var(--home-container)) / 2), var(--home-gutter)) 2.25rem; display: grid; grid-template-columns: minmax(20rem, .82fr) minmax(29rem, 1.18fr); align-items: center; gap: clamp(2rem, 4vw, 5rem); overflow: hidden; }
 .home-hero__copy { position: relative; z-index: 3; min-width: 0; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
 .home-hero__copy { container-type: inline-size; }
-.home-eyebrow { width: 100%; max-width: none; margin: 0; color: #171411; text-align: left; font: 400 clamp(1.5rem, 11cqw, 4.5rem)/1 'Cormorant', Georgia, serif; letter-spacing: normal; text-transform: uppercase; }
+.home-eyebrow { width: max-content; max-width: none; margin: 0; color: #171411; text-align: left; font: 400 clamp(1.5rem, 11cqw, 7rem)/.96 'Cormorant', Georgia, serif; letter-spacing: normal; text-transform: uppercase; }
+@media (min-width: 1200px) {
+  .home-hero__shell { grid-template-columns: minmax(20rem, 1.1fr) minmax(29rem, .9fr); }
+  .home-eyebrow { font-size: clamp(3rem, 4.4vw, 7rem); }
+}
 .home-eyebrow span { display: block; white-space: nowrap; }
 .home-eyebrow span:nth-child(2) { padding-left: .65em; }
 .home-hero__video-trigger { position: relative; z-index: 2; width: min(100%, 38rem); aspect-ratio: 1; justify-self: center; padding: 0; border: 0; appearance: none; background: radial-gradient(circle at 56% 50%, rgba(176,144,61,.12), rgba(176,144,61,.035) 42%, transparent 70%); cursor: pointer; isolation: isolate; overflow: visible; transition: filter .45s ease; }
