@@ -140,8 +140,11 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero__shell { width: 100%; max-width: none; margin-inline: auto; }
 .home-hero__shell { position: relative; min-height: clamp(31rem, 39vw, 35rem); padding: clamp(3.5rem, 5vw, 4.75rem) max(calc((100% - var(--home-container)) / 2), var(--home-gutter)) 2.25rem; display: grid; grid-template-columns: minmax(20rem, .82fr) minmax(29rem, 1.18fr); align-items: center; gap: clamp(2rem, 4vw, 5rem); overflow: hidden; }
 .home-hero__copy { position: relative; z-index: 3; min-width: 0; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
-.home-eyebrow { max-width: 9.5ch; margin: 0; color: var(--home-gold); text-align: left; font: italic 400 clamp(3.75rem, 5.2vw, 5.5rem)/.82 'Cormorant', Georgia, serif; letter-spacing: -.045em; text-wrap: balance; }
-.home-hero__video-trigger { position: relative; z-index: 2; width: min(100%, 38rem); aspect-ratio: 1; justify-self: center; padding: 0; border: 0; appearance: none; background: radial-gradient(circle at 56% 50%, rgba(176,144,61,.12), rgba(176,144,61,.035) 42%, transparent 70%); cursor: pointer; isolation: isolate; overflow: visible; transition: transform .45s cubic-bezier(.22,.61,.36,1), filter .45s ease; }
+.home-hero__copy { container-type: inline-size; }
+.home-eyebrow { width: 100%; max-width: none; margin: 0; color: #171411; text-align: left; font: 400 clamp(1.5rem, 11cqw, 4.5rem)/1 'Cormorant', Georgia, serif; letter-spacing: normal; text-transform: uppercase; }
+.home-eyebrow span { display: block; white-space: nowrap; }
+.home-eyebrow span:nth-child(2) { padding-left: .65em; }
+.home-hero__video-trigger { position: relative; z-index: 2; width: min(100%, 38rem); aspect-ratio: 1; justify-self: center; padding: 0; border: 0; appearance: none; background: radial-gradient(circle at 56% 50%, rgba(176,144,61,.12), rgba(176,144,61,.035) 42%, transparent 70%); cursor: pointer; isolation: isolate; overflow: visible; transition: filter .45s ease; }
 .home-hero__video-trigger video { position: absolute; right: -6%; bottom: -3.1875rem; width: clamp(52rem, 76vw, 80rem); max-width: none; height: auto; aspect-ratio: 16 / 9; display: block; object-fit: contain; transform: translateY(.75rem); clip-path: inset(2px 0 0); pointer-events: none; }
 @media (min-width: 1440px) {
   .home-hero__video-trigger video { bottom: -3.3125rem; }
@@ -154,7 +157,7 @@ body { overflow-x: clip; background: var(--home-paper); }
 .home-hero__play-hint i::before { content: ''; width: 0; height: 0; margin-left: .125rem; border-top: .22rem solid transparent; border-bottom: .22rem solid transparent; border-left: .34rem solid #fff; }
 .home-hero__video-trigger[data-state="playing"] .home-hero__play-hint { opacity: 0; transform: translateY(.35rem); }
 @media (hover: hover) and (pointer: fine) {
-  .home-hero__video-trigger[data-state="idle"]:hover { transform: translateY(-.2rem) rotate(.25deg); filter: saturate(1.04); }
+  .home-hero__video-trigger[data-state="idle"]:hover { filter: saturate(1.04); }
 }
 .home-hero__video-trigger:focus { outline: none; }
 .home-hero__video-trigger:focus-visible { outline: 2px solid var(--home-gold); outline-offset: .25rem; border-radius: 1rem; }
@@ -282,7 +285,6 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-hero__shell { min-height: clamp(29rem, 50vw, 33rem); max-height: none; }
   .home-hero { margin-top: 0; }
   .home-hero__shell { padding-block: 2.75rem 2rem; grid-template-columns: minmax(15rem, .9fr) minmax(19rem, 1.1fr); gap: clamp(1.25rem, 4vw, 3rem); }
-  .home-eyebrow { font-size: clamp(3rem, 6.6vw, 4.25rem); }
   .home-hero__video-trigger { width: min(100%, 31rem); align-self: stretch; aspect-ratio: auto; }
   .home-hero__video-trigger video { bottom: -2.75rem; }
   .home-hero__lead { margin-top: 1.75rem; }
@@ -374,7 +376,6 @@ body { overflow-x: clip; background: var(--home-paper); }
   .home-hero { margin-top: 0; }
   .home-hero__shell { padding-block: 2rem 1.75rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
   .home-hero__copy { display: block; }
-  .home-eyebrow { max-width: 9.5ch; font-size: clamp(3rem, 15vw, 4.125rem); text-align: left; }
   .home-hero__video-trigger { display: none; }
   .home-hero__lead { width: auto; margin-top: 1.5rem; }
   .home-hero__lead > p { width: 100%; margin-bottom: 1rem; font-size: 0.75rem; line-height: 1.5; }

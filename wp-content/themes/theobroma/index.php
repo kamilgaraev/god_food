@@ -30,7 +30,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
         <div class="home-hero__shell">
             <h1 id="home-hero-title" class="screen-reader-text">Абсолютно натуральный шоколад</h1>
             <div class="home-hero__copy">
-                <p class="home-eyebrow">Абсолютно натуральный шоколад</p>
+                <p class="home-eyebrow" aria-hidden="true"><span>Абсолютно</span> <span>натуральный</span> <span>шоколад</span></p>
                 <div class="home-hero__lead">
                     <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
                     <div class="home-hero__actions">

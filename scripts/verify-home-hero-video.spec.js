@@ -40,7 +40,7 @@ function visibleChocolateGap(png) {
 
 (async () => {
   assert(hero, 'Homepage hero must exist');
-  assert.match(hero, /<p class="home-eyebrow">Абсолютно натуральный шоколад<\/p>/,
+  assert.match(hero, /<p class="home-eyebrow"[^>]*><span>Абсолютно<\/span>\s*<span>натуральный<\/span>\s*<span>шоколад<\/span><\/p>/,
     'Hero must identify the product as absolutely natural chocolate');
 
   const triggerMarkup = hero.match(/<button class="home-hero__video-trigger"[\s\S]*?<\/button>/)?.[0];
