@@ -201,4 +201,15 @@ assert_same(80, theobroma_requested_cacao_percentage(array('cacao_percentage' =>
 assert_same(null, theobroma_requested_cacao_percentage(array('cacao_percentage' => '80x')), 'Ignores malformed public filter values');
 assert_same(array(10, 11, 12), theobroma_catalog_percentage_product_ids(70), 'Builds catalogue post IDs for the requested percentage');
 
+$test_options['theobroma_content_settings'] = array('cacao_profiles' => array(
+    array('percentage' => 70, 'enabled' => '1', 'label' => 'Авторский', 'description' => 'Свободное описание', 'image_url' => 'https://example.test/custom.jpg', 'fact' => 'Своя подпись'),
+    array('percentage' => 80, 'enabled' => '1', 'label' => 'Глубокий', 'description' => ''),
+));
+$custom_profiles = theobroma_cacao_profiles();
+assert_same('https://example.test/custom.jpg', $custom_profiles[70]['image_url'], 'Preserves custom image through settings and frontend profile projection');
+assert_same('Своя подпись', $custom_profiles[70]['fact'], 'Preserves custom caption through settings and frontend profile projection');
+assert_same('Свободное описание', $custom_profiles[70]['description'], 'Preserves arbitrary profile description');
+assert_same('', $custom_profiles[80]['image_url'], 'Legacy profiles leave the product image fallback available');
+assert_same('', $custom_profiles[80]['fact'], 'Legacy profiles leave the product caption fallback available');
+
 echo "Homepage data contract verified\n";

@@ -15,6 +15,7 @@ function add_filter(...$args): void {}
 function current_user_can(string $capability): bool { return $capability === 'manage_options'; }
 function admin_url(string $path = ''): string { return 'https://example.test/wp-admin/' . $path; }
 function esc_url(string $value): string { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
+function esc_url_raw(string $value, array $protocols = array()): string { return filter_var($value, FILTER_VALIDATE_URL) && in_array(parse_url($value, PHP_URL_SCHEME), $protocols, true) ? $value : ''; }
 function esc_html(string $value): string { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
 function esc_attr(string $value): string { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
 function esc_textarea(string $value): string { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); }
@@ -108,6 +109,9 @@ if (!str_contains($html, 'Ваш процент какао')
     || !str_contains($html, 'name="settings[cacao_profiles][0][percentage]"')
     || !str_contains($html, 'name="settings[cacao_profiles][0][product_id]"')
     || !str_contains($html, 'name="settings[cacao_profiles][0][label]"')
+    || !str_contains($html, 'name="settings[cacao_profiles][0][image_url]"')
+    || !str_contains($html, 'name="settings[cacao_profiles][0][fact]"')
+    || !str_contains($html, 'data-select-cacao-image')
     || !str_contains($html, 'name="settings[cacao_profiles][0][description]"')) {
     throw new RuntimeException('Cacao block settings must expose section copy and profile controls.');
 }
@@ -122,7 +126,7 @@ $normalizedCacao = Theobroma_Admin_Tools::normalize_cacao_settings(array(
     'cacao_enabled' => 'yes',
     'cacao_default_percentage' => '99',
     'cacao_profiles' => array(
-        array('percentage' => '85', 'enabled' => '1', 'label' => ' новый <b>вкус</b> ', 'description' => "Описание\nвкуса", 'product_id' => '14'),
+        array('percentage' => '85', 'enabled' => '1', 'label' => ' новый <b>вкус</b> ', 'description' => "Описание\nвкуса", 'product_id' => '14', 'image_url' => 'https://example.test/custom.jpg', 'fact' => '<b>Своя подпись</b>'),
         array('percentage' => '85', 'enabled' => '1', 'label' => 'дубликат', 'description' => ''),
         array('percentage' => '72', 'enabled' => 'unexpected', 'label' => 'деликатный', 'description' => '', 'product_id' => '15'),
         array('percentage' => '101', 'enabled' => '1', 'label' => 'ошибка', 'description' => ''),
@@ -132,8 +136,8 @@ $normalizedCacao = Theobroma_Admin_Tools::normalize_cacao_settings(array(
 if (($normalizedCacao['cacao_enabled'] ?? null) !== '0'
     || ($normalizedCacao['cacao_default_percentage'] ?? null) !== '85'
     || ($normalizedCacao['cacao_profiles'] ?? null) !== array(
-        array('percentage' => 72, 'enabled' => '0', 'label' => 'деликатный', 'description' => '', 'product_id' => 0),
-        array('percentage' => 85, 'enabled' => '1', 'label' => 'новый вкус', 'description' => "Описание\nвкуса", 'product_id' => 14),
+        array('percentage' => 72, 'enabled' => '0', 'label' => 'деликатный', 'description' => '', 'image_url' => '', 'fact' => '', 'product_id' => 0),
+        array('percentage' => 85, 'enabled' => '1', 'label' => 'новый вкус', 'description' => "Описание\nвкуса", 'image_url' => 'https://example.test/custom.jpg', 'fact' => 'Своя подпись', 'product_id' => 14),
     )) {
     throw new RuntimeException('Cacao settings must sanitize dynamic profiles, reject duplicates, and choose an enabled default percentage.');
 }

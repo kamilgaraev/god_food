@@ -228,6 +228,8 @@ final class Theobroma_Admin_Tools {
                 'enabled' => !empty($profile['enabled']),
                 'label' => (string) ($profile['label'] ?? ''),
                 'description' => (string) ($profile['description'] ?? ''),
+                'image_url' => (string) ($profile['image_url'] ?? ''),
+                'fact' => (string) ($profile['fact'] ?? ''),
                 'product_id' => (int) ($profile['product_id'] ?? 0),
             ), $product_choices);
         }
@@ -254,6 +256,11 @@ final class Theobroma_Admin_Tools {
         echo '</select></label><br><span class="description">Выберите товар, если его название не начинается с указанного процента.</span></p>';
         echo '<p><label><strong>Название вкуса</strong><br><input class="regular-text" type="text" required name="' . esc_attr($prefix . '[label]') . '" value="' . esc_attr($profile['label']) . '"></label></p>';
         echo '<p><label><strong>Описание</strong><br><textarea class="large-text" rows="3" name="' . esc_attr($prefix . '[description]') . '">' . esc_textarea($profile['description']) . '</textarea></label></p>';
+        $image_url = (string) ($profile['image_url'] ?? '');
+        echo '<div data-cacao-image><p><label><strong>Изображение блока</strong><br><input class="large-text" type="url" data-cacao-image-url name="' . esc_attr($prefix . '[image_url]') . '" value="' . esc_attr($image_url) . '" placeholder="https://..."></label></p>';
+        echo '<p><button type="button" class="button" data-select-cacao-image>Выбрать изображение</button> <button type="button" class="button" data-clear-cacao-image>Сбросить</button></p>';
+        echo '<img data-cacao-image-preview src="' . esc_url($image_url) . '" alt="Предпросмотр изображения" style="max-width:180px;height:auto"' . ($image_url === '' ? ' hidden' : '') . '><p class="description">Выберите файл из медиатеки или вставьте ссылку. Пустое поле использует изображение товара.</p></div>';
+        echo '<p><label><strong>Короткая подпись под описанием</strong><br><input class="large-text" type="text" name="' . esc_attr($prefix . '[fact]') . '" value="' . esc_attr((string) ($profile['fact'] ?? '')) . '"></label><br><span class="description">Пустое поле использует краткое описание товара.</span></p>';
         echo '<p><button type="button" class="button-link-delete" data-remove-cacao-profile>Удалить процент</button></p>';
         echo '</div></fieldset>';
     }
@@ -360,6 +367,8 @@ final class Theobroma_Admin_Tools {
                 'enabled' => ($row['enabled'] ?? '0') === '1' ? '1' : '0',
                 'label' => $label,
                 'description' => is_string($row['description'] ?? null) ? sanitize_textarea_field($row['description']) : '',
+                'image_url' => is_string($row['image_url'] ?? null) ? esc_url_raw($row['image_url'], array('http', 'https')) : '',
+                'fact' => is_string($row['fact'] ?? null) ? sanitize_text_field($row['fact']) : '',
                 'product_id' => $eligible_product ? $product_id : 0,
             );
             $used[] = $percentage;
@@ -501,6 +510,7 @@ final class Theobroma_Admin_Tools {
         if (!str_ends_with($hook, '_page_theobroma-settings')) {
             return;
         }
+        wp_enqueue_media();
         wp_enqueue_script(
             'theobroma-content-settings',
             plugin_dir_url(__FILE__) . 'assets/content-settings.js',

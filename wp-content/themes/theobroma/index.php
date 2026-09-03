@@ -23,7 +23,7 @@ $default_display = $cacao_options[$default_percentage] ?? array('percentage' => 
 $default_image_id = $default_product instanceof WC_Product
     ? (int) ($default_product->get_meta('_theobroma_product_detail_image_id', true) ?: $default_product->get_image_id())
     : 0;
-$default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($default_image_id, 'large') : '';
+$default_image_url = !empty($default_profile['image_url']) ? $default_profile['image_url'] : ($default_image_id ? (string) wp_get_attachment_image_url($default_image_id, 'large') : '');
 ?>
 <main<?php echo is_front_page() ? ' id="theobroma-main" tabindex="-1"' : ''; ?>>
     <section class="home-hero" aria-labelledby="home-hero-title">
@@ -105,7 +105,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                             $profile = $cacao_profiles[$percentage] ?? array('label' => '', 'description' => '');
                             $product_url = $group['url'] ?? theobroma_cacao_catalog_url($percentage);
                             $image_id = (int) ($product->get_meta('_theobroma_product_detail_image_id', true) ?: $product->get_image_id());
-                            $image_url = $image_id ? (string) wp_get_attachment_image_url($image_id, 'large') : '';
+                            $image_url = !empty($profile['image_url']) ? $profile['image_url'] : ($image_id ? (string) wp_get_attachment_image_url($image_id, 'large') : '');
                             $selected = $percentage === $default_percentage;
                             ?>
                             <button
@@ -119,7 +119,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                                 data-percent="<?php echo esc_attr((string) $percentage); ?>"
                                 data-title="<?php echo esc_attr(mb_convert_case($option['label'], MB_CASE_TITLE, 'UTF-8') . ' ' . $option['percentage'] . '%'); ?>"
                                 data-description="<?php echo esc_attr($profile['description']); ?>"
-                                data-fact="<?php echo esc_attr(wp_strip_all_tags($product->get_short_description())); ?>"
+                                data-fact="<?php echo esc_attr(($profile['fact'] ?? '') !== '' ? $profile['fact'] : wp_strip_all_tags($product->get_short_description())); ?>"
                                 data-price="<?php echo esc_attr('от ' . wp_strip_all_tags(wc_price($group['minimum_price']))); ?>"
                                 data-url="<?php echo esc_url($product_url); ?>"
                                 data-image="<?php echo esc_url($image_url); ?>"
@@ -140,7 +140,7 @@ $default_image_url = $default_image_id ? (string) wp_get_attachment_image_url($d
                     <div class="home-cacao__copy">
                         <h3 data-cacao-title><?php echo esc_html(mb_convert_case($default_display['label'], MB_CASE_TITLE, 'UTF-8') . ' ' . $default_display['percentage'] . '%'); ?></h3>
                         <p class="home-cacao__description" data-cacao-description><?php echo esc_html($default_profile['description']); ?></p>
-                        <p class="home-cacao__fact" data-cacao-fact><?php echo esc_html(wp_strip_all_tags($default_product->get_short_description())); ?></p>
+                        <p class="home-cacao__fact" data-cacao-fact><?php echo esc_html(($default_profile['fact'] ?? '') !== '' ? $default_profile['fact'] : wp_strip_all_tags($default_product->get_short_description())); ?></p>
                         <div class="home-cacao__buy">
                             <a class="home-button home-button--primary" href="<?php echo esc_url($default_group['url'] ?? theobroma_cacao_catalog_url($default_percentage)); ?>"><?php echo esc_html($cacao_settings['button_label']); ?></a>
                             <strong><?php echo wp_kses_post('от ' . wc_price($default_group['minimum_price'])); ?></strong>

@@ -56,7 +56,9 @@ function theobroma_normalize_cacao_profiles(array $rows): array {
         $product_id = is_int($row['product_id'] ?? null) || (is_string($row['product_id'] ?? null) && ctype_digit($row['product_id']))
             ? max(0, (int) $row['product_id'])
             : 0;
-        $profiles[$percentage] = array('enabled' => $enabled, 'label' => $label, 'description' => $description, 'product_id' => $product_id);
+        $image_url = is_string($row['image_url'] ?? null) ? trim($row['image_url']) : '';
+        $fact = is_string($row['fact'] ?? null) ? trim(strip_tags($row['fact'])) : '';
+        $profiles[$percentage] = array('enabled' => $enabled, 'label' => $label, 'description' => $description, 'product_id' => $product_id, 'image_url' => $image_url, 'fact' => $fact);
     }
     ksort($profiles, SORT_NUMERIC);
     return $profiles;
@@ -365,7 +367,7 @@ if (function_exists('add_filter')) {
 /** @return array<int,array{label:string,description:string}> */
 function theobroma_cacao_profiles(): array {
     return array_map(
-        static fn(array $profile): array => array('label' => $profile['label'], 'description' => $profile['description']),
+        static fn(array $profile): array => array('label' => $profile['label'], 'description' => $profile['description'], 'image_url' => $profile['image_url'] ?? '', 'fact' => $profile['fact'] ?? ''),
         theobroma_cacao_settings()['profiles']
     );
 }
