@@ -336,7 +336,8 @@
     var city = document.querySelector('#billing_city');
     if (!city) return;
     // Address is entered once, inside the courier dialog.
-    var reveal = false;
+    var chosen = checkoutElement('input[name^="shipping_method"]:checked');
+    var reveal = Boolean(config.officialCdek && chosen && chosen.value === 'official_cdek:137');
     document.querySelectorAll('.theobroma-delivery-address').forEach(function (row) {
       row.hidden = !reveal;
       row.setAttribute('aria-hidden', reveal ? 'false' : 'true');
@@ -363,7 +364,7 @@
       var deliveryHeading = document.createElement('h3');
       deliveryHeading.className = 'theobroma-delivery-heading';
       deliveryHeading.textContent = 'Доставка';
-      var cityRow = fields.querySelector('#billing_city_field');
+      var cityRow = fields.querySelector(config.officialCdek ? '#billing_country_field' : '#billing_city_field');
       fields.insertBefore(deliveryHeading, cityRow || host);
     }
     ['first_name', 'last_name', 'phone', 'email'].forEach(function (key) {
@@ -424,8 +425,27 @@
       body: JSON.stringify(core.buildQuotePayload(state.provider, state.kind, state.selected, details))
     }); }).then(function (data) {
       setStatus((data.quote && data.quote.label ? data.quote.label : 'Доставка выбрана') + '. Обновляем заказ…');
-      $(document.body).trigger('update_checkout');
-      window.setTimeout(closeDialog, 350);
+      return new Promise(function (resolve, reject) {
+        var body = $(document.body);
+        var attempts = 0;
+        var timer = window.setTimeout(function () { finish(new Error('Не удалось выбрать доставку. Повторите расчёт.')); }, 25000);
+        function finish(error) {
+          window.clearTimeout(timer);
+          body.off('updated_checkout.theobromaChoose');
+          if (error) reject(error); else { closeDialog(); resolve(); }
+        }
+        body.on('updated_checkout.theobromaChoose', function () {
+          var opener = document.querySelector('.commerce-cart-checkout [data-delivery-open="' + data.provider + '"].is-confirmed');
+          var row = opener && opener.closest('li');
+          var radio = row && row.querySelector('input[name^="shipping_method"]');
+          if (!radio) { finish(new Error('Расчёт доставки устарел. Выберите доставку ещё раз.')); return; }
+          if (radio.checked || radio.type === 'hidden') { finish(); return; }
+          if (++attempts > 1) { finish(new Error('Не удалось переключить способ доставки.')); return; }
+          radio.checked = true;
+          body.trigger('update_checkout');
+        });
+        body.trigger('update_checkout');
+      });
     }).catch(function (error) {
       setStatus(error.message, true);
     }).finally(function () { button.disabled = false; });
