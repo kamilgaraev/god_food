@@ -79,8 +79,9 @@ final class CdekOrderLifecycle
             }
             (new CdekShipmentService($client))->create(new WooShipmentOrder($order), $payload);
         } catch (\Throwable $exception) {
-            $order->add_order_note('Не удалось создать отправление СДЭК: ' . sanitize_text_field($exception->getMessage()));
-            wc_get_logger()->error($exception->getMessage(), ['source' => 'theobroma-cdek', 'order_id' => $orderId]);
+            $reason = OzonFailureReason::describe($exception);
+            $order->add_order_note('Не удалось создать отправление СДЭК. ' . sanitize_text_field($reason));
+            wc_get_logger()->error($reason, ['source' => 'theobroma-cdek', 'order_id' => $orderId]);
         }
     }
 
