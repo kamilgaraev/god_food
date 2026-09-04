@@ -60,6 +60,7 @@ final class CdekOrderLifecycle
                     'email' => $order->get_billing_email(),
                 ],
                 'destination' => [
+                    'country_code' => $order->get_shipping_country() ?: $order->get_billing_country(),
                     'city' => $order->get_shipping_city() ?: $order->get_billing_city(),
                     'postal_code' => $order->get_shipping_postcode() ?: $order->get_billing_postcode(),
                     'address' => trim(($order->get_shipping_address_1() ?: $order->get_billing_address_1()) . ' ' . ($order->get_shipping_address_2() ?: $order->get_billing_address_2())),
@@ -68,6 +69,14 @@ final class CdekOrderLifecycle
             ];
             $payload = (new CdekOrderPayloadFactory((int) ($settings['cdek_sender_city_code'] ?? 0), (string) ($settings['cdek_sender_address'] ?? '')))->build($data);
             $client = new CdekClient(new WpTransport(), new WordPressTokenStore(), $clientId, $secret);
+            if (isset($payload['to_location'])) {
+                $cities = $client->cities(['city' => $payload['to_location']['city'] ?? '', 'country_codes' => $payload['to_location']['country_code'] ?? 'RU', 'size' => 1]);
+                $code = (int) ($cities[0]['code'] ?? 0);
+                if ($code <= 0) {
+                    throw new \InvalidArgumentException('Город СДЭК не найден. Проверьте адрес заказа.');
+                }
+                $payload['to_location']['code'] = $code;
+            }
             (new CdekShipmentService($client))->create(new WooShipmentOrder($order), $payload);
         } catch (\Throwable $exception) {
             $order->add_order_note('Не удалось создать отправление СДЭК: ' . sanitize_text_field($exception->getMessage()));

@@ -65,6 +65,10 @@ final class DeliverySelector
                     <button type="button" class="theobroma-delivery-close" data-delivery-close aria-label="Закрыть"><span aria-hidden="true"></span></button>
                 </header>
 
+                <div class="theobroma-delivery-fields theobroma-delivery-destination">
+                    <label><span>Страна</span><select data-delivery-field="country" autocomplete="country"><option value="RU">Россия</option><option value="KZ">Казахстан</option></select></label>
+                    <label><span>Город</span><input data-delivery-field="city" autocomplete="address-level2" placeholder="Например, Алматы" required></label>
+                </div>
                 <div class="theobroma-delivery-tabs" role="tablist" aria-label="Способ доставки">
                     <button type="button" role="tab" aria-selected="true" data-delivery-kind="pickup">В пункт выдачи</button>
                     <button type="button" role="tab" aria-selected="false" data-delivery-kind="courier">Курьером</button>
@@ -87,7 +91,6 @@ final class DeliverySelector
 
                 <section class="theobroma-delivery-courier" data-delivery-courier hidden>
                     <div class="theobroma-delivery-fields">
-                        <label><span>Город</span><input data-delivery-field="city" autocomplete="address-level2" required></label>
                         <label><span>Индекс</span><input data-delivery-field="postcode" autocomplete="postal-code"></label>
                         <label class="wide"><span>Улица, дом, квартира</span><input data-delivery-field="address" autocomplete="address-line1" list="theobroma-courier-suggestions" required><datalist id="theobroma-courier-suggestions"></datalist></label>
                         <label class="wide"><span>Подъезд, этаж, комментарий</span><input data-delivery-field="address_2" autocomplete="address-line2"></label>
@@ -131,9 +134,9 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
             : (string) ($settings['yandex_suggest_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.1');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.2');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.1', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.2', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),

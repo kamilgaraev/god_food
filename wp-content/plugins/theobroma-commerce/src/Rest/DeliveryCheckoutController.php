@@ -81,7 +81,7 @@ final class DeliveryCheckoutController
             $provider = sanitize_key((string) $request->get_param('provider'));
             $settings = (array) get_option('theobroma_commerce_settings', []);
             if ($provider === 'cdek') {
-                $points = $this->cdek($settings)->points(sanitize_text_field((string) $request->get_param('city')));
+                $points = $this->cdek($settings)->points(sanitize_text_field((string) $request->get_param('city')), strtoupper(sanitize_text_field((string) ($request->get_param('country') ?: 'RU'))));
             } elseif ($provider === 'ozon') {
                 $points = $this->ozon($settings)->points($this->viewport($request));
             } else {
@@ -139,6 +139,9 @@ final class DeliveryCheckoutController
             $package = DeliveryRuntime::currentPackage();
             $contents = (array) $package['contents'];
             $destination = $this->destination($request, (array) $package['destination']);
+            if (!in_array($destination['country'] ?? 'RU', $provider === 'cdek' ? ['RU', 'KZ'] : ['RU'], true)) {
+                return new \WP_Error('invalid_delivery_country', 'Выберите доступную страну доставки.', ['status' => 422]);
+            }
             $quoteContext = DeliveryRuntime::quoteContext($package, $destination);
             $package = $quoteContext['package'];
             $fingerprint = $quoteContext['fingerprint'];
@@ -152,9 +155,10 @@ final class DeliveryCheckoutController
                     'city' => (string) ($destination['city'] ?? ''),
                     'address' => trim((string) ($destination['address'] ?? '') . ' ' . (string) ($destination['address_2'] ?? '')),
                 ], $lines);
+                $payload['to_location']['country_code'] = (string) ($destination['country'] ?? 'RU');
                 $quote = $this->cdek($settings)->quote($payload, $kind);
                 if ($kind === 'pickup') {
-                    $point = $this->findPoint($this->cdek($settings)->points((string) ($destination['city'] ?? '')), (string) $request->get_param('point_id'));
+                    $point = $this->findPoint($this->cdek($settings)->points((string) ($destination['city'] ?? ''), (string) ($destination['country'] ?? 'RU')), (string) $request->get_param('point_id'));
                 }
             } else {
                 $ozon = $this->ozon($settings);
