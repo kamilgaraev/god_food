@@ -1,3 +1,22 @@
+/* Compact recipient and delivery sections; address lives in the courier dialog. */
+.commerce-cart-checkout .woocommerce-billing-fields .woocommerce-billing-fields__field-wrapper {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px;
+}
+.commerce-cart-checkout .woocommerce-billing-fields .woocommerce-billing-fields__field-wrapper > * { grid-column: 1 / -1; min-width: 0; }
+.commerce-cart-checkout .woocommerce-billing-fields #billing_first_name_field { grid-column: 1; }
+.commerce-cart-checkout .woocommerce-billing-fields #billing_last_name_field { grid-column: 2; }
+.commerce-cart-checkout .woocommerce-billing-fields .woocommerce-billing-fields__field-wrapper > .form-row {
+  width: 100% !important; float: none !important; margin: 0 !important; padding: 0 !important;
+}
+.commerce-cart-checkout .theobroma-delivery-heading { margin: 18px 0 0; font-size: 24px; font-weight: 500; }
+.commerce-cart-checkout #billing_city_field > label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.commerce-cart-checkout .theobroma-delivery-selection { margin-top: 8px; }
+.commerce-cart-checkout .theobroma-delivery-methods { margin-top: 0; }
+@media (max-width: 380px) {
+  .commerce-cart-checkout .woocommerce-billing-fields #billing_first_name_field,
+  .commerce-cart-checkout .woocommerce-billing-fields #billing_last_name_field { grid-column: 1 / -1; }
+}
+
 :root {
   --theobroma-ink: #2f241e;
   --theobroma-muted: #74675f;

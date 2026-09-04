@@ -121,7 +121,7 @@ namespace Theobroma\Commerce\Tests {
             $html = (string) ob_get_clean();
 
             $this->assertSame(false, str_contains($html, 'theobroma-delivery-selection'));
-            $this->assertTrue(str_contains($html, 'Выбрать пункт или курьера'));
+            $this->assertTrue(str_contains($html, 'Выбрать доставку'));
         }
     }
 }

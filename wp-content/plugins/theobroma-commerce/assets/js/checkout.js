@@ -53,6 +53,31 @@
       });
     });
   }
+  var courierSuggestions = [];
+  var courierSearchTimer;
+  function suggestCourierAddress(value) {
+    if (!config.suggestionsUrl || value.trim().length < 3) return;
+    var query = (field('city').value || '') + ', ' + value;
+    request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
+      if (field('address').value !== value) return;
+      courierSuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      var list = document.querySelector('#theobroma-courier-suggestions');
+      if (!list) return;
+      list.replaceChildren();
+      courierSuggestions.forEach(function (item) {
+        var option = document.createElement('option');
+        option.value = item.label || item.address || '';
+        list.appendChild(option);
+      });
+    }).catch(function () { /* Manual address entry stays available. */ });
+  }
+  function applyCourierAddress() {
+    var match = courierSuggestions.find(function (item) { return (item.label || item.address) === field('address').value; });
+    if (!match) return;
+    if (match.city) field('city').value = match.city;
+    if (match.postcode) field('postcode').value = match.postcode;
+    if (match.address) field('address').value = match.address;
+  }
   function providerTitle() { return state.provider === 'ozon' ? 'Ozon Доставка' : 'СДЭК'; }
   function closeDialog() {
     var root = dialog();
@@ -295,7 +320,8 @@
   function syncAddressFieldVisibility() {
     var city = document.querySelector('#billing_city');
     if (!city) return;
-    var reveal = city.value.trim() !== '';
+    // Address is entered once, inside the courier dialog.
+    var reveal = false;
     document.querySelectorAll('.theobroma-delivery-address').forEach(function (row) {
       row.hidden = !reveal;
       row.setAttribute('aria-hidden', reveal ? 'false' : 'true');
@@ -316,6 +342,26 @@
       fields.appendChild(host);
     }
     host.replaceChildren(methods);
+    var heading = document.querySelector('#commerce-checkout-title') || document.querySelector('.commerce-cart-checkout .woocommerce-billing-fields > h3');
+    if (heading) heading.textContent = 'Получатель';
+    if (!fields.querySelector('.theobroma-delivery-heading')) {
+      var deliveryHeading = document.createElement('h3');
+      deliveryHeading.className = 'theobroma-delivery-heading';
+      deliveryHeading.textContent = 'Доставка';
+      var cityRow = fields.querySelector('#billing_city_field');
+      fields.insertBefore(deliveryHeading, cityRow || host);
+    }
+    ['first_name', 'last_name', 'phone', 'email'].forEach(function (key) {
+      var input = fields.querySelector('#billing_' + key);
+      if (input) input.setAttribute('aria-label', {first_name: 'Имя', last_name: 'Фамилия', phone: 'Телефон', email: 'Электронная почта'}[key]);
+    });
+    var payment = document.querySelector('.commerce-cart-checkout #payment');
+    if (payment && !payment.querySelector('.theobroma-payment-heading')) {
+      var paymentHeading = document.createElement('h3');
+      paymentHeading.className = 'theobroma-payment-heading';
+      paymentHeading.textContent = 'Оплата';
+      payment.prepend(paymentHeading);
+    }
     table.hidden = true;
   }
 
@@ -382,9 +428,19 @@
 
   document.addEventListener('input', function (event) {
     if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
+    if (event.target && event.target.matches('[data-delivery-field="address"]')) {
+      applyCourierAddress();
+      window.clearTimeout(courierSearchTimer);
+      courierSearchTimer = window.setTimeout(function () { suggestCourierAddress(field('address').value); }, 280);
+    }
   });
   document.addEventListener('change', function (event) {
     if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
+    if (event.target && event.target.matches('[data-delivery-field="address"]')) {
+      applyCourierAddress();
+      window.clearTimeout(courierSearchTimer);
+      courierSearchTimer = window.setTimeout(function () { suggestCourierAddress(field('address').value); }, 280);
+    }
   });
   var checkoutEvents = $(document.body);
   if (checkoutEvents && typeof checkoutEvents.on === 'function') {

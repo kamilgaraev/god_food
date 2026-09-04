@@ -63,6 +63,7 @@ final class OzonOrderLifecycle
         }
 
         try {
+            $payload = (new OzonOrderPrices())->apply($payload, $order);
             $client = (new OzonClientFactory(new WpTransport(), new WordPressTokenStore()))->clientFromSettings($settings);
             (new OzonOrderService($client))->create(new WooShipmentOrder($order), true, $payload);
         } catch (\Throwable $exception) {

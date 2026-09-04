@@ -539,7 +539,7 @@ function theobroma_checkout_total(): void {
 add_action('woocommerce_checkout_after_terms_and_conditions', 'theobroma_checkout_total');
 
 function theobroma_checkout_afterword(): void {
-    echo '<p class="commerce-checkout-afterword">После оформления заказа с вами свяжется наш менеджер для уточнения деталей заказа и доставки. Пожалуйста, будьте на связи, чтобы мы могли быстрее обработать ваш заказ.</p>';
+    echo '<p class="commerce-checkout-afterword">Подтверждение заказа придёт на электронную почту. Статус заказа можно посмотреть в личном кабинете.</p>';
 }
 add_action('woocommerce_review_order_after_submit', 'theobroma_checkout_afterword');
 
