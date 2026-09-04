@@ -29,7 +29,7 @@ final class CdekOrderPayloadFactoryTest extends TestCase
         $this->assertSame(400, $payload['packages'][0]['weight']);
         $this->assertSame(2, $payload['packages'][0]['items'][0]['amount']);
         $this->assertSame(500.0, $payload['packages'][0]['items'][0]['cost']);
-        $this->assertSame(0.0, $payload['packages'][0]['items'][0]['payment']);
+        $this->assertSame(0.0, $payload['packages'][0]['items'][0]['payment']['value']);
     }
 
     public function testRejectsMissingTariffCode(): void
@@ -65,6 +65,6 @@ final class CdekOrderPayloadFactoryTest extends TestCase
             ]],
         ]);
 
-        $this->assertSame(500.0, $payload['packages'][0]['items'][0]['payment']);
+        $this->assertSame(500.0, $payload['packages'][0]['items'][0]['payment']['value']);
     }
 }
