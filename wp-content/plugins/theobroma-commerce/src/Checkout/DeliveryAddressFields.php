@@ -33,6 +33,15 @@ final class DeliveryAddressFields
                 $fields['billing'][$key]['class'] = ['form-row-wide'];
             }
         }
+        $fields['billing']['billing_last_name'] = [
+            'type' => 'text',
+            'label' => 'Фамилия',
+            'placeholder' => 'Фамилия получателя (для Ozon)',
+            'required' => false,
+            'priority' => 15,
+            'class' => ['form-row-wide'],
+            'autocomplete' => 'family-name',
+        ];
         $fields['billing']['billing_postcode'] = [
             'type' => 'text',
             'label' => '',
@@ -67,6 +76,15 @@ final class DeliveryAddressFields
     public function validate(array $data, \WP_Error $errors): void
     {
         $methods = array_map('strval', (array) ($data['shipping_method'] ?? []));
+        if (array_filter($methods, static fn (string $method): bool => str_contains($method, 'theobroma_ozon'))) {
+            $nameError = DeliveryCustomerName::error([
+                'first_name' => $data['billing_first_name'] ?? '',
+                'last_name' => $data['billing_last_name'] ?? '',
+            ]);
+            if ($nameError !== null) {
+                $errors->add('theobroma_delivery_name', $nameError);
+            }
+        }
         if (!$this->hasCourier($methods)) {
             return;
         }
