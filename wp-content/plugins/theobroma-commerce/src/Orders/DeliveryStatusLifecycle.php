@@ -12,6 +12,8 @@ use Theobroma\Commerce\Integrations\Cdek\CdekClient;
 final class DeliveryStatusLifecycle
 {
     private const HOOK = 'theobroma_delivery_status_poll';
+    private const DELIVERY_STATUSES = ['shipped' => 'Передан в доставку', 'in-transit' => 'В пути', 'delivering' => 'Доставляется', 'pickup-ready' => 'Ожидает получения'];
+    private const ACTIVE_STATUSES = ['processing', 'shipped', 'in-transit', 'delivering', 'pickup-ready'];
 
     public function register(): void
     {
@@ -26,12 +28,14 @@ final class DeliveryStatusLifecycle
 
     public function registerStatus(): void
     {
-        register_post_status('wc-shipped', [
-            'label' => 'Передано в доставку', 'public' => true,
-            'exclude_from_search' => false, 'show_in_admin_all_list' => true,
-            'show_in_admin_status_list' => true,
-            'label_count' => _n_noop('Передано в доставку <span class="count">(%s)</span>', 'Передано в доставку <span class="count">(%s)</span>', 'theobroma-commerce'),
-        ]);
+        foreach (self::DELIVERY_STATUSES as $key => $label) {
+            register_post_status('wc-' . $key, [
+                'label' => $label, 'public' => true,
+                'exclude_from_search' => false, 'show_in_admin_all_list' => true,
+                'show_in_admin_status_list' => true,
+                'label_count' => _n_noop($label . ' <span class="count">(%s)</span>', $label . ' <span class="count">(%s)</span>', 'theobroma-commerce'),
+            ]);
+        }
     }
 
     public function statuses(array $statuses): array
@@ -40,7 +44,7 @@ final class DeliveryStatusLifecycle
         foreach ($statuses as $key => $label) {
             $result[$key] = $label;
             if ($key === 'wc-processing') {
-                $result['wc-shipped'] = 'Передано в доставку';
+                foreach (self::DELIVERY_STATUSES as $status => $title) $result['wc-' . $status] = $title;
             }
         }
         return $result;
@@ -48,7 +52,7 @@ final class DeliveryStatusLifecycle
 
     public function includeShipped(array $statuses): array
     {
-        return array_values(array_unique(array_merge($statuses, ['shipped'])));
+        return array_values(array_unique(array_merge($statuses, array_keys(self::DELIVERY_STATUSES))));
     }
 
     public function schedule(): void
@@ -67,16 +71,37 @@ final class DeliveryStatusLifecycle
         if (count(array_filter($states, static fn ($s) => $s === 'delivered')) === count($states)) {
             return 'completed';
         }
-        if (count(array_filter($states, static fn ($s) => in_array($s, ['delivering', 'delivered'], true))) === count($states)) {
-            return 'shipped';
+        $ranks = ['shipped' => 1, 'in-transit' => 2, 'delivering' => 3, 'pickup-ready' => 4, 'delivered' => 5];
+        foreach ($states as $state) {
+            if (!isset($ranks[$state])) return null;
         }
-        return null;
+        $minimum = min(array_map(static fn ($state) => $ranks[$state], $states));
+        return array_search($minimum, $ranks, true) ?: null;
+    }
+
+    /** Coarse status is authoritative: stale substatuses cannot advance cancelled/unready postings. */
+    public static function ozonState(array $posting): string
+    {
+        $status = strtolower(trim((string) ($posting['status'] ?? '')));
+        if ($status !== 'delivering') return $status;
+        return match (strtolower(trim((string) ($posting['substatus'] ?? '')))) {
+            'posting_transferring_to_delivery' => 'shipped',
+            'posting_in_carriage', 'posting_on_way_to_city' => 'in-transit',
+            'posting_in_pickup_point' => 'pickup-ready',
+            default => 'delivering',
+        };
+    }
+
+    public static function canAdvance(string $current, string $next): bool
+    {
+        $ranks = ['processing' => 0, 'shipped' => 1, 'in-transit' => 2, 'delivering' => 3, 'pickup-ready' => 4, 'completed' => 5];
+        return isset($ranks[$current], $ranks[$next]) && $ranks[$next] > $ranks[$current];
     }
 
     public function poll(): void
     {
         $page = max(1, (int) get_option('theobroma_delivery_poll_page', 1));
-        $batch = wc_get_orders(['status' => ['processing', 'shipped'], 'limit' => 20, 'page' => $page, 'paginate' => true, 'orderby' => 'ID', 'order' => 'ASC']);
+        $batch = wc_get_orders(['status' => self::ACTIVE_STATUSES, 'limit' => 20, 'page' => $page, 'paginate' => true, 'orderby' => 'ID', 'order' => 'ASC']);
         $settings = (array) get_option('theobroma_commerce_settings', []);
         foreach ($batch->orders as $order) {
             try {
@@ -84,7 +109,7 @@ final class DeliveryStatusLifecycle
                 $next = self::nextStatus($states);
                 // Reload before updating: do not undo an administrator's cancellation.
                 $fresh = wc_get_order($order->get_id());
-                if (!$fresh || !in_array($fresh->get_status(), ['processing', 'shipped'], true)) {
+                if (!$fresh || !in_array($fresh->get_status(), self::ACTIVE_STATUSES, true)) {
                     continue;
                 }
                 if ($states !== []) {
@@ -92,8 +117,8 @@ final class DeliveryStatusLifecycle
                     $fresh->update_meta_data('_theobroma_delivery_tracking_checked', time());
                     $fresh->save_meta_data();
                 }
-                if ($next !== null && $fresh->get_status() !== $next) {
-                    $fresh->update_status($next, $next === 'completed' ? 'Перевозчик подтвердил вручение всех отправлений.' : 'Перевозчик подтвердил передачу всех отправлений в доставку.');
+                if ($next !== null && self::canAdvance($fresh->get_status(), $next)) {
+                    $fresh->update_status($next, $next === 'completed' ? 'Перевозчик подтвердил вручение всех отправлений.' : 'Статус получен от перевозчика: ' . self::DELIVERY_STATUSES[$next] . '.');
                 }
             } catch (\Throwable $error) {
                 wc_get_logger()->warning('Delivery tracking failed', ['source' => 'theobroma-delivery-tracking', 'order_id' => $order->get_id(), 'reason' => OzonFailureReason::describe($error)]);
@@ -133,7 +158,7 @@ final class DeliveryStatusLifecycle
                 if (($data['posting_number'] ?? '') !== $number) {
                     throw new \RuntimeException('Posting identity mismatch');
                 }
-                $states[] = strtolower((string) ($data['status'] ?? ''));
+                $states[] = self::ozonState($data);
             }
             return $states;
         }
@@ -148,7 +173,7 @@ final class DeliveryStatusLifecycle
             if ($status === 'DELIVERED') {
                 return ['delivered'];
             }
-            return in_array($status, ['RECEIVED_AT_SHIPMENT_WAREHOUSE', 'DEPARTED', 'ARRIVED_AT_DESTINATION_CITY', 'ACCEPTED_AT_DELIVERY_WAREHOUSE', 'TAKEN_BY_COURIER'], true) ? ['delivering'] : [];
+            return in_array($status, ['RECEIVED_AT_SHIPMENT_WAREHOUSE', 'DEPARTED', 'ARRIVED_AT_DESTINATION_CITY', 'ACCEPTED_AT_DELIVERY_WAREHOUSE', 'TAKEN_BY_COURIER'], true) ? ['shipped'] : [];
         }
         return [];
     }

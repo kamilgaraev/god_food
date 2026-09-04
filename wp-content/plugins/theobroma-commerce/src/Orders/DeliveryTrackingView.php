@@ -37,7 +37,10 @@ final class DeliveryTrackingView
                 'cancelled' => 'Заказ отменён',
                 'refunded' => 'Заказ возвращён',
                 'completed' => 'Заказ выполнен',
-                'shipped' => 'Передано в доставку',
+                'shipped' => 'Передан в доставку',
+                'in-transit' => 'В пути',
+                'delivering' => 'Доставляется',
+                'pickup-ready' => 'Ожидает получения',
                 default => $created ? 'Отправление создано. Ожидаем обновления перевозчика.' : 'Отправление ещё не создано.',
             };
             echo '<p>' . esc_html($label) . '</p>';
@@ -45,7 +48,7 @@ final class DeliveryTrackingView
                 echo '<p>Номер отправления: <strong>' . esc_html(implode(', ', $numbers)) . '</strong></p>';
             }
             $states = (array) $order->get_meta('_theobroma_delivery_tracking_states', true);
-            $labels = ['delivering' => 'В пути', 'delivered' => 'Вручено', 'awaiting_packaging' => 'Собирается', 'awaiting_deliver' => 'Готовится к передаче', 'cancelled' => 'Отправление отменено'];
+            $labels = ['shipped' => 'Передан в доставку', 'in-transit' => 'В пути', 'pickup-ready' => 'Ожидает получения', 'delivering' => 'Доставляется', 'delivered' => 'Вручено', 'awaiting_packaging' => 'Собирается', 'awaiting_deliver' => 'Готовится к передаче', 'cancelled' => 'Отправление отменено'];
             foreach ($states as $index => $state) {
                 if (is_string($state) && isset($labels[$state])) {
                     echo '<p>' . esc_html(($numbers[$index] ?? 'Отправление') . ': ' . $labels[$state]) . '</p>';
