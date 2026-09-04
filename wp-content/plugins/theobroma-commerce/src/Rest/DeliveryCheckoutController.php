@@ -139,7 +139,7 @@ final class DeliveryCheckoutController
             $package = DeliveryRuntime::currentPackage();
             $contents = (array) $package['contents'];
             $destination = $this->destination($request, (array) $package['destination']);
-            if (!in_array($destination['country'] ?? 'RU', array_keys(WC()->countries->get_shipping_countries()), true)) {
+            if (!in_array($destination['country'] ?? 'RU', array_keys(array_intersect_key(WC()->countries->get_shipping_countries(), WC()->countries->get_allowed_countries())), true)) {
                 return new \WP_Error('invalid_delivery_country', 'Выберите доступную страну доставки.', ['status' => 422]);
             }
             $quoteContext = DeliveryRuntime::quoteContext($package, $destination);
