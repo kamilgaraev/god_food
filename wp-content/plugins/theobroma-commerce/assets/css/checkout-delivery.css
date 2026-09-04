@@ -1,3 +1,18 @@
+/* Official CDEK keeps its native fields and calculation inside the delivery dialog. */
+.commerce-cart-checkout dialog.theobroma-official-cdek { width: min(680px, calc(100vw - 24px)); max-height: 90dvh; padding: 0; border: 1px solid #e8ded2; border-radius: 20px; background: #fbf8f3; color: #2f241e; }
+.commerce-cart-checkout dialog.theobroma-official-cdek[open] { display: flex; flex-direction: column; }
+.theobroma-official-cdek::backdrop { background: rgb(30 22 16 / 55%); }
+.theobroma-official-content { padding: 24px; overflow-y: auto; }
+.theobroma-official-cdek header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.theobroma-official-cdek header h3 { margin: 0; font-size: 24px; }
+.theobroma-official-cdek [data-official-close] { border: 0; background: transparent; font-size: 28px; cursor: pointer; }
+.theobroma-official-cdek [data-official-address] { display: grid; gap: 16px; }
+.commerce-cart-checkout .theobroma-official-cdek .form-row { width: 100%; margin: 0; padding: 0; }
+.theobroma-official-cdek footer { padding: 16px 24px; border-top: 1px solid #e8ded2; flex-shrink: 0; }
+.theobroma-official-cdek footer button, .theobroma-official-summary button { padding: 12px 18px; border: 0; border-radius: 10px; background: #714727; color: #fff; font: inherit; cursor: pointer; }
+.commerce-cart-checkout .theobroma-official-summary { display: flex !important; align-items: center; justify-content: space-between; gap: 16px; }
+.theobroma-official-summary button { flex-shrink: 0; }
+@media (max-width: 480px) { .theobroma-official-content { padding: 18px; } .theobroma-official-summary { flex-wrap: wrap; } }
 /* Compact recipient and delivery sections; address lives in the courier dialog. */
 .commerce-cart-checkout #billing_country_field,
 .commerce-cart-checkout #billing_city_field { display: none !important; }
