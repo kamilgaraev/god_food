@@ -22,6 +22,9 @@
   .commerce-cart-checkout .woocommerce-billing-fields #billing_last_name_field { grid-column: 1 / -1; }
 }
 
+.cdek-map > div { z-index: 10000020 !important; }
+.commerce-cart-checkout .open-pvz-btn { background: transparent !important; border: 0 !important; text-align: left; }
+
 :root {
   --theobroma-ink: #2f241e;
   --theobroma-muted: #74675f;
