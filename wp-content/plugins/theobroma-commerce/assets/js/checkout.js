@@ -344,6 +344,59 @@
     });
   }
 
+  function syncOfficialCdek(fields, methods) {
+    if (!config.officialCdek) return;
+    var root = fields.querySelector('[data-official-cdek-dialog]');
+    if (!root) {
+      root = document.createElement('dialog');
+      root.dataset.officialCdekDialog = '';
+      root.className = 'theobroma-official-cdek';
+      root.setAttribute('aria-label', 'Доставка СДЭК');
+      root.innerHTML = '<div class="theobroma-official-content"><header><h3>Доставка СДЭК</h3><button type="button" data-official-close aria-label="Закрыть">×</button></header><div data-official-address></div><ul class="woocommerce-shipping-methods" data-official-rates></ul><p data-official-message role="status"></p></div><footer><button type="button" data-official-apply>Готово</button></footer>';
+      fields.appendChild(root);
+      root.addEventListener('click', function (event) {
+        if (event.target === root || event.target.closest('[data-official-close]')) root.close();
+        if (event.target.closest('[data-official-apply]')) {
+          var chosen = root.querySelector('input[name^="shipping_method"]:checked');
+          var office = root.querySelector('.cdek-office-code');
+          if (!chosen || (chosen.value === 'official_cdek:136' && (!office || !office.value))) {
+            root.querySelector('[data-official-message]').textContent = 'Выберите тариф и пункт выдачи для доставки в ПВЗ.';
+            return;
+          }
+          root.close();
+        }
+      });
+      // The official map is a body overlay and must not sit behind a native dialog.
+      root.addEventListener('click', function (event) {
+        if (event.target.closest('.open-pvz-btn')) root.close();
+      }, true);
+    }
+    var address = root.querySelector('[data-official-address]');
+    fields.querySelectorAll('#billing_country_field, #billing_city_field, .theobroma-delivery-address').forEach(function (row) {
+      if (row.parentNode !== address) address.appendChild(row);
+    });
+    var rates = root.querySelector('[data-official-rates]');
+    rates.replaceChildren();
+    methods.querySelectorAll('input[name^="shipping_method"]').forEach(function (input) {
+      if (input.value.indexOf('official_cdek:') === 0) rates.appendChild(input.closest('li'));
+    });
+    var chosen = rates.querySelector('input:checked');
+    var row = document.createElement('li');
+    row.className = 'theobroma-official-summary';
+    var label = document.createElement('span');
+    var selectedLabel = chosen && chosen.closest('li').querySelector('label');
+    label.textContent = selectedLabel ? selectedLabel.textContent.trim() : 'СДЭК';
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = chosen ? 'Изменить доставку' : 'Выбрать доставку';
+    button.addEventListener('click', function () {
+      root.querySelector('[data-official-message]').textContent = rates.children.length ? '' : 'Укажите город для расчёта доставки.';
+      root.showModal();
+    });
+    row.append(label, button);
+    methods.prepend(row);
+  }
+
   function syncDeliveryPlacement() {
     var fields = document.querySelector('.commerce-cart-checkout .woocommerce-billing-fields__field-wrapper');
     var methods = document.querySelector('.commerce-cart-checkout .woocommerce-shipping-totals .woocommerce-shipping-methods');
@@ -358,6 +411,7 @@
       fields.appendChild(host);
     }
     host.replaceChildren(methods);
+    syncOfficialCdek(fields, methods);
     var heading = document.querySelector('#commerce-checkout-title') || document.querySelector('.commerce-cart-checkout .woocommerce-billing-fields > h3');
     if (heading) heading.textContent = 'Получатель';
     if (!fields.querySelector('.theobroma-delivery-heading')) {
@@ -365,7 +419,7 @@
       deliveryHeading.className = 'theobroma-delivery-heading';
       deliveryHeading.textContent = 'Доставка';
       var cityRow = fields.querySelector(config.officialCdek ? '#billing_country_field' : '#billing_city_field');
-      fields.insertBefore(deliveryHeading, cityRow || host);
+      fields.insertBefore(deliveryHeading, cityRow && cityRow.parentNode === fields ? cityRow : host);
     }
     ['first_name', 'last_name', 'phone', 'email'].forEach(function (key) {
       var input = fields.querySelector('#billing_' + key);
