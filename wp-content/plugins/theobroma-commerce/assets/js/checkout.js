@@ -31,8 +31,8 @@
   }
   function customer() {
     var details = checkoutCustomer();
-    ['city', 'postcode', 'address', 'address_2'].forEach(function (name) {
-      if (field(name) && field(name).value.trim()) details[name] = field(name).value.trim();
+    ['country', 'city', 'postcode', 'address', 'address_2'].forEach(function (name) {
+      if (field(name)) details[name] = field(name).value.trim();
     });
     return details;
   }
@@ -57,7 +57,7 @@
   var courierSearchTimer;
   function suggestCourierAddress(value) {
     if (!config.suggestionsUrl || value.trim().length < 3) return;
-    var query = (field('city').value || '') + ', ' + value;
+    var query = (customer().country === 'KZ' ? 'Казахстан, ' : 'Россия, ') + (field('city').value || '') + ', ' + value;
     request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
       if (field('address').value !== value) return;
       courierSuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
@@ -93,9 +93,15 @@
     if (!root) return;
     root.querySelector('[data-delivery-provider]').textContent = providerTitle();
     var initial = checkoutCustomer();
-    ['city', 'postcode', 'address', 'address_2'].forEach(function (name) {
+    ['country', 'city', 'postcode', 'address', 'address_2'].forEach(function (name) {
       if (field(name)) field(name).value = initial[name] || '';
     });
+    field('country').disabled = provider === 'ozon';
+    if (provider === 'ozon' && initial.country !== 'RU') {
+      field('country').value = 'RU';
+      field('city').value = '';
+      initial.city = initial.address = '';
+    }
     switchKind('pickup');
     setStatus('');
     var search = root.querySelector('[data-delivery-search]');
@@ -134,20 +140,23 @@
 
   function loadPoints(viewport) {
     var city = customer().city;
-    var url = config.pointsUrl + '?provider=' + encodeURIComponent(state.provider) + '&city=' + encodeURIComponent(city) + viewportQuery(viewport);
+    var url = config.pointsUrl + '?provider=' + encodeURIComponent(state.provider) + '&city=' + encodeURIComponent(city) + '&country=' + encodeURIComponent(customer().country) + viewportQuery(viewport);
     if (state.provider === 'cdek' && !city) {
       state.points = [];
       renderPoints([]);
-      setStatus('Укажите город в оформлении заказа.', true);
+      setStatus('Укажите город доставки.', true);
       return;
     }
     setStatus('Загружаем пункты выдачи…');
+    var context = state.provider + ':' + customer().country + ':' + city;
     request(url).then(function (data) {
+      if (context !== state.provider + ':' + customer().country + ':' + customer().city) return;
       state.points = Array.isArray(data.points) ? data.points : [];
       renderPoints(state.points);
       setStatus(state.points.length ? 'Выберите удобный пункт выдачи.' : 'Пункты выдачи не найдены.', !state.points.length);
       renderMap();
     }).catch(function (error) {
+      if (context !== state.provider + ':' + customer().country + ':' + customer().city) return;
       state.points = [];
       renderPoints([]);
       setStatus(error.message, true);
@@ -196,6 +205,7 @@
     var query = city && value.toLocaleLowerCase('ru-RU').indexOf(city.toLocaleLowerCase('ru-RU')) === -1
       ? city + ', ' + value
       : value;
+    query = (customer().country === 'KZ' ? 'Казахстан, ' : 'Россия, ') + query;
     request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
       renderSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
       if (data.configured === false) {
@@ -221,7 +231,7 @@
       if (field(pair[0])) field(pair[0]).value = value;
       setCheckoutValue(pair[1], value);
     });
-    setCheckoutValue('#billing_country', 'RU');
+    setCheckoutValue('#billing_country', customer().country);
     syncAddressFieldVisibility();
     renderSuggestions([]);
     state.selected = null;
@@ -365,6 +375,25 @@
     table.hidden = true;
   }
 
+  function syncCheckoutDestination(details) {
+    details.state = '';
+    [['country', 'country'], ['city', 'city'], ['postcode', 'postcode'], ['address', 'address_1'], ['address_2', 'address_2']].forEach(function (pair) {
+      var input = checkoutElement('#billing_' + pair[1]);
+      if (input) input.value = details[pair[0]] || '';
+    });
+    var region = checkoutElement('#billing_state');
+    if (region) region.value = '';
+    return new Promise(function (resolve, reject) {
+      var body = $(document.body);
+      var timer = window.setTimeout(function () {
+        body.off('updated_checkout.theobromaDestination');
+        reject(new Error('Не удалось обновить адрес. Попробуйте ещё раз.'));
+      }, 20000);
+      body.one('updated_checkout.theobromaDestination', function () { window.clearTimeout(timer); resolve(); });
+      body.trigger('update_checkout');
+    });
+  }
+
   function confirm() {
     if (state.kind === 'pickup' && !state.selected) {
       setStatus('Сначала выберите пункт выдачи.', true);
@@ -384,17 +413,11 @@
     var button = document.querySelector('[data-delivery-confirm]');
     button.disabled = true;
     setStatus('Рассчитываем стоимость…');
-    request(config.quoteUrl, {
+    syncCheckoutDestination(details).then(function () { return request(config.quoteUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(core.buildQuotePayload(state.provider, state.kind, state.selected, details))
-    }).then(function (data) {
-      if (state.kind === 'courier') {
-        [['#billing_city', details.city], ['#billing_postcode', details.postcode], ['#billing_address_1', details.address], ['#billing_address_2', details.address_2]].forEach(function (pair) {
-          var target = document.querySelector(pair[0]);
-          if (target) target.value = pair[1];
-        });
-      }
+    }); }).then(function (data) {
       setStatus((data.quote && data.quote.label ? data.quote.label : 'Доставка выбрана') + '. Обновляем заказ…');
       $(document.body).trigger('update_checkout');
       window.setTimeout(closeDialog, 350);
@@ -435,6 +458,19 @@
     }
   });
   document.addEventListener('change', function (event) {
+    if (event.target.matches('[data-delivery-field="country"], [data-delivery-field="city"]')) {
+      state.selected = null;
+      state.points = [];
+      renderPoints([]);
+      ['postcode', 'address', 'address_2'].forEach(function (name) { field(name).value = ''; });
+      var search = document.querySelector('[data-delivery-search]');
+      if (search) search.value = '';
+      if (event.target === field('country')) {
+        field('city').value = '';
+        field('city').focus();
+        setStatus('Укажите город доставки.');
+      } else { loadPointsForCheckoutAddress(customer().city); }
+    }
     if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
     if (event.target && event.target.matches('[data-delivery-field="address"]')) {
       applyCourierAddress();

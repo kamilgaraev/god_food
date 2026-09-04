@@ -61,6 +61,7 @@ final class CdekOrderPayloadFactory
             $payload['delivery_point'] = (string) ($data['pickup_code'] ?? '');
         } else {
             $payload['to_location'] = array_filter([
+                'country_code' => (string) ($destination['country_code'] ?? ''),
                 'postal_code' => (string) ($destination['postal_code'] ?? ''),
                 'city' => (string) ($destination['city'] ?? ''),
                 'address' => (string) ($destination['address'] ?? ''),

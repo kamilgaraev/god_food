@@ -1,5 +1,8 @@
 /* Compact recipient and delivery sections; address lives in the courier dialog. */
-.commerce-cart-checkout #billing_country_field { display: none !important; }
+.commerce-cart-checkout #billing_country_field,
+.commerce-cart-checkout #billing_city_field { display: none !important; }
+.theobroma-delivery-destination { margin-bottom: 20px; }
+.theobroma-delivery-destination select { width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--theobroma-line); border-radius: 8px; background: var(--theobroma-paper); color: var(--theobroma-ink); font: inherit; }
 .commerce-cart-checkout .theobroma-payment-heading { font-size: 24px; font-weight: 500; margin: 24px 0 16px; text-transform: none; }
 .commerce-cart-checkout .woocommerce-billing-fields .woocommerce-billing-fields__field-wrapper {
   display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px;
