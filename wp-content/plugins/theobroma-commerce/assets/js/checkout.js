@@ -383,9 +383,10 @@
     var chosen = rates.querySelector('input:checked');
     var row = document.createElement('li');
     row.className = 'theobroma-official-summary';
-    var label = document.createElement('span');
+    var label = document.createElement('label');
     var selectedLabel = chosen && chosen.closest('li').querySelector('label');
-    label.textContent = selectedLabel ? selectedLabel.textContent.trim() : 'СДЭК';
+    var price = selectedLabel && selectedLabel.querySelector('.amount');
+    label.textContent = 'СДЭК' + (chosen ? (chosen.value === 'official_cdek:137' ? ' · Курьер' : ' · Пункт выдачи') : '') + (price ? ': ' + price.textContent.trim() : '');
     var button = document.createElement('button');
     button.type = 'button';
     button.textContent = chosen ? 'Изменить доставку' : 'Выбрать доставку';
@@ -393,7 +394,18 @@
       root.querySelector('[data-official-message]').textContent = rates.children.length ? '' : 'Укажите город для расчёта доставки.';
       root.showModal();
     });
-    row.append(label, button);
+    button.className = 'theobroma-delivery-open' + (chosen ? ' is-confirmed' : '');
+    var selector = document.createElement('input');
+    selector.type = 'radio';
+    selector.checked = Boolean(chosen);
+    selector.id = 'theobroma-official-cdek-choice';
+    selector.setAttribute('aria-label', 'СДЭК');
+    label.htmlFor = selector.id;
+    selector.addEventListener('click', function (event) {
+      event.preventDefault();
+      button.click();
+    });
+    row.append(selector, label, button);
     methods.prepend(row);
   }
 
