@@ -131,9 +131,9 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
             : (string) ($settings['yandex_suggest_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.0');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.1');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.0', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.1', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),

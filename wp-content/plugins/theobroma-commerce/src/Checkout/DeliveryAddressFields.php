@@ -69,6 +69,9 @@ final class DeliveryAddressFields
             'class' => ['form-row-wide', 'theobroma-delivery-address'],
             'autocomplete' => 'address-line2',
         ];
+        if (isset($fields['billing']['billing_city'])) {
+            $fields['billing']['billing_city']['placeholder'] = 'Город';
+        }
         return $fields;
     }
 
