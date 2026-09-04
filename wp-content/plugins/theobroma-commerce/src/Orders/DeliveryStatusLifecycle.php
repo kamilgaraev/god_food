@@ -15,6 +15,7 @@ final class DeliveryStatusLifecycle
 
     public function register(): void
     {
+        add_action('woocommerce_order_details_after_order_table', [new DeliveryTrackingView(), 'render']);
         add_action('init', [$this, 'registerStatus']);
         add_filter('wc_order_statuses', [$this, 'statuses']);
         add_filter('woocommerce_order_is_paid_statuses', [$this, 'includeShipped']);
@@ -85,6 +86,11 @@ final class DeliveryStatusLifecycle
                 $fresh = wc_get_order($order->get_id());
                 if (!$fresh || !in_array($fresh->get_status(), ['processing', 'shipped'], true)) {
                     continue;
+                }
+                if ($states !== []) {
+                    $fresh->update_meta_data('_theobroma_delivery_tracking_states', $states);
+                    $fresh->update_meta_data('_theobroma_delivery_tracking_checked', time());
+                    $fresh->save_meta_data();
                 }
                 if ($next !== null && $fresh->get_status() !== $next) {
                     $fresh->update_status($next, $next === 'completed' ? 'Перевозчик подтвердил вручение всех отправлений.' : 'Перевозчик подтвердил передачу всех отправлений в доставку.');

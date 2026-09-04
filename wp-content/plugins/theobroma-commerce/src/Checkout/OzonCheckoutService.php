@@ -127,6 +127,7 @@ final class OzonCheckoutService
                     'delivery_type' => (string) ($method['delivery_type'] ?? ''),
                     'logistic_date_range' => (array) ($timeslot['logistic_date_range'] ?? []),
                     'timeslot_id' => (int) ($timeslot['timeslot_id'] ?? 0),
+                    'price' => (array) ($split['commissions']['total'] ?? $method['price'] ?? []),
                 ],
                 'items' => array_values(array_filter((array) ($split['items'] ?? []), 'is_array')),
                 'warehouse_id' => (int) ($split['warehouse_id'] ?? 0),

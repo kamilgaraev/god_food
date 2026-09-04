@@ -35,8 +35,8 @@ final class DeliveryAddressFields
         }
         $fields['billing']['billing_last_name'] = [
             'type' => 'text',
-            'label' => 'Фамилия',
-            'placeholder' => 'Фамилия получателя (для Ozon)',
+            'label' => '',
+            'placeholder' => 'Фамилия',
             'required' => false,
             'priority' => 15,
             'class' => ['form-row-wide'],
