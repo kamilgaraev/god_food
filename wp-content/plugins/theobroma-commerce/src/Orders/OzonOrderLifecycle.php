@@ -48,6 +48,20 @@ final class OzonOrderLifecycle
             return;
         }
 
+        $person = [
+            'first_name' => trim($order->get_billing_first_name()),
+            'last_name' => trim($order->get_billing_last_name()),
+        ];
+        $nameError = \Theobroma\Commerce\Checkout\DeliveryCustomerName::error($person);
+        if ($nameError !== null) {
+            $order->add_order_note('Отправление Ozon не создано. ' . $nameError);
+            return;
+        }
+        foreach ($person as $key => $value) {
+            $payload['buyer'][$key] = $value;
+            $payload['recipient']['recipient_' . $key] = $value;
+        }
+
         try {
             $client = (new OzonClientFactory(new WpTransport(), new WordPressTokenStore()))->clientFromSettings($settings);
             (new OzonOrderService($client))->create(new WooShipmentOrder($order), true, $payload);

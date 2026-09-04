@@ -130,6 +130,12 @@ final class DeliveryCheckoutController
             if (!in_array($provider, ['cdek', 'ozon'], true) || !in_array($kind, ['pickup', 'courier'], true)) {
                 return new \WP_Error('invalid_delivery', __('Выберите службу и способ доставки.', 'theobroma-commerce'), ['status' => 400]);
             }
+            if ($provider === 'ozon') {
+                $nameError = \Theobroma\Commerce\Checkout\DeliveryCustomerName::error($this->person($request));
+                if ($nameError !== null) {
+                    return new \WP_Error('invalid_delivery_name', $nameError, ['status' => 422]);
+                }
+            }
             $package = DeliveryRuntime::currentPackage();
             $contents = (array) $package['contents'];
             $destination = $this->destination($request, (array) $package['destination']);
