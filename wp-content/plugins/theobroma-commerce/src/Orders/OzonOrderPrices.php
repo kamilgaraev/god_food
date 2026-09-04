@@ -54,8 +54,13 @@ final class OzonOrderPrices
             unset($item);
             if (count($splits) === 1) {
                 $split['delivery_method']['price'] = self::money((float) $order->get_shipping_total() + (float) $order->get_shipping_tax(), $order->get_currency());
-            } elseif (empty($split['delivery_method']['price'])) {
-                throw new \InvalidArgumentException('Recalculate delivery for multiple Ozon splits');
+            } else {
+                $price = $split['delivery_method']['price'] ?? [];
+                if (isset($price['amount'], $price['currency']) && is_numeric($price['amount'])) {
+                    $split['delivery_method']['price'] = self::money((float) $price['amount'], (string) $price['currency']);
+                } elseif (!isset($price['currency_code'], $price['units'], $price['nanos'])) {
+                    throw new \InvalidArgumentException('Recalculate delivery for multiple Ozon splits');
+                }
             }
         }
         unset($split);

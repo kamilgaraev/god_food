@@ -57,6 +57,7 @@ final class DeliverySelector
         ?>
         <dialog class="theobroma-delivery-dialog" data-delivery-dialog aria-labelledby="theobroma-delivery-title">
             <div class="theobroma-delivery-shell">
+              <div class="theobroma-delivery-content">
                 <header class="theobroma-delivery-header">
                     <div>
                         <p class="theobroma-delivery-eyebrow" data-delivery-provider>Доставка</p>
@@ -97,8 +98,9 @@ final class DeliverySelector
                     </div>
                 </section>
 
-                <p class="theobroma-delivery-status" data-delivery-status aria-live="polite"></p>
+              </div>
                 <footer class="theobroma-delivery-footer">
+                    <p class="theobroma-delivery-status" data-delivery-status aria-live="polite"></p>
                     <button type="button" class="button alt" data-delivery-confirm>Рассчитать и выбрать</button>
                 </footer>
             </div>
@@ -134,9 +136,9 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
             : (string) ($settings['yandex_suggest_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.5');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.6');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.5', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.6', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
