@@ -7,6 +7,7 @@ require_once get_template_directory() . '/inc/product-images.php';
 require_once get_template_directory() . '/inc/contact-request-validation.php';
 require_once get_template_directory() . '/inc/chocolate-sample-request.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
+require_once get_template_directory() . '/inc/checkout-page.php';
 
 function theobroma_setup(): void {
     add_theme_support('title-tag');
