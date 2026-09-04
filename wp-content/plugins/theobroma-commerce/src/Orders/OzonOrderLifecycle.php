@@ -13,6 +13,7 @@ final class OzonOrderLifecycle
 {
     public function register(): void
     {
+        add_filter('woocommerce_order_item_get_formatted_meta_data', [$this, 'formatDeliveryMeta'], 20, 2);
         add_action('woocommerce_order_status_processing', [$this, 'createShipment'], 20);
         add_action('woocommerce_checkout_order_processed', [$this, 'createCodShipment'], 20, 3);
     }
@@ -51,13 +52,42 @@ final class OzonOrderLifecycle
             $client = (new OzonClientFactory(new WpTransport(), new WordPressTokenStore()))->clientFromSettings($settings);
             (new OzonOrderService($client))->create(new WooShipmentOrder($order), true, $payload);
         } catch (\Throwable $exception) {
-            $order->add_order_note('Не удалось создать заказ Ozon Доставки. Проверьте журнал интеграции.');
+            $reason = OzonFailureReason::describe($exception);
+            $order->add_order_note('Не удалось создать отправление Ozon Доставки. ' . $reason);
             wc_get_logger()->error('Ozon order creation failed', [
                 'source' => 'theobroma-ozon',
+                'reason' => $reason,
                 'order_id' => $orderId,
                 'status' => $exception instanceof ProviderException ? $exception->statusCode() : 0,
             ]);
         }
+    }
+
+    /** Hide internal delivery data without deleting it from existing orders. */
+    public function formatDeliveryMeta(array $metadata, $item): array
+    {
+        if (!$item instanceof \WC_Order_Item_Shipping) {
+            return $metadata;
+        }
+        $labels = [
+            'theobroma_pickup_point' => 'Код пункта выдачи',
+            'theobroma_pickup_address' => 'Адрес пункта выдачи',
+            'theobroma_delivery_kind' => 'Способ доставки',
+        ];
+        foreach ($metadata as $id => $meta) {
+            if (!str_starts_with((string) $meta->key, 'theobroma_')) {
+                continue;
+            }
+            if (!isset($labels[$meta->key])) {
+                unset($metadata[$id]);
+                continue;
+            }
+            $meta->display_key = $labels[$meta->key];
+            if ($meta->key === 'theobroma_delivery_kind') {
+                $meta->display_value = esc_html(['pickup' => 'Пункт выдачи', 'courier' => 'Курьер'][$meta->value] ?? (string) $meta->value);
+            }
+        }
+        return $metadata;
     }
 
     private function usesOzonDelivery(\WC_Order $order): bool
