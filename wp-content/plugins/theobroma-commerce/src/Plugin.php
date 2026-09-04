@@ -54,6 +54,7 @@ final class Plugin
         (new DeliveryOrderMeta())->register();
         (new CdekOrderLifecycle())->register();
         (new OzonOrderLifecycle())->register();
+        (new \Theobroma\Commerce\Orders\DeliveryStatusLifecycle())->register();
         (new WooLoyaltyLifecycle())->register();
         (new LoyaltyCheckout())->register();
         (new LoyaltyAccountEndpoint())->register();
