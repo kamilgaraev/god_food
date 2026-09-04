@@ -48,6 +48,8 @@ final class OzonOrderPrices
                 if (!isset($lines[$sku]) || $quantity < 1) {
                     throw new \InvalidArgumentException('Ozon selection does not match order items');
                 }
+                // Ozon accepts exactly one item identifier. The confirmed checkout uses SKU.
+                unset($item['offer_id']);
                 $used[$sku] = ($used[$sku] ?? 0) + $quantity;
                 $item['price'] = self::money($lines[$sku]['total'] / $lines[$sku]['quantity'], $order->get_currency());
             }

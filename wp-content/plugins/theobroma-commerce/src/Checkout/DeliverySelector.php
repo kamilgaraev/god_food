@@ -136,10 +136,16 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
             : (string) ($settings['yandex_suggest_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.6');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.7');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.6', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.7', true);
+        $officialCdek = class_exists('\\Cdek\\ShippingMethod');
+        if ($officialCdek && class_exists('\\Cdek\\Helpers\\UI')) {
+            \Cdek\Helpers\UI::enqueueScript('cdek-map', 'cdek-checkout-map', true);
+            wp_add_inline_style('theobroma-commerce-delivery', '.commerce-cart-checkout #billing_country_field,.commerce-cart-checkout #billing_city_field{display:block!important}.commerce-cart-checkout .open-pvz-btn{width:100%;padding:12px 0}.commerce-cart-checkout .open-pvz-btn a{display:inline-block;background:#714727;color:#fff;padding:12px 18px;border-radius:10px;cursor:pointer}');
+        }
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
+            'officialCdek' => $officialCdek,
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
             'quoteUrl' => $this->quoteUrl(),
