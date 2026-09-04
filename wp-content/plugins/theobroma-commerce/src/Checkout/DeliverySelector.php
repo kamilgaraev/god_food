@@ -66,7 +66,7 @@ final class DeliverySelector
                 </header>
 
                 <div class="theobroma-delivery-fields theobroma-delivery-destination">
-                    <label><span>Страна</span><select data-delivery-field="country" autocomplete="country"><option value="RU">Россия</option><option value="KZ">Казахстан</option></select></label>
+                    <label><span>Страна</span><select data-delivery-field="country" autocomplete="country"><?php foreach (WC()->countries->get_shipping_countries() as $code => $name) : ?><option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name); ?></option><?php endforeach; ?></select></label>
                     <label><span>Город</span><input data-delivery-field="city" autocomplete="address-level2" placeholder="Например, Алматы" required></label>
                 </div>
                 <div class="theobroma-delivery-tabs" role="tablist" aria-label="Способ доставки">
@@ -134,9 +134,9 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
             : (string) ($settings['yandex_suggest_key'] ?? '');
 
-        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.3');
+        wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.4');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.3', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.4', true);
         wp_localize_script('theobroma-commerce-checkout', 'theobromaDelivery', [
             'pointsUrl' => rest_url('theobroma-commerce/v1/delivery/points'),
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),

@@ -64,7 +64,7 @@
   });
   function suggestCourierAddress(value) {
     if (!config.suggestionsUrl || value.trim().length < 3) return;
-    var query = (customer().country === 'KZ' ? 'Казахстан, ' : 'Россия, ') + (field('city').value || '') + ', ' + value;
+    var query = (field('country').selectedOptions[0].textContent + ', ') + (field('city').value || '') + ', ' + value;
     request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
       if (field('address').value !== value) return;
       courierSuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
@@ -103,12 +103,8 @@
     ['country', 'city', 'postcode', 'address', 'address_2'].forEach(function (name) {
       if (field(name)) field(name).value = initial[name] || '';
     });
-    field('country').disabled = provider === 'ozon';
-    if (provider === 'ozon' && initial.country !== 'RU') {
-      field('country').value = 'RU';
-      field('city').value = '';
-      initial.city = initial.address = '';
-    }
+    field('country').disabled = false;
+    if (!field('country').value && field('country').options.length) field('country').selectedIndex = 0;
     switchKind('pickup');
     setStatus('');
     var search = root.querySelector('[data-delivery-search]');
@@ -148,7 +144,7 @@
   function loadPoints(viewport) {
     var city = customer().city;
     var url = config.pointsUrl + '?provider=' + encodeURIComponent(state.provider) + '&city=' + encodeURIComponent(city) + '&country=' + encodeURIComponent(customer().country) + viewportQuery(viewport);
-    if (state.provider === 'cdek' && !city) {
+    if (!city) {
       state.points = [];
       renderPoints([]);
       setStatus('Укажите город доставки.', true);
@@ -176,13 +172,15 @@
       return;
     }
     setStatus('Ищем пункты рядом с адресом…');
+    value = field('country').selectedOptions[0].textContent + ', ' + value;
     request(config.suggestionsUrl + '?query=' + encodeURIComponent(value)).then(function (data) {
       var suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
       var first = suggestions[0] || null;
       renderSuggestions([]);
-      loadPoints(first && first.viewport ? first.viewport : null);
+      if (first && first.viewport) loadPoints(first.viewport);
+      else setStatus('Не удалось найти город. Уточните название.', true);
     }).catch(function () {
-      loadPoints();
+      setStatus('Не удалось найти город. Попробуйте ещё раз.', true);
     });
   }
 
@@ -212,7 +210,7 @@
     var query = city && value.toLocaleLowerCase('ru-RU').indexOf(city.toLocaleLowerCase('ru-RU')) === -1
       ? city + ', ' + value
       : value;
-    query = (customer().country === 'KZ' ? 'Казахстан, ' : 'Россия, ') + query;
+    query = (field('country').selectedOptions[0].textContent + ', ') + query;
     request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
       renderSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
       if (data.configured === false) {
