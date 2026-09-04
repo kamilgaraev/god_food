@@ -17,7 +17,7 @@ final class DeliveryAddressFields
     {
         $fields['billing'] ??= [];
         $fields['billing']['billing_country'] = [
-            'type' => 'hidden',
+            'type' => 'country',
             'required' => false,
             'default' => 'RU',
             'priority' => 35,
