@@ -55,6 +55,13 @@
   }
   var courierSuggestions = [];
   var courierSearchTimer;
+  var citySearchTimer;
+  document.addEventListener('input', function (event) {
+    if (!event.target.matches('[data-delivery-field="city"]')) return;
+    state.selected = null;
+    window.clearTimeout(citySearchTimer);
+    citySearchTimer = window.setTimeout(function () { loadPointsForCheckoutAddress(customer().city); }, 450);
+  });
   function suggestCourierAddress(value) {
     if (!config.suggestionsUrl || value.trim().length < 3) return;
     var query = (customer().country === 'KZ' ? 'Казахстан, ' : 'Россия, ') + (field('city').value || '') + ', ' + value;
