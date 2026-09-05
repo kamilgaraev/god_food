@@ -111,13 +111,11 @@ final class DeliveryCheckoutController
         }
 
         try {
-            return rest_ensure_response([
-                'configured' => true,
-                'suggestions' => $geocoder->suggestions(
-                    sanitize_text_field((string) $request->get_param('query')),
-                    $key
-                ),
-            ]);
+            $query = sanitize_text_field((string) $request->get_param('query'));
+            $items = $geocoder instanceof \Theobroma\Commerce\Checkout\PhotonGeocoder
+                ? $geocoder->search($query, sanitize_text_field((string) $request->get_param('country')), $request->get_param('type') === 'city')
+                : $geocoder->suggestions($query, $key);
+            return rest_ensure_response(['configured' => true, 'suggestions' => $items]);
         } catch (\Throwable $exception) {
             wc_get_logger()->error('Address suggestions unavailable', ['source' => 'theobroma-delivery']);
             return new \WP_Error('delivery_suggestions_unavailable', __('Не удалось загрузить подсказки адреса.', 'theobroma-commerce'), ['status' => 502]);

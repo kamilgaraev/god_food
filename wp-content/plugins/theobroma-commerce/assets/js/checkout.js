@@ -65,7 +65,7 @@
   function suggestCourierAddress(value) {
     if (!config.suggestionsUrl || value.trim().length < 3) return;
     var query = (field('country').selectedOptions[0].textContent + ', ') + (field('city').value || '') + ', ' + value;
-    request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
+    request(config.suggestionsUrl + '?country=' + encodeURIComponent(customer().country) + '&query=' + encodeURIComponent(query)).then(function (data) {
       if (field('address').value !== value) return;
       courierSuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
       var list = document.querySelector('#theobroma-courier-suggestions');
@@ -176,7 +176,7 @@
     var city = customer().city;
     var context = state.provider + ':' + customer().country + ':' + city;
     function current() { return context === state.provider + ':' + customer().country + ':' + customer().city; }
-    function lookup(query) { return request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)); }
+    function lookup(query) { return request(config.suggestionsUrl + '?country=' + encodeURIComponent(customer().country) + '&query=' + encodeURIComponent(query)); }
     lookup(country + ', ' + value).then(function (data) {
       if (!current()) return null;
       var items = Array.isArray(data.suggestions) ? data.suggestions : [];
@@ -193,7 +193,7 @@
       var suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
       var first = suggestions.find(function (item) { return item.viewport; });
       renderSuggestions([]);
-      if (first) loadPoints(first.viewport);
+      if (first) { state.addressLocation = first; renderMap(); loadPoints(first.viewport); }
       else setStatus('Не удалось найти город. Уточните название.', true);
     }).catch(function () {
       if (current()) setStatus('Поиск адреса временно недоступен. Попробуйте ещё раз.', true);
@@ -227,12 +227,37 @@
       ? city + ', ' + value
       : value;
     query = (field('country').selectedOptions[0].textContent + ', ') + query;
-    request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)).then(function (data) {
+    request(config.suggestionsUrl + '?country=' + encodeURIComponent(customer().country) + '&query=' + encodeURIComponent(query)).then(function (data) {
       renderSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
       if (data.configured === false) {
         setStatus('Подсказки адреса доступны после настройки HTTP Геокодера. Пункты можно выбрать из списка.', false);
       }
     }).catch(function () { renderSuggestions([]); });
+  }
+
+  function suggestCity(value) {
+    if (config.mapProvider !== 'osm' || !config.suggestionsUrl) return;
+    var input = field('city');
+    var list = document.getElementById('theobroma-city-options');
+    if (!list) {
+      list = document.createElement('datalist');
+      list.id = 'theobroma-city-options';
+      input.setAttribute('list', list.id);
+      input.parentNode.appendChild(list);
+    }
+    list.innerHTML = '';
+    state.citySuggestions = [];
+    if (value.trim().length < 2) return;
+    var country = customer().country;
+    request(config.suggestionsUrl + '?type=city&country=' + encodeURIComponent(country) + '&query=' + encodeURIComponent(value)).then(function (data) {
+      if (input.value !== value || customer().country !== country) return;
+      state.citySuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      state.citySuggestions.forEach(function (item) {
+        var option = document.createElement('option');
+        option.value = item.label;
+        list.appendChild(option);
+      });
+    }).catch(function () { /* Manual city entry remains available. */ });
   }
 
   function setCheckoutValue(selector, value) {
@@ -256,12 +281,14 @@
     syncAddressFieldVisibility();
     renderSuggestions([]);
     state.selected = null;
+    state.addressLocation = item;
+    renderMap();
     loadPoints(item.viewport || null);
   }
 
   function resolveAddressSuggestion(value) {
     if (!config.suggestionsUrl || String(value || '').trim().length < 3) return;
-    request(config.suggestionsUrl + '?query=' + encodeURIComponent(value)).then(function (data) {
+    request(config.suggestionsUrl + '?country=' + encodeURIComponent(customer().country) + '&query=' + encodeURIComponent(value)).then(function (data) {
       var item = Array.isArray(data.suggestions) ? data.suggestions[0] : null;
       if (item) applyAddressSuggestion(item);
     }).catch(function () {
@@ -316,7 +343,7 @@
   }
   function selectPoint(point) {
     state.selected = point;
-    renderPoints(core.filterPoints(state.points, checkoutValue('[data-delivery-search]')));
+    renderPoints(config.mapProvider === 'osm' ? state.points : core.filterPoints(state.points, checkoutValue('[data-delivery-search]')));
     setStatus('Выбран: ' + (point.address || point.name || point.id));
     if (state.map && point.latitude && point.longitude) {
       if (config.mapProvider === 'osm') state.map.setView([Number(point.latitude), Number(point.longitude)], 15);
@@ -327,8 +354,9 @@
   function renderOsmMap(container) {
     if (!container || !window.L) { if (container) container.hidden = true; return; }
     var points = state.points.filter(function (point) { return point.latitude && point.longitude; });
-    container.hidden = !points.length;
-    if (!points.length) { if (state.placemarks) state.placemarks.clearLayers(); return; }
+    var address = state.addressLocation;
+    container.hidden = !points.length && !address;
+    if (container.hidden) { if (state.placemarks) state.placemarks.clearLayers(); return; }
     if (!state.map) {
       state.map = window.L.map(container, { scrollWheelZoom: false });
       window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -346,7 +374,14 @@
       }).bindTooltip(label).on('click', function () { selectPoint(point); }).addTo(state.placemarks);
     });
     state.map.invalidateSize();
-    state.map.fitBounds(state.placemarks.getBounds(), { padding: [24, 24], maxZoom: 14 });
+    if (address) {
+      var addressLabel = document.createElement('span');
+      addressLabel.textContent = address.label || 'Найденный адрес';
+      window.L.circleMarker([Number(address.latitude), Number(address.longitude)], {
+        radius: 7, color: '#714727', weight: 3, fillColor: '#fff', fillOpacity: 1
+      }).bindTooltip(addressLabel).addTo(state.placemarks);
+      state.map.setView([Number(address.latitude), Number(address.longitude)], address.house ? 15 : 12);
+    } else state.map.fitBounds(state.placemarks.getBounds(), { padding: [24, 24], maxZoom: 14 });
   }
 
   function renderMap() {
@@ -584,6 +619,11 @@
   });
 
   document.addEventListener('input', function (event) {
+    if (event.target && event.target.matches('[data-delivery-field="city"]')) {
+      window.clearTimeout(state.cityTimer);
+      var typedCity = event.target.value;
+      state.cityTimer = window.setTimeout(function () { suggestCity(typedCity); }, 280);
+    }
     if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
     if (event.target && event.target.matches('[data-delivery-field="address"]')) {
       applyCourierAddress();
@@ -593,6 +633,10 @@
   });
   document.addEventListener('change', function (event) {
     if (event.target.matches('[data-delivery-field="country"], [data-delivery-field="city"]')) {
+      window.clearTimeout(state.cityTimer);
+      var selectedCity = event.target === field('city') && (state.citySuggestions || []).find(function (item) { return item.label === event.target.value; });
+      if (selectedCity) field('city').value = selectedCity.city;
+      state.addressLocation = selectedCity || null;
       state.selected = null;
       state.points = [];
       renderPoints([]);
@@ -603,7 +647,12 @@
         field('city').value = '';
         field('city').focus();
         setStatus('Укажите город доставки.');
-      } else { loadPointsForCheckoutAddress(customer().city); }
+        state.citySuggestions = [];
+        var cityList = document.getElementById('theobroma-city-options');
+        if (cityList) cityList.innerHTML = '';
+        renderMap();
+      } else if (selectedCity) { renderMap(); loadPoints(selectedCity.viewport); }
+      else { loadPointsForCheckoutAddress(customer().city); }
     }
     if (event.target && event.target.matches('#billing_city')) syncAddressFieldVisibility();
     if (event.target && event.target.matches('[data-delivery-field="address"]')) {

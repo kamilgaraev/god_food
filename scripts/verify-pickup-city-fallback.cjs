@@ -7,7 +7,7 @@ async function run(first, stale = false) {
   const calls = [], loaded = [], errors = [], input = {value: 'full address with office'};
   let city = 'Казань';
   const viewport = {left_bottom: {lat: 55, long: 49}, right_top: {lat: 56, long: 50}};
-  const context = {state: {provider: 'ozon'}, config: {suggestionsUrl: '/suggestions'}, customer: () => ({city, country: 'RU'}), field: () => ({selectedOptions: [{textContent: 'Россия'}]}), document: {querySelector: () => input}, setStatus: (message, error) => {if (error) errors.push(message);}, renderSuggestions: () => {}, loadPoints: v => loaded.push(v), request: async url => {calls.push(url); if (stale) city = 'Москва'; return calls.length === 1 ? first : {suggestions: [{viewport}]};}};
+  const context = {state: {provider: 'ozon'}, config: {suggestionsUrl: '/suggestions'}, customer: () => ({city, country: 'RU'}), field: () => ({selectedOptions: [{textContent: 'Россия'}]}), document: {querySelector: () => input}, setStatus: (message, error) => {if (error) errors.push(message);}, renderSuggestions: () => {}, renderMap: () => {}, loadPoints: v => loaded.push(v), request: async url => {calls.push(url); if (stale) city = 'Москва'; return calls.length === 1 ? first : {suggestions: [{viewport}]};}};
   vm.runInNewContext(body + '\nloadPointsForCheckoutAddress("full address with office");', context);
   await new Promise(resolve => setImmediate(resolve));
   return {calls, loaded, errors, input, viewport};
