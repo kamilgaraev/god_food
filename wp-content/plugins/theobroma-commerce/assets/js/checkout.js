@@ -240,21 +240,52 @@
     var input = field('city');
     var list = document.getElementById('theobroma-city-options');
     if (!list) {
-      list = document.createElement('datalist');
+      list = document.createElement('div');
       list.id = 'theobroma-city-options';
-      input.setAttribute('list', list.id);
+      list.className = 'theobroma-delivery-suggestions';
+      list.setAttribute('role', 'listbox');
+      list.setAttribute('aria-label', 'Подсказки городов');
+      list.style.top = '100%';
+      input.parentNode.style.position = 'relative';
+      input.setAttribute('aria-controls', list.id);
+      input.setAttribute('aria-autocomplete', 'list');
       input.parentNode.appendChild(list);
+      input.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowDown' && !list.hidden && list.firstChild) { event.preventDefault(); list.firstChild.focus(); }
+        if (event.key === 'Escape') { list.hidden = true; event.stopPropagation(); }
+      });
     }
     list.innerHTML = '';
+    list.hidden = true;
     state.citySuggestions = [];
     if (value.trim().length < 2) return;
     var country = customer().country;
     request(config.suggestionsUrl + '?type=city&country=' + encodeURIComponent(country) + '&query=' + encodeURIComponent(value)).then(function (data) {
       if (input.value !== value || customer().country !== country) return;
       state.citySuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      list.hidden = !state.citySuggestions.length;
       state.citySuggestions.forEach(function (item) {
-        var option = document.createElement('option');
-        option.value = item.label;
+        var option = document.createElement('button');
+        option.type = 'button';
+        option.setAttribute('role', 'option');
+        option.textContent = item.label;
+        option.addEventListener('click', function () {
+          window.clearTimeout(state.cityTimer);
+          input.value = item.city;
+          list.hidden = true;
+          state.addressLocation = item;
+          state.selected = null;
+          state.points = [];
+          ['postcode', 'address', 'address_2'].forEach(function (name) { field(name).value = ''; });
+          var search = document.querySelector('[data-delivery-search]');
+          if (search) search.value = '';
+          setCheckoutValue('#billing_city', item.city);
+          setCheckoutValue('#billing_country', country);
+          renderSuggestions([]);
+          renderPoints([]);
+          renderMap();
+          loadPoints(item.viewport);
+        });
         list.appendChild(option);
       });
     }).catch(function () { /* Manual city entry remains available. */ });
