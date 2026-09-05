@@ -75,12 +75,14 @@ final class PhotonGeocoder
             if ($label === '') {
                 continue;
             }
-            // Use a neighbourhood around the result, not an entire country's extent.
+            // A house search must stay local: Ozon caps each viewport response at 100 points.
+            $latRadius = !empty($p['housenumber']) ? 0.01 : 0.05;
+            $lonRadius = !empty($p['housenumber']) ? 0.015 : 0.08;
             $result[] = ['label' => $label, 'city' => $city, 'address' => $address,
                 'postcode' => (string) ($p['postcode'] ?? ''), 'latitude' => $lat, 'longitude' => $lon,
                 'house' => (string) ($p['housenumber'] ?? ''),
-                'viewport' => ['left_bottom' => ['lat' => max(-90, $lat - 0.05), 'long' => max(-180, $lon - 0.08)],
-                    'right_top' => ['lat' => min(90, $lat + 0.05), 'long' => min(180, $lon + 0.08)]]];
+                'viewport' => ['left_bottom' => ['lat' => max(-90, $lat - $latRadius), 'long' => max(-180, $lon - $lonRadius)],
+                    'right_top' => ['lat' => min(90, $lat + $latRadius), 'long' => min(180, $lon + $lonRadius)]]];
         }
         return $result;
     }

@@ -143,7 +143,7 @@ final class DeliverySelector
         }
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.11');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', $osm ? ['jquery', 'theobroma-delivery-core', 'theobroma-leaflet'] : ['jquery', 'theobroma-delivery-core'], '0.5.2', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', $osm ? ['jquery', 'theobroma-delivery-core', 'theobroma-leaflet'] : ['jquery', 'theobroma-delivery-core'], '0.5.3', true);
         $officialCdek = class_exists('\\Cdek\\ShippingMethod');
         if ($officialCdek && class_exists('\\Cdek\\Helpers\\UI')) {
             \Cdek\Helpers\UI::enqueueScript('cdek-map', 'cdek-checkout-map', true);
