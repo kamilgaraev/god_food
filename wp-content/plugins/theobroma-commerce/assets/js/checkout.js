@@ -303,11 +303,38 @@
     renderPoints(core.filterPoints(state.points, checkoutValue('[data-delivery-search]')));
     setStatus('Выбран: ' + (point.address || point.name || point.id));
     if (state.map && point.latitude && point.longitude) {
-      state.map.setCenter([Number(point.latitude), Number(point.longitude)], 15, { duration: 250 });
+      if (config.mapProvider === 'osm') state.map.setView([Number(point.latitude), Number(point.longitude)], 15);
+      else state.map.setCenter([Number(point.latitude), Number(point.longitude)], 15, { duration: 250 });
     }
   }
 
+  function renderOsmMap(container) {
+    if (!container || !window.L) { if (container) container.hidden = true; return; }
+    var points = state.points.filter(function (point) { return point.latitude && point.longitude; });
+    container.hidden = !points.length;
+    if (!points.length) { if (state.placemarks) state.placemarks.clearLayers(); return; }
+    if (!state.map) {
+      state.map = window.L.map(container, { scrollWheelZoom: false });
+      window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(state.map);
+      state.placemarks = window.L.featureGroup().addTo(state.map);
+    }
+    state.placemarks.clearLayers();
+    points.forEach(function (point) {
+      var label = document.createElement('span');
+      label.textContent = point.address || point.name || '';
+      window.L.circleMarker([Number(point.latitude), Number(point.longitude)], {
+        radius: 9, color: '#fff', weight: 2, fillColor: '#714727', fillOpacity: 1
+      }).bindTooltip(label).on('click', function () { selectPoint(point); }).addTo(state.placemarks);
+    });
+    state.map.invalidateSize();
+    state.map.fitBounds(state.placemarks.getBounds(), { padding: [24, 24], maxZoom: 14 });
+  }
+
   function renderMap() {
+    if (config.mapProvider === 'osm') { renderOsmMap(document.querySelector('[data-delivery-map]')); return; }
     var container = document.querySelector('[data-delivery-map]');
     if (!container || !core.canRenderMap(config) || !window.ymaps) {
       if (container) container.hidden = true;

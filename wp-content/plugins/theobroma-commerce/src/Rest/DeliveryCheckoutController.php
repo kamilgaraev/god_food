@@ -104,14 +104,16 @@ final class DeliveryCheckoutController
         $key = defined('THEOBROMA_YANDEX_GEOCODER_KEY')
             ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY')
             : (string) ($settings['yandex_geocoder_key'] ?? '');
-        if (trim($key) === '') {
+        $geocoder = ($settings['map_provider'] ?? 'yandex') === 'osm'
+            ? new \Theobroma\Commerce\Checkout\PhotonGeocoder() : new YandexGeocoder();
+        if (($settings['map_provider'] ?? 'yandex') !== 'osm' && trim($key) === '') {
             return rest_ensure_response(['configured' => false, 'suggestions' => []]);
         }
 
         try {
             return rest_ensure_response([
                 'configured' => true,
-                'suggestions' => (new YandexGeocoder())->suggestions(
+                'suggestions' => $geocoder->suggestions(
                     sanitize_text_field((string) $request->get_param('query')),
                     $key
                 ),
@@ -171,7 +173,9 @@ final class DeliveryCheckoutController
                     $longitude = $request->get_param('longitude');
                     if (!is_numeric($latitude) || !is_numeric($longitude)) {
                         $geocoderKey = defined('THEOBROMA_YANDEX_GEOCODER_KEY') ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY') : (string) ($settings['yandex_geocoder_key'] ?? '');
-                        $coordinates = (new YandexGeocoder())->coordinates($this->address($destination), $geocoderKey);
+                        $geocoder = ($settings['map_provider'] ?? 'yandex') === 'osm'
+                            ? new \Theobroma\Commerce\Checkout\PhotonGeocoder() : new YandexGeocoder();
+                        $coordinates = $geocoder->coordinates($this->address($destination), $geocoderKey);
                         $latitude = $coordinates['latitude'];
                         $longitude = $coordinates['longitude'];
                     }
