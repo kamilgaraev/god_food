@@ -6,6 +6,35 @@ use Theobroma\Commerce\Checkout\PhotonGeocoder;
 
 final class PhotonGeocoderTest extends TestCase
 {
+    public function testNormalizesPostalAddressWithoutChangingBuildingNumber(): void
+    {
+        $queries = [];
+        $geocoder = new PhotonGeocoder(static function (string $url) use (&$queries): array {
+            parse_str(parse_url($url, PHP_URL_QUERY), $params);
+            $queries[] = $params['q'];
+            return ['status' => 200, 'body' => '{"features":[]}'];
+        });
+        $geocoder->suggestions('Россия, Республика Татарстан, г Казань, Спартаковская ул, д. 12, офис 223');
+        $geocoder->suggestions('Россия, г. Самара, ул. Ленина, д. 8/2, кв. 19');
+        $this->assertSame('Россия Татарстан Казань Спартаковская 12', $queries[0]);
+        $this->assertSame('Россия Самара Ленина 8/2', $queries[1]);
+    }
+
+    public function testCitySearchFiltersCountryAndExcludesBuildings(): void
+    {
+        $geocoder = new PhotonGeocoder(static function (string $url): array {
+            if (!str_contains($url, 'countrycode=KZ') || !str_contains($url, 'osm_tag=place:city')) throw new \RuntimeException('Missing filters');
+            $features = [];
+            foreach ([['Алматы', 'KZ', 'city'], ['Алматы', 'RU', 'city'], ['Магазин', 'KZ', 'shop']] as $row) {
+                $features[] = ['geometry' => ['coordinates' => [76.9, 43.2]], 'properties' => ['name' => $row[0], 'countrycode' => $row[1], 'osm_value' => $row[2]]];
+            }
+            return ['status' => 200, 'body' => json_encode(['features' => $features])];
+        });
+        $items = $geocoder->search('Ал', 'KZ', true);
+        $this->assertSame(1, count($items));
+        $this->assertSame('Алматы', $items[0]['city']);
+    }
+
     public function testNormalizesGeoJsonAndSkipsInvalidCoordinates(): void
     {
         $geocoder = new PhotonGeocoder(static fn (string $url): array => ['status' => 200, 'body' => json_encode(['features' => [
