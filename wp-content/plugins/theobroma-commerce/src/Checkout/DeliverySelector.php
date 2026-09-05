@@ -136,9 +136,14 @@ final class DeliverySelector
             ? (string) constant('THEOBROMA_YANDEX_SUGGEST_KEY')
             : (string) ($settings['yandex_suggest_key'] ?? '');
 
+        $osm = ($settings['map_provider'] ?? 'yandex') === 'osm';
+        if ($osm) {
+            wp_enqueue_style('theobroma-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4');
+            wp_enqueue_script('theobroma-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true);
+        }
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.11');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', ['jquery', 'theobroma-delivery-core'], '0.4.11', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', $osm ? ['jquery', 'theobroma-delivery-core', 'theobroma-leaflet'] : ['jquery', 'theobroma-delivery-core'], '0.5.0', true);
         $officialCdek = class_exists('\\Cdek\\ShippingMethod');
         if ($officialCdek && class_exists('\\Cdek\\Helpers\\UI')) {
             \Cdek\Helpers\UI::enqueueScript('cdek-map', 'cdek-checkout-map', true);
@@ -150,11 +155,12 @@ final class DeliverySelector
             'suggestionsUrl' => rest_url('theobroma-commerce/v1/delivery/suggestions'),
             'quoteUrl' => $this->quoteUrl(),
             'selectionUrl' => rest_url('theobroma-commerce/v1/delivery/selection'),
-            'mapEnabled' => $mapKey !== '',
+            'mapProvider' => $osm ? 'osm' : 'yandex',
+            'mapEnabled' => $osm || $mapKey !== '',
             'mapKey' => $mapKey,
-            'suggestEnabled' => $mapKey !== '' && $suggestKey !== '',
+            'suggestEnabled' => !$osm && $mapKey !== '' && $suggestKey !== '',
         ]);
-        if ($mapKey !== '') {
+        if (!$osm && $mapKey !== '') {
             wp_enqueue_script('yandex-maps', $this->mapScriptUrl($mapKey, $suggestKey), [], null, true);
         }
     }

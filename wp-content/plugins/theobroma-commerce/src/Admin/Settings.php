@@ -18,6 +18,7 @@ final class Settings
             'cdek_order_status' => 'processing',
             'ozon_client_id' => '',
             'ozon_client_secret' => '',
+            'map_provider' => 'yandex',
             'yandex_maps_js_key' => '',
             'yandex_suggest_key' => '',
             'yandex_geocoder_key' => '',
@@ -31,6 +32,7 @@ final class Settings
     public function sanitize(array $input, array $existing = []): array
     {
         $result = $this->defaults();
+        $result['map_provider'] = ($input['map_provider'] ?? $existing['map_provider'] ?? 'yandex') === 'osm' ? 'osm' : 'yandex';
         foreach (['cdek_enabled'] as $flag) {
             $result[$flag] = in_array((string) ($input[$flag] ?? ''), ['1', 'yes', 'on', 'true'], true) ? 'yes' : 'no';
         }

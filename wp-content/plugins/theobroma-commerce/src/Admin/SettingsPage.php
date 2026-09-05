@@ -102,7 +102,13 @@ final class SettingsPage
                 <?php $this->secret('ozon_client_secret', __('Secret частного приложения', 'theobroma-commerce'), $values, defined('THEOBROMA_OZON_CLIENT_SECRET')); ?>
 
                 <h2><?php esc_html_e('Карты пунктов выдачи', 'theobroma-commerce'); ?></h2>
-                <p><?php esc_html_e('Ключи необязательны: без них покупатель выберет ПВЗ из списка.', 'theobroma-commerce'); ?></p>
+                <p><label for="theobroma-map-provider">Карта и поиск адресов</label><br>
+                    <select id="theobroma-map-provider" name="theobroma_commerce_settings[map_provider]">
+                        <option value="yandex" <?php selected($values['map_provider'] ?? 'yandex', 'yandex'); ?>>Яндекс Карты</option>
+                        <option value="osm" <?php selected($values['map_provider'] ?? 'yandex', 'osm'); ?>>OpenStreetMap + Photon</option>
+                    </select>
+                </p>
+                <p>OpenStreetMap + Photon работают без ключей Яндекса. Ключи сохраняются при переключении. Публичные сервисы OSM и Photon могут ограничивать нагрузку; список ПВЗ и ручной ввод остаются доступны.</p>
                 <?php $this->text('yandex_maps_js_key', __('Ключ JavaScript API Яндекс Карт', 'theobroma-commerce'), $values); ?>
                 <?php $this->secret('yandex_suggest_key', __('Ключ API Геосаджеста Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_SUGGEST_KEY')); ?>
                 <?php $this->secret('yandex_geocoder_key', __('Ключ HTTP Геокодера Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_GEOCODER_KEY')); ?>
