@@ -172,15 +172,31 @@
       return;
     }
     setStatus('Ищем пункты рядом с адресом…');
-    value = field('country').selectedOptions[0].textContent + ', ' + value;
-    request(config.suggestionsUrl + '?query=' + encodeURIComponent(value)).then(function (data) {
+    var country = field('country').selectedOptions[0].textContent;
+    var city = customer().city;
+    var context = state.provider + ':' + customer().country + ':' + city;
+    function current() { return context === state.provider + ':' + customer().country + ':' + customer().city; }
+    function lookup(query) { return request(config.suggestionsUrl + '?query=' + encodeURIComponent(query)); }
+    lookup(country + ', ' + value).then(function (data) {
+      if (!current()) return null;
+      var items = Array.isArray(data.suggestions) ? data.suggestions : [];
+      if (items.some(function (item) { return item.viewport; }) || !city || value.trim() === city.trim()) return data;
+      return lookup(country + ', ' + city).then(function (fallback) {
+        if (current()) {
+          var search = document.querySelector('[data-delivery-search]');
+          if (search) search.value = '';
+        }
+        return fallback;
+      });
+    }).then(function (data) {
+      if (!current() || !data) return;
       var suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
-      var first = suggestions[0] || null;
+      var first = suggestions.find(function (item) { return item.viewport; });
       renderSuggestions([]);
-      if (first && first.viewport) loadPoints(first.viewport);
+      if (first) loadPoints(first.viewport);
       else setStatus('Не удалось найти город. Уточните название.', true);
     }).catch(function () {
-      setStatus('Не удалось найти город. Попробуйте ещё раз.', true);
+      if (current()) setStatus('Поиск адреса временно недоступен. Попробуйте ещё раз.', true);
     });
   }
 
