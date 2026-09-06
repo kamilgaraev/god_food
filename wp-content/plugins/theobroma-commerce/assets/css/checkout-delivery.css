@@ -258,6 +258,28 @@ body > div.cdek-map > div[class] { z-index: 10000020 !important; }
 .theobroma-delivery-search-control { display: block; position: relative; }
 .theobroma-delivery-search input,
 .theobroma-delivery-fields input { background: #fff; border: 1px solid var(--theobroma-line); border-radius: 10px; box-sizing: border-box; color: var(--theobroma-ink); font: inherit; min-height: 44px; padding: 9px 12px; width: 100%; }
+.theobroma-delivery-dialog .theobroma-delivery-fields select {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  min-height: 44px;
+  padding: 9px 40px 9px 12px;
+  border: 1px solid var(--theobroma-line);
+  border-radius: 10px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23714727' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  color: var(--theobroma-ink);
+  font: inherit;
+  line-height: normal;
+  cursor: pointer;
+}
 .theobroma-delivery-search input { padding-right: 48px; }
 .theobroma-delivery-search-clear { align-items: center; appearance: none; background: transparent; border: 0; border-radius: 50%; color: var(--theobroma-muted); cursor: pointer; display: inline-flex; height: 34px; justify-content: center; padding: 0; position: absolute; right: 7px; top: 50%; transform: translateY(-50%); width: 34px; }
 .theobroma-delivery-search-clear:hover { background: #f4ece3; color: var(--theobroma-accent-dark); }
