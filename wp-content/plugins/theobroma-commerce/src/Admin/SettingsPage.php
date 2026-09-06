@@ -121,6 +121,24 @@ final class SettingsPage
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <p><button type="submit" class="button" form="theobroma-yandex-maps-check"><?php esc_html_e('Проверить ключи карт', 'theobroma-commerce'); ?></button></p>
+                <h2>Почта — SMTP</h2>
+                <p>Эти настройки применяются ко всем письмам сайта, включая уведомления о заказах. Включённые настройки ниже заменяют почтовую конфигурацию сервера. После отключения используется конфигурация сервера.</p>
+                <?php if (($values['smtp_enabled'] ?? 'no') !== 'yes' && getenv('THEOBROMA_SMTP_HOST') === 'mailpit') : ?>
+                    <div class="notice notice-warning inline"><p>Сейчас письма сохраняются в тестовом Mailpit и не доставляются покупателям. Заполните и включите SMTP вашего почтового сервиса.</p></div>
+                <?php endif; ?>
+                <?php $this->checkbox('smtp_enabled', 'Использовать SMTP из этих настроек', $values); ?>
+                <?php $this->text('smtp_host', 'SMTP-сервер (без https://)', $values); ?>
+                <?php $this->number('smtp_port', 'Порт SMTP', $values); ?>
+                <p><label>Шифрование<br><select name="theobroma_commerce_settings[smtp_encryption]">
+                    <option value="tls" <?php selected($values['smtp_encryption'], 'tls'); ?>>STARTTLS (обычно порт 587)</option>
+                    <option value="ssl" <?php selected($values['smtp_encryption'], 'ssl'); ?>>SSL/TLS (обычно порт 465)</option>
+                    <option value="none" <?php selected($values['smtp_encryption'], 'none'); ?>>Без шифрования</option>
+                </select></label></p>
+                <?php $this->text('smtp_username', 'Логин SMTP', $values); ?>
+                <?php $this->secret('smtp_password', 'Пароль SMTP / пароль приложения', $values, false); ?>
+                <?php $this->text('smtp_from_address', 'Email отправителя', $values); ?>
+                <?php $this->text('smtp_from_name', 'Имя отправителя', $values); ?>
+                <p>Используйте адрес отправителя, разрешённый вашим почтовым сервисом. Пустое поле пароля сохраняет ранее заданный пароль.</p>
                 <?php submit_button(); ?>
             </form>
             <form id="theobroma-yandex-maps-check" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:none">
