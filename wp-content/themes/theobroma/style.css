@@ -3398,12 +3398,16 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-remove::before,.commerce-cart-remove::after { background:#714727; }
   .commerce-cart-quantity button:hover,.commerce-cart-remove:hover { background:#eee1d2; }
 
+/* Pointer interaction stays quiet; keyboard focus remains visible. */
+body :focus:not(:focus-visible) { outline:none !important; box-shadow:none !important; }
+body :focus-visible { outline:2px solid #b0903d; outline-offset:3px; }
+
 @keyframes theobroma-soft-in { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion:no-preference) {
   @view-transition { navigation:auto; }
   ::view-transition-old(root),::view-transition-new(root) { animation-duration:220ms; animation-timing-function:ease-out; }
-  .commerce-modal.is-open .commerce-modal-cart,.commerce-modal.is-open .commerce-modal-wishlist,
-  dialog[open] { animation:theobroma-soft-in 220ms ease-out both; }
+  .commerce-modal.is-open,.account-modal.is-open,dialog[open] { animation:theobroma-soft-in 280ms ease-out both; }
+  .commerce-modal.is-open .commerce-modal-content > * { animation:theobroma-soft-in 280ms ease-out both; }
   .commerce-cart-quantity button,.commerce-cart-remove { transition:background-color 160ms ease,border-color 160ms ease; }
 }
 @media (prefers-reduced-motion:reduce) {
