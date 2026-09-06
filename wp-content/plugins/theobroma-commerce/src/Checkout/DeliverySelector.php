@@ -69,7 +69,7 @@ final class DeliverySelector
                 <div class="theobroma-delivery-fields theobroma-delivery-destination">
                     <label><span>Страна</span><select data-delivery-field="country" autocomplete="country"><?php foreach (array_intersect_key(WC()->countries->get_shipping_countries(), WC()->countries->get_allowed_countries()) as $code => $name) : ?><option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name); ?></option><?php endforeach; ?></select></label>
                     <label><span>Город</span><input data-delivery-field="city" autocomplete="address-level2" placeholder="Например, Москва" required></label>
-                    <div class="wide"><button type="button" class="button" data-detect-city>Определить мой город</button><small style="display:block;margin-top:8px">С вашего разрешения приблизительное местоположение передаётся Photon для определения города.</small></div>
+
                 </div>
                 <div class="theobroma-delivery-tabs" role="tablist" aria-label="Способ доставки">
                     <button type="button" role="tab" aria-selected="true" data-delivery-kind="pickup">В пункт выдачи</button>
@@ -144,7 +144,7 @@ final class DeliverySelector
         }
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.12');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);
-        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', $osm ? ['jquery', 'theobroma-delivery-core', 'theobroma-leaflet'] : ['jquery', 'theobroma-delivery-core'], '0.5.5', true);
+        wp_enqueue_script('theobroma-commerce-checkout', THEOBROMA_COMMERCE_URL . 'assets/js/checkout.js', $osm ? ['jquery', 'theobroma-delivery-core', 'theobroma-leaflet'] : ['jquery', 'theobroma-delivery-core'], '0.5.6', true);
         $officialCdek = class_exists('\\Cdek\\ShippingMethod');
         if ($officialCdek && class_exists('\\Cdek\\Helpers\\UI')) {
             \Cdek\Helpers\UI::enqueueScript('cdek-map', 'cdek-checkout-map', true);
