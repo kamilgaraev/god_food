@@ -110,34 +110,43 @@
   function detectCity() {
     if (!navigator.geolocation || state.cityDetectionAttempted) return;
     state.cityDetectionAttempted = true;
-    var previousCity = field('city').value;
-    var previousCountry = field('country').value;
-    function done() { /* Manual city entry remains available. */ }
-    function unchanged() { return dialog().open && field('city').value === previousCity && field('country').value === previousCountry; }
+    var names = ['city', 'country', 'address', 'postcode', 'address_2'];
+    var previous = names.map(function (name) { return field(name).value; });
+    var provider = state.provider;
+    function unchanged() {
+      return dialog().open && state.provider === provider && !state.selected && names.every(function (name, index) { return field(name).value === previous[index]; });
+    }
     navigator.geolocation.getCurrentPosition(function (position) {
-      if (!unchanged()) { done(); return; }
-      // Round before transmission; precise coordinates are never sent to the server.
-      var lat = position.coords.latitude.toFixed(2);
-      var lon = position.coords.longitude.toFixed(2);
-      request(config.suggestionsUrl + '?type=location&lat=' + lat + '&lon=' + lon).then(function (data) {
-        if (!unchanged()) return;
-        if (!data.city || !Array.from(field('country').options).some(function (option) { return option.value === data.country; })) throw new Error('unsupported city');
+      if (!unchanged()) return;
+      request(config.suggestionsUrl, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'location', lat: position.coords.latitude.toFixed(5), lon: position.coords.longitude.toFixed(5) })
+      }).then(function (data) {
+        if (!unchanged() || !data.city || !Array.from(field('country').options).some(function (option) { return option.value === data.country; })) return;
+        // A saved destination can differ from the customer's physical location.
+        if (previous[0] && (previous[0].trim().toLocaleLowerCase() !== data.city.trim().toLocaleLowerCase() || previous[1] !== data.country)) return;
         field('country').value = data.country;
         field('city').value = data.city;
-        ['postcode', 'address', 'address_2'].forEach(function (name) { field(name).value = ''; });
         setCheckoutValue('#billing_country', data.country);
         setCheckoutValue('#billing_city', data.city);
-        state.selected = null;
+        // Poor location accuracy is sufficient for a city, but not a delivery address.
+        var address = position.coords.accuracy <= 150 ? (data.address || '') : '';
+        if (address && !field('address').value) {
+          field('address').value = address;
+          if (!field('postcode').value) field('postcode').value = data.postcode || '';
+          setCheckoutValue('#billing_address_1', address);
+          setCheckoutValue('#billing_postcode', field('postcode').value);
+        }
         state.points = [];
         state.addressLocation = null;
         renderSuggestions([]);
         renderPoints([]);
         var search = document.querySelector('[data-delivery-search]');
-        if (search) search.value = data.city;
-        setStatus('Город определён: ' + data.city + '. При необходимости его можно изменить.');
-        loadPointsForCheckoutAddress(data.city);
-      }).catch(function () { if (unchanged()) setStatus('Не удалось определить город. Введите его вручную.', true); }).finally(done);
-    }, function () { done(); if (unchanged()) setStatus('Местоположение недоступно. Введите город вручную.', true); }, { enableHighAccuracy:false, timeout:8000, maximumAge:300000 });
+        var query = [data.city, address].filter(Boolean).join(', ');
+        if (search) search.value = query;
+        loadPointsForCheckoutAddress(query);
+      }).catch(function () { /* Manual address entry stays available. */ });
+    }, function () { /* Do not interrupt checkout if permission is denied. */ }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
   }
 
   function open(provider) {
@@ -166,7 +175,7 @@
     renderSuggestions([]);
     if (typeof root.showModal === 'function') root.showModal(); else root.setAttribute('open', '');
     initNativeSuggestions();
-    if (!initial.city) detectCity();
+    if (!initial.address) detectCity();
     loadPointsForCheckoutAddress(pickupAddress);
   }
 

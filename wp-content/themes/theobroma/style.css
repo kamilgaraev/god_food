@@ -1920,6 +1920,9 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .commerce-modal-close::after { transform:rotate(-45deg); }
 .commerce-modal-status { padding-top:45vh; text-align:center; color:#8e8985; font:400 0.875rem/1.3125rem 'Montserrat',Arial,sans-serif; }
 .commerce-modal-content { position:relative; }
+/* WooCommerce still blocks duplicate actions, without flashing a white overlay. */
+.commerce-modal-cart .blockUI.blockOverlay { background:transparent !important; opacity:0 !important; }
+[data-commerce-cart-open][aria-busy="true"] { cursor:progress; }
 .product-image-lightbox[hidden] { display:none; }
 .product-image-lightbox { position:fixed; z-index:20; inset:0; display:grid; place-items:center; padding:3rem; background:rgba(34,31,29,.9); }
 .product-image-lightbox-backdrop { position:absolute; inset:0; width:100%; height:100%; padding:0; border:0; background:transparent; cursor:zoom-out; }
@@ -3406,7 +3409,7 @@ body :focus-visible { outline:2px solid #b0903d; outline-offset:3px; }
 @media (prefers-reduced-motion:no-preference) {
   @view-transition { navigation:auto; }
   ::view-transition-old(root),::view-transition-new(root) { animation-duration:220ms; animation-timing-function:ease-out; }
-  .commerce-modal.is-open,.account-modal.is-open,dialog[open] { animation:theobroma-soft-in 280ms ease-out both; }
+  .account-modal.is-open,dialog[open] { animation:theobroma-soft-in 280ms ease-out both; }
   .commerce-modal.is-open .commerce-modal-wishlist > * { animation:theobroma-soft-in 280ms ease-out both; }
   .commerce-cart-quantity button,.commerce-cart-remove { transition:background-color 160ms ease,border-color 160ms ease; }
 }

@@ -55,7 +55,7 @@ final class DeliveryCheckoutController
             'permission_callback' => [$this, 'publicAccess'],
         ]);
         register_rest_route('theobroma-commerce/v1', '/delivery/suggestions', [
-            'methods' => 'GET',
+            'methods' => ['GET', 'POST'],
             'callback' => [$this, 'suggestions'],
             'permission_callback' => [$this, 'publicAccess'],
         ]);
@@ -106,8 +106,10 @@ final class DeliveryCheckoutController
             if (!is_numeric($lat) || !is_numeric($lon) || abs((float) $lat) > 90 || abs((float) $lon) > 180) {
                 return new \WP_Error('invalid_coordinates', 'Некорректные координаты.', ['status' => 400]);
             }
-            // City precision only: do not send or retain the customer's exact position.
-            $url = 'https://photon.komoot.io/reverse?' . http_build_query(['lat' => round((float) $lat, 2), 'lon' => round((float) $lon, 2), 'limit' => 1]);
+            // POST keeps coordinates out of the website's access-log URLs.
+            $addressLookup = $request->get_method() === 'POST';
+            $precision = $addressLookup ? 5 : 2;
+            $url = 'https://photon.komoot.io/reverse?' . http_build_query(['lat' => round((float) $lat, $precision), 'lon' => round((float) $lon, $precision), 'limit' => 1]);
             $response = wp_remote_get($url, ['timeout' => 8, 'limit_response_size' => 65536]);
             if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
                 return new \WP_Error('city_unavailable', 'Не удалось определить город. Введите его вручную.', ['status' => 502]);
@@ -120,7 +122,13 @@ final class DeliveryCheckoutController
             if ($city === '' || !isset($allowed[$country])) {
                 return new \WP_Error('city_unavailable', 'Выберите город доставки вручную.', ['status' => 404]);
             }
-            return rest_ensure_response(['city' => $city, 'country' => $country]);
+            $address = $addressLookup ? sanitize_text_field(trim(implode(', ', array_filter([
+                (string) ($properties['street'] ?? ''), (string) ($properties['housenumber'] ?? ''),
+            ])))) : '';
+            $result = rest_ensure_response(['city' => $city, 'country' => $country, 'address' => $address,
+                'postcode' => $addressLookup ? sanitize_text_field((string) ($properties['postcode'] ?? '')) : '']);
+            $result->header('Cache-Control', 'private, no-store');
+            return $result;
         }
         $settings = (array) get_option('theobroma_commerce_settings', []);
         $key = defined('THEOBROMA_YANDEX_GEOCODER_KEY')
