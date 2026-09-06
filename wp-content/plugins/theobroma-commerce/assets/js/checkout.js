@@ -107,6 +107,42 @@
     if (typeof root.close === 'function' && root.open) root.close(); else root.removeAttribute('open');
   }
 
+  function detectCity() {
+    var button = document.querySelector('[data-detect-city]');
+    if (!navigator.geolocation) { setStatus('Браузер не поддерживает определение города. Введите его вручную.', true); return; }
+    if (button.disabled) return;
+    var previousCity = field('city').value;
+    var previousCountry = field('country').value;
+    button.disabled = true;
+    button.textContent = 'Определяем город…';
+    function done() { button.disabled = false; button.textContent = 'Определить мой город'; }
+    function unchanged() { return dialog().open && field('city').value === previousCity && field('country').value === previousCountry; }
+    navigator.geolocation.getCurrentPosition(function (position) {
+      if (!unchanged()) { done(); return; }
+      // Round before transmission; precise coordinates are never sent to the server.
+      var lat = position.coords.latitude.toFixed(2);
+      var lon = position.coords.longitude.toFixed(2);
+      request(config.suggestionsUrl + '?type=location&lat=' + lat + '&lon=' + lon).then(function (data) {
+        if (!unchanged()) return;
+        if (!data.city || !Array.from(field('country').options).some(function (option) { return option.value === data.country; })) throw new Error('unsupported city');
+        field('country').value = data.country;
+        field('city').value = data.city;
+        ['postcode', 'address', 'address_2'].forEach(function (name) { field(name).value = ''; });
+        setCheckoutValue('#billing_country', data.country);
+        setCheckoutValue('#billing_city', data.city);
+        state.selected = null;
+        state.points = [];
+        state.addressLocation = null;
+        renderSuggestions([]);
+        renderPoints([]);
+        var search = document.querySelector('[data-delivery-search]');
+        if (search) search.value = data.city;
+        setStatus('Город определён: ' + data.city + '. При необходимости его можно изменить.');
+        loadPointsForCheckoutAddress(data.city);
+      }).catch(function () { if (unchanged()) setStatus('Не удалось определить город. Введите его вручную.', true); }).finally(done);
+    }, function () { done(); if (unchanged()) setStatus('Местоположение недоступно. Введите город вручную.', true); }, { enableHighAccuracy:false, timeout:8000, maximumAge:300000 });
+  }
+
   function open(provider) {
     state.provider = provider;
     state.kind = 'pickup';
@@ -133,6 +169,12 @@
     renderSuggestions([]);
     if (typeof root.showModal === 'function') root.showModal(); else root.setAttribute('open', '');
     initNativeSuggestions();
+    root.querySelector('[data-detect-city]').onclick = detectCity;
+    if (!initial.city && navigator.permissions) {
+      navigator.permissions.query({ name:'geolocation' }).then(function (permission) {
+        if (permission.state === 'granted' && root.open && !field('city').value) detectCity();
+      }).catch(function () { /* The explicit location button remains available. */ });
+    }
     loadPointsForCheckoutAddress(pickupAddress);
   }
 

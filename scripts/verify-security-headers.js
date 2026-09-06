@@ -12,7 +12,7 @@ async function main() {
     assert.equal(response.headers.get('referrer-policy'), 'strict-origin-when-cross-origin', `${route} must limit referrer disclosure`);
     assert.equal(
       response.headers.get('permissions-policy'),
-      'camera=(), microphone=(), geolocation=(), payment=(self)',
+      'camera=(), microphone=(), geolocation=(self), payment=(self)',
       `${route} must disable unused browser capabilities`,
     );
     if (baseUrl.startsWith('http://')) {

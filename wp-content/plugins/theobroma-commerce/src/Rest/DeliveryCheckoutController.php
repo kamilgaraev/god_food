@@ -100,6 +100,28 @@ final class DeliveryCheckoutController
 
     public function suggestions(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        if ($request->get_param('type') === 'location') {
+            $lat = $request->get_param('lat');
+            $lon = $request->get_param('lon');
+            if (!is_numeric($lat) || !is_numeric($lon) || abs((float) $lat) > 90 || abs((float) $lon) > 180) {
+                return new \WP_Error('invalid_coordinates', 'Некорректные координаты.', ['status' => 400]);
+            }
+            // City precision only: do not send or retain the customer's exact position.
+            $url = 'https://photon.komoot.io/reverse?' . http_build_query(['lat' => round((float) $lat, 2), 'lon' => round((float) $lon, 2), 'limit' => 1]);
+            $response = wp_remote_get($url, ['timeout' => 8, 'limit_response_size' => 65536]);
+            if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+                return new \WP_Error('city_unavailable', 'Не удалось определить город. Введите его вручную.', ['status' => 502]);
+            }
+            $data = json_decode(wp_remote_retrieve_body($response), true);
+            $properties = $data['features'][0]['properties'] ?? [];
+            $city = sanitize_text_field((string) ($properties['city'] ?? $properties['town'] ?? $properties['village'] ?? ''));
+            $country = strtoupper((string) ($properties['countrycode'] ?? ''));
+            $allowed = WC()->countries->get_shipping_countries();
+            if ($city === '' || !isset($allowed[$country])) {
+                return new \WP_Error('city_unavailable', 'Выберите город доставки вручную.', ['status' => 404]);
+            }
+            return rest_ensure_response(['city' => $city, 'country' => $country]);
+        }
         $settings = (array) get_option('theobroma_commerce_settings', []);
         $key = defined('THEOBROMA_YANDEX_GEOCODER_KEY')
             ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY')
