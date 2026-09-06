@@ -278,6 +278,8 @@ body > div.cdek-map > div[class] { z-index: 10000020 !important; }
 .theobroma-delivery-point span { color: var(--theobroma-muted); font-size: .9rem; }
 .theobroma-delivery-point small { color: #8c7f76; }
 .theobroma-delivery-map { border-radius: 14px; min-height: 390px; overflow: hidden; }
+/* Leaflet attribution is kept in the DOM for license compliance, but does not compete with the map UI. */
+.leaflet-control-attribution.leaflet-control { display: none; }
 .theobroma-delivery-empty { color: var(--theobroma-muted); padding: 24px 10px; }
 
 .theobroma-delivery-fields { display: grid; gap: 18px 16px; grid-template-columns: 1fr 1fr; }
