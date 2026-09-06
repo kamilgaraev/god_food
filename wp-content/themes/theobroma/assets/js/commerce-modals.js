@@ -81,7 +81,9 @@
         modal.setAttribute('aria-hidden', 'false');
         document.documentElement.classList.add('commerce-modal-open');
         document.body.classList.add('commerce-modal-open');
-        window.requestAnimationFrame(() => modal.classList.add('is-open'));
+        // Commit the initial opacity before starting the single opening transition.
+        void modal.offsetWidth;
+        modal.classList.add('is-open');
         closeButton.focus({ preventScroll: true });
     };
 
@@ -405,20 +407,23 @@
         if (opener) {
             trigger = opener;
         }
-        showModal('cart', 'Корзина и оформление заказа');
-        setLoading('Загрузка корзины…');
+        if (opener?.getAttribute('aria-busy') === 'true') return;
+        opener?.setAttribute('aria-busy', 'true');
         try {
             const response = await request({ action: 'theobroma_cart_modal' });
             if (!response.success) {
                 throw new Error(response.data?.message || 'Cart request failed');
             }
             renderCart(response.data);
+            showModal('cart', 'Корзина и оформление заказа');
             focusFirstModalControl();
         } catch (error) {
             if (error.name === 'AbortError') {
                 return;
             }
             window.location.assign(config.cartUrl);
+        } finally {
+            opener?.removeAttribute('aria-busy');
         }
     };
 

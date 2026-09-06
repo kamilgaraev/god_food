@@ -62,6 +62,7 @@ final class Plugin
         (new ProductWeightBackfill())->register();
         (new WishlistController())->register();
         MailTransport::fromEnvironment()->register();
+        (new \Theobroma\Commerce\Accounts\EmailVerification())->register();
     }
 
     /** @param array<string, class-string> $methods
