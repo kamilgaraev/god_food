@@ -108,14 +108,11 @@
   }
 
   function detectCity() {
-    var button = document.querySelector('[data-detect-city]');
-    if (!navigator.geolocation) { setStatus('Браузер не поддерживает определение города. Введите его вручную.', true); return; }
-    if (button.disabled) return;
+    if (!navigator.geolocation || state.cityDetectionAttempted) return;
+    state.cityDetectionAttempted = true;
     var previousCity = field('city').value;
     var previousCountry = field('country').value;
-    button.disabled = true;
-    button.textContent = 'Определяем город…';
-    function done() { button.disabled = false; button.textContent = 'Определить мой город'; }
+    function done() { /* Manual city entry remains available. */ }
     function unchanged() { return dialog().open && field('city').value === previousCity && field('country').value === previousCountry; }
     navigator.geolocation.getCurrentPosition(function (position) {
       if (!unchanged()) { done(); return; }
@@ -169,12 +166,7 @@
     renderSuggestions([]);
     if (typeof root.showModal === 'function') root.showModal(); else root.setAttribute('open', '');
     initNativeSuggestions();
-    root.querySelector('[data-detect-city]').onclick = detectCity;
-    if (!initial.city && navigator.permissions) {
-      navigator.permissions.query({ name:'geolocation' }).then(function (permission) {
-        if (permission.state === 'granted' && root.open && !field('city').value) detectCity();
-      }).catch(function () { /* The explicit location button remains available. */ });
-    }
+    if (!initial.city) detectCity();
     loadPointsForCheckoutAddress(pickupAddress);
   }
 
