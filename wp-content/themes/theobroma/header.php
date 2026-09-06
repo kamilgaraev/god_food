@@ -30,6 +30,9 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
             <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" decoding="async" fetchpriority="high" alt="Theobroma — Пища Богов">
         </a>
         <div class="nav-links nav-links-transactional floating-actions">
+            <a class="header-icon header-account header-wishlist" href="#wishlist" data-wishlist-open aria-label="Избранное" title="Избранное">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+            </a>
             <a class="header-icon header-cart" href="<?php echo esc_url($cart_url); ?>" data-commerce-cart-open aria-label="Корзина, товаров: <?php echo esc_attr((string) $cart_count); ?>">
                 <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/cart.svg'); ?>" alt="">
                 <span class="cart-count" aria-hidden="true"><?php echo esc_html((string) $cart_count); ?></span>
