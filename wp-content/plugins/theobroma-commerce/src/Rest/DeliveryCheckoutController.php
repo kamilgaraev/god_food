@@ -126,7 +126,7 @@ final class DeliveryCheckoutController
                 (string) ($properties['street'] ?? ''), (string) ($properties['housenumber'] ?? ''),
             ])))) : '';
             $result = rest_ensure_response(['city' => $city, 'country' => $country, 'address' => $address,
-                'postcode' => $addressLookup ? sanitize_text_field((string) ($properties['postcode'] ?? '')) : '']);
+                'postcode' => $addressLookup && !empty($properties['housenumber']) ? sanitize_text_field((string) ($properties['postcode'] ?? '')) : '']);
             $result->header('Cache-Control', 'private, no-store');
             return $result;
         }
