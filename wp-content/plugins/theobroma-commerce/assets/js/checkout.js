@@ -63,17 +63,32 @@
     citySearchTimer = window.setTimeout(function () { loadPointsForCheckoutAddress(customer().city); }, 450);
   });
   function suggestCourierAddress(value) {
+    var list = document.querySelector('#theobroma-courier-suggestions');
+    if (!list) return;
+    list.replaceChildren();
+    list.hidden = true;
+    var country = customer().country;
+    var city = field('city').value.trim();
     if (!config.suggestionsUrl || value.trim().length < 3) return;
-    var query = (field('country').selectedOptions[0].textContent + ', ') + (field('city').value || '') + ', ' + value;
-    request(config.suggestionsUrl + '?country=' + encodeURIComponent(customer().country) + '&query=' + encodeURIComponent(query)).then(function (data) {
-      if (field('address').value !== value) return;
+    var query = field('country').selectedOptions[0].textContent + ', ' + (city && value.toLowerCase().indexOf(city.toLowerCase()) === -1 ? city + ', ' : '') + value;
+    request(config.suggestionsUrl + '?country=' + encodeURIComponent(country) + '&query=' + encodeURIComponent(query)).then(function (data) {
+      if (field('address').value !== value || customer().country !== country || field('city').value.trim() !== city || state.kind !== 'courier' || !dialog().open) return;
       courierSuggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
-      var list = document.querySelector('#theobroma-courier-suggestions');
-      if (!list) return;
       list.replaceChildren();
+      list.hidden = courierSuggestions.length === 0;
       courierSuggestions.forEach(function (item) {
-        var option = document.createElement('option');
-        option.value = item.label || item.address || '';
+        var option = document.createElement('button');
+        option.type = 'button';
+        option.setAttribute('role', 'option');
+        option.textContent = item.label || item.address || '';
+        option.addEventListener('click', function () {
+          window.clearTimeout(courierSearchTimer);
+          field('address').value = item.label || item.address || '';
+          applyCourierAddress();
+          list.replaceChildren();
+          list.hidden = true;
+          field('address').focus();
+        });
         list.appendChild(option);
       });
     }).catch(function () { /* Manual address entry stays available. */ });
