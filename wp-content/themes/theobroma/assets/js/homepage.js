@@ -9,15 +9,18 @@
       const playing = state === 'playing';
       heroVideoTrigger.dataset.state = state;
       heroVideoTrigger.setAttribute('aria-busy', playing ? 'true' : 'false');
+      heroVideoTrigger.setAttribute('aria-label', state === 'settled' ? 'Собрать пирамиду' : 'Воспроизвести анимацию шоколада');
     }
 
     function resetHeroVideo() {
-      heroVideo.currentTime = 0;
       setHeroVideoState('idle');
+      heroVideo.pause();
+      heroVideo.currentTime = 0;
     }
 
     heroVideoTrigger.addEventListener('click', () => {
       if (heroVideoTrigger.dataset.state === 'playing') return;
+      if (heroVideoTrigger.dataset.state === 'settled') { resetHeroVideo(); return; }
 
       heroVideo.currentTime = 0;
       setHeroVideoState('playing');
@@ -25,7 +28,11 @@
       if (playback && typeof playback.catch === 'function') playback.catch(resetHeroVideo);
     });
 
-    heroVideo.addEventListener('ended', resetHeroVideo);
+    heroVideo.addEventListener('ended', () => setHeroVideoState('settled'));
+    heroVideoTrigger.closest('.home-hero')?.addEventListener('click', (event) => {
+      if (heroVideoTrigger.dataset.state !== 'settled' || event.target.closest('a, button, input, select, textarea')) return;
+      resetHeroVideo();
+    });
     heroVideo.addEventListener('pause', () => {
       if (heroVideoTrigger.dataset.state === 'playing' && !heroVideo.ended) resetHeroVideo();
     });
