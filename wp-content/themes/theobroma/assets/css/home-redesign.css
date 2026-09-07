@@ -885,8 +885,8 @@ body .home .about-stage .story .story-title {
 }
 body .home .value h3 { text-transform: uppercase !important; }
 @media (min-width: 1200px) {
-  .nav .nav-links-study { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 4px; }
-  .nav .nav-links-study a { min-height: 25px; padding: 0; font: 400 16px/25px 'Montserrat', Arial, sans-serif; }
+  .nav .nav-links-study { display: flex; flex-wrap: nowrap; gap: clamp(10px, 1vw, 16px); }
+  .nav .nav-links-study a { min-height: 25px; padding: 0; font: 400 clamp(12px, .95vw, 14px)/25px 'Montserrat', Arial, sans-serif; }
   .nav .nav-links-study a:first-child { max-width: none; white-space: nowrap; }
 }
 @media (max-width: 1199px) {
