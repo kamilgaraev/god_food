@@ -75,7 +75,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
 
     <section class="home-catalog" id="catalog" aria-labelledby="home-catalog-title">
         <div class="home-section-heading">
-            <h2 id="home-catalog-title">Каталог</h2>
+            <h2 id="home-catalog-title">Продукция Пища богов</h2>
             <a href="<?php echo esc_url($shop_url); ?>">Весь каталог</a>
         </div>
         <?php if ($homepage_products) : ?>

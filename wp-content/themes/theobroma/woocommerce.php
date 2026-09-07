@@ -11,8 +11,8 @@ $cacao_percentage = $is_catalog ? theobroma_requested_cacao_percentage() : null;
 ?>
 <main class="shop-page<?php echo $is_catalog ? ' catalog-page catalog-group-' . esc_attr($catalog_group) : ''; ?>"><div class="shop-shell">
     <?php if ($is_catalog) : ?>
-        <nav class="catalog-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Каталог</strong></nav>
-        <h1 class="catalog-title">Каталог</h1>
+        <nav class="catalog-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Продукция Пища богов</strong></nav>
+        <h1 class="catalog-title">Продукция Пища богов</h1>
         <nav class="catalog-filters" aria-label="Категории товаров">
             <a class="<?php echo $catalog_group === 'chocolate-200g' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'chocolate-200g' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url($shop_url); ?>">Шоколад 200г</a>
             <a class="<?php echo $catalog_group === 'chocolate-100g' ? 'is-active' : ''; ?>"<?php echo $catalog_group === 'chocolate-100g' ? ' aria-current="page"' : ''; ?> href="<?php echo esc_url(add_query_arg('product_group', 'chocolate-100g', $shop_url)); ?>">Шоколад 100г</a>
