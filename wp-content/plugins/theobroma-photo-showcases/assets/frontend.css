@@ -321,7 +321,7 @@ html.theobroma-photo-lightbox-open { overflow: hidden; }
 .theobroma-photo-lightbox { box-sizing: border-box; }
 .theobroma-photo-lightbox__panel { box-sizing: border-box; padding: 40px 88px 52px; pointer-events: none; }
 .theobroma-photo-lightbox figure { pointer-events: none; }
-.theobroma-photo-lightbox img { border-radius: 12px; pointer-events: auto; }
+.theobroma-photo-lightbox img { width: auto; height: auto; max-height: min(calc(100dvh - 124px), 868px); border-radius: 12px; pointer-events: auto; }
 .theobroma-photo-lightbox__nav,
 .theobroma-photo-lightbox__close { pointer-events: auto; -webkit-appearance: none; appearance: none; }
 .theobroma-photo-lightbox__nav { left: 24px; transform: translateY(-50%); }
@@ -334,7 +334,7 @@ html.theobroma-photo-lightbox-open { overflow: hidden; }
   .theobroma-photo-lightbox__nav--next { left: auto; right: calc(50% - 100px); }
   .theobroma-photo-lightbox__counter { bottom: max(27px, calc(env(safe-area-inset-bottom) + 11px)); }
   .theobroma-photo-lightbox__close { top: max(12px, env(safe-area-inset-top)); }
-  .theobroma-photo-lightbox img { border-radius: 8px; }
+  .theobroma-photo-lightbox img { max-height: calc(100dvh - 168px); border-radius: 8px; }
 }
 
 
