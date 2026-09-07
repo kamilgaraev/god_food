@@ -31,16 +31,13 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
         </a>
         <div class="nav-links nav-links-transactional floating-actions">
             <a class="header-icon header-account header-wishlist header-with-label" href="#wishlist" data-wishlist-open aria-label="Избранное" title="Избранное">
-                <span class="header-action-label">Избранное</span>
                 <span class="header-action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></span>
             </a>
             <a class="header-icon header-cart header-with-label" href="<?php echo esc_url($cart_url); ?>" data-commerce-cart-open aria-label="Корзина, товаров: <?php echo esc_attr((string) $cart_count); ?>">
-                <span class="header-action-label">Корзина</span>
                 <span class="header-action-icon"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/cart.svg'); ?>" alt=""></span>
                 <span class="cart-count" aria-hidden="true"><?php echo esc_html((string) $cart_count); ?></span>
             </a>
             <a class="header-icon header-account header-with-label" href="<?php echo esc_url($account_url); ?>"<?php echo !is_user_logged_in() ? ' data-account-trigger' : ''; ?> aria-label="Личный кабинет">
-                <span class="header-action-label">Личный кабинет</span>
                 <span class="header-action-icon"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/user.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""></span>
             </a>
         </div>
