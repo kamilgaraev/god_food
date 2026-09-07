@@ -6,31 +6,54 @@
   const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
 
   let panelAnimation;
+  let transitionId = 0;
 
   const activate = (tab, { focus = false, updateHash = true } = {}) => {
     const index = tabs.indexOf(tab);
     if (index < 0 || !panels[index]) return;
 
-    const changed = panels[index].hidden;
+    const current = panels.find((panel) => panel && !panel.hidden);
+    const target = panels[index];
+    const id = ++transitionId;
     panelAnimation?.cancel();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     tabs.forEach((candidate, candidateIndex) => {
       const selected = candidateIndex === index;
       candidate.setAttribute('aria-selected', String(selected));
       candidate.tabIndex = selected ? 0 : -1;
-      panels[candidateIndex].hidden = !selected;
     });
-
-    if (changed && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      panelAnimation = panels[index].animate(
-        [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }],
-        { duration: 240, easing: 'cubic-bezier(.22,.61,.36,1)' }
-      );
-    }
 
     if (focus) tab.focus();
     if (updateHash && history.replaceState) {
-      history.replaceState(null, '', `#${panels[index].id}`);
+      history.replaceState(null, '', `#${target.id}`);
+    }
+
+    const reveal = () => {
+      if (id !== transitionId) return;
+      panels.forEach((panel) => { if (panel) panel.hidden = panel !== target; });
+      if (!reducedMotion && current !== target) {
+        panelAnimation = target.animate(
+          [{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'translateY(0)' }],
+          { duration: 340, easing: 'cubic-bezier(.22,.61,.36,1)' }
+        );
+      }
+    };
+
+    if (!reducedMotion && current && current !== target) {
+      panelAnimation = current.animate(
+        [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-12px)' }],
+        { duration: 160, easing: 'ease-in', fill: 'forwards' }
+      );
+      const leaving = panelAnimation;
+      leaving.finished.then(() => {
+        if (id !== transitionId) return;
+        current.hidden = true;
+        leaving.cancel();
+        reveal();
+      }).catch(() => {});
+    } else {
+      reveal();
     }
   };
 
