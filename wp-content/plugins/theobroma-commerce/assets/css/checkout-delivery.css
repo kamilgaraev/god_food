@@ -287,8 +287,7 @@ body > div.cdek-map > div[class] { z-index: 10000020 !important; }
 .theobroma-delivery-suggestions { background: #fff; border: 1px solid var(--theobroma-line); border-radius: 12px; box-shadow: 0 16px 38px rgba(46, 30, 21, .16); display: grid; left: 0; margin-top: 7px; max-height: 260px; overflow: auto; padding: 5px; position: absolute; right: 0; z-index: 12; }
 .theobroma-delivery-suggestions[hidden] { display: none; }
 .theobroma-delivery-suggestions button { background: transparent; border: 0; border-radius: 8px; color: var(--theobroma-ink); cursor: pointer; font: 500 .88rem/1.45 'Montserrat', sans-serif; padding: 10px 12px; text-align: left; }
-.theobroma-delivery-suggestions button:hover,
-.theobroma-delivery-suggestions button:focus-visible { background: #f7f0e7; }
+.theobroma-delivery-suggestions button:hover{ background: #f7f0e7; }
 
 .theobroma-delivery-grid { display: grid; gap: 18px; grid-template-columns: minmax(260px, 2fr) minmax(300px, 3fr); }
 .theobroma-delivery-grid:has(.theobroma-delivery-map[hidden]) { grid-template-columns: minmax(0, 1fr); }
@@ -319,10 +318,6 @@ body > div.cdek-map > div[class] { z-index: 10000020 !important; }
 .theobroma-delivery-footer .button[data-delivery-confirm] { background: var(--theobroma-accent-dark) !important; border: 1px solid var(--theobroma-accent-dark) !important; border-radius: 10px; box-shadow: none; color: #fff !important; font: 650 .9rem/1.2 'Montserrat', sans-serif; min-height: 46px; padding-inline: 24px; transition: background-color .18s ease, border-color .18s ease, transform .18s ease; }
 .theobroma-delivery-footer .button[data-delivery-confirm]:hover { background: #59361f !important; border-color: #59361f !important; transform: translateY(-1px); }
 .theobroma-delivery-footer .button[data-delivery-confirm]:disabled { cursor: wait; opacity: .65; transform: none; }
-
-.theobroma-delivery-dialog button:focus-visible,
-.theobroma-delivery-dialog input:focus-visible,
-.theobroma-delivery-open:focus-visible { outline: 3px solid rgba(155, 106, 61, .38); outline-offset: 2px; }
 
 @media (max-width: 720px) {
   .theobroma-delivery-dialog { border-radius: 18px 18px 0 0; margin: auto 0 0; max-height: 94vh; max-height: 94dvh; width: 100%; }

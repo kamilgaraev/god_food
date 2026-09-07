@@ -352,15 +352,6 @@ body.woocommerce-account .woocommerce .woocommerce-customer-details .woocommerce
   transform:translateY(-1px);
 }
 
-.woocommerce-orders-table .button:focus-visible,
-.woocommerce-order .button:focus-visible,
-.woocommerce-view-order .button:focus-visible,
-.woocommerce-order-pay .button:focus-visible,
-.woocommerce-order-pay #place_order:focus-visible {
-  outline:2px solid var(--order-gold);
-  outline-offset:3px;
-}
-
 .woocommerce-order .woocommerce-notice,
 .woocommerce-view-order .woocommerce-info,
 .woocommerce-order-pay .woocommerce-info {
