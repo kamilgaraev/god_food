@@ -127,10 +127,43 @@ body { overflow-x: clip; background: var(--home-paper); }
 
 .home main { color: var(--home-ink); background: var(--home-paper); }
 .home main a { text-decoration: none; }
+/* Original cocoa illustrations stay in the section margins. */
+.home #catalog,
+.home .feature,
+.home .reviews { position: relative; isolation: isolate; }
 .home #catalog::before,
 .home #catalog::after,
 .home .feature::before,
-.home .reviews::before { content: none; background-image: none; }
+.home .reviews::before {
+  content: ''; position: absolute; z-index: -1; display: block;
+  pointer-events: none; background-repeat: no-repeat; background-size: contain;
+  opacity: .55;
+}
+.home #catalog::before {
+  top: 0; right: 0; bottom: auto; left: auto;
+  width: clamp(100px, 17vw, 230px); height: 150px;
+  background-image: url('../images/botanical-home-right.webp'); background-position: top right;
+}
+.home #catalog::after {
+  top: auto; bottom: 0; left: 0; right: auto;
+  width: clamp(90px, 13vw, 180px); height: 130px;
+  background-image: url('../images/botanical-home-left.webp'); background-position: bottom left;
+}
+.home .feature::before {
+  top: auto; bottom: 0; right: 0; left: auto;
+  width: clamp(90px, 12vw, 190px); height: 230px;
+  background-image: url('../images/botanical-home-right-tall.webp'); background-position: bottom right;
+}
+.home .reviews::before {
+  top: auto; bottom: 0; left: 0; right: auto;
+  width: clamp(80px, 11vw, 170px); height: 190px;
+  background-image: url('../images/botanical-home-left-tall.webp'); background-position: bottom left;
+}
+@media (max-width: 900px) {
+  .home #catalog::before { height: 65px; }
+  .home #catalog::after { height: 48px; }
+  .home .feature::before, .home .reviews::before { height: 80px; opacity: .2; }
+}
 .home .feature,
 .home .reviews,
 .home .contact,
@@ -694,4 +727,27 @@ ul.products.home-product-grid > li.product.home-product-card > .home-product-car
   .floating-actions a:nth-child(n).header-with-label { width: auto; }
   .floating-actions a:nth-child(n) .header-action-icon { width: 2.375rem; height: 2.375rem; flex-basis: 2.375rem; }
   .floating-actions .header-cart .cart-count { width: 2.375rem; }
+}
+
+/* Header controls use normal flow, never legacy artboard offsets. */
+.site-header .shipping { box-sizing: border-box; min-height: var(--home-shipping-height); height: var(--home-shipping-height); gap: 8px; padding: 0 12px; }
+.site-header .shipping img { position: static; inset: auto; width: 20px; height: 20px; zoom: 1; flex: 0 0 20px; }
+.site-header .shipping span { position: static; inset: auto; width: auto; max-width: calc(100% - 28px); min-width: 0; zoom: 1; font: 400 12px/1.3 'Montserrat',Arial,sans-serif; white-space: normal; text-align: center; }
+.nav .floating-actions a:nth-child(n) .header-action-icon,
+.nav .floating-actions a:nth-child(n) .header-action-label,
+.nav .floating-actions a:nth-child(n) .header-action-icon img { inset: auto; transform: none; margin: 0; }
+@media (max-width: 1199px) {
+  :root { --home-shipping-height: 36px; }
+}
+@media (max-width: 900px) {
+  .site-header { height: calc(120px + var(--home-shipping-height)); }
+  .nav, .nav-sticky .nav { grid-template-columns: 1fr auto; min-height: 120px; padding: 4px 18px 8px; row-gap: 4px; }
+  .nav .brand { grid-column: 1; grid-row: 1; }
+  .menu-toggle { grid-column: 2; grid-row: 1; }
+  .nav .nav-links-study { display: none !important; }
+  .nav .nav-links:last-of-type.floating-actions { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; justify-content: space-between; gap: 8px; }
+  .nav .floating-actions a:nth-child(n).header-with-label { width: auto; height: 38px; flex: 0 0 auto; gap: 6px; }
+  .nav .floating-actions a:nth-child(n) .header-action-label { font-size: 11px; }
+  .nav .floating-actions a:nth-child(n) .header-action-icon { width: 38px; height: 38px; flex-basis: 38px; }
+  .nav .floating-actions .header-cart .cart-count { width: 38px; }
 }
