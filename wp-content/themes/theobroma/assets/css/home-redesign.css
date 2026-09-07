@@ -945,3 +945,16 @@ body .home .value h3 { text-transform: uppercase !important; }
   .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a,
   .logged-in.woocommerce-account .account-dashboard-grid a { transition: none; }
 }
+
+/* Section titles share case; mobile containers own their horizontal gutter. */
+body :is(#home-catalog-title, #home-cacao-title, #home-composition-title,
+  .theobroma-photo-showcase__intro h2, .catalog-page .catalog-title,
+  .home-promo-card h2) { text-transform: uppercase; }
+.site-header .shipping span { font-size: clamp(14px, 1.12vw, 20px); }
+.site-header .shipping img { width: 24px; height: 24px; flex-basis: 24px; }
+@media (max-width: 600px) {
+  .home .home-section-heading { padding-inline: 0; }
+  .home .theobroma-photo-showcase__intro { width: 100%; margin-inline: 0; }
+  .site-header .shipping span { font-size: clamp(11px, 3.1vw, 13px); }
+  .site-header .shipping img { width: 20px; height: 20px; flex-basis: 20px; }
+}
