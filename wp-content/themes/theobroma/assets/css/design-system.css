@@ -118,8 +118,8 @@ body :is(.commerce-cart-empty p, .commerce-wishlist-empty p) {
 /* Primary actions: one fill, type scale, radius and interactive state. */
 body :is(.button, .home-button, .home-product-card__button,
   .theobroma-delivery-open, [data-delivery-confirm], .theobroma-official-cdek footer button,
-  .checkout-step-next, #place_order, .account-email-step > button,
-  .account-auth-form button[type=submit]) {
+  .checkout-step-next, [id=place_order], .account-email-step > button,
+  .account-auth-form :where(button[type=submit])) {
   min-height:var(--ds-control-height) !important; height:auto !important;
   box-sizing:border-box; padding:12px 22px !important;
   font:500 var(--ds-button)/1.35 var(--ds-text) !important;
@@ -139,7 +139,7 @@ body :is(.home-button--secondary, .checkout-step-back,
 @media (hover:hover) {
   body :is(.button, .home-button, .home-product-card__button,
     .theobroma-delivery-open, [data-delivery-confirm], .checkout-step-next,
-    .account-email-step > button, .account-auth-form button[type=submit]):not(:disabled):hover {
+    .account-email-step > button, .account-auth-form :where(button[type=submit])):where(:not(:disabled)):hover {
     background-color:var(--ds-gold-hover) !important; border-color:var(--ds-gold-hover) !important;
     color:#fff !important;
   }
