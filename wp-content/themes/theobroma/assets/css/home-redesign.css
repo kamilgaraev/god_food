@@ -856,3 +856,43 @@ body :is(h1, h2, h3, h4, h5, h6) :is(span, em, strong, a) {
   letter-spacing: normal; text-transform: none;
 }
 .home .story-title em { color: var(--home-gold); }
+
+/* Typography measured on the original Theobroma storefront. */
+:root { --type-h1: 52px; --type-h2: 52px; --type-h3: 26px; }
+body main :is(h1, h2):not(.screen-reader-text),
+body main :is(h1, h2):not(.screen-reader-text) :is(span, em, a) {
+  line-height: 52px !important; text-transform: uppercase !important;
+}
+body .catalog-title { font-weight: 500 !important; }
+body .home-product-card h3,
+body .home-product-card h3 a {
+  font-family: 'Montserrat', Arial, sans-serif !important;
+  font-size: 14px !important; font-weight: 500 !important;
+  line-height: 1.35 !important; letter-spacing: normal !important;
+  text-transform: uppercase !important; color: #343434;
+}
+body .home-product-card > p {
+  font: 400 14px/1.55 'Montserrat', Arial, sans-serif;
+  color: #343434; letter-spacing: normal;
+}
+body .home-product-card__price {
+  color: #b0903d; font: 500 18px/1.35 'Montserrat', Arial, sans-serif;
+  letter-spacing: normal;
+}
+body .home-product-card__price :is(span, ins) { color: inherit; font: inherit; }
+body .home .about-stage .story .story-title {
+  font-size: 26px; line-height: 31px; text-transform: uppercase;
+}
+body .home .value h3 { text-transform: uppercase !important; }
+@media (min-width: 1200px) {
+  .nav .nav-links-study { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 4px; }
+  .nav .nav-links-study a { min-height: 25px; padding: 0; font: 400 16px/25px 'Montserrat', Arial, sans-serif; }
+  .nav .nav-links-study a:first-child { max-width: none; white-space: nowrap; }
+}
+@media (max-width: 1199px) {
+  :root { --type-h1: 44px; --type-h2: 44px; }
+}
+@media (max-width: 600px) {
+  :root { --type-h1: 30px; --type-h2: 30px; }
+  body .home-product-card > p { font-size: 12px; }
+}
