@@ -5,9 +5,14 @@
   const tabs = [...tabList.querySelectorAll('[role="tab"]')];
   const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
 
+  let panelAnimation;
+
   const activate = (tab, { focus = false, updateHash = true } = {}) => {
     const index = tabs.indexOf(tab);
     if (index < 0 || !panels[index]) return;
+
+    const changed = panels[index].hidden;
+    panelAnimation?.cancel();
 
     tabs.forEach((candidate, candidateIndex) => {
       const selected = candidateIndex === index;
@@ -15,6 +20,13 @@
       candidate.tabIndex = selected ? 0 : -1;
       panels[candidateIndex].hidden = !selected;
     });
+
+    if (changed && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      panelAnimation = panels[index].animate(
+        [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 240, easing: 'cubic-bezier(.22,.61,.36,1)' }
+      );
+    }
 
     if (focus) tab.focus();
     if (updateHash && history.replaceState) {
