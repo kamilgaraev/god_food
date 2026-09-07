@@ -1,0 +1,238 @@
+/*
+ * Theobroma storefront design tokens and component roles.
+ * Loaded after legacy layout CSS. Do not style every h1/h2 alike:
+ * product names, section titles and dialog titles have different roles.
+ */
+:root {
+  --ds-display: 'Cormorant', Georgia, serif;
+  --ds-text: 'Montserrat', Arial, sans-serif;
+  --ds-ink: #343434;
+  --ds-title: #171511;
+  --ds-muted: #756b63;
+  --ds-gold: #b0903d;
+  --ds-gold-hover: #96782f;
+  --ds-paper: #fbf8f3;
+  --ds-surface: #ffffff;
+  --ds-soft: #f3ebe4;
+  --ds-line: #dfd2c3;
+  --ds-error: #a74332;
+  --ds-heading: 52px;
+  --ds-card-heading: 26px;
+  --ds-body: 14px;
+  --ds-caption: 12px;
+  --ds-button: 16px;
+  --ds-radius: 8px;
+  --ds-pill: 999px;
+  --ds-control-height: 48px;
+  --ink: var(--ds-ink); --paper: var(--ds-paper); --gold: var(--ds-gold);
+  --home-ink: var(--ds-ink); --home-muted: var(--ds-muted);
+  --home-gold: var(--ds-gold); --home-paper: var(--ds-paper); --home-line: var(--ds-line);
+  --type-h1: var(--ds-heading); --type-h2: var(--ds-heading); --type-h3: var(--ds-card-heading);
+}
+@media (max-width:1199px) {
+  :root { --ds-heading:44px; --ds-button:14px; }
+}
+@media (max-width:600px) {
+  :root { --ds-heading:30px; --ds-card-heading:24px; --ds-control-height:44px; }
+}
+
+/* Page and editorial section titles. Product titles are deliberately excluded. */
+body :is(
+  .catalog-page .catalog-title, .account-page-title,
+  .buy-intro > h1, .recipes-intro > h1, .marketplace-intro > h1,
+  .cooperation-page > h1, .delivery-page > h1, .legal-page > h1,
+  .media-page > h1, .media-intro > h1, .recipe-detail-intro > h1,
+  .corporate-gifts-hero h1, .samples-hero h1,
+  #home-catalog-title, #home-cacao-title, #home-composition-title,
+  .theobroma-photo-showcase__intro h2, .reviews .section-heading h2,
+  .contact-card h2, .cooperation-benefits > h2, .recipe-product-promo > h2,
+  .corporate-gifts-showcase > header h2, .corporate-gifts-branding > header h2,
+  .corporate-gifts-cases > header h2, .samples-steps h2
+) {
+  font-family:var(--ds-display) !important;
+  font-size:var(--ds-heading) !important;
+  font-weight:400 !important;
+  line-height:1.1 !important;
+  letter-spacing:normal !important;
+  text-transform:uppercase !important;
+  color:var(--ds-title);
+  height:auto;
+  min-width:0;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:break-word;
+}
+body :is(.home-promo-card h2, .corporate-gifts-request h2, .samples-form-intro h2) {
+  font:400 var(--ds-card-heading)/1.15 var(--ds-display);
+  letter-spacing:normal; text-transform:uppercase; color:var(--ds-title);
+}
+body :is(.buy-location h2, .recipe-card h2, .cooperation-benefits h3,
+  .corporate-gifts-benefits h2, .corporate-gifts-branding h3,
+  .corporate-gifts-cases h3, .recipe-ingredients h2, .recipe-method h2) {
+  font-family:var(--ds-display); font-size:var(--ds-card-heading);
+  font-weight:400; line-height:1.15; letter-spacing:normal;
+  text-transform:uppercase; color:var(--ds-title); height:auto; white-space:normal;
+}
+body :is(.home-product-card h3, .home-product-card h3 a,
+  .product-detail-summary h1, .market-product h2) {
+  font:500 14px/1.35 var(--ds-text) !important;
+  letter-spacing:normal !important; text-transform:uppercase !important;
+  color:var(--ds-ink) !important; height:auto; overflow-wrap:break-word;
+}
+body :is(.product-related > h2, .media-article-products h2, .media-article-related h2) {
+  font:500 20px/1.3 var(--ds-text);
+  letter-spacing:normal; text-transform:none; height:auto;
+}
+body :is(.home-product-card > p, .home-hero__lead > p, .home-cacao__intro,
+  .home-cacao__description, .home-composition__intro > p, .home-promo-card > p,
+  .theobroma-photo-showcase__intro p, .account-lead, .buy-location p,
+  .recipe-card p, .cooperation-form > p, .cooperation-benefits p) {
+  font:400 var(--ds-body)/1.55 var(--ds-text); color:var(--ds-muted); letter-spacing:normal;
+}
+body :is(.home-product-card__price, .home-cacao__buy > strong, .product-detail-summary .price,
+  .commerce-wishlist-product > strong, .market-product > strong) {
+  font:500 18px/1.35 var(--ds-text); color:var(--ds-gold); letter-spacing:normal;
+}
+body .home-product-card__price :is(span, ins) { font:inherit; color:inherit; }
+body :is(.home-section-heading > a, .home-composition dd, .home-hero__trust span,
+  .breadcrumbs, .breadcrumb, .woocommerce-breadcrumb) {
+  font:400 var(--ds-caption)/1.5 var(--ds-text); letter-spacing:normal;
+}
+
+/* UI headings remain compact, including titles rendered by WooCommerce. */
+body :is(.commerce-cart-header h2, .commerce-wishlist h2, .account-modal-body h2,
+  .checkout-step-title, .theobroma-payment-heading, .theobroma-delivery-heading,
+  .account-page-auth h2, .account-recovery-card h2, .cooperation-form h2) {
+  font:500 20px/1.3 var(--ds-text) !important;
+  letter-spacing:normal !important; text-transform:none !important;
+  white-space:normal; height:auto; color:var(--ds-ink);
+}
+body .theobroma-delivery-header h2 {
+  font:400 var(--ds-card-heading)/1.15 var(--ds-display);
+  text-transform:uppercase; letter-spacing:normal; color:var(--ds-title);
+}
+body :is(.commerce-cart-empty p, .commerce-wishlist-empty p) {
+  font:400 16px/1.5 var(--ds-text); text-transform:none; color:var(--ds-ink);
+}
+
+/* Primary actions: one fill, type scale, radius and interactive state. */
+body :is(.button, .home-button, .home-product-card__button,
+  .theobroma-delivery-open, [data-delivery-confirm], .theobroma-official-cdek footer button,
+  .checkout-step-next, #place_order, .account-email-step > button,
+  .account-auth-form button[type=submit]) {
+  min-height:var(--ds-control-height) !important; height:auto !important;
+  box-sizing:border-box; padding:12px 22px !important;
+  font:500 var(--ds-button)/1.35 var(--ds-text) !important;
+  letter-spacing:normal !important; text-transform:none !important;
+  border:1px solid var(--ds-gold) !important; border-radius:var(--ds-pill) !important;
+  background-color:var(--ds-gold) !important; color:#fff !important;
+  text-align:center; text-decoration:none; white-space:normal;
+  transition:background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+/* Secondary / completed actions always remain visibly distinct. */
+body :is(.home-button--secondary, .checkout-step-back,
+  .corporate-gifts-minimum .button, .home-product-card__button.is-in-cart,
+  .home-product-card__button.added) {
+  background:#fff !important; color:var(--ds-gold-hover) !important;
+  border-color:var(--ds-gold) !important; animation:none;
+}
+@media (hover:hover) {
+  body :is(.button, .home-button, .home-product-card__button,
+    .theobroma-delivery-open, [data-delivery-confirm], .checkout-step-next,
+    .account-email-step > button, .account-auth-form button[type=submit]):not(:disabled):hover {
+    background-color:var(--ds-gold-hover) !important; border-color:var(--ds-gold-hover) !important;
+    color:#fff !important;
+  }
+  body :is(.home-button--secondary, .checkout-step-back,
+    .corporate-gifts-minimum .button, .home-product-card__button.is-in-cart,
+    .home-product-card__button.added):hover {
+    background:var(--ds-soft) !important; color:var(--ds-gold-hover) !important;
+  }
+}
+body :is(.button, .home-button, .home-product-card__button,
+  .theobroma-delivery-open, [data-delivery-confirm], .checkout-step-next):is(:disabled,[aria-disabled=true],.loading) {
+  opacity:.55; cursor:wait; animation:none !important; background-image:none !important;
+}
+body :is(.button, .home-button, .home-product-card__button,
+  .theobroma-delivery-open, [data-delivery-confirm], .checkout-step-next):active { filter:brightness(.96); }
+
+/* Common form surfaces. 16px input type prevents iOS focus zoom. */
+body :is(.account-page-auth, .account-recovery-card, .account-modal-body,
+  .cooperation-form, .contact-card, .samples-form, .corporate-gifts-request,
+  .woocommerce-MyAccount-content, .theobroma-delivery-fields) :is(
+  input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),
+  textarea, select
+) {
+  font:400 16px/1.5 var(--ds-text); color:var(--ds-ink);
+  border-color:var(--ds-line); border-radius:var(--ds-radius);
+  background-color:var(--ds-surface); min-height:48px; box-sizing:border-box;
+}
+body :is(.account-page-auth, .account-modal-body, .theobroma-delivery-fields,
+  .checkout-wizard, .woocommerce-MyAccount-content) label {
+  font-family:var(--ds-text); font-size:13px; line-height:1.5; color:var(--ds-ink);
+}
+body :is(.theobroma-delivery, .theobroma-delivery-dialog, [data-delivery-dialog]) {
+  --theobroma-ink:var(--ds-ink); --theobroma-muted:var(--ds-muted);
+  --theobroma-paper:var(--ds-paper); --theobroma-line:var(--ds-line);
+  --theobroma-accent:var(--ds-gold); --theobroma-accent-dark:var(--ds-gold-hover);
+  font-family:var(--ds-text);
+}
+body .commerce-cart-checkout {
+  --checkout-ink:var(--ds-ink); --checkout-muted:var(--ds-muted); --checkout-gold:var(--ds-gold);
+}
+body .theobroma-delivery-tabs button {
+  font:500 14px/1.35 var(--ds-text); min-height:44px; border-radius:var(--ds-radius);
+}
+body .theobroma-delivery-point { border-radius:var(--ds-radius); font:400 14px/1.5 var(--ds-text); }
+body .theobroma-delivery-point strong { font:600 16px/1.35 var(--ds-text); }
+body .theobroma-delivery-point small { font:400 12px/1.5 var(--ds-text); }
+body .theobroma-delivery-point[aria-pressed=true] { border-color:var(--ds-gold); background:var(--ds-soft); }
+body .buy-tabs button { font:500 14px/1.5 var(--ds-text); min-height:44px; }
+body .home-cacao__tabs button { font-family:var(--ds-text); color:var(--ds-muted); }
+body .home-cacao__tabs button span { font:500 12px/1.3 var(--ds-text); color:inherit; letter-spacing:normal; }
+body .home-cacao__tabs button[aria-selected=true] { color:var(--ds-ink); background:transparent; }
+body .home-cacao__tabs button strong { color:inherit; }
+@media(max-width:600px) {
+  body .home-cacao__tabs button[aria-selected=true] { color:#fff; background:var(--ds-gold); }
+  body .home-hero__actions { grid-template-columns:minmax(0,1fr); }
+  body .home-hero__actions .home-button { width:100%; }
+  body .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { padding-inline:0; scroll-padding-inline:0; }
+}
+
+/* Responsive content must not scale its text or tap targets with an artboard. */
+body.home .about-stage { transform:none; max-width:var(--home-container); }
+body.home .about-stage .value { width:auto; grid-column:auto; grid-row:auto; padding:24px; }
+body.home .about-stage .value :is(h3,p) { width:auto; max-width:100%; transform:none; }
+body.home .value h3 { font:400 var(--ds-card-heading)/1.15 var(--ds-display); }
+body.home .value p { font:400 var(--ds-body)/1.55 var(--ds-text); color:var(--ds-muted); }
+body .reviews { height:auto; padding:56px 0; }
+body .reviews-stage { position:relative; inset:auto; width:min(calc(100% - 36px),1160px); height:auto; margin:auto; transform:none; }
+body .reviews .section-heading { height:auto; margin-bottom:24px; padding:0; }
+body .reviews .section-heading h2 { position:static; transform:none; width:100%; text-align:left; }
+body .review-controls { position:static; justify-content:flex-end; margin-top:20px; gap:12px; }
+body .review-controls button { width:44px; height:44px; }
+body .review-grid { height:auto; grid-template-columns:repeat(7,280px); grid-auto-columns:280px; gap:24px; padding:0; }
+body .review { width:auto; height:360px; margin:0; padding:24px; border-radius:var(--ds-radius); }
+body .review p { width:auto; font:400 14px/1.55 var(--ds-text); }
+body .review time { font:400 12px/1.5 var(--ds-text); color:var(--ds-muted); }
+body .review strong { font:400 24px/1.2 var(--ds-display); left:24px; bottom:24px; }
+body .reviews-button { height:auto; padding-top:24px; }
+body .reviews-button .button { margin:0; }
+body .contact { height:auto; }
+body .contact .section { height:auto; padding:56px 18px; inset:auto; }
+body .contact-card { position:relative; inset:auto; width:min(100%,720px); max-width:100%; margin:auto; padding:0; transform:none; }
+body .contact-card h2 { position:static; transform:none; width:100%; margin-bottom:32px; text-align:center; }
+body .contact-card .form-grid { width:100%; }
+body .contact-card .form-grid input { font:400 16px/1.5 var(--ds-text); min-height:48px; }
+body .contact-card .consent { font:400 12px/1.5 var(--ds-text); }
+@media(max-width:600px) {
+  body .reviews, body .contact .section { padding-block:40px; }
+  body .review-grid { grid-template-columns:repeat(7,minmax(0, min(280px, calc(100vw - 36px)))); grid-auto-columns:min(280px, calc(100vw - 36px)); }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  body :is(.button,.home-button,.home-product-card__button,
+    .theobroma-delivery-open,[data-delivery-confirm],.checkout-step-next) {
+    animation:none !important; transition:none !important;
+  }
+}

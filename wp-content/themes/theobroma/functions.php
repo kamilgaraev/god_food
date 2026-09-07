@@ -9,6 +9,19 @@ require_once get_template_directory() . '/inc/chocolate-sample-request.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
 require_once get_template_directory() . '/inc/checkout-page.php';
 
+/** Canonical visual roles follow the theme and plugin layout styles. */
+function theobroma_design_system_assets(): void {
+    $path = get_template_directory() . '/assets/css/design-system.css';
+    wp_enqueue_style(
+        'theobroma-design-system',
+        get_template_directory_uri() . '/assets/css/design-system.css',
+        array('theobroma-home-redesign'),
+        (string) filemtime($path)
+    );
+}
+add_action('wp_enqueue_scripts', 'theobroma_design_system_assets', 100);
+
+
 function theobroma_setup(): void {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
