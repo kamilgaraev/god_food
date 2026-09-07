@@ -35,9 +35,9 @@ final class DeliveryAddressFields
         }
         $fields['billing']['billing_last_name'] = [
             'type' => 'text',
-            'label' => '',
+            'label' => 'Фамилия',
             'placeholder' => 'Фамилия',
-            'required' => false,
+            'required' => true,
             'priority' => 15,
             'class' => ['form-row-wide'],
             'autocomplete' => 'family-name',
