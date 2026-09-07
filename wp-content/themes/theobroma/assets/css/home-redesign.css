@@ -896,3 +896,11 @@ body .home .value h3 { text-transform: uppercase !important; }
   :root { --type-h1: 30px; --type-h2: 30px; }
   body .home-product-card > p { font-size: 12px; }
 }
+
+@media (min-width: 1200px) {
+  .nav .nav-links-study a,
+  .nav .floating-actions a:nth-child(n) .header-action-label {
+    font: 400 clamp(12px, .95vw, 14px)/25px 'Montserrat', Arial, sans-serif;
+    letter-spacing: normal;
+  }
+}
