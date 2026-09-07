@@ -8,7 +8,15 @@
 
     const image = lightbox.querySelector('[data-photo-lightbox-image]');
     const caption = lightbox.querySelector('[data-photo-lightbox-caption]');
-    const panel = lightbox.querySelector('.theobroma-photo-lightbox__panel');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let generation = 0;
+    let closing = false;
+    let overlayMotion;
+    let imageMotion;
+    const counter = document.createElement('span');
+    counter.className = 'theobroma-photo-lightbox__counter';
+    counter.setAttribute('aria-live', 'polite');
+    lightbox.querySelector('.theobroma-photo-lightbox__panel').appendChild(counter);
     const closeButton = lightbox.querySelector('.theobroma-photo-lightbox__close');
     const previousButton = lightbox.querySelector('[data-photo-lightbox-previous]');
     const nextButton = lightbox.querySelector('[data-photo-lightbox-next]');
@@ -16,54 +24,81 @@
     let activeIndex = 0;
     let returnFocus = null;
 
-    const alignNavigation = () => {
-      if (lightbox.hidden || !image.complete || !panel) return;
-      const imageBox = image.getBoundingClientRect();
-      const panelBox = panel.getBoundingClientRect();
-      if (imageBox.width === 0) return;
-      panel.style.setProperty('--photo-nav-previous-x', `${imageBox.left - panelBox.left}px`);
-      panel.style.setProperty('--photo-nav-next-x', `${imageBox.right - panelBox.left}px`);
-    };
-
-    const render = () => {
-      const trigger = triggers[activeIndex];
-      image.src = trigger.dataset.photoSrc || '';
+    const render = async (direction = 0) => {
+      const request = ++generation;
+      const index = activeIndex;
+      const trigger = triggers[index];
+      const source = trigger.dataset.photoSrc || '';
+      const loaded = new Image();
+      loaded.src = source;
+      try { await loaded.decode(); } catch (_) { return; }
+      if (request !== generation || closing || lightbox.hidden) return;
+      imageMotion?.cancel();
+      if (image.getAttribute('src') && !reducedMotion.matches) {
+        imageMotion = image.animate(
+          [{ opacity: 1, transform: 'translateX(0)' }, { opacity: 0, transform: `translateX(${-direction * 14}px)` }],
+          { duration: 120, easing: 'ease-in', fill: 'forwards' }
+        );
+        await imageMotion.finished.catch(() => {});
+        if (request !== generation || closing || lightbox.hidden) return;
+      }
+      image.src = source;
       image.alt = trigger.dataset.photoAlt || '';
       caption.textContent = trigger.dataset.photoCaption || '';
       caption.hidden = caption.textContent === '';
+      counter.textContent = `${index + 1} / ${triggers.length}`;
       previousButton.hidden = triggers.length < 2;
       nextButton.hidden = triggers.length < 2;
-      window.requestAnimationFrame(alignNavigation);
+      imageMotion?.cancel();
+      if (!reducedMotion.matches) {
+        imageMotion = image.animate(
+          [{ opacity: 0, transform: `translateX(${direction * 14}px)` }, { opacity: 1, transform: 'translateX(0)' }],
+          { duration: 220, easing: 'ease-out' }
+        );
+      }
     };
 
     const open = (trigger) => {
       activeIndex = triggers.indexOf(trigger);
       returnFocus = trigger;
-      render();
+      closing = false;
+      overlayMotion?.cancel();
       lightbox.hidden = false;
+      render();
+      if (!reducedMotion.matches) overlayMotion = lightbox.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
       lightbox.setAttribute('aria-hidden', 'false');
       document.documentElement.classList.add('theobroma-photo-lightbox-open');
       closeButton.focus({ preventScroll: true });
     };
 
-    const close = () => {
-      if (lightbox.hidden) return;
+    const close = async () => {
+      if (lightbox.hidden || closing) return;
+      closing = true;
+      ++generation;
+      imageMotion?.cancel();
+      overlayMotion?.cancel();
+      if (!reducedMotion.matches) {
+        overlayMotion = lightbox.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+        await overlayMotion.finished.catch(() => {});
+      }
+      if (!closing) return;
       lightbox.hidden = true;
+      overlayMotion?.cancel();
       lightbox.setAttribute('aria-hidden', 'true');
       image.removeAttribute('src');
+      counter.textContent = '';
       document.documentElement.classList.remove('theobroma-photo-lightbox-open');
       if (returnFocus instanceof HTMLElement) returnFocus.focus({ preventScroll: true });
       returnFocus = null;
     };
 
     const move = (offset) => {
+      if (closing || lightbox.hidden) return;
       activeIndex = (activeIndex + offset + triggers.length) % triggers.length;
-      render();
+      render(offset);
     };
 
     triggers.forEach((trigger) => trigger.addEventListener('click', () => open(trigger)));
-    image.addEventListener('load', alignNavigation);
-    window.addEventListener('resize', alignNavigation, { passive: true });
     lightbox.addEventListener('click', (event) => {
       if (event.target.closest('[data-photo-lightbox-close]')) close();
       else if (event.target.closest('[data-photo-lightbox-previous]')) move(-1);

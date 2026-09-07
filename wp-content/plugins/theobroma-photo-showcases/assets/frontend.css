@@ -317,6 +317,27 @@
 
 html.theobroma-photo-lightbox-open { overflow: hidden; }
 
+/* Keep controls outside the image, with a separate toolbar on small screens. */
+.theobroma-photo-lightbox { box-sizing: border-box; }
+.theobroma-photo-lightbox__panel { box-sizing: border-box; padding: 40px 88px 52px; pointer-events: none; }
+.theobroma-photo-lightbox figure { pointer-events: none; }
+.theobroma-photo-lightbox img { border-radius: 12px; pointer-events: auto; }
+.theobroma-photo-lightbox__nav,
+.theobroma-photo-lightbox__close { pointer-events: auto; -webkit-appearance: none; appearance: none; }
+.theobroma-photo-lightbox__nav { left: 24px; transform: translateY(-50%); }
+.theobroma-photo-lightbox__nav--next { left: auto; right: 24px; }
+.theobroma-photo-lightbox__counter { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); color: #fbf7f1; font: 500 .875rem/1.5 'Montserrat', Arial, sans-serif; font-variant-numeric: tabular-nums; }
+.theobroma-photo-lightbox figcaption { border-radius: 8px; }
+@media (max-width: 600px) {
+  .theobroma-photo-lightbox__panel { padding: 64px 8px 88px; }
+  .theobroma-photo-lightbox__nav { top: auto; bottom: max(16px, env(safe-area-inset-bottom)); left: calc(50% - 100px); transform: none; }
+  .theobroma-photo-lightbox__nav--next { left: auto; right: calc(50% - 100px); }
+  .theobroma-photo-lightbox__counter { bottom: max(27px, calc(env(safe-area-inset-bottom) + 11px)); }
+  .theobroma-photo-lightbox__close { top: max(12px, env(safe-area-inset-top)); }
+  .theobroma-photo-lightbox img { border-radius: 8px; }
+}
+
+
 @media (min-width: 601px) and (max-width: 1199px) {
   .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { grid-auto-rows: clamp(11rem, 22vw, 16rem); }
   .theobroma-photo-showcase--corporate .theobroma-photo-showcase__gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
