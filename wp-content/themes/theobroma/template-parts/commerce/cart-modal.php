@@ -55,11 +55,12 @@ $cart = WC()->cart->get_cart();
             <p class="commerce-cart-auth">Покупали ранее? <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">Авторизуйтесь или зарегистрируйтесь</a></p>
         <?php endif; ?>
 
-        <div class="commerce-cart-notes">
+        <details class="commerce-cart-notes">
+            <summary>О доставке и обработке заказа</summary>
             <p><strong>Обработка заказов</strong><br>Принятие и обработка заказов осуществляется с понедельника по пятницу с 9:00 до 18:00.</p>
             <p><strong>Важное о доставке</strong><br>Мы отправляем заказы из Москвы по всей территории России, а также в Республики Беларусь и Казахстан, службой курьерской доставки CDEK.<br>Сроки доставки устанавливаются согласно условиям транспортной компании, курьерской службы.<br>После оформления заказа мы пришлём вам трек номер для отслеживания отправления.</p>
             <a href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">Подробная информация о доставке и оплате</a>
-        </div>
+        </details>
 
         <section class="commerce-cart-checkout" aria-labelledby="commerce-checkout-title">
             <h3 id="commerce-checkout-title">Доставка</h3>
