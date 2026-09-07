@@ -442,13 +442,14 @@
   }
 
   function updateMapSelection() {
-    var selectedMarker = null;
+    var selectedPoint = null;
+    if (state.selectionPin) { state.selectionPin.remove(); state.selectionPin = null; }
     state.pointMarkers.forEach(function (entry) {
       var selected = Boolean(state.selected && String(state.selected.id) === String(entry.point.id));
       if (config.mapProvider === 'osm') {
-        entry.marker.setStyle({ color: selected ? '#714727' : '#fff', weight: selected ? 4 : 2, fillColor: selected ? '#b0903d' : '#714727' });
-        entry.marker.setRadius(selected ? 14 : 9);
-        if (selected) selectedMarker = entry.marker;
+        entry.marker.setStyle({ color: '#fff', weight: 2, fillColor: '#714727', opacity: selected ? 0 : 1, fillOpacity: selected ? 0 : 1 });
+        entry.marker.setRadius(9);
+        if (selected) selectedPoint = entry.point;
       } else {
         entry.marker.options.set({
           preset: selected ? 'islands#circleIcon' : 'islands#circleDotIcon',
@@ -458,7 +459,18 @@
         entry.marker.properties.set('iconContent', selected ? '✓' : '');
       }
     });
-    if (selectedMarker) selectedMarker.bringToFront();
+    if (selectedPoint && state.placemarks) {
+      var label = document.createElement('span');
+      label.textContent = 'Выбран ПВЗ: ' + (selectedPoint.address || selectedPoint.name || '');
+      var icon = window.L.divIcon({
+        className: 'theobroma-selected-pickup',
+        iconSize: [40, 48], iconAnchor: [20, 46], tooltipAnchor: [0, -40],
+        html: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 40 48" aria-hidden="true" style="overflow:visible;filter:drop-shadow(0 3px 4px rgba(55,35,20,.3))"><path d="M20 45C16 39 3 29 3 19a17 17 0 1 1 34 0c0 10-13 20-17 26Z" fill="#b0903d" stroke="#fffaf2" stroke-width="3"/><circle cx="20" cy="19" r="10" fill="#fffaf2"/><path d="m15 19 3.5 3.5L25 16" fill="none" stroke="#714727" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      });
+      state.selectionPin = window.L.marker([Number(selectedPoint.latitude), Number(selectedPoint.longitude)], {
+        icon: icon, zIndexOffset: 1000, title: label.textContent, alt: label.textContent
+      }).bindTooltip(label).addTo(state.placemarks);
+    }
   }
 
   function renderOsmMap(container) {
