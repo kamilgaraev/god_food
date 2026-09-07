@@ -299,7 +299,12 @@ body > div.cdek-map > div[class] { z-index: 10000020 !important; }
 .theobroma-delivery-point[aria-pressed="true"] { background: #f4eade; border-color: var(--theobroma-accent); box-shadow: inset 3px 0 0 var(--theobroma-accent); }
 .theobroma-delivery-point span { color: var(--theobroma-muted); font-size: .9rem; }
 .theobroma-delivery-point small { color: #8c7f76; }
-.theobroma-delivery-map { border-radius: 14px; min-height: 390px; overflow: hidden; }
+.theobroma-delivery-map { position:relative; z-index:0; isolation:isolate; border-radius: 14px; min-height: 390px; overflow: hidden; }
+.theobroma-delivery-fields { position:relative; z-index:3; }
+.theobroma-delivery-search { z-index:2; }
+.theobroma-delivery-content { isolation:isolate; }
+.theobroma-delivery-dialog { max-height:min(820px,92dvh); }
+@media (max-width:720px) { .theobroma-delivery-dialog { max-height:94dvh; } }
 /* Leaflet attribution is kept in the DOM for license compliance, but does not compete with the map UI. */
 .leaflet-control-attribution.leaflet-control { display: none; }
 .theobroma-delivery-empty { color: var(--theobroma-muted); padding: 24px 10px; }

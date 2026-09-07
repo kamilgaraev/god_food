@@ -11,21 +11,24 @@
   const loginEmail = modal.querySelector('#account-login-email');
   const registerEmail = modal.querySelector('#account-register-email');
   let previousFocus = null;
+  let closeTimer;
 
   const setView = (view) => {
     emailStep.hidden = view !== 'email';
     loginForm.hidden = view !== 'login';
     registerForm.hidden = view !== 'register';
     const target = view === 'email' ? emailInput : modal.querySelector(view === 'login' ? '#account-login-password' : '#account-register-password');
-    window.setTimeout(() => target?.focus(), 0);
+    window.setTimeout(() => target?.focus({ preventScroll:true }), 0);
   };
 
   const open = () => {
+    window.clearTimeout(closeTimer);
     previousFocus = document.activeElement;
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('account-modal-open');
-    requestAnimationFrame(() => modal.classList.add('is-open'));
+    void modal.offsetWidth;
+    modal.classList.add('is-open');
 
     const notices = document.querySelector('.woocommerce-error, .woocommerce-message');
     if (notices) {
@@ -41,7 +44,7 @@
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('account-modal-open');
-    window.setTimeout(() => { modal.hidden = true; }, 200);
+    closeTimer = window.setTimeout(() => { modal.hidden = true; }, 200);
     const focusTarget = previousFocus?.getClientRects?.().length
       ? previousFocus
       : document.querySelector('.menu-toggle');

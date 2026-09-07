@@ -2178,8 +2178,8 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-modal-cart:has(.commerce-cart--empty) { width:21.875rem; height:5.5rem; margin:0; padding:0; }
   .commerce-cart-empty { padding:1.125rem 3rem 1.125rem 1.125rem; }
   .commerce-cart-empty p { font-size:1.1875rem; line-height:1.375rem; }
-  .commerce-cart-empty-close { background:#b0903d; }
-  .commerce-cart-empty-close::before,.commerce-cart-empty-close::after { content:none; }
+  .commerce-cart-empty-close { background:#f7f0e7; border:1px solid #e6d9ca; border-radius:10px; -webkit-appearance:none; appearance:none; }
+  .commerce-cart-empty-close::before,.commerce-cart-empty-close::after { content:""; background:#714727; }
   .commerce-cart-header { height:3.45605469rem; border-color:#cfcfcf; }
   .commerce-cart-header h2 { width:100%; font:500 1.25rem/1.625rem 'Montserrat',Arial,sans-serif; }
   .commerce-cart-clear { display:none; }
@@ -3401,6 +3401,15 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   .commerce-cart-remove::before,.commerce-cart-remove::after { background:#714727; }
   .commerce-cart-quantity button:hover,.commerce-cart-remove:hover { background:#eee1d2; }
 
+/* Shared empty-state layout: reserve space for the close control on every screen. */
+.commerce-modal-cart:has(.commerce-cart--empty),
+.commerce-modal-wishlist:has(.commerce-wishlist--empty) { width:calc(100% - 32px); max-width:560px; height:auto; min-height:144px; border-radius:14px; }
+.commerce-cart--empty,.commerce-wishlist--empty { height:auto; }
+.commerce-cart-empty,.commerce-wishlist--empty .commerce-wishlist-empty { box-sizing:border-box; height:auto; min-height:144px; padding:56px 24px 28px; position:relative; }
+.commerce-cart-empty p,.commerce-wishlist--empty .commerce-wishlist-empty p { font:400 1rem/1.5 'Montserrat',Arial,sans-serif; text-transform:none; overflow-wrap:anywhere; }
+.commerce-wishlist:not(.commerce-wishlist--empty) h2 { font:500 1.25rem/1.625rem 'Montserrat',Arial,sans-serif; text-transform:none; }
+.commerce-wishlist-product h3 { text-transform:none; }
+
 /* Pointer interaction stays quiet; keyboard focus remains visible. */
 body :focus:not(:focus-visible) { outline:none !important; box-shadow:none !important; }
 body :focus-visible { outline:2px solid #b0903d; outline-offset:3px; }
@@ -3409,7 +3418,7 @@ body :focus-visible { outline:2px solid #b0903d; outline-offset:3px; }
 @media (prefers-reduced-motion:no-preference) {
   @view-transition { navigation:auto; }
   ::view-transition-old(root),::view-transition-new(root) { animation-duration:220ms; animation-timing-function:ease-out; }
-  .account-modal.is-open,dialog[open] { animation:theobroma-soft-in 280ms ease-out both; }
+  dialog[open] { animation:theobroma-soft-in 280ms ease-out both; }
   .commerce-modal.is-open .commerce-modal-wishlist > * { animation:theobroma-soft-in 280ms ease-out both; }
   .commerce-cart-quantity button,.commerce-cart-remove { transition:background-color 160ms ease,border-color 160ms ease; }
 }
