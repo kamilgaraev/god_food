@@ -3,7 +3,7 @@
 
   var config = window.theobromaDelivery || {};
   var core = window.TheobromaDeliveryCore;
-  var state = { provider: '', kind: 'pickup', points: [], selected: null, map: null, placemarks: null, suggestTimer: null, suggestView: null };
+  var state = { provider: '', kind: 'pickup', points: [], selected: null, map: null, placemarks: null, pointMarkers: [], suggestTimer: null, suggestView: null };
 
   function dialog() { return document.querySelector('[data-delivery-dialog]'); }
   function field(name) { return document.querySelector('[data-delivery-field="' + name + '"]'); }
@@ -432,6 +432,7 @@
   }
   function selectPoint(point) {
     state.selected = point;
+    updateMapSelection();
     renderPoints(config.mapProvider === 'osm' ? state.points : core.filterPoints(state.points, checkoutValue('[data-delivery-search]')));
     setStatus('Выбран: ' + (point.address || point.name || point.id));
     if (state.map && point.latitude && point.longitude) {
@@ -440,7 +441,28 @@
     }
   }
 
+  function updateMapSelection() {
+    var selectedMarker = null;
+    state.pointMarkers.forEach(function (entry) {
+      var selected = Boolean(state.selected && String(state.selected.id) === String(entry.point.id));
+      if (config.mapProvider === 'osm') {
+        entry.marker.setStyle({ color: selected ? '#714727' : '#fff', weight: selected ? 4 : 2, fillColor: selected ? '#b0903d' : '#714727' });
+        entry.marker.setRadius(selected ? 14 : 9);
+        if (selected) selectedMarker = entry.marker;
+      } else {
+        entry.marker.options.set({
+          preset: selected ? 'islands#circleIcon' : 'islands#circleDotIcon',
+          iconColor: selected ? '#b0903d' : '#714727',
+          zIndex: selected ? 1000 : 0
+        });
+        entry.marker.properties.set('iconContent', selected ? '✓' : '');
+      }
+    });
+    if (selectedMarker) selectedMarker.bringToFront();
+  }
+
   function renderOsmMap(container) {
+    state.pointMarkers = [];
     if (!container || !window.L) { if (container) container.hidden = true; return; }
     var points = state.points.filter(function (point) { return point.latitude && point.longitude; });
     var address = state.addressLocation;
@@ -458,9 +480,10 @@
     points.forEach(function (point) {
       var label = document.createElement('span');
       label.textContent = point.address || point.name || '';
-      window.L.circleMarker([Number(point.latitude), Number(point.longitude)], {
+      var marker = window.L.circleMarker([Number(point.latitude), Number(point.longitude)], {
         radius: 9, color: '#fff', weight: 2, fillColor: '#714727', fillOpacity: 1
       }).bindTooltip(label).on('click', function () { selectPoint(point); }).addTo(state.placemarks);
+      state.pointMarkers.push({ point: point, marker: marker });
     });
     state.map.invalidateSize();
     if (address) {
@@ -471,6 +494,7 @@
       }).bindTooltip(addressLabel).addTo(state.placemarks);
       state.map.setView([Number(address.latitude), Number(address.longitude)], address.house ? 15 : 12);
     } else state.map.fitBounds(state.placemarks.getBounds(), { padding: [24, 24], maxZoom: 14 });
+    updateMapSelection();
   }
 
   function renderMap() {
@@ -490,11 +514,14 @@
         state.map.geoObjects.add(state.placemarks);
       }
       state.placemarks.removeAll();
+      state.pointMarkers = [];
       points.forEach(function (point) {
         var marker = new window.ymaps.Placemark([Number(point.latitude), Number(point.longitude)], { hintContent: point.address || point.name });
         marker.events.add('click', function () { selectPoint(point); });
         state.placemarks.add(marker);
+        state.pointMarkers.push({ point: point, marker: marker });
       });
+      updateMapSelection();
       state.map.setBounds(state.placemarks.getBounds(), { checkZoomRange: true, zoomMargin: 32 });
     });
   }

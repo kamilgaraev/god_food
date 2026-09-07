@@ -801,35 +801,20 @@ body a.home-product-card__button:is(.loading, [aria-disabled="true"]) { animatio
   body a.home-product-card__button { animation: none; background-image: none; }
 }
 
-/* Shared heading scale across the storefront; component rules only place headings. */
-:root {
-  --type-h1: clamp(42px, 5vw, 72px);
-  --type-h2: clamp(36px, 4vw, 56px);
-  --type-h3: clamp(24px, 2.2vw, 32px);
-  --type-h4: clamp(20px, 1.7vw, 24px);
-  --type-h5: 18px;
-  --type-h6: 16px;
-}
-body :is(h1, h2, h3, h4, h5, h6):not(.screen-reader-text) {
-  font-family: 'Cormorant', Georgia, serif !important;
-  font-weight: 400 !important;
-  line-height: 1.1 !important;
-  letter-spacing: normal !important;
-  text-transform: none !important;
-  height: auto; min-width: 0;
+/* Shared scale is limited to editorial section headings, not commerce UI. */
+:root { --type-h1: 52px; --type-h2: 52px; --type-h3: 26px; }
+body :is(#home-catalog-title, #home-cacao-title, #home-composition-title,
+  .theobroma-photo-showcase__intro h2, .catalog-page .catalog-title) {
+  font-family: 'Cormorant', Georgia, serif;
+  font-size: var(--type-h2);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: normal;
+  text-transform: none;
+  height: auto;
+  min-width: 0;
   white-space: normal;
 }
-body h1:not(.screen-reader-text) { font-size: var(--type-h1) !important; }
-body h2:not(.screen-reader-text) { font-size: var(--type-h2) !important; }
-body h3:not(.screen-reader-text) { font-size: var(--type-h3) !important; }
-body h4:not(.screen-reader-text) { font-size: var(--type-h4) !important; }
-body h5:not(.screen-reader-text) { font-size: var(--type-h5) !important; }
-body h6:not(.screen-reader-text) { font-size: var(--type-h6) !important; }
-body :is(h1, h2, h3, h4, h5, h6) :is(span, em, strong, a) {
-  font-size: inherit !important; line-height: inherit !important;
-  letter-spacing: inherit !important; text-transform: none !important;
-}
-
 /* Let the company section grow with the shared heading scale. */
 .home .feature { height: auto; }
 .home .about-stage {
@@ -859,10 +844,6 @@ body :is(h1, h2, h3, h4, h5, h6) :is(span, em, strong, a) {
 
 /* Typography measured on the original Theobroma storefront. */
 :root { --type-h1: 52px; --type-h2: 52px; --type-h3: 26px; }
-body main :is(h1, h2):not(.screen-reader-text),
-body main :is(h1, h2):not(.screen-reader-text) :is(span, em, a) {
-  line-height: 52px !important; text-transform: uppercase !important;
-}
 body .catalog-title { font-weight: 500 !important; }
 body .home-product-card h3,
 body .home-product-card h3 a {
@@ -903,4 +884,17 @@ body .home .value h3 { text-transform: uppercase !important; }
     font: 400 clamp(12px, .95vw, 14px)/25px 'Montserrat', Arial, sans-serif;
     letter-spacing: normal;
   }
+}
+
+/* Account forms retain their own compact UI typography. */
+.woocommerce-account .woocommerce :is(.account-page-auth, .account-recovery-card) h2 {
+  font: 500 20px/1.3 'Montserrat', Arial, sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+}
+/* Account copy must wrap naturally, including long customer display names. */
+.theobroma-account-dashboard h1 { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .woocommerce-account .account-page-title { font-size: 30px; line-height: 1.1; }
+  .theobroma-account-dashboard h1 { font-size: 28px; line-height: 1.15; }
 }
