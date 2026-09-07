@@ -192,7 +192,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
     <section class="feature" id="about"><div class="about-stage">
         <img class="about-award" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/award.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt="Награда Theobroma">
         <?php $story_heading = theobroma_content('story_heading'); ?>
-        <div class="story"><h2><em>Theobroma</em><?php echo wp_kses_post(nl2br(esc_html(str_replace('Theobroma', '', $story_heading)))); ?></h2><p><?php echo nl2br(esc_html(theobroma_content('story_text'))); ?></p></div>
+        <div class="story"><p class="story-title"><em>Theobroma</em><?php echo wp_kses_post(nl2br(esc_html(str_replace('Theobroma', '', $story_heading)))); ?></p><p><?php echo nl2br(esc_html(theobroma_content('story_text'))); ?></p></div>
         <div class="values">
             <article class="value"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/vector-4.svg'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""><div><h3><?php echo esc_html(theobroma_content('value_1_title')); ?></h3><p><?php echo esc_html(theobroma_content('value_1_text_1')); ?></p><p><?php echo esc_html(theobroma_content('value_1_text_2')); ?></p></div></article>
             <article class="value"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/cacao.svg'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""><div><h3><?php echo esc_html(theobroma_content('value_2_title')); ?></h3><p><?php echo esc_html(theobroma_content('value_2_text')); ?></p></div></article>

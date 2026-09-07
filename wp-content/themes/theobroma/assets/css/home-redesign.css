@@ -800,3 +800,59 @@ body a.home-product-card__button:is(.loading, [aria-disabled="true"]) { animatio
 @media (prefers-reduced-motion: reduce) {
   body a.home-product-card__button { animation: none; background-image: none; }
 }
+
+/* Shared heading scale across the storefront; component rules only place headings. */
+:root {
+  --type-h1: clamp(42px, 5vw, 72px);
+  --type-h2: clamp(36px, 4vw, 56px);
+  --type-h3: clamp(24px, 2.2vw, 32px);
+  --type-h4: clamp(20px, 1.7vw, 24px);
+  --type-h5: 18px;
+  --type-h6: 16px;
+}
+body :is(h1, h2, h3, h4, h5, h6):not(.screen-reader-text) {
+  font-family: 'Cormorant', Georgia, serif !important;
+  font-weight: 400 !important;
+  line-height: 1.1 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  height: auto; min-width: 0;
+  white-space: normal;
+}
+body h1:not(.screen-reader-text) { font-size: var(--type-h1) !important; }
+body h2:not(.screen-reader-text) { font-size: var(--type-h2) !important; }
+body h3:not(.screen-reader-text) { font-size: var(--type-h3) !important; }
+body h4:not(.screen-reader-text) { font-size: var(--type-h4) !important; }
+body h5:not(.screen-reader-text) { font-size: var(--type-h5) !important; }
+body h6:not(.screen-reader-text) { font-size: var(--type-h6) !important; }
+body :is(h1, h2, h3, h4, h5, h6) :is(span, em, strong, a) {
+  font-size: inherit !important; line-height: inherit !important;
+  letter-spacing: inherit !important; text-transform: none !important;
+}
+
+/* Let the company section grow with the shared heading scale. */
+.home .feature { height: auto; }
+.home .about-stage {
+  position: relative; inset: auto; width: min(100% - 36px, var(--home-container));
+  height: auto; margin: 0 auto; padding: 48px 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px;
+}
+.home .about-stage .about-award { position: relative; inset: auto; width: min(100%, 360px); height: 300px; margin: auto; object-fit: contain; }
+.home .about-stage .story { position: static; width: auto; height: auto; padding: 32px; }
+.home .about-stage .story :is(h2, p) { position: static; width: auto; height: auto; }
+.home .about-stage .story p { margin-top: 24px; line-height: 1.6; }
+.home .about-stage .values { position: static; width: auto; grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.home .about-stage .value { height: auto; min-width: 0; }
+.home .about-stage .value > div, .home .about-stage .value h3 { width: auto; }
+@media (max-width: 900px) {
+  .home .about-stage { grid-template-columns: minmax(0, 1fr); }
+  .home .about-stage .about-award { height: 200px; }
+  .home .about-stage .values { grid-template-columns: minmax(0, 1fr); }
+  .home .about-stage .story { padding: 24px; }
+}
+
+.home .about-stage .story .story-title {
+  margin: 0; font: 400 var(--type-h3)/1.2 'Cormorant', Georgia, serif;
+  letter-spacing: normal; text-transform: none;
+}
+.home .story-title em { color: var(--home-gold); }
