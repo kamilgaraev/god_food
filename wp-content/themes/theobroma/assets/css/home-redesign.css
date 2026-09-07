@@ -898,3 +898,50 @@ body .home .value h3 { text-transform: uppercase !important; }
   .woocommerce-account .account-page-title { font-size: 30px; line-height: 1.1; }
   .theobroma-account-dashboard h1 { font-size: 28px; line-height: 1.15; }
 }
+
+/* Account navigation and dashboard cards stay readable at every viewport. */
+.logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul {
+  width: 100%; max-width: 100%; display: grid; gap: 8px;
+  padding: 0; overflow: visible; background: transparent;
+}
+.logged-in.woocommerce-account .woocommerce-MyAccount-navigation li { min-width: 0; }
+.logged-in.woocommerce-account .woocommerce-MyAccount-navigation a {
+  min-height: 48px; height: 100%; padding: 12px 16px; box-sizing: border-box;
+  border: 1px solid #dfd2c3; border-radius: 8px; background: #f3ebe4;
+  font: 500 14px/1.35 'Montserrat', Arial, sans-serif;
+  text-decoration: none; white-space: normal; text-align: left;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.logged-in.woocommerce-account .woocommerce-MyAccount-navigation li:last-child a { border-bottom: 1px solid #dfd2c3; }
+.logged-in.woocommerce-account .woocommerce-MyAccount-navigation .is-active a { background: #b0903d; border-color: #b0903d; color: #fff; }
+.logged-in.woocommerce-account .woocommerce-MyAccount-content {
+  min-width: 0; padding: 28px; border-radius: 12px;
+}
+.logged-in.woocommerce-account .account-dashboard-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+}
+.logged-in.woocommerce-account .account-dashboard-grid a {
+  min-width: 0; min-height: 128px; padding: 20px; gap: 12px;
+  box-sizing: border-box; border-radius: 8px; text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.logged-in.woocommerce-account .account-dashboard-grid span { font: 500 26px/1.1 'Cormorant', Georgia, serif; }
+.logged-in.woocommerce-account .account-dashboard-grid small { font: 400 14px/1.5 'Montserrat', Arial, sans-serif; }
+@media (hover: hover) {
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation li:not(.is-active) a:hover,
+  .logged-in.woocommerce-account .account-dashboard-grid a:hover { background: #fff; border-color: #b0903d; }
+}
+@media (max-width: 1199px) {
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a { justify-content: center; text-align: center; }
+}
+@media (max-width: 600px) {
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .logged-in.woocommerce-account .woocommerce-MyAccount-content { padding: 20px 16px; }
+  .logged-in.woocommerce-account .account-dashboard-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .logged-in.woocommerce-account .account-dashboard-grid a { min-height: 108px; padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logged-in.woocommerce-account .woocommerce-MyAccount-navigation a,
+  .logged-in.woocommerce-account .account-dashboard-grid a { transition: none; }
+}
