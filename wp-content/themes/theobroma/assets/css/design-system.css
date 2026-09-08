@@ -206,7 +206,7 @@ body.home .about-stage .value :is(h3,p) { width:auto; max-width:100%; transform:
 body.home .value h3 { font:400 var(--ds-card-heading)/1.15 var(--ds-display); }
 body.home .value p { font:400 var(--ds-body)/1.55 var(--ds-text); color:var(--ds-muted); }
 body .reviews { height:auto; padding:56px 0; }
-body .reviews-stage { position:relative; inset:auto; width:min(calc(100% - 36px),1160px); height:auto; margin:auto; transform:none; }
+body .reviews-stage { position:relative; inset:auto; width:min(calc(100% - 36px),var(--home-container)); height:auto; margin:auto; transform:none; }
 body .reviews .section-heading { height:auto; margin-bottom:24px; padding:0; }
 body .reviews .section-heading h2 { position:static; transform:none; width:100%; text-align:left; }
 body .review-controls { position:static; justify-content:flex-end; margin-top:20px; gap:12px; }
