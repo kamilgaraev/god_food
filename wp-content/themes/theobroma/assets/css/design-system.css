@@ -199,6 +199,18 @@ body .home-cacao__tabs button strong { color:inherit; }
   body .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { padding-inline:0; scroll-padding-inline:0; }
 }
 
+/* Header captions are only shown on phone layouts. */
+.site-header .floating-actions .header-action-label { display:none; }
+@media(max-width:600px) {
+  .site-header .floating-actions .header-action-label { display:block; }
+}
+/* Field decoration is a real border, independent of focus-ring suppression. */
+body :is(.form-grid > input, .form-grid > select, .form-grid > textarea,
+  .phone-field input, .samples-field input, .samples-field select, .samples-field textarea) {
+  border-bottom:1px solid var(--ds-gold) !important;
+  box-shadow:none;
+}
+
 /* Responsive content must not scale its text or tap targets with an artboard. */
 body.home .about-stage { transform:none; max-width:var(--home-container); }
 body.home .about-stage .value { width:auto; grid-column:auto; grid-row:auto; padding:24px; }
