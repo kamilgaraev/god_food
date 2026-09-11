@@ -199,6 +199,15 @@ body .home-cacao__tabs button strong { color:inherit; }
   body .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { padding-inline:0; scroll-padding-inline:0; }
 }
 
+/* Compact wishlist cards follow the same uncropped portrait format. */
+body .commerce-wishlist:not(.commerce-wishlist--empty) .commerce-wishlist-thumb {
+  height:auto; aspect-ratio:4 / 5;
+}
+body .commerce-wishlist-thumb img { object-fit:contain; }
+body .commerce-wishlist:not(.commerce-wishlist--empty) .commerce-wishlist-product {
+  min-height:8.625rem;
+}
+
 /* Header captions are only shown on phone layouts. */
 .site-header .floating-actions .header-action-label { display:none; }
 @media(max-width:600px) {
