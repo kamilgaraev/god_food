@@ -640,9 +640,11 @@ body.account-modal-open { overflow:hidden; }
 .buy-russia-grid { display:flex; flex-wrap:wrap; }
 .buy-russia-grid .buy-partner-card { flex:0 0 12.875rem; }
 .buy-russia-grid .buy-partner-card:nth-child(n+6) { flex-basis:11.04166669rem; }
-.buy-partner-card { height:8.875rem; padding:1.5rem 0.75rem 0.75rem; display:flex; flex-direction:column; align-items:center; justify-content:space-between; color:#343434; background:#f3ebe4; text-align:center; }
-.buy-partner-logo { width:10rem; max-width:100%; height:5rem; margin:auto 0; object-fit:contain; }
-.buy-partner-card span { color:rgba(52,52,52,.55); font:400 0.75rem/1.125rem 'Montserrat',Arial,sans-serif; }
+.buy-partner-card { min-height:10.5rem; height:auto; padding:1.25rem 0.75rem 0.875rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:.625rem; color:#343434; background:#f3ebe4; text-align:center; }
+.buy-partner-logo { width:10rem; max-width:100%; height:4.5rem; flex:0 0 4.5rem; margin:0; object-fit:contain; }
+.buy-partner-meta { width:100%; min-height:2.25rem; margin-top:auto; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:.125rem; }
+.buy-partner-card strong { display:block; max-width:100%; overflow:hidden; color:#343434; font:500 0.75rem/1rem 'Montserrat',Arial,sans-serif; text-overflow:ellipsis; white-space:nowrap; }
+.buy-partner-city { display:block; color:rgba(52,52,52,.55); font:400 0.75rem/1rem 'Montserrat',Arial,sans-serif; }
 .buy-decor { position:absolute; z-index:2; pointer-events:none; background-position:center; background-size:100% 100%; background-repeat:no-repeat; }
 .buy-decor-left { top:7.5rem; left:0; width:13.1875rem; height:17.77441406rem; background-image:url('assets/images/botanical-buy-left.webp'); }
 .buy-decor-right { top:41.1875rem; right:0; width:15.625rem; height:20.57226563rem; background-image:url('assets/images/botanical-page-right.webp'); }
@@ -1182,7 +1184,9 @@ body.theobroma-product-view .product-detail-buy button.single_add_to_cart_button
   .buy-location p { width:11.875rem; font-size:0.75rem; line-height:1.0625rem; }
   .buy-location .button { right:0.875rem; bottom:1.375rem; width:9.375rem; }
   .buy-partner-grid { width:23rem; margin-top:2.1875rem; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
-  .buy-partner-card { height:7.8125rem; padding:1.125rem 0.5rem 0.625rem; }
+  .buy-partner-card { min-height:9.75rem; padding:1rem 0.5rem 0.75rem; gap:.5rem; }
+  .buy-partner-logo { width:100%; height:4rem; flex-basis:4rem; }
+  .buy-partner-meta { min-height:2.25rem; }
   .buy-russia-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
   .buy-intro:has(#bulletcities3:not([hidden])) { min-height:81.25rem; }
 

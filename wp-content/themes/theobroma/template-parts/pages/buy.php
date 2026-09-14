@@ -62,9 +62,11 @@ $partners = function_exists('theobroma_buy_get_entries') ? theobroma_buy_get_ent
                             <?php else : ?><article class="buy-partner-card">
                             <?php endif; ?>
                                 <?php $partner_content(); ?>
-                                <strong><?php echo esc_html(get_the_title($partner_id)); ?></strong>
-                                <?php $city = theobroma_buy_meta('city', $partner_id); ?>
-                                <?php if ($city !== '') : ?><span>· <?php echo esc_html($city); ?> ·</span><?php endif; ?>
+                                <div class="buy-partner-meta">
+                                    <strong><?php echo esc_html(get_the_title($partner_id)); ?></strong>
+                                    <?php $city = theobroma_buy_meta('city', $partner_id); ?>
+                                    <?php if ($city !== '') : ?><span class="buy-partner-city">· <?php echo esc_html($city); ?> ·</span><?php endif; ?>
+                                </div>
                             <?php if ($store_url !== '') : ?></a><?php else : ?></article><?php endif; ?>
                         <?php endforeach; ?>
                     </div>
