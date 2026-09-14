@@ -425,6 +425,50 @@ function theobroma_catalog_layout(): void {
 }
 add_action('wp', 'theobroma_catalog_layout');
 
+/**
+ * Return the product categories that should be available in the catalog.
+ * Empty categories and WooCommerce's technical default category are hidden.
+ *
+ * @return WP_Term[]
+ */
+function theobroma_catalog_categories(): array {
+    if (!taxonomy_exists('product_cat')) {
+        return array();
+    }
+
+    $terms = get_terms(array(
+        'taxonomy' => 'product_cat',
+        'hide_empty' => true,
+        'orderby' => 'name',
+        'order' => 'ASC',
+    ));
+
+    if (is_wp_error($terms)) {
+        return array();
+    }
+
+    return array_values(array_filter($terms, static function ($term): bool {
+        return $term instanceof WP_Term && $term->slug !== 'uncategorized';
+    }));
+}
+
+/**
+ * Keep the existing chocolate 200g landing tab when it exists; otherwise use
+ * the first category managed in WooCommerce.
+ *
+ * @param WP_Term[] $categories
+ */
+function theobroma_catalog_default_slug(array $categories): string {
+    foreach ($categories as $category) {
+        if ($category instanceof WP_Term && $category->slug === 'chocolate-200g') {
+            return $category->slug;
+        }
+    }
+
+    $first = $categories[0] ?? null;
+    return $first instanceof WP_Term ? $first->slug : '';
+}
+
 function theobroma_catalog_thumbnail_frame_open(): void {
     if (function_exists('is_shop') && (is_shop() || is_product_category())) {
         echo '<span class="catalog-product-image">';
@@ -449,9 +493,11 @@ function theobroma_catalog_products(WP_Query $query): void {
             $query->set('order', 'ASC');
             return;
         }
-        $groups = array('chocolate-200g', 'chocolate-100g', 'chocolate-30g', 'cacao', 'chia');
+        $catalog_categories = theobroma_catalog_categories();
+        $groups = array_values(array_filter(wp_list_pluck($catalog_categories, 'slug'), 'is_string'));
         $requested_group = sanitize_key(wp_unslash($_GET['product_group'] ?? 'chocolate-200g'));
-        $query->set('product_cat', in_array($requested_group, $groups, true) ? $requested_group : 'chocolate-200g');
+        $default_group = theobroma_catalog_default_slug($catalog_categories);
+        $query->set('product_cat', in_array($requested_group, $groups, true) ? $requested_group : $default_group);
         $query->set('posts_per_page', 12);
         $query->set('orderby', 'menu_order');
         $query->set('order', 'ASC');
