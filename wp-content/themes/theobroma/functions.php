@@ -8,6 +8,7 @@ require_once get_template_directory() . '/inc/contact-request-validation.php';
 require_once get_template_directory() . '/inc/chocolate-sample-request.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
 require_once get_template_directory() . '/inc/checkout-page.php';
+require_once get_template_directory() . '/inc/buy-partners.php';
 
 /** Canonical visual roles follow the theme and plugin layout styles. */
 function theobroma_design_system_assets(): void {

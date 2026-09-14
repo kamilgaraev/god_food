@@ -1,0 +1,226 @@
+.theobroma-buy-admin {
+    max-width: 1120px;
+    margin-top: 28px;
+    color: #332b27;
+}
+
+.theobroma-buy-admin-hero {
+    padding: 34px 38px 36px;
+    border: 1px solid #e6d8c8;
+    background: linear-gradient(135deg, #fbf8f3 0%, #f4e9de 100%);
+    box-shadow: 0 12px 34px rgba(96, 70, 42, .07);
+}
+
+.theobroma-buy-admin-kicker {
+    display: block;
+    margin-bottom: 8px;
+    color: #b08b37;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .18em;
+}
+
+.theobroma-buy-admin-hero h1 {
+    margin: 0 0 10px;
+    color: #241e1a;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 38px;
+    font-weight: 400;
+}
+
+.theobroma-buy-admin-hero p {
+    max-width: 650px;
+    margin: 0;
+    color: #796e66;
+    font-size: 14px;
+}
+
+.theobroma-buy-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.theobroma-buy-admin-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    min-height: 102px;
+    padding: 20px 22px;
+    border: 1px solid #e6d8c8;
+    background: #fffdfa;
+    color: #332b27;
+    text-decoration: none;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.theobroma-buy-admin-card:hover,
+.theobroma-buy-admin-card:focus-visible {
+    border-color: #b08b37;
+    box-shadow: 0 10px 24px rgba(96, 70, 42, .1);
+    transform: translateY(-2px);
+    color: #332b27;
+}
+
+.theobroma-buy-admin-card > .dashicons:first-child {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #b08b37;
+    color: #fffdfa;
+    font-size: 21px;
+    line-height: 42px;
+    text-align: center;
+}
+
+.theobroma-buy-admin-card strong,
+.theobroma-buy-admin-card small {
+    display: block;
+}
+
+.theobroma-buy-admin-card strong {
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.theobroma-buy-admin-card small {
+    color: #796e66;
+    font-size: 12px;
+}
+
+.theobroma-buy-admin-card > .dashicons:last-child {
+    color: #b08b37;
+}
+
+.theobroma-buy-editor {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, .85fr);
+    gap: 26px;
+    padding: 8px 4px 10px;
+}
+
+.theobroma-buy-editor-main,
+.theobroma-buy-editor-side {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+}
+
+.theobroma-buy-field,
+.theobroma-buy-image-field {
+    padding: 18px;
+    border: 1px solid #eadfd3;
+    background: #fffdfa;
+}
+
+.theobroma-buy-field label,
+.theobroma-buy-field-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4b4038;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+
+.theobroma-buy-field input[type='text'],
+.theobroma-buy-field input[type='url'],
+.theobroma-buy-field input[type='number'],
+.theobroma-buy-field textarea {
+    width: 100%;
+    border-color: #d9c8b7;
+    border-radius: 2px;
+    box-shadow: none;
+}
+
+.theobroma-buy-field input:focus,
+.theobroma-buy-field textarea:focus {
+    border-color: #b08b37;
+    box-shadow: 0 0 0 1px #b08b37;
+}
+
+.theobroma-buy-field .description,
+.theobroma-buy-image-field .description {
+    margin: 8px 0 0;
+    color: #8d8177;
+    font-size: 12px;
+}
+
+.theobroma-buy-image-preview {
+    display: grid;
+    place-items: center;
+    min-height: 190px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    border: 1px dashed #d9c8b7;
+    background: #f5eee7;
+    color: #b5a397;
+}
+
+.theobroma-buy-image-preview img {
+    display: block;
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+}
+
+.theobroma-buy-image-preview .dashicons {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+}
+
+.theobroma-buy-image-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.theobroma-buy-image-actions .button-primary {
+    background: #b08b37;
+    border-color: #9d7a2e;
+}
+
+.theobroma-buy-order-field input {
+    max-width: 120px;
+}
+
+.theobroma-buy-admin-row .column-buy_preview {
+    width: 82px;
+}
+
+.theobroma-buy-list-thumb {
+    display: block;
+    width: 64px;
+    height: 48px;
+    border-radius: 2px;
+    object-fit: contain;
+    background: #f5eee7;
+}
+
+.theobroma-buy-list-placeholder {
+    color: #a89a8e;
+}
+
+@media (max-width: 782px) {
+    .theobroma-buy-admin-hero {
+        padding: 26px 22px;
+    }
+
+    .theobroma-buy-admin-grid,
+    .theobroma-buy-editor {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .theobroma-buy-admin-card {
+        grid-template-columns: auto 1fr;
+    }
+
+    .theobroma-buy-admin-card > .dashicons:last-child {
+        display: none;
+    }
+}

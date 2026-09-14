@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, '..');
 const templatePath = path.join(root, 'wp-content/themes/theobroma/template-parts/pages/buy.php');
 const scriptPath = path.join(root, 'wp-content/themes/theobroma/assets/js/buy-tabs.js');
 const stylesheetPath = path.join(root, 'wp-content/themes/theobroma/style.css');
+const contentPath = path.join(root, 'wp-content/themes/theobroma/inc/buy-partners.php');
 
 (async () => {
   const template = fs.readFileSync(templatePath, 'utf8');
@@ -14,11 +15,15 @@ const stylesheetPath = path.join(root, 'wp-content/themes/theobroma/style.css');
   assert.doesNotMatch(template, /bulletcities2|Маркетплейсы|ozon\.ru|wildberries\.ru/iu, 'buy page does not advertise marketplaces');
   assert.doesNotMatch(template, /buy-tabs[\s\S]{0,500}theobroma_page_url/, 'buy tabs do not navigate to another WordPress page');
   assert.equal((template.match(/role="tab"/g) || []).length, 2, 'buy page renders only boutiques and all-Russia tabs');
-  assert.equal((template.match(/class="buy-partner-logo"/g) || []).length, 1, 'the Russia partner loop renders partner logos');
+  assert.match(template, /theobroma_buy_get_entries\('theobroma_boutique'\)/, 'boutiques are loaded from managed content');
+  assert.match(template, /theobroma_buy_get_entries\('theobroma_partner'\)/, 'partners are loaded from managed content');
+  assert.match(template, /buy-partner-logo/, 'the Russia partner loop renders partner logos');
+  assert.doesNotMatch(template, /ashanti\.png|jagannath\.png|white-clouds\.png/, 'partner filenames are no longer hardcoded in the template');
 
   const logoFiles = ['ashanti.png', 'jagannath.png', 'white-clouds.png', 'vidzhai.png', 'green-cardamon.png', 'sattva.png', 'delikateska.png', 'naturalista.png', 'ukrop.png', 'kunzhut.png', 'mishkin-gostinets.png'];
+  const content = fs.readFileSync(contentPath, 'utf8');
   logoFiles.forEach((logoFile) => {
-    assert.match(template, new RegExp(logoFile.replace('.', '\\.')), `${logoFile} is wired into the buy page`);
+    assert.match(content, new RegExp(logoFile.replace('.', '\\.') ), `${logoFile} is included in the one-time migration`);
     assert.equal(fs.existsSync(path.join(root, 'wp-content/themes/theobroma/assets/images/partners', logoFile)), true, `${logoFile} exists locally`);
   });
 
@@ -47,11 +52,13 @@ const stylesheetPath = path.join(root, 'wp-content/themes/theobroma/style.css');
     });
 
     await page.getByRole('tab', { name: 'Бутики' }).press('ArrowRight');
+    await page.waitForFunction(() => !document.querySelector('#bulletcities3')?.hidden);
     assert.equal(await page.locator('#bulletcities3').isVisible(), true, 'keyboard navigation activates the all-Russia panel');
     assert.equal(await page.locator('#bulletcities1').isVisible(), false, 'keyboard navigation hides the previous panel');
     assert.equal(await page.getByRole('tab', { name: 'Вся Россия' }).getAttribute('aria-selected'), 'true');
 
     await page.getByRole('tab', { name: 'Вся Россия' }).press('ArrowLeft');
+    await page.waitForFunction(() => !document.querySelector('#bulletcities1')?.hidden);
     assert.equal(await page.locator('#bulletcities1').isVisible(), true, 'keyboard navigation returns to boutiques');
   } finally {
     await browser.close();
