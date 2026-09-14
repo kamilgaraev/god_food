@@ -3450,3 +3450,42 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 @layer theobroma-focus-policy {
   :focus, :focus-visible { outline: none !important; box-shadow: none !important; }
 }
+
+/* Boutique cards keep the copy and directions action in one flow. */
+.buy-location-grid .buy-location {
+  height:auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+.buy-location-grid .buy-location-info {
+  margin-top:.625rem;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:1rem;
+  align-items:end;
+}
+.buy-location-grid .buy-location-copy { min-width:0; }
+.buy-location-grid .buy-location h2 { margin:.0rem 0 0; }
+.buy-location-grid .buy-location p { width:auto; max-width:100%; margin:.25rem 0 0; }
+.buy-location-grid .buy-location p + p { margin-top:.125rem; }
+.buy-location-grid .buy-location .button {
+  position:static;
+  align-self:end;
+  flex:none;
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .buy-location-grid {
+    width:min(37.5rem,calc(100% - 5rem));
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .buy-location-grid .buy-location-info {
+    grid-template-columns:1fr;
+    gap:.75rem;
+  }
+  .buy-location-grid .buy-location .button { justify-self:end; }
+}

@@ -30,10 +30,14 @@ $partners = function_exists('theobroma_buy_get_entries') ? theobroma_buy_get_ent
                             <article class="buy-location">
                                 <?php if ($image_url !== '') : ?><img src="<?php echo esc_url($image_url); ?>" width="520" height="240" loading="eager" decoding="async" alt="<?php echo esc_attr(get_the_title($boutique_id)); ?>">
                                 <?php else : ?><div class="buy-location-image-fallback" aria-hidden="true"><span class="dashicons dashicons-store"></span></div><?php endif; ?>
-                                <h2><?php echo esc_html(get_the_title($boutique_id)); ?></h2>
-                                <?php if ($address !== '') : ?><p class="buy-location-address"><?php echo esc_html($address); ?></p><?php endif; ?>
-                                <?php if ($hours !== '') : ?><p><?php echo esc_html($hours); ?></p><?php endif; ?>
-                                <?php if ($map_url !== '') : ?><a class="button" href="<?php echo esc_url($map_url); ?>" target="_blank" rel="noopener">Как добраться</a><?php endif; ?>
+                                <div class="buy-location-info">
+                                    <div class="buy-location-copy">
+                                        <h2><?php echo esc_html(get_the_title($boutique_id)); ?></h2>
+                                        <?php if ($address !== '') : ?><p class="buy-location-address"><?php echo esc_html($address); ?></p><?php endif; ?>
+                                        <?php if ($hours !== '') : ?><p><?php echo esc_html($hours); ?></p><?php endif; ?>
+                                    </div>
+                                    <?php if ($map_url !== '') : ?><a class="button" href="<?php echo esc_url($map_url); ?>" target="_blank" rel="noopener">Как добраться</a><?php endif; ?>
+                                </div>
                             </article>
                         <?php endforeach; ?>
                     </div>
