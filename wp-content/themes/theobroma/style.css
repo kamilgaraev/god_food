@@ -292,6 +292,42 @@ ul.products li.product > a.add_to_cart_button { display:none !important; }
   .woocommerce-account .account-recovery-card__submit button { width:100%; }
 }
 
+/* Editable buy-directory content. */
+.buy-location-image-fallback {
+  width:32.5rem;
+  height:15rem;
+  display:grid;
+  place-items:center;
+  color:rgba(176,144,61,.7);
+  background:#eee4da;
+}
+.buy-location-grid {
+  width:min(72.5rem,calc(100% - 5rem));
+  margin:3.125rem auto 0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1.25rem;
+  align-items:start;
+}
+.buy-location-grid .buy-location { width:100%; margin:0; box-sizing:border-box; }
+.buy-intro:has(.buy-location-grid),.buy-intro:has(.buy-russia-grid) { height:auto; min-height:53.6875rem; padding-bottom:6.25rem; }
+.buy-location-image-fallback .dashicons { width:3rem; height:3rem; font-size:3rem; }
+.buy-location-address { max-width:18rem; }
+.buy-location p + p { margin-top:.25rem; }
+.buy-partner-card { text-decoration:none; transition:transform .2s ease,box-shadow .2s ease; }
+.buy-partner-card:hover { color:#343434; text-decoration:none; transform:translateY(-2px); box-shadow:0 .5rem 1.25rem rgba(52,52,52,.12); }
+.buy-partner-card strong { display:block; max-width:100%; overflow:hidden; color:#343434; font:500 .75rem/1.125rem 'Montserrat',Arial,sans-serif; text-overflow:ellipsis; white-space:nowrap; }
+.buy-partner-logo--empty { display:grid; place-items:center; color:rgba(176,144,61,.65); }
+.buy-partner-logo--empty .dashicons { width:2.5rem; height:2.5rem; font-size:2.5rem; }
+.buy-empty-state { width:min(35rem,calc(100% - 2 * var(--layout-gutter))); margin:3.125rem auto 0; color:#796e66; font:400 1rem/1.5rem 'Montserrat',Arial,sans-serif; text-align:center; }
+@media (max-width:600px) {
+  .buy-location-grid { width:100%; margin-top:2.1875rem; grid-template-columns:1fr; gap:1.25rem; }
+  .buy-intro:has(.buy-location-grid),.buy-intro:has(.buy-russia-grid) { min-height:0; padding-bottom:5.625rem; }
+  .buy-location-image-fallback { width:100%; height:auto; aspect-ratio:520/240; }
+  .buy-location-address { max-width:100%; }
+  .buy-empty-state { width:100%; }
+}
+
 /* Native WooCommerce account, progressively presented like the source members panel. */
 body.account-modal-open { overflow:hidden; }
 .account-modal[hidden] { display:none; }

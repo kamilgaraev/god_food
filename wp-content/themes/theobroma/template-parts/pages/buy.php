@@ -1,3 +1,7 @@
+<?php
+$boutiques = function_exists('theobroma_buy_get_entries') ? theobroma_buy_get_entries('theobroma_boutique') : array();
+$partners = function_exists('theobroma_buy_get_entries') ? theobroma_buy_get_entries('theobroma_partner') : array();
+?>
 <main class="buy-page">
     <section class="buy-intro">
         <div class="buy-decor buy-decor-left" aria-hidden="true"></div>
@@ -13,35 +17,60 @@
 
         <div class="buy-panels">
             <section class="buy-panel" id="bulletcities1" role="tabpanel" aria-labelledby="buy-tab-1">
-                <article class="buy-location">
-                    <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/buy-aviapark.jpg'); ?>" width="520" height="240" loading="eager" decoding="async" alt="Бутик Theobroma в ТЦ Авиапарк">
-                    <h2>ТЦ «Авиапарк»</h2>
-                    <p>Ежедневно 10:00–22:00</p>
-                    <a class="button" href="https://yandex.ru/maps/?text=%D0%A2%D0%A6%20%D0%90%D0%B2%D0%B8%D0%B0%D0%BF%D0%B0%D1%80%D0%BA" target="_blank" rel="noopener">Как добраться</a>
-                </article>
+                <?php if ($boutiques !== array()) : ?>
+                    <div class="buy-location-grid">
+                        <?php foreach ($boutiques as $boutique) : ?>
+                            <?php
+                            $boutique_id = $boutique->ID;
+                            $image_url = theobroma_buy_image_url($boutique_id, 'full');
+                            $address = theobroma_buy_meta('address', $boutique_id);
+                            $hours = theobroma_buy_meta('hours', $boutique_id);
+                            $map_url = theobroma_buy_meta('map_url', $boutique_id);
+                            ?>
+                            <article class="buy-location">
+                                <?php if ($image_url !== '') : ?><img src="<?php echo esc_url($image_url); ?>" width="520" height="240" loading="eager" decoding="async" alt="<?php echo esc_attr(get_the_title($boutique_id)); ?>">
+                                <?php else : ?><div class="buy-location-image-fallback" aria-hidden="true"><span class="dashicons dashicons-store"></span></div><?php endif; ?>
+                                <h2><?php echo esc_html(get_the_title($boutique_id)); ?></h2>
+                                <?php if ($address !== '') : ?><p class="buy-location-address"><?php echo esc_html($address); ?></p><?php endif; ?>
+                                <?php if ($hours !== '') : ?><p><?php echo esc_html($hours); ?></p><?php endif; ?>
+                                <?php if ($map_url !== '') : ?><a class="button" href="<?php echo esc_url($map_url); ?>" target="_blank" rel="noopener">Как добраться</a><?php endif; ?>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <p class="buy-empty-state">Бутики скоро появятся.</p>
+                <?php endif; ?>
             </section>
 
             <section class="buy-panel" id="bulletcities3" role="tabpanel" aria-labelledby="buy-tab-3" hidden>
-                <?php
-                $partners = array(
-                    array('ashanti.png', 'Ashanti', 'Москва'),
-                    array('jagannath.png', 'Джаганнат', 'Москва'),
-                    array('white-clouds.png', 'Белые облака', 'Москва'),
-                    array('vidzhai.png', 'Виджай', 'Москва'),
-                    array('green-cardamon.png', 'Green Cardamon', 'Москва'),
-                    array('sattva.png', 'Sattva', 'Москва'),
-                    array('delikateska.png', 'Деликатеска', 'Москва'),
-                    array('naturalista.png', 'Naturalista', 'Самара'),
-                    array('ukrop.png', 'Укроп', 'Челябинск'),
-                    array('kunzhut.png', 'Кунжут', 'Челябинск'),
-                    array('mishkin-gostinets.png', 'Мишкин гостинец', 'Нижний Тагил'),
-                );
-                ?>
-                <div class="buy-partner-grid buy-russia-grid">
-                    <?php foreach ($partners as $partner) : ?>
-                        <article class="buy-partner-card"><img class="buy-partner-logo" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/partners/' . $partner[0]); ?>" width="160" height="80" loading="lazy" decoding="async" alt="<?php echo esc_attr($partner[1]); ?>"><span>· <?php echo esc_html($partner[2]); ?> ·</span></article>
-                    <?php endforeach; ?>
-                </div>
+                <?php if ($partners !== array()) : ?>
+                    <div class="buy-partner-grid buy-russia-grid">
+                        <?php foreach ($partners as $partner) : ?>
+                            <?php
+                            $partner_id = $partner->ID;
+                            $image_url = theobroma_buy_image_url($partner_id, 'full');
+                            $store_url = theobroma_buy_meta('store_url', $partner_id);
+                            $partner_content = static function () use ($partner_id, $image_url): void {
+                                if ($image_url !== '') {
+                                    echo '<img class="buy-partner-logo" src="' . esc_url($image_url) . '" width="160" height="80" loading="lazy" decoding="async" alt="' . esc_attr(get_the_title($partner_id)) . '">';
+                                } else {
+                                    echo '<span class="buy-partner-logo buy-partner-logo--empty" aria-hidden="true"><span class="dashicons dashicons-store"></span></span>';
+                                }
+                            };
+                            ?>
+                            <?php if ($store_url !== '') : ?><a class="buy-partner-card" href="<?php echo esc_url($store_url); ?>" target="_blank" rel="noopener">
+                            <?php else : ?><article class="buy-partner-card">
+                            <?php endif; ?>
+                                <?php $partner_content(); ?>
+                                <strong><?php echo esc_html(get_the_title($partner_id)); ?></strong>
+                                <?php $city = theobroma_buy_meta('city', $partner_id); ?>
+                                <?php if ($city !== '') : ?><span>· <?php echo esc_html($city); ?> ·</span><?php endif; ?>
+                            <?php if ($store_url !== '') : ?></a><?php else : ?></article><?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <p class="buy-empty-state">Партнёры скоро появятся.</p>
+                <?php endif; ?>
             </section>
         </div>
     </section>
