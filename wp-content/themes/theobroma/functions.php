@@ -448,7 +448,7 @@ function theobroma_catalog_categories(): array {
     }
 
     return array_values(array_filter($terms, static function ($term): bool {
-        return $term instanceof WP_Term && $term->slug !== 'uncategorized';
+        return $term instanceof WP_Term && !in_array($term->slug, array('uncategorized', 'misc'), true);
     }));
 }
 
