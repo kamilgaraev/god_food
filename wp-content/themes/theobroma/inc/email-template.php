@@ -11,11 +11,17 @@ declare(strict_types=1);
  */
 
 function theobroma_email_logo_url(): string {
-    return (string) apply_filters(
+    $default = set_url_scheme(
+        get_stylesheet_directory_uri() . '/assets/images/logo.png',
+        'https'
+    );
+    $url = (string) apply_filters(
         'theobroma_email_logo_url',
         // PNG is intentionally used for mail clients with limited WebP support.
-        get_stylesheet_directory_uri() . '/assets/images/logo.png'
+        $default
     );
+
+    return set_url_scheme($url, 'https');
 }
 
 /** @param list<string> $paragraphs @param list<string> $details */
@@ -66,13 +72,13 @@ function theobroma_email_render_html(
     $buttonHtml = '';
     if ($buttonLabel !== null && $buttonUrl !== null && $buttonLabel !== '' && $buttonUrl !== '') {
         $buttonHtml = '<p style="margin:28px 0 4px;text-align:center;">'
-            . '<a href="' . esc_url($buttonUrl) . '" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#b0903d;color:#ffffff;font-size:14px;font-weight:600;line-height:1.2;text-decoration:none;">'
+            . '<a href="' . esc_url(set_url_scheme($buttonUrl, 'https')) . '" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#b0903d;color:#ffffff;font-size:14px;font-weight:600;line-height:1.2;text-decoration:none;">'
             . esc_html($buttonLabel)
             . '</a></p>';
     }
 
     $logoUrl = esc_url(theobroma_email_logo_url());
-    $homeUrl = esc_url(home_url('/'));
+    $homeUrl = esc_url(set_url_scheme(home_url('/'), 'https'));
 
     return '<!doctype html><html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>'
         . esc_html($heading)
