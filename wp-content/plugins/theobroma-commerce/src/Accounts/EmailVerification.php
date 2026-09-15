@@ -86,7 +86,23 @@ final class EmailVerification
         $url = add_query_arg(['confirm-email' => $id, 'confirmation-token' => $token], wc_get_page_permalink('myaccount'));
         $message = "Здравствуйте!\n\nПодтвердите электронную почту для аккаунта Theobroma:\n" . $url
             . "\n\nСсылка действует 24 часа. После подтверждения войдите с вашим паролем. Если вы не задавали пароль, воспользуйтесь восстановлением пароля на странице входа.\n\nЕсли вы не регистрировались, просто проигнорируйте это письмо.\n\nTheobroma — Пища богов";
-        $sent = wp_mail($user->user_email, 'Подтвердите почту — Theobroma', $message, ['Content-Type: text/plain; charset=UTF-8']);
+        if (function_exists('theobroma_send_branded_email')) {
+            $sent = \theobroma_send_branded_email(
+                $user->user_email,
+                'Подтвердите почту — Theobroma',
+                'Подтвердите электронную почту',
+                array(),
+                array(
+                    'Здравствуйте' . ($user->display_name !== '' ? ', ' . $user->display_name : '') . '!',
+                    'Подтвердите электронную почту, чтобы завершить регистрацию личного кабинета. Ссылка действует 24 часа.',
+                    'Если вы не регистрировались на сайте, просто проигнорируйте это письмо.',
+                ),
+                'Подтвердить почту',
+                $url
+            );
+        } else {
+            $sent = wp_mail($user->user_email, 'Подтвердите почту — Theobroma', $message, ['Content-Type: text/plain; charset=UTF-8']);
+        }
         update_user_meta($id, '_theobroma_email_sent', $sent ? '1' : '');
         return $sent;
     }

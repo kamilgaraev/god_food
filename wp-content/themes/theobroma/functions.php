@@ -6,6 +6,7 @@ require_once get_template_directory() . '/inc/checkout-order-button.php';
 require_once get_template_directory() . '/inc/product-images.php';
 require_once get_template_directory() . '/inc/contact-request-validation.php';
 require_once get_template_directory() . '/inc/chocolate-sample-request.php';
+require_once get_template_directory() . '/inc/email-template.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
 require_once get_template_directory() . '/inc/checkout-page.php';
 require_once get_template_directory() . '/inc/buy-partners.php';
@@ -734,12 +735,19 @@ function theobroma_handle_contact_request(): void {
             $content .= ($content !== '' ? "\n\n" : '') . $message;
         }
         wp_update_post(array('ID' => (int) $request_id, 'post_content' => $content));
-        wp_mail(get_option('admin_email'), 'Корпоративная заявка Theobroma', implode("\n", theobroma_contact_request_lines(array_merge($corporate_fields, array(
+        $corporate_lines = theobroma_contact_request_lines(array_merge($corporate_fields, array(
             'name' => $name,
             'phone' => $phone,
             'email' => $email,
             'message' => $message,
-        )))));
+        )));
+        theobroma_send_branded_email(
+            sanitize_email((string) get_option('admin_email')),
+            'Корпоративная заявка Theobroma',
+            'Новая корпоративная заявка',
+            $corporate_lines,
+            array('На сайте Theobroma появилась новая заявка на корпоративный заказ.')
+        );
     } else {
         update_post_meta((int) $request_id, '_theobroma_form_id', $form_id);
         if (($standard_values['email'] ?? '') !== '') {
@@ -748,10 +756,12 @@ function theobroma_handle_contact_request(): void {
         $subject = $form_id === 'cooperation'
             ? 'Заявка со страницы «Сотрудничество» Theobroma'
             : 'Заявка с сайта Theobroma';
-        wp_mail(
+        theobroma_send_branded_email(
             theobroma_standard_contact_request_recipient($form_id, sanitize_email((string) get_option('admin_email'))),
             $subject,
-            implode("\n", $standard_lines)
+            $form_id === 'cooperation' ? 'Заявка на сотрудничество' : 'Новая заявка с сайта',
+            $standard_lines,
+            array('На сайте Theobroma появилась новая заявка. Данные обращения собраны ниже.')
         );
     }
     wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contact-form');
