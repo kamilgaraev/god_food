@@ -89,7 +89,6 @@ function theobroma_email_render_html(
         . '<a href="' . $homeUrl . '" style="display:inline-block;text-decoration:none;"><img src="' . $logoUrl . '" alt="Theobroma — Пища Богов" width="220" style="display:block;width:220px;max-width:100%;height:auto;border:0;"></a>'
         . '</td></tr>'
         . '<tr><td style="padding:34px 40px 38px;">'
-        . '<p style="margin:0 0 12px;color:#b0903d;font-size:12px;letter-spacing:.08em;text-transform:uppercase;">Theobroma — Пища Богов</p>'
         . '<h1 style="margin:0 0 24px;color:#171511;font-family:Georgia,\'Times New Roman\',serif;font-size:32px;font-weight:400;line-height:1.15;">'
         . esc_html($heading)
         . '</h1>'
@@ -193,6 +192,9 @@ body, #outer_wrapper {
     border-bottom: 1px solid #dfd2c3 !important;
     padding-bottom: 20px !important;
 }
+#body_content hr {
+    display: none !important;
+}
 #body_content .email-order-details tfoot tr:first-child td,
 #body_content .email-order-details tfoot tr:first-child th {
     border-top: 0 !important;
@@ -219,6 +221,118 @@ body, #outer_wrapper {
     background-color: #b0903d !important;
     border-color: #b0903d !important;
     border-radius: 999px !important;
+}
+
+@media screen and (max-width: 600px) {
+    #wrapper {
+        padding: 12px 0 !important;
+    }
+    #template_header_image {
+        padding: 18px 20px 14px !important;
+    }
+    #template_header_image img {
+        width: 184px !important;
+    }
+    #header_wrapper {
+        padding: 20px !important;
+    }
+    #template_header h1,
+    #template_header h1 a {
+        font-size: 26px !important;
+    }
+    #body_content table td {
+        padding: 16px 20px 24px !important;
+    }
+    #body_content .email-order-details {
+        width: 100% !important;
+        border: 0 !important;
+        table-layout: fixed !important;
+    }
+    #body_content .email-order-details thead {
+        display: none !important;
+    }
+    #body_content .email-order-details tbody tr.order_item {
+        display: block !important;
+        width: 100% !important;
+        padding: 16px 0 !important;
+        border-bottom: 1px solid #dfd2c3 !important;
+    }
+    #body_content .email-order-details tbody tr.order_item > td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        border: 0 !important;
+        text-align: left !important;
+    }
+    #body_content .email-order-details .order-item-data {
+        display: table !important;
+        width: 100% !important;
+        table-layout: auto !important;
+    }
+    #body_content .email-order-details .order-item-data td {
+        display: table-cell !important;
+        width: auto !important;
+        padding: 0 !important;
+        border: 0 !important;
+        vertical-align: top !important;
+    }
+    #body_content .email-order-details .order-item-data td:first-child {
+        width: 72px !important;
+        padding-right: 12px !important;
+    }
+    #body_content .email-order-details .order-item-data td:first-child img {
+        width: 64px !important;
+        height: 64px !important;
+        max-width: 64px !important;
+        border-radius: 4px !important;
+    }
+    #body_content .email-order-details .order-item-data td:nth-child(2) {
+        color: #756b63 !important;
+        font-size: 0 !important;
+        line-height: 1.35 !important;
+    }
+    #body_content .email-order-details .order-item-data td:nth-child(2) h3 {
+        margin: 0 0 5px !important;
+        color: #343434 !important;
+        font-size: 15px !important;
+        line-height: 1.35 !important;
+    }
+    #body_content .email-order-details .order-item-data td:nth-child(2) .email-order-item-meta {
+        font-size: 12px !important;
+    }
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(2),
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(3) {
+        display: inline-block !important;
+        width: 49% !important;
+        margin-top: 14px !important;
+        color: #343434 !important;
+        font-size: 15px !important;
+        line-height: 1.35 !important;
+        vertical-align: top !important;
+    }
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(2)::before,
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(3)::before {
+        display: block !important;
+        margin-bottom: 3px !important;
+        color: #756b63 !important;
+        font-size: 11px !important;
+        line-height: 1.3 !important;
+    }
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(2)::before {
+        content: 'Количество';
+    }
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(3) {
+        text-align: right !important;
+    }
+    #body_content .email-order-details tbody tr.order_item > td:nth-child(3)::before {
+        content: 'Цена';
+        text-align: right !important;
+    }
+    #body_content .email-order-details + hr,
+    #body_content .email-order-details ~ hr {
+        display: none !important;
+    }
 }
 CSS;
 
