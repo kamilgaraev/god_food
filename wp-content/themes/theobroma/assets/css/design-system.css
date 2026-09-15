@@ -194,6 +194,12 @@ body .home-cacao__tabs button[aria-selected=true] { color:var(--ds-ink); backgro
 body .home-cacao__tabs button strong { color:inherit; }
 @media(max-width:600px) {
   body .home-cacao__tabs button[aria-selected=true] { color:#fff; background:var(--ds-gold); }
+  body .home-cacao__tabs button { flex:0 0 6.75rem; }
+  body .home-cacao__tabs button span {
+    font-size:clamp(.5625rem,2.6vw,.625rem) !important;
+    line-height:1.2;
+    white-space:nowrap;
+  }
   body .home-hero__actions { grid-template-columns:minmax(0,1fr); }
   body .home-hero__actions .home-button { width:100%; }
   body .theobroma-photo-showcase--home .theobroma-photo-showcase__gallery { padding-inline:0; scroll-padding-inline:0; }
