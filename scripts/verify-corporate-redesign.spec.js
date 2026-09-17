@@ -105,14 +105,9 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
     await motionPage.waitForTimeout(300);
     assert.notEqual(await ribbon.evaluate(element => getComputedStyle(element).transform), start, 'ribbon moves');
     assert.ok(await ribbon.evaluate(element => Math.abs(element.getBoundingClientRect().width / 2 - element.firstElementChild.getBoundingClientRect().width) < 1), 'repeat distance equals one group');
-    const pause = motionPage.locator('.cg-ribbon-toggle');
-    await pause.click();
-    await motionPage.mouse.move(1, 1);
-    await pause.evaluate(element => element.blur());
+    await motionPage.locator('.cg-ribbon').hover();
     assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'paused');
-    await motionPage.getByRole('button', { name: 'Продолжить бегущую строку' }).click();
     await motionPage.mouse.move(1, 1);
-    await pause.evaluate(element => element.blur());
     assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'running');
     await motionPage.close();
     console.log('Marquee motion, seamless repeat, pause and resume passed (DPR 2)');

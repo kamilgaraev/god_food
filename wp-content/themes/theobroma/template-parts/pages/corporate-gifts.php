@@ -62,7 +62,6 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
             <div class="cg-ribbon-group"<?php echo $copy ? ' aria-hidden="true"' : ''; ?>><span>Без белого сахара</span><span>Доставка по всей России</span><span>Только натуральные ингредиенты</span><span>Чистый состав</span></div>
             <?php endfor; ?>
         </div>
-        <button class="cg-ribbon-toggle" type="button" aria-label="Приостановить бегущую строку" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path class="cg-ribbon-pause" d="M6 4h4v16H6zM14 4h4v16h-4z"/><path class="cg-ribbon-play" d="m7 3 14 9-14 9z"/></svg></button>
     </div>
     <section class="cg-solutions cg-shell" aria-labelledby="cg-solutions-title">
         <h2 id="cg-solutions-title">Готовые <em>решения</em></h2>
