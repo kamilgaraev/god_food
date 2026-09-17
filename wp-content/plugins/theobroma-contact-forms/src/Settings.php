@@ -12,7 +12,7 @@ final class Settings
     /** @return list<string> */
     public function formIds(): array
     {
-        return array('home', 'cooperation');
+        return array('home', 'cooperation', 'corporate');
     }
 
     /** @return list<string> */
@@ -35,9 +35,19 @@ final class Settings
             'custom_fields' => array(),
         );
 
+        $corporate = $form;
+        $corporate['custom_fields'] = array(
+            array('key' => 'company', 'label' => 'Компания', 'type' => 'text', 'placeholder' => 'Компания', 'required' => false, 'options' => array()),
+            array('key' => 'volume', 'label' => 'Необходимое количество', 'type' => 'number', 'placeholder' => 'Необходимое количество', 'required' => false, 'options' => array()),
+            array('key' => 'occasion', 'label' => 'Повод', 'type' => 'select', 'placeholder' => 'Повод', 'required' => false, 'options' => array('Новый год', 'Подарки сотрудникам', 'Подарки клиентам и партнёрам', 'Мероприятие', 'Другой повод')),
+            array('key' => 'timing', 'label' => 'Срочность', 'type' => 'select', 'placeholder' => 'Срочность', 'required' => false, 'options' => array('В течение двух недель', 'В течение месяца', 'Планируем заранее')),
+            array('key' => 'gift', 'label' => 'Набор', 'type' => 'select', 'placeholder' => 'Выберите набор — необязательно', 'required' => false, 'options' => array('Знакомство', 'Для неё', 'Горький', 'Для него', 'Премиум', 'Индивидуальный набор', 'Каталог PDF')),
+        );
+
         return array(
             'home' => $form,
             'cooperation' => $form,
+            'corporate' => $corporate,
         );
     }
 

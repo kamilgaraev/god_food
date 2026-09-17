@@ -102,6 +102,7 @@ final class Theobroma_Admin_Tools {
                 'contact_success' => array('Сообщение после отправки', 'text'),
             ),
             'Корпоративные подарки' => array(
+                'corporate_catalog_url' => array('Ссылка на каталог PDF', 'url', null, 'Загрузите PDF в медиатеку и вставьте ссылку. Если поле пустое, кнопка предлагает запросить каталог через форму.'),
                 'corporate_hero_title' => array('Заголовок', 'text'),
                 'corporate_hero_accent' => array('Акцентная строка', 'text'),
                 'corporate_intro' => array('Вступительный текст', 'textarea'),
@@ -279,7 +280,7 @@ final class Theobroma_Admin_Tools {
             'cacao_intro',
         );
         $emails = array('footer_info_email', 'footer_opt_email', 'footer_press_email');
-        $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen');
+        $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen', 'corporate_catalog_url');
         $cacao_profiles = isset($input['cacao_profiles']) && is_array($input['cacao_profiles']) ? $input['cacao_profiles'] : array();
         unset($input['cacao_profiles']);
         $clean = array();
