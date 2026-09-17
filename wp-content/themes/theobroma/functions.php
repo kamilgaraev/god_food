@@ -101,6 +101,11 @@ function theobroma_assets(): void {
         array('strategy' => 'defer', 'in_footer' => true)
     );
 
+    if (is_page('Корпоративные подарки')) {
+        wp_enqueue_style('theobroma-corporate', get_template_directory_uri() . '/assets/css/corporate-gifts.css', array('theobroma-home-redesign'), (string) filemtime($theme_dir . '/assets/css/corporate-gifts.css'));
+        wp_enqueue_script('theobroma-corporate', get_template_directory_uri() . '/assets/js/corporate-gifts.js', array(), (string) filemtime($theme_dir . '/assets/js/corporate-gifts.js'), array('strategy' => 'defer', 'in_footer' => true));
+    }
+
     if (is_front_page()) {
         wp_enqueue_script(
             'theobroma-homepage',
@@ -602,7 +607,7 @@ function theobroma_handle_contact_request(): void {
         exit;
     }
     $form_id = sanitize_key(wp_unslash($_POST['form_id'] ?? 'home'));
-    $form_id = in_array($form_id, array('home', 'cooperation'), true) ? $form_id : 'home';
+    $form_id = in_array($form_id, array('home', 'cooperation', 'corporate'), true) ? $form_id : 'home';
     $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
     $honeypot = sanitize_text_field(wp_unslash($_POST['theobroma_website'] ?? ''));
     $started_at = absint($_POST['theobroma_form_started'] ?? 0);
@@ -620,7 +625,8 @@ function theobroma_handle_contact_request(): void {
         'started_at' => $started_at,
         'custom' => $custom,
     );
-    $is_corporate_request = $request_type === 'corporate_gift';
+    // Keep legacy corporate submissions compatible; the new form uses plugin settings.
+    $is_corporate_request = $request_type === 'corporate_gift' && $form_id !== 'corporate';
     $valid = $is_corporate_request
         ? theobroma_contact_request_is_valid($request, time())
         : theobroma_standard_contact_request_is_valid($request, $form_id, time());
@@ -681,12 +687,15 @@ function theobroma_handle_contact_request(): void {
         )))));
     } else {
         update_post_meta((int) $request_id, '_theobroma_form_id', $form_id);
+        if ($form_id === 'corporate') {
+            update_post_meta((int) $request_id, '_theobroma_request_type', 'corporate_gift');
+        }
         if (($standard_values['email'] ?? '') !== '') {
             update_post_meta((int) $request_id, '_theobroma_request_email', $standard_values['email']);
         }
-        $subject = $form_id === 'cooperation'
+        $subject = $form_id === 'corporate' ? 'Корпоративная заявка Theobroma' : ($form_id === 'cooperation'
             ? 'Заявка со страницы «Сотрудничество» Theobroma'
-            : 'Заявка с сайта Theobroma';
+            : 'Заявка с сайта Theobroma');
         wp_mail(
             theobroma_standard_contact_request_recipient($form_id, sanitize_email((string) get_option('admin_email'))),
             $subject,
