@@ -19,12 +19,7 @@
 .cg-ribbon-track { display:flex; width:max-content; animation:cg-marquee 32s linear infinite; }
 .cg-ribbon-group { display:flex; flex-shrink:0; justify-content:space-around; align-items:center; gap:2rem; min-width:100vw; min-height:3.75rem; padding:1rem 2rem; white-space:nowrap; }
 .cg-ribbon-group span::after { content:'·'; margin-left:2rem; }
-.cg-ribbon:hover .cg-ribbon-track,.cg-ribbon:focus-within .cg-ribbon-track,.cg-ribbon.is-paused .cg-ribbon-track { animation-play-state:paused; }
-.cg-ribbon-toggle { position:absolute; right:0; top:0; bottom:0; width:2.75rem; padding:0; border:0; background:var(--cg-gold); color:#fff; font:inherit; cursor:pointer; }
-.cg-ribbon-toggle:focus-visible { outline-color:#fff; outline-offset:-4px; }
-.cg-ribbon-toggle svg { display:block; width:1.25rem; height:1.25rem; margin:auto; fill:currentColor; }
-.cg-ribbon-play,.cg-ribbon-toggle[aria-pressed="true"] .cg-ribbon-pause { display:none; }
-.cg-ribbon-toggle[aria-pressed="true"] .cg-ribbon-play { display:block; }
+.cg-ribbon:hover .cg-ribbon-track { animation-play-state:paused; }
 @keyframes cg-marquee { to { transform:translateX(-50%); } }
 .cg-solutions { padding-block:4.375rem 5rem; position:relative; }
 .cg-solutions::after { content:''; position:absolute; z-index:0; right:-8.75rem; bottom:3rem; width:18.75rem; height:25rem; background:url('../images/corporate/cacao-right-original.png') center/contain no-repeat; pointer-events:none; }
@@ -181,5 +176,5 @@
   .cg-ribbon-track { width:100%; animation:none; }
   .cg-ribbon-group { min-width:0; width:100%; flex-wrap:wrap; white-space:normal; gap:.75rem 1.5rem; padding:1rem; }
   .cg-ribbon-group span::after { display:none; }
-  .cg-ribbon-group[aria-hidden],.cg-ribbon-toggle { display:none; }
+  .cg-ribbon-group[aria-hidden] { display:none; }
 }
