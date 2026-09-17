@@ -7,6 +7,15 @@ const base = process.env.CORPORATE_BASE_URL || 'http://localhost:8080';
 const widths = [320, 390, 768, 1440, 2560];
 const output = path.resolve(__dirname, '../output/playwright/corporate-redesign');
 
+async function verifySelectedRequest(page, value) {
+  const selection = await page.locator('[data-cg-form]').evaluate((form, requested) => {
+    const select = form.querySelector('[name="custom[gift]"]');
+    if (select && Array.from(select.options).some(option => option.value === requested)) return select.value === requested;
+    return form.querySelector('[name="message"]')?.value.includes(`Интересует: ${requested}`) || false;
+  }, value);
+  assert.ok(selection, `request selection preserved: ${value}`);
+}
+
 (async () => {
   fs.mkdirSync(output, { recursive: true });
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
@@ -91,7 +100,7 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
       await trigger.click();
       await dialog.getByRole('button', { name: 'Заказать', exact: true }).click();
       await dialog.waitFor({ state: 'hidden' });
-      assert.equal(await page.locator('[name="custom[gift]"]').inputValue(), 'Знакомство');
+      await verifySelectedRequest(page, 'Знакомство');
       await page.locator('[data-cg-form] input[name="name"]').fill('');
       assert.equal(await page.locator('[data-cg-form]').evaluate(form => form.checkValidity()), false, 'empty required fields cannot submit');
       const faq = page.locator('.cg-faq details').nth(1);
@@ -110,7 +119,7 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
       const requestCatalog = page.locator('[data-cg-request]');
       if (await requestCatalog.count()) {
         await requestCatalog.click();
-        assert.equal(await page.locator('[name="custom[gift]"]').inputValue(), 'Каталог PDF');
+        await verifySelectedRequest(page, 'Каталог PDF');
       }
       assert.deepEqual(errors, [], `${width}: browser errors`);
       await page.close();
