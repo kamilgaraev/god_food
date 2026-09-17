@@ -99,7 +99,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
     </div><div class="cg-review-controls"><button type="button" data-cg-direction="-1" aria-label="Предыдущие отзывы">‹</button><button type="button" data-cg-direction="1" aria-label="Следующие отзывы">›</button></div></section>
     <?php endif; ?>
     <section class="cg-request" id="corporate-request" aria-labelledby="cg-request-title"><div class="cg-shell cg-request-layout">
-        <div><h2 id="cg-request-title"><em>Оставьте заявку</em><br>мы свяжемся<br>в течение дня</h2><address><a href="mailto:opt@theobroma.msk.ru">opt@theobroma.msk.ru</a><a href="tel:+79257555626">+7 925 755-56-26</a><span>пн–пт 09:00–18:00</span></address></div>
+        <div><h2 id="cg-request-title"><em>Оставьте заявку</em><br> мы свяжемся<br> в течение дня</h2><address><a href="mailto:opt@theobroma.msk.ru">opt@theobroma.msk.ru</a><a href="tel:+79257555626">+7 925 755-56-26</a><span>пн–пт 09:00–18:00</span></address></div>
         <div id="contact-form">
             <?php if (($_GET['contact'] ?? '') === 'sent') : ?><p class="cg-form-status" role="status">Спасибо! Заявка отправлена. Мы свяжемся с вами.</p><?php elseif (($_GET['contact'] ?? '') === 'error') : ?><p class="cg-form-status" role="alert">Не удалось отправить заявку. Проверьте обязательные поля и согласие, затем попробуйте ещё раз.</p><?php endif; ?>
             <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" data-cg-form>

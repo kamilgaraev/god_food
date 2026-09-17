@@ -91,4 +91,30 @@
     new ResizeObserver(sync).observe(track);
     sync();
   });
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (!reducedMotion.matches && 'IntersectionObserver' in window && typeof Element.prototype.animate === 'function') {
+    const activeAnimations = new Set();
+    const reveal = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        reveal.unobserve(entry.target);
+        if (reducedMotion.matches || entry.target.contains(document.activeElement)) return;
+        const siblings = Array.from(entry.target.parentElement.children);
+        const stagger = entry.target.matches('.cg-gift,.cg-detail-grid article') ? (siblings.indexOf(entry.target) % 3) * 70 : 0;
+        const animation = entry.target.animate([
+          { opacity:0, transform:'translateY(18px)' },
+          { opacity:1, transform:'translateY(0)' },
+        ], { duration:500, delay:stagger, easing:'cubic-bezier(.2,.65,.3,1)', fill:'backwards' });
+        activeAnimations.add(animation);
+        animation.finished.then(() => activeAnimations.delete(animation), () => activeAnimations.delete(animation));
+      });
+    }, { threshold:0, rootMargin:'0px 0px -32px 0px' });
+    root.querySelectorAll('.cg-gift,.cg-details-intro,.cg-detail-grid article,.cg-gallery h2,.cg-gallery-track,.cg-season,.cg-faq details,.cg-reviews h2,.cg-review-track,.cg-request-layout > div').forEach(element => reveal.observe(element));
+    reducedMotion.addEventListener('change', event => {
+      if (!event.matches) return;
+      reveal.disconnect();
+      activeAnimations.forEach(animation => animation.cancel());
+      activeAnimations.clear();
+    });
+  }
 })();
