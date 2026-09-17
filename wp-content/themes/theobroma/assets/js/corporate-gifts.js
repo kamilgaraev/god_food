@@ -7,7 +7,6 @@
     const paused = ribbonToggle.closest('.cg-ribbon').classList.toggle('is-paused');
     ribbonToggle.setAttribute('aria-pressed', String(paused));
     ribbonToggle.setAttribute('aria-label', paused ? 'Продолжить бегущую строку' : 'Приостановить бегущую строку');
-    ribbonToggle.firstElementChild.textContent = paused ? '▶' : 'Ⅱ';
   });
   const dialog = root.querySelector('.cg-dialog');
   const form = root.querySelector('[data-cg-form]');
