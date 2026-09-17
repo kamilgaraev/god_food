@@ -104,7 +104,7 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
     const start = await ribbon.evaluate(element => getComputedStyle(element).transform);
     await motionPage.waitForTimeout(300);
     assert.notEqual(await ribbon.evaluate(element => getComputedStyle(element).transform), start, 'ribbon moves');
-    assert.ok(await ribbon.evaluate(element => Math.abs(element.getBoundingClientRect().width / 2 - element.firstElementChild.getBoundingClientRect().width) < 1), 'repeat distance equals one group');
+    assert.ok(await ribbon.evaluate(element => Math.abs(element.getBoundingClientRect().width / 4 - element.firstElementChild.getBoundingClientRect().width) < 1), 'repeat distance equals one group');
     await motionPage.locator('.cg-ribbon').hover();
     assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'paused');
     await motionPage.mouse.move(1, 1);

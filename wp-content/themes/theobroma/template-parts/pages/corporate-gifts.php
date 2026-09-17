@@ -58,7 +58,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
     </section>
     <div class="cg-ribbon">
         <div class="cg-ribbon-track">
-            <?php for ($copy = 0; $copy < 2; $copy++) : ?>
+            <?php for ($copy = 0; $copy < 4; $copy++) : ?>
             <div class="cg-ribbon-group"<?php echo $copy ? ' aria-hidden="true"' : ''; ?>><span>Без белого сахара</span><span>Доставка по всей России</span><span>Только натуральные ингредиенты</span><span>Чистый состав</span></div>
             <?php endfor; ?>
         </div>
