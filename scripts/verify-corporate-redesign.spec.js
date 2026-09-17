@@ -26,6 +26,19 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
       assert.equal(await page.locator('[data-cg-gift]').count(), 5);
       assert.equal(await page.locator('.cg-detail-grid article').count(), 4);
       assert.equal(await page.locator('.cg-faq details').count(), 8);
+      const clippedDetails = await page.locator('.cg-detail-grid article').evaluateAll(cards => cards.some(card => {
+        const heading = card.querySelector('h3');
+        const range = document.createRange();
+        range.selectNodeContents(heading);
+        const text = range.getBoundingClientRect();
+        const box = card.getBoundingClientRect();
+        return text.right > box.right || text.left < box.left || card.scrollWidth > card.clientWidth;
+      }));
+      assert.equal(clippedDetails, false, `${width}: detail headings stay inside cards`);
+      if (width <= 600) {
+        assert.ok(await page.locator('.cg-request .form-grid input,.cg-request .form-grid select,.cg-request .form-grid textarea').evaluateAll(fields => fields.every(field => parseFloat(getComputedStyle(field).fontSize) >= 16)), 'mobile inputs avoid focus zoom');
+        assert.match(await page.locator('#cg-request-title').textContent(), /заявку\s+мы свяжемся\s+в течение дня/);
+      }
       const fidelity = await page.evaluate(() => {
         const address = document.querySelector('.cg-request address');
         return {
@@ -57,6 +70,11 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
       await trigger.click();
       assert.ok(await dialog.isVisible());
       assert.equal(await dialog.locator('h2').textContent(), '«Знакомство»');
+      assert.ok(await dialog.evaluate(element => {
+        const text = document.createRange();
+        text.selectNodeContents(element.querySelector('h2'));
+        return text.getBoundingClientRect().right <= element.querySelector('.cg-dialog-close').getBoundingClientRect().left;
+      }), 'modal title does not overlap close button');
       for (let index = 0; index < 4; index++) {
         await page.keyboard.press('Tab');
         assert.ok(await dialog.evaluate(element => element.contains(document.activeElement)), 'focus stays inside modal');
@@ -109,6 +127,11 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
     assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'paused');
     await motionPage.mouse.move(1, 1);
     assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'running');
+    await motionPage.locator('.cg-detail-grid article').last().scrollIntoViewIfNeeded();
+    await motionPage.waitForFunction(() => Array.from(document.querySelectorAll('.cg-detail-grid article')).some(card => card.getAnimations().length > 0));
+    await motionPage.emulateMedia({ reducedMotion:'reduce' });
+    await motionPage.waitForFunction(() => document.querySelector('.corporate-redesign').getAnimations({ subtree:true }).length === 0);
+    assert.equal(await motionPage.locator('.cg-detail-grid article').last().evaluate(card => getComputedStyle(card).opacity), '1');
     await motionPage.close();
     console.log('Marquee motion, seamless repeat, pause and resume passed (DPR 2)');
   } finally {
