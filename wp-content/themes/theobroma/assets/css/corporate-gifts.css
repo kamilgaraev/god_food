@@ -22,6 +22,9 @@
 .cg-ribbon:hover .cg-ribbon-track,.cg-ribbon:focus-within .cg-ribbon-track,.cg-ribbon.is-paused .cg-ribbon-track { animation-play-state:paused; }
 .cg-ribbon-toggle { position:absolute; right:0; top:0; bottom:0; width:2.75rem; padding:0; border:0; background:var(--cg-gold); color:#fff; font:inherit; cursor:pointer; }
 .cg-ribbon-toggle:focus-visible { outline-color:#fff; outline-offset:-4px; }
+.cg-ribbon-toggle svg { display:block; width:1.25rem; height:1.25rem; margin:auto; fill:currentColor; }
+.cg-ribbon-play,.cg-ribbon-toggle[aria-pressed="true"] .cg-ribbon-pause { display:none; }
+.cg-ribbon-toggle[aria-pressed="true"] .cg-ribbon-play { display:block; }
 @keyframes cg-marquee { to { transform:translateX(-50%); } }
 .cg-solutions { padding-block:4.375rem 5rem; position:relative; }
 .cg-solutions::after { content:''; position:absolute; z-index:0; right:-8.75rem; bottom:3rem; width:18.75rem; height:25rem; background:url('../images/corporate/cacao-right-original.png') center/contain no-repeat; pointer-events:none; }
