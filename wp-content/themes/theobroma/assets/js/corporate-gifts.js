@@ -2,6 +2,13 @@
   'use strict';
   const root = document.querySelector('.corporate-redesign');
   if (!root) return;
+  const ribbonToggle = root.querySelector('.cg-ribbon-toggle');
+  ribbonToggle?.addEventListener('click', () => {
+    const paused = ribbonToggle.closest('.cg-ribbon').classList.toggle('is-paused');
+    ribbonToggle.setAttribute('aria-pressed', String(paused));
+    ribbonToggle.setAttribute('aria-label', paused ? 'Продолжить бегущую строку' : 'Приостановить бегущую строку');
+    ribbonToggle.firstElementChild.textContent = paused ? '▶' : 'Ⅱ';
+  });
   const dialog = root.querySelector('.cg-dialog');
   const form = root.querySelector('[data-cg-form]');
   const cards = Array.from(root.querySelectorAll('[data-cg-gift]'));

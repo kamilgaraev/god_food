@@ -15,10 +15,16 @@
 .corporate-redesign .cg-hero h1 { position:static; width:auto; font-size:4.6875rem; line-height:1; text-transform:uppercase; }
 .cg-intro { margin:1.6rem 0 1.5rem; font-size:1.125rem; line-height:1.4; }
 .cg-hero-actions { display:flex; flex-wrap:wrap; gap:1.25rem; }
-.cg-ribbon { min-height:3.75rem; padding:1rem 1.75rem; display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:.7rem 1.5rem; color:#fff; background:var(--cg-gold); font-size:1rem; }
-.cg-ribbon span + span::before { content:'·'; margin-right:1.5rem; }
+.cg-ribbon { position:relative; overflow:hidden; color:#fff; background:var(--cg-gold); font-size:1rem; }
+.cg-ribbon-track { display:flex; width:max-content; animation:cg-marquee 32s linear infinite; }
+.cg-ribbon-group { display:flex; flex-shrink:0; justify-content:space-around; align-items:center; gap:2rem; min-width:100vw; min-height:3.75rem; padding:1rem 2rem; white-space:nowrap; }
+.cg-ribbon-group span::after { content:'·'; margin-left:2rem; }
+.cg-ribbon:hover .cg-ribbon-track,.cg-ribbon:focus-within .cg-ribbon-track,.cg-ribbon.is-paused .cg-ribbon-track { animation-play-state:paused; }
+.cg-ribbon-toggle { position:absolute; right:0; top:0; bottom:0; width:2.75rem; padding:0; border:0; background:var(--cg-gold); color:#fff; font:inherit; cursor:pointer; }
+.cg-ribbon-toggle:focus-visible { outline-color:#fff; outline-offset:-4px; }
+@keyframes cg-marquee { to { transform:translateX(-50%); } }
 .cg-solutions { padding-block:4.375rem 5rem; position:relative; }
-.cg-solutions::after { content:''; position:absolute; z-index:0; right:-8.75rem; bottom:3rem; width:18.75rem; height:25rem; background:url('../images/corporate/cacao-right.webp') center/contain no-repeat; pointer-events:none; }
+.cg-solutions::after { content:''; position:absolute; z-index:0; right:-8.75rem; bottom:3rem; width:18.75rem; height:25rem; background:url('../images/corporate/cacao-right-original.png') center/contain no-repeat; pointer-events:none; }
 .cg-solutions h2,.cg-gallery h2,.cg-faq h2,.cg-reviews h2 { text-align:center; margin-bottom:2.75rem; }
 .cg-gift-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2.5rem; position:relative; z-index:1; }
 .cg-gift { min-width:0; display:flex; flex-direction:column; background:var(--cream); }
@@ -32,7 +38,7 @@
 .cg-gift-copy .cg-price { margin-top:auto; margin-bottom:.6rem; }
 .corporate-redesign .cg-gift .button { font-size:.875rem; padding:.4rem 1.75rem; }
 .cg-details { position:relative; display:grid; grid-template-columns:1fr 1.05fr; gap:4.375rem; padding-block:0 6rem; }
-.cg-details::before { content:''; position:absolute; width:16.75rem; height:22.5rem; left:-10rem; bottom:5rem; background:url('../images/corporate/cacao-left.webp') center/contain no-repeat; pointer-events:none; }
+.cg-details::before { content:''; position:absolute; width:16.75rem; height:22.5rem; left:-10rem; bottom:5rem; background:url('../images/corporate/cacao-left-original.png') center/contain no-repeat; pointer-events:none; }
 .cg-details-intro { position:relative; }
 .cg-details-intro h2 { margin:.5rem 0 1.15rem; white-space:nowrap; }
 .cg-details-intro p { max-width:24rem; font-size:1.125rem; line-height:1.35; margin:0 0 1.75rem; }
@@ -55,7 +61,7 @@
 .cg-season p { max-width:30rem; margin:1.875rem 0 2.5rem; font-size:1.125rem; line-height:1.35; }
 .cg-season > img { width:100%; height:auto; object-fit:contain; }
 .cg-faq { position:relative; padding-block:6.25rem 5rem; }
-.cg-faq::before { content:''; position:absolute; top:3rem; right:-8.75rem; width:18rem; height:25rem; background:url('../images/corporate/cacao-right.webp') center/contain no-repeat; pointer-events:none; }
+.cg-faq::before { content:''; position:absolute; top:3rem; right:-8.75rem; width:18rem; height:25rem; background:url('../images/corporate/cacao-right-original.png') center/contain no-repeat; pointer-events:none; }
 .cg-faq-list { max-width:47.5rem; margin:auto; position:relative; }
 .cg-faq details { background:var(--cream); margin-bottom:.9375rem; }
 .cg-faq summary { display:flex; justify-content:space-between; align-items:center; gap:1.25rem; min-height:4.375rem; padding:1.25rem; cursor:pointer; list-style:none; font-size:1.125rem; line-height:1.35; }
@@ -72,10 +78,10 @@
 .corporate-redesign .cg-review-track h3 { font-size:1.9375rem; text-transform:uppercase; line-height:1; padding-right:2rem; margin-top:2.75rem; }
 .cg-review-track article > img { position:absolute; right:1.25rem; bottom:1.5rem; width:2rem; height:2rem; }
 .cg-review-controls { display:flex; justify-content:flex-end; gap:.75rem; margin-top:1rem; }
-.cg-request { padding:4.5rem 0; background:var(--cream) url('../images/corporate/contact-background.webp') center/cover no-repeat; scroll-margin-top:9rem; }
+.cg-request { padding:4.5rem 0; background:var(--cream) url('../images/corporate/contact-background-original.jpg') center/cover no-repeat; scroll-margin-top:9rem; }
 .cg-request-layout { display:grid; grid-template-columns:1fr 1.05fr; gap:4.375rem; align-items:start; }
 .corporate-redesign .cg-request h2 { font-size:3rem; }
-.cg-request address { width:fit-content; display:flex; flex-direction:column; gap:.3rem; padding:1rem 1.25rem; margin-top:1.5rem; background:rgba(243,235,228,.85); border-radius:0 0 1rem 1rem; border-bottom:1px solid #c5ad6f; font:400 1rem/1.5 'Cormorant',serif; }
+.cg-request address { width:fit-content; max-width:100%; display:flex; flex-direction:column; gap:.5rem; padding:1.25rem 1.5rem; margin-top:1.5rem; background:rgba(243,235,228,.85); border-radius:0 0 1rem 1rem; border-bottom:1px solid #c5ad6f; font:400 1.5rem/1.4 'Cormorant',serif; }
 .cg-request address a:hover { color:var(--cg-gold); }
 .cg-request .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
 .cg-request .form-grid > * { min-width:0; margin:0; }
@@ -130,8 +136,8 @@
   .cg-intro br { display:none; }
   .cg-hero-actions { gap:.75rem; }
   .corporate-redesign .cg-hero-actions .button { width:100%; }
-  .cg-ribbon { display:grid; grid-template-columns:1fr 1fr; padding:1rem; gap:.65rem; text-align:center; font-size:.6875rem; line-height:1.5; }
-  .cg-ribbon span + span::before { display:none; }
+  .cg-ribbon { font-size:.875rem; line-height:1.5; }
+  .cg-request address { font-size:1.375rem; padding:1rem 1.25rem; }
   .cg-solutions { padding-block:3rem; }
   .cg-gift-grid { grid-template-columns:1fr; gap:1.5rem; }
   .cg-solutions::after,.cg-details::before,.cg-faq::before { display:none; }
@@ -168,3 +174,9 @@
   .cg-dialog-bottom .button { padding-inline:1.5rem; }
 }
 @media (prefers-reduced-motion:reduce) { .corporate-redesign *, .corporate-redesign *::before, .corporate-redesign *::after { scroll-behavior:auto !important; transition:none !important; } }
+@media (prefers-reduced-motion:reduce) {
+  .cg-ribbon-track { width:100%; animation:none; }
+  .cg-ribbon-group { min-width:0; width:100%; flex-wrap:wrap; white-space:normal; gap:.75rem 1.5rem; padding:1rem; }
+  .cg-ribbon-group span::after { display:none; }
+  .cg-ribbon-group[aria-hidden],.cg-ribbon-toggle { display:none; }
+}

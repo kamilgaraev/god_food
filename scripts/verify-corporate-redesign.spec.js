@@ -26,6 +26,22 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
       assert.equal(await page.locator('[data-cg-gift]').count(), 5);
       assert.equal(await page.locator('.cg-detail-grid article').count(), 4);
       assert.equal(await page.locator('.cg-faq details').count(), 8);
+      const fidelity = await page.evaluate(() => {
+        const address = document.querySelector('.cg-request address');
+        return {
+          photos: Array.from(document.querySelectorAll('.cg-gallery-track img')).map(image => ({ src: image.currentSrc, width: image.naturalWidth, height: image.naturalHeight })),
+          fontRatio: parseFloat(getComputedStyle(address).fontSize) / parseFloat(getComputedStyle(document.documentElement).fontSize),
+          contactOverflow: address.scrollWidth > address.clientWidth,
+          animation: getComputedStyle(document.querySelector('.cg-ribbon-track')).animationName,
+        };
+      });
+      assert.equal(fidelity.photos.length, 2, 'exactly the two Figma gallery frames');
+      assert.match(fidelity.photos[0].src, /gallery-chocolate-original[^/]*\.jpg/);
+      assert.match(fidelity.photos[1].src, /gallery-packaging-original[^/]*\.jpg/);
+      assert.deepEqual(fidelity.photos.map(photo => [photo.width, photo.height]), [[2731, 4096], [2723, 4096]], 'original image resolution');
+      assert.ok(Math.abs(fidelity.fontRatio - (width <= 600 ? 1.375 : 1.5)) < .01, 'contacts scale with the site');
+      assert.equal(fidelity.contactOverflow, false, 'contacts fit their card');
+      assert.equal(fidelity.animation, 'none', 'reduced motion respected');
       const layout = await page.evaluate(() => {
         const heading = document.querySelector('.cg-hero h1 em').getBoundingClientRect();
         const intro = document.querySelector('.cg-intro').getBoundingClientRect();
@@ -82,6 +98,24 @@ const output = path.resolve(__dirname, '../output/playwright/corporate-redesign'
       await page.close();
       console.log(`Corporate redesign: ${width}px passed`);
     }
+    const motionPage = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'no-preference', deviceScaleFactor: 2 });
+    await motionPage.goto(`${base}/corporate-gifts/`, { waitUntil: 'networkidle' });
+    const ribbon = motionPage.locator('.cg-ribbon-track');
+    const start = await ribbon.evaluate(element => getComputedStyle(element).transform);
+    await motionPage.waitForTimeout(300);
+    assert.notEqual(await ribbon.evaluate(element => getComputedStyle(element).transform), start, 'ribbon moves');
+    assert.ok(await ribbon.evaluate(element => Math.abs(element.getBoundingClientRect().width / 2 - element.firstElementChild.getBoundingClientRect().width) < 1), 'repeat distance equals one group');
+    const pause = motionPage.locator('.cg-ribbon-toggle');
+    await pause.click();
+    await motionPage.mouse.move(1, 1);
+    await pause.evaluate(element => element.blur());
+    assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'paused');
+    await motionPage.getByRole('button', { name: 'Продолжить бегущую строку' }).click();
+    await motionPage.mouse.move(1, 1);
+    await pause.evaluate(element => element.blur());
+    assert.equal(await ribbon.evaluate(element => getComputedStyle(element).animationPlayState), 'running');
+    await motionPage.close();
+    console.log('Marquee motion, seamless repeat, pause and resume passed (DPR 2)');
   } finally {
     await browser.close();
   }
