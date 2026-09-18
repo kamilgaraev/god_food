@@ -3489,3 +3489,55 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
   }
   .buy-location-grid .buy-location .button { justify-self:end; }
 }
+
+/* Cookie choices share the storefront palette and stay above the bottom safe area. */
+.cookie-notice {
+  left:50%; right:auto; bottom:max(1rem,env(safe-area-inset-bottom));
+  transform:translateX(-50%); width:min(72.5rem,calc(100% - 2rem));
+  box-sizing:border-box; display:flex; align-items:center; gap:2rem;
+  padding:1.25rem 1.5rem; border:1px solid var(--line); border-radius:1rem;
+  background:var(--paper); color:var(--ink); box-shadow:0 .5rem 2rem rgba(36,29,25,.12);
+  font:400 .8125rem/1.6 'Montserrat',Arial,sans-serif;
+}
+.cookie-notice[hidden] { display:none; }
+.cookie-notice-copy { flex:1; min-width:0; }
+.cookie-notice-copy strong { display:block; margin-bottom:.375rem; font-size:1rem; font-weight:500; }
+.cookie-notice p { color:var(--muted); }
+.cookie-notice a { color:#826323; border:0; text-decoration:underline; text-underline-offset:.2em; }
+.cookie-notice-actions { display:flex; align-items:center; gap:.75rem; flex-shrink:0; }
+.cookie-notice button {
+  min-height:44px; margin:0; padding:.75rem 1.25rem; border:1px solid var(--gold);
+  border-radius:99rem; font:500 .8125rem/1.3 'Montserrat',Arial,sans-serif;
+  text-transform:none; letter-spacing:normal; white-space:nowrap; color:#fff; background:var(--gold);
+}
+.cookie-notice button[data-cookie-choice="0"] { color:var(--ink); background:transparent; }
+.cookie-notice button:hover { background:#987929; border-color:#987929; color:#fff; }
+.cookie-notice :is(button,a):focus-visible { outline:2px solid #826323; outline-offset:3px; }
+@media (max-width:900px) {
+  .cookie-notice { gap:1rem; flex-direction:column; align-items:stretch; }
+  .cookie-notice-actions { justify-content:flex-end; }
+}
+@media (max-width:600px) {
+  .cookie-notice { width:calc(100% - 1.25rem); padding:1rem; bottom:max(.625rem,env(safe-area-inset-bottom)); }
+  .cookie-notice-copy strong { font-size:.9375rem; }
+  .cookie-notice-actions { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:.5rem; }
+  .cookie-notice button { white-space:normal; padding:.625rem .5rem; font-size:.75rem; }
+}
+@media (prefers-reduced-motion:no-preference) {
+  .cookie-notice:not([hidden]) { animation:cookie-notice-in .28s ease-out; }
+  .cookie-notice button { transition:background-color .2s,border-color .2s,color .2s; }
+  @keyframes cookie-notice-in { from { opacity:0; translate:0 .75rem; } to { opacity:1; translate:0 0; } }
+}
+
+/* Match the understated corporate review arrows, below the cards. */
+.reviews,.reviews-stage { height:auto; }
+.reviews .review-controls { position:static; display:flex; justify-content:flex-end; gap:.75rem; margin-top:1rem; }
+.reviews .review-controls button {
+  width:3rem; height:3rem; min-width:44px; min-height:44px; padding:0;
+  border:0; background:transparent; color:var(--gold);
+  font:400 3.75rem/1 'Cormorant',Georgia,serif; cursor:pointer; transform:none;
+}
+.reviews .review-controls button:hover { color:#987929; }
+.reviews .review-controls button:focus-visible { outline:2px solid #826323; outline-offset:2px; }
+.reviews .reviews-button { height:auto; padding:1rem 0 3rem; }
+.reviews .reviews-button .button { margin-top:0; }

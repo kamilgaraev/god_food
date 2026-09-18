@@ -19,9 +19,15 @@
     </div>
     <div class="copyright"><span><?php echo nl2br(esc_html(theobroma_content('footer_company'))); ?></span><span><?php echo nl2br(esc_html(theobroma_content('footer_bank'))); ?></span><span><a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Политика конфиденциальности</a><br><a href="<?php echo esc_url(theobroma_page_url('Пользовательское соглашение')); ?>">Пользовательское соглашение</a><br><a href="<?php echo esc_url(theobroma_page_url('Публичная оферта')); ?>">Публичная оферта</a></span></div>
 </footer>
-<aside class="cookie-notice" aria-label="Уведомление о файлах cookie" hidden>
-    <p>Используя данный сайт, вы даете <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">согласие на использование файлов cookie</a>, помогающих нам сделать его удобнее для вас</p>
-    <button type="button">ОК, НЕ ПОКАЗЫВАТЬ СНОВА</button>
+<aside class="cookie-notice" aria-labelledby="cookie-notice-title" hidden>
+    <div class="cookie-notice-copy">
+        <strong id="cookie-notice-title">Немного заботы о вашем удобстве</strong>
+        <p>Мы используем cookie для работы сайта и аналитики. Вы можете разрешить все или оставить только необходимые. <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Подробнее в политике конфиденциальности</a>.</p>
+    </div>
+    <div class="cookie-notice-actions">
+        <button type="button" data-cookie-choice="0">Только необходимые</button>
+        <button type="button" data-cookie-choice="1">Принять</button>
+    </div>
 </aside>
 <?php wp_footer(); ?>
 </body>
