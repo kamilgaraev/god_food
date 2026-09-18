@@ -92,6 +92,44 @@
     sync();
   });
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  root.querySelectorAll('.cg-faq details').forEach(details => {
+    const summary = details.querySelector('summary');
+    let animation = null;
+    let expanded = details.open;
+    const finish = () => {
+      details.open = expanded;
+      details.style.removeProperty('height');
+      details.style.removeProperty('overflow');
+      delete details.dataset.expanded;
+      animation = null;
+    };
+    summary.addEventListener('click', event => {
+      if (typeof details.animate !== 'function') return;
+      event.preventDefault();
+      const startHeight = details.getBoundingClientRect().height;
+      expanded = !expanded;
+      if (animation) {
+        animation.onfinish = null;
+        animation.cancel();
+      }
+      if (reducedMotion.matches) { finish(); return; }
+      details.open = true;
+      details.dataset.expanded = String(expanded);
+      details.style.removeProperty('height');
+      const endHeight = expanded ? details.getBoundingClientRect().height : summary.getBoundingClientRect().height;
+      details.style.overflow = 'hidden';
+      animation = details.animate(
+        [{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+        { duration: 280, easing: 'cubic-bezier(.2,.65,.3,1)' }
+      );
+      animation.onfinish = finish;
+    });
+    reducedMotion.addEventListener('change', () => {
+      if (!reducedMotion.matches || !animation) return;
+      animation.cancel();
+      finish();
+    });
+  });
   if (!reducedMotion.matches && 'IntersectionObserver' in window && typeof Element.prototype.animate === 'function') {
     const activeAnimations = new Set();
     const reveal = new IntersectionObserver(entries => {
