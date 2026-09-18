@@ -3541,3 +3541,7 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .reviews .review-controls button:focus-visible { outline:2px solid #826323; outline-offset:2px; }
 .reviews .reviews-button { height:auto; padding:1rem 0 3rem; }
 .reviews .reviews-button .button { margin-top:0; }
+
+@media (max-width:600px) {
+  .reviews .review-controls { justify-content:center; }
+}

@@ -125,6 +125,7 @@
   .cg-ribbon { font-size:.8125rem; }
 }
 @media (max-width:600px) {
+  .cg-review-controls { justify-content:center; }
   .corporate-redesign .cg-shell { width:calc(100% - 2.5rem); }
   .corporate-redesign h2 { font-size:2.375rem; line-height:1.05; }
   .cg-hero { min-height:0; padding-top:15rem; }
