@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
 </head>
-<body <?php body_class(); ?>>
+<body <?php body_class(is_page('Корпоративные подарки') ? 'corporate-no-shipping' : ''); ?>>
 <?php wp_body_open(); ?>
 <a class="skip-link" href="#theobroma-main">Перейти к основному содержимому</a>
 <?php
@@ -15,10 +15,12 @@ $cart_url = function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/
 $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 ?>
 <header class="site-header">
+    <?php if (!is_page('Корпоративные подарки')) : ?>
     <a class="shipping" href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">
         <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/truck-original.webp'); ?>" width="18" height="18" decoding="async" alt="">
         <span><?php echo esc_html(theobroma_content('shipping_text')); ?></span>
     </a>
+    <?php endif; ?>
     <nav class="nav" aria-label="Основная навигация">
         <div class="nav-links nav-links-study">
             <a href="<?php echo esc_url($shop_url); ?>">Каталог</a>
