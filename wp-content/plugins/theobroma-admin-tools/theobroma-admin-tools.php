@@ -102,7 +102,7 @@ final class Theobroma_Admin_Tools {
                 'contact_success' => array('Сообщение после отправки', 'text'),
             ),
             'Корпоративные подарки' => array(
-                'corporate_catalog_url' => array('Ссылка на каталог PDF', 'url', null, 'Загрузите PDF в медиатеку и вставьте ссылку. Если поле пустое, кнопка предлагает запросить каталог через форму.'),
+                'corporate_catalog_url' => array('Ссылка на презентацию', 'url', null, 'Загрузите презентацию (PPTX или PDF) в медиатеку и вставьте ссылку для кнопки «Скачать презентацию». Если поле пустое, кнопка скрыта.'),
                 'corporate_hero_title' => array('Заголовок', 'text'),
                 'corporate_hero_accent' => array('Акцентная строка', 'text'),
                 'corporate_intro' => array('Вступительный текст', 'textarea'),

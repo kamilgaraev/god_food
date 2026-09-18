@@ -95,6 +95,12 @@ function theobroma_assets(): void {
         array('theobroma-style'),
         (string) filemtime($theme_dir . '/assets/css/home-redesign.css')
     );
+    wp_enqueue_style(
+        'theobroma-hero-alignment',
+        get_template_directory_uri() . '/assets/css/hero-alignment.css',
+        array('theobroma-home-redesign'),
+        (string) filemtime($theme_dir . '/assets/css/hero-alignment.css')
+    );
     wp_enqueue_script(
         'theobroma-site-header',
         get_template_directory_uri() . '/assets/js/site-header.js',
