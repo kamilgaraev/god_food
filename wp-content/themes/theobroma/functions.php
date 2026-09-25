@@ -242,10 +242,11 @@ add_filter('script_loader_tag', 'theobroma_noncritical_script_priority', 10, 2);
 
 function theobroma_preload_critical_fonts(): void {
     $font_base = get_template_directory_uri() . '/assets/fonts/';
-    printf(
-        '<link rel="icon" href="%s" type="image/webp">' . "\n",
-        esc_url(get_template_directory_uri() . '/assets/images/logo.webp')
-    );
+    $icon_base = get_template_directory_uri() . '/assets/icons/';
+    printf('<link rel="icon" href="%s" type="image/svg+xml">' . "\n", esc_url($icon_base . 'favicon.svg'));
+    printf('<link rel="icon" href="%s" type="image/png" sizes="32x32">' . "\n", esc_url($icon_base . 'favicon-32.png'));
+    printf('<link rel="apple-touch-icon" href="%s" sizes="180x180">' . "\n", esc_url($icon_base . 'apple-touch-icon.png'));
+    printf('<link rel="manifest" href="%s">' . "\n", esc_url($icon_base . 'site.webmanifest'));
     foreach (array('montserrat-cyrillic.woff2', 'cormorant-cyrillic-variable.woff2') as $font) {
         printf(
             '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",

@@ -3,12 +3,18 @@
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
+RewriteRule ^favicon\.ico$ wp-content/themes/theobroma/assets/icons/favicon.ico [L]
+RewriteRule ^apple-touch-icon\.png$ wp-content/themes/theobroma/assets/icons/apple-touch-icon.png [L]
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
 # END WordPress
+
+<IfModule mod_mime.c>
+AddType application/manifest+json .webmanifest
+</IfModule>
 
 # Baseline browser hardening. HSTS is emitted only for a direct HTTPS request;
 # when TLS terminates at a reverse proxy, configure HSTS at that proxy instead.

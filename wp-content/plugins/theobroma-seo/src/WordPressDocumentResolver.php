@@ -17,6 +17,11 @@ final class WordPressDocumentResolver
             return $this->forShop();
         }
 
+        if (is_tax('product_cat')) {
+            $term = get_queried_object();
+            return $term instanceof \WP_Term ? $this->forProductCategory($term) : null;
+        }
+
         if (is_front_page()) {
             return $this->forSite();
         }
@@ -43,7 +48,7 @@ final class WordPressDocumentResolver
         $description = $shopId > 0 ? $this->customValue($shopId, '_theobroma_seo_description') : '';
         $description = $this->description(
             $description,
-            'Каталог натурального пористого шоколада, какао и семян чиа Theobroma. Доставка заказов по России.'
+            'Каталог натурального пористого шоколада и какао Theobroma. Доставка заказов по России.'
         );
         $url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/catalog/');
         $image = $shopId > 0 ? $this->customValue($shopId, '_theobroma_seo_og_image') : '';
@@ -65,13 +70,30 @@ final class WordPressDocumentResolver
         );
     }
 
+    public function forProductCategory(\WP_Term $term): SeoDocument
+    {
+        $url = get_term_link($term);
+        $description = $this->description(
+            $term->description,
+            sprintf('%s — натуральный шоколад Theobroma. Выберите вкус и закажите с доставкой по России.', $term->name)
+        );
+        $thumbnailId = (int) get_term_meta($term->term_id, 'thumbnail_id', true);
+        $image = $thumbnailId > 0 ? wp_get_attachment_image_url($thumbnailId, 'full') : false;
+
+        return new SeoDocument(
+            title: $term->name,
+            description: $description,
+            canonicalUrl: is_string($url) ? $url : home_url('/catalog/'),
+            type: 'website',
+            siteName: $this->siteName(),
+            imageUrl: is_string($image) ? $image : $this->defaultImage()
+        );
+    }
+
     public function forProduct(\WC_Product $product): SeoDocument
     {
         $postId = $product->get_id();
-        $title = $this->customValue($postId, '_theobroma_seo_title');
-        if ($title === '') {
-            $title = $product->get_name();
-        }
+        $title = $this->productTitle($product);
 
         $description = $this->customValue($postId, '_theobroma_seo_description');
         if ($description === '') {
@@ -118,6 +140,21 @@ final class WordPressDocumentResolver
             imageUrl: $images[0] ?? $this->defaultImage(),
             schema: $schema
         );
+    }
+
+    public function productTitle(\WC_Product $product): string
+    {
+        $custom = $this->customValue($product->get_id(), '_theobroma_seo_title');
+        if ($custom !== '') {
+            return $custom;
+        }
+
+        $title = $product->get_name();
+        $qualifier = trim((string) preg_replace('/\s+/u', ' ', wp_strip_all_tags($product->get_short_description())));
+        if ($qualifier !== '' && mb_strlen($qualifier) <= 70 && mb_stripos($title, $qualifier) === false) {
+            return $title . ' — ' . $qualifier;
+        }
+        return $title;
     }
 
     public function forPost(\WP_Post $post): SeoDocument

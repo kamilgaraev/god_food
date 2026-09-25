@@ -39,6 +39,14 @@ $cacao_percentage = $is_catalog ? theobroma_requested_cacao_percentage() : null;
             <div class="catalog-cacao-filter" role="status"><span>Какао: <strong><?php echo esc_html((string) $cacao_percentage); ?>%</strong></span><a href="<?php echo esc_url($shop_url); ?>">Сбросить фильтр</a></div>
         <?php endif; ?>
     <?php endif; ?>
-    <?php woocommerce_content(); ?>
+    <?php
+    if ($is_catalog) {
+        add_filter('woocommerce_show_page_title', '__return_false');
+    }
+    woocommerce_content();
+    if ($is_catalog) {
+        remove_filter('woocommerce_show_page_title', '__return_false');
+    }
+    ?>
 </div></main>
 <?php get_footer();

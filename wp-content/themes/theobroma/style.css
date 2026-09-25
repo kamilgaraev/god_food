@@ -3545,3 +3545,14 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 @media (max-width:600px) {
   .reviews .review-controls { justify-content:center; }
 }
+
+.site-not-found { display:grid; place-items:center; min-height:clamp(32rem,70vh,48rem); padding:5rem var(--layout-gutter); text-align:center; background:var(--paper); }
+.site-not-found__inner { max-width:42rem; }
+.site-not-found__number { display:block; color:var(--gold); font:400 clamp(6rem,16vw,11rem)/.9 'Cormorant',Georgia,serif; }
+.site-not-found h1 { margin:1.5rem 0 1rem; font:400 clamp(2.5rem,6vw,4.5rem)/1.05 'Cormorant',Georgia,serif; }
+.site-not-found p { margin:0 auto; max-width:32rem; color:var(--muted); line-height:1.7; }
+.site-not-found__actions { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:1rem 2rem; margin-top:2rem; }
+.site-not-found__button { display:inline-flex; align-items:center; justify-content:center; min-height:3rem; padding:.75rem 2rem; border-radius:99px; color:#fff; background:var(--gold); }
+.site-not-found__button:hover { background:#987929; }
+.site-not-found__link { color:var(--gold); text-decoration:underline; text-underline-offset:.25rem; }
+.site-not-found__button:focus-visible, .site-not-found__link:focus-visible { outline:2px solid #826323; outline-offset:3px; }
