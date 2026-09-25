@@ -43,5 +43,3 @@ const url = process.env.THEOBROMA_URL || 'https://theobroma.one/';
     }
   } finally { await browser.close(); }
 })().catch(error=>{console.error(error);process.exit(1)});
-
-
