@@ -963,3 +963,28 @@ body .home-eyebrow { font-size: clamp(32px, 5vw, 80px); }
 @media (min-width: 1200px) and (max-width: 1439px) {
   body .home-hero__video-trigger { width: 100%; aspect-ratio: auto; min-height: 0; }
 }
+
+/* Keep the hero as tall as its content, with the video filling the same row. */
+@media (min-width: 601px) {
+  body .home-hero, body .home-hero__shell { min-height: 0; }
+  body .home-hero__shell { padding-top: clamp(64px, 5vw, 96px); }
+  body .home-hero__copy { justify-content: flex-start; padding-top: 0; }
+  body .home-hero__video-trigger {
+    width: 100%; height: auto; min-height: 0; aspect-ratio: auto; align-self: stretch;
+  }
+  body .home-hero__video-trigger video {
+    height: calc(111.111% + 2.5rem);
+    width: auto;
+  }
+}
+
+.home-hero__mobile-art { display: none; }
+
+@media (max-width: 600px) {
+  .home-hero__mobile-art {
+    display: block;
+    width: min(62vw, 15rem);
+    height: auto;
+    margin: .5rem auto -.25rem;
+  }
+}
