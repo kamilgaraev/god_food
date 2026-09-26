@@ -214,9 +214,9 @@ body .commerce-wishlist:not(.commerce-wishlist--empty) .commerce-wishlist-produc
   min-height:8.625rem;
 }
 
-/* Header captions are only shown on phone layouts. */
+/* Captions stay visible on phone and compact tablet layouts. */
 .site-header .floating-actions .header-action-label { display:none; }
-@media(max-width:600px) {
+@media(max-width:900px) {
   .site-header .floating-actions .header-action-label { display:block; }
 }
 /* Field decoration is a real border, independent of focus-ring suppression. */

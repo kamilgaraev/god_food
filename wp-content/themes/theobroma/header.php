@@ -43,7 +43,7 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
             </a>
             <a class="header-icon header-account header-with-label" href="<?php echo esc_url($account_url); ?>"<?php echo !is_user_logged_in() ? ' data-account-trigger' : ''; ?> aria-label="Личный кабинет">
                 <span class="header-action-label">Личный кабинет</span>
-                <span class="header-action-icon"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/user.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""></span>
+                <span class="header-action-icon"><img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/user.webp'); ?>" decoding="async" alt=""></span>
             </a>
         </div>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Открыть меню"><span></span><span></span><span></span></button>
