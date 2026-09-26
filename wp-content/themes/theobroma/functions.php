@@ -269,10 +269,14 @@ add_action('wp_enqueue_scripts', 'theobroma_defer_home_dependency_scripts', 100)
 function theobroma_defer_home_hidden_styles(string $tag, string $handle): string {
     if (!is_front_page() || !in_array($handle, array(
         'wc-blocks-style', 'theobroma-photo-showcases', 'woocommerce-layout',
-        'woocommerce-general', 'theobroma-leaflet', 'theobroma-commerce-delivery',
+        'woocommerce-general', 'woocommerce-smallscreen', 'theobroma-leaflet', 'theobroma-commerce-delivery',
         'theobroma-checkout-steps',
     ), true)) {
         return $tag;
+    }
+
+    if ($handle === 'woocommerce-smallscreen') {
+        return str_replace(" media='only screen and (max-width: 768px)'", " media='print' onload=\"this.media='only screen and (max-width: 768px)'\"", $tag);
     }
 
     return str_replace(" media='all'", " media='print' onload=\"this.media='all'\"", $tag);
