@@ -23,6 +23,9 @@
 .theobroma-monitor .tm-pill--bad { background: #f8e4df; color: #9e483a; }
 .theobroma-monitor .tm-alerts { margin: 0; padding-left: 18px; color: #924f3c; }
 .theobroma-monitor .tm-subtle { color: #81786e; font-size: 13px; line-height: 1.6; }
+.theobroma-monitor .tm-log-state { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid #eee5d9; color: #81786e; font-size: 13px; }
+.theobroma-monitor .tm-log-state strong { color: #4e6041; font-weight: 600; }
+.theobroma-monitor .tm-log-state--bad strong { color: #a04f3f; }
 .theobroma-monitor label { display: block; margin-bottom: 8px; font-weight: 600; }
 .theobroma-monitor .tm-form-row { display: flex; gap: 10px; }
 .theobroma-monitor .tm-form-row input { width: 100%; min-width: 0; max-width: 460px; }

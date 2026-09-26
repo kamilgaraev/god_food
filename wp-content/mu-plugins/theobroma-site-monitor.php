@@ -109,6 +109,7 @@ function theobroma_monitor_render_page(): void {
                 <?php else : ?>
                     <p class="tm-subtle">Новых срабатываний нет. При проблеме монитор отправит письмо на указанный адрес.</p>
                 <?php endif; ?>
+                <p class="tm-log-state <?php echo ($last['logs'] ?? '') === 'ok' ? '' : 'tm-log-state--bad'; ?>">Сбор журналов: <strong><?php echo ($last['logs'] ?? '') === 'ok' ? 'работает' : 'нет свежих данных или ошибка'; ?></strong></p>
             </section>
             <section class="tm-panel">
                 <h2>Почта для алертов</h2>
@@ -126,7 +127,7 @@ function theobroma_monitor_render_page(): void {
                     <?php wp_nonce_field('theobroma_monitor_test_email'); ?>
                     <button class="button" type="submit">Отправить тестовое письмо</button>
                 </form>
-                <p class="tm-subtle">После сохранения новый адрес применяется при следующей проверке, обычно в течение двух минут.</p>
+                <p class="tm-subtle">Сначала сохраните новый адрес, затем отправьте тестовое письмо. Монитор подхватит адрес при следующей проверке, обычно в течение двух минут.</p>
             </section>
         </div>
 
