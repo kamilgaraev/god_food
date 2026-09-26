@@ -4,7 +4,11 @@ const { chromium } = require('playwright');
 const { PNG } = require('pngjs');
 const url = process.env.THEOBROMA_URL || 'https://theobroma.one/';
 (async () => {
-  const browser = await chromium.launch({ channel: 'chrome' });
+  const launchOptions = process.env.CHROME_PATH
+    ? { executablePath: process.env.CHROME_PATH }
+    : { channel: 'chrome' };
+  if (process.env.HTTPS_PROXY) launchOptions.proxy = { server: process.env.HTTPS_PROXY };
+  const browser = await chromium.launch(launchOptions);
   try {
     for (const width of (process.env.HERO_WIDTHS || "320,390,600,601,768,900,1024,1199,1200,1280,1366,1440,1600,1920,2560").split(",").map(Number)) {
       const page = await browser.newPage({viewport:{width,height:1100}});
@@ -21,7 +25,8 @@ const url = process.env.THEOBROMA_URL || 'https://theobroma.one/';
         img.setAttribute('aria-hidden', 'true');
         document.querySelector('.home-eyebrow').after(img);
       });
-      await page.locator('.home-hero__mobile-art').evaluate(img => img.decode());
+      await page.locator('.home-hero__mobile-art').evaluate(element =>
+        (element.tagName === 'IMG' ? element : element.querySelector('img')).decode());
       if (process.env.HERO_PATCH) await page.evaluate(css => {
         const style = document.createElement('style');
         style.textContent = css;

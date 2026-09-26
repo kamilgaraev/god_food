@@ -93,18 +93,29 @@ def run(config, state_path):
     except Exception as exc:
         health_error = str(exc)[:200]
 
-    nginx_lines = read_new_access_log(Path(config['nginx_access_log']), state)
+    log_error = ''
+    try:
+        nginx_lines = read_new_access_log(Path(config['nginx_access_log']), state)
+    except Exception as exc:
+        nginx_lines = []
+        log_error = f'nginx: {exc}'
     previous = state.get('last_docker_time', now)
-    result = subprocess.run(
-        ['docker', 'logs', '--since', previous, '--timestamps', '--tail', '2000', config['container']],
-        capture_output=True, text=True, timeout=25, check=True,
-    )
-    state['last_docker_time'] = now
-    php_count, js_count = count_runtime_errors(result.stdout + result.stderr)
+    try:
+        result = subprocess.run(
+            ['docker', 'logs', '--since', previous, '--timestamps', '--tail', '2000', config['container']],
+            capture_output=True, text=True, timeout=25, check=True,
+        )
+        state['last_docker_time'] = now
+        php_count, js_count = count_runtime_errors(result.stdout + result.stderr)
+    except Exception as exc:
+        php_count = js_count = 0
+        log_error = f'{log_error}; docker: {exc}' if log_error else f'docker: {exc}'
     http_count = count_5xx(nginx_lines)
 
     update_alert(state, 'Доступность сайта', bool(health_error), 2,
                  f'{config["url"]}: {health_error or "HTTP 200"}', config)
+    update_alert(state, 'Сбор логов', bool(log_error), 1,
+                 (log_error or 'nginx и Docker доступны')[:200], config)
     update_alert(state, 'Ошибки HTTP 5xx', http_count >= 3, 1,
                  f'За последние 2 минуты: {http_count} новых ответов 5xx.', config)
     update_alert(state, 'Критические ошибки PHP', php_count >= 1, 1,
