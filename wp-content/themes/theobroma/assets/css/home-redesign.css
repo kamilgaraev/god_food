@@ -680,7 +680,7 @@ ul.products.home-product-grid > li.product.home-product-card > .home-product-car
 }
 
 /* Original hero artwork and aligned headline/pyramid composition. */
-.home-hero { background: linear-gradient(rgba(251,247,245,.7), rgba(251,247,245,.7)), url('../images/hero-original-stripes.jpg') center / cover; }
+.home-hero { background: linear-gradient(rgba(251,247,245,.7), rgba(251,247,245,.7)), url('../images/hero-original-stripes.webp') center / cover; }
 .home-hero__video-trigger { background: transparent; isolation: auto; mix-blend-mode: multiply; }
 .home-hero__video-trigger video { filter: brightness(1.03) grayscale(.18) saturate(.72); }
 .home-hero__video-trigger[data-state="settled"] .home-hero__play-hint { opacity: 0; }
