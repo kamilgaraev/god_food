@@ -256,6 +256,16 @@ function theobroma_preload_critical_fonts(): void {
 }
 add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
 
+function theobroma_preload_home_hero(): void {
+    if (!is_front_page()) {
+        return;
+    }
+    $images = get_template_directory_uri() . '/assets/images/';
+    printf('<link rel="preload" href="%s" as="image" fetchpriority="high">' . "\n", esc_url($images . 'hero-original-stripes.jpg'));
+    printf('<link rel="preload" href="%s" as="image" type="image/webp" media="(max-width: 600px)" fetchpriority="high">' . "\n", esc_url($images . 'hero-chocolate-mobile.webp'));
+}
+add_action('wp_head', 'theobroma_preload_home_hero', 10);
+
 add_filter('show_admin_bar', '__return_false');
 
 /** @return WP_Post[] */

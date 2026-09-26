@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Theobroma every two minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+Persistent=true
+Unit=theobroma-monitor.service
+
+[Install]
+WantedBy=timers.target

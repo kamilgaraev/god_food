@@ -985,6 +985,7 @@ body .home-eyebrow { font-size: clamp(32px, 5vw, 80px); }
 }
 
 .home-hero__mobile-art { display: none; }
+.home-hero__mobile-art img { display: block; width: 100%; height: auto; }
 
 @media (max-width: 600px) {
   .home-hero__mobile-art {
