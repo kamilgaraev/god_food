@@ -1,0 +1,58 @@
+.theobroma-monitor { max-width: 1460px; color: #39342f; }
+.theobroma-monitor .tm-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin: 28px 0; }
+.theobroma-monitor .tm-heading h1 { margin: 4px 0 10px; font: 400 clamp(32px, 3vw, 44px)/1.1 Georgia, serif; color: #25211e; }
+.theobroma-monitor .tm-heading p:last-child { margin: 0; color: #777068; font-size: 14px; }
+.theobroma-monitor .tm-kicker { margin: 0; color: #ab8c3e; font-size: 12px; }
+.theobroma-monitor .tm-refresh { white-space: nowrap; }
+.theobroma-monitor .tm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.theobroma-monitor .tm-card, .theobroma-monitor .tm-panel { background: #fffaf5; border: 1px solid #e6ddd0; border-radius: 12px; box-shadow: 0 2px 12px rgba(48, 36, 22, .04); }
+.theobroma-monitor .tm-card { min-height: 112px; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; }
+.theobroma-monitor .tm-label { color: #81786e; font-size: 13px; }
+.theobroma-monitor .tm-card strong { color: #342b21; font: 400 32px/1.05 Georgia, serif; }
+.theobroma-monitor .tm-card small { color: #91867a; font-size: 12px; }
+.theobroma-monitor .tm-status--good { border-color: #a9b797; }
+.theobroma-monitor .tm-status--bad { border-color: #c88475; }
+.theobroma-monitor .tm-status--muted { border-color: #d6cfc6; }
+.theobroma-monitor .tm-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.theobroma-monitor .tm-columns--logs { align-items: start; }
+.theobroma-monitor .tm-panel { padding: 24px; min-width: 0; }
+.theobroma-monitor .tm-panel h2 { margin: 0 0 20px; color: #342b21; font: 400 24px/1.2 Georgia, serif; }
+.theobroma-monitor .tm-panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.theobroma-monitor .tm-pill { display: inline-block; padding: 6px 10px; border-radius: 99px; font-size: 12px; white-space: nowrap; }
+.theobroma-monitor .tm-pill--good { background: #eaf0e3; color: #536747; }
+.theobroma-monitor .tm-pill--bad { background: #f8e4df; color: #9e483a; }
+.theobroma-monitor .tm-alerts { margin: 0; padding-left: 18px; color: #924f3c; }
+.theobroma-monitor .tm-subtle { color: #81786e; font-size: 13px; line-height: 1.6; }
+.theobroma-monitor label { display: block; margin-bottom: 8px; font-weight: 600; }
+.theobroma-monitor .tm-form-row { display: flex; gap: 10px; }
+.theobroma-monitor .tm-form-row input { width: 100%; min-width: 0; max-width: 460px; }
+.theobroma-monitor .tm-form-row .button { flex: 0 0 auto; }
+.theobroma-monitor .tm-test-form { margin-top: 12px; }
+.theobroma-monitor .button-primary { background: #ac8e3e; border-color: #ac8e3e; }
+.theobroma-monitor .button-primary:hover, .theobroma-monitor .button-primary:focus { background: #94782f; border-color: #94782f; }
+.theobroma-monitor .tm-table-scroll { overflow-x: auto; }
+.theobroma-monitor .tm-table { border: 0; background: transparent; box-shadow: none; }
+.theobroma-monitor .tm-table th { color: #807469; font-weight: 500; }
+.theobroma-monitor .tm-table th, .theobroma-monitor .tm-table td { padding: 11px 9px; white-space: nowrap; }
+.theobroma-monitor .tm-table td:first-child, .theobroma-monitor .tm-table th:first-child { padding-left: 0; }
+.theobroma-monitor .tm-table tr:last-child td { border-bottom: 0; }
+.theobroma-monitor .tm-dot { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; background: #d2b071; }
+.theobroma-monitor .tm-dot--good { background: #829d6f; }
+.theobroma-monitor .tm-dot--bad { background: #c17d64; }
+.theobroma-monitor .tm-event-list { margin: 0; }
+.theobroma-monitor .tm-event-list li { display: flex; align-items: start; padding: 12px 0; border-top: 1px solid #eee5d9; }
+.theobroma-monitor .tm-event-list li:first-child { border-top: 0; padding-top: 0; }
+.theobroma-monitor .tm-event-list .tm-dot { margin-top: 6px; flex: 0 0 8px; }
+.theobroma-monitor .tm-event-list strong { font-weight: 600; }
+.theobroma-monitor .tm-event-list p { margin: 4px 0; color: #746b62; }
+.theobroma-monitor .tm-event-list small { color: #a0968b; }
+@media (max-width: 1100px) { .theobroma-monitor .tm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 800px) { .theobroma-monitor .tm-columns { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .theobroma-monitor .tm-heading { align-items: start; flex-direction: column; }
+  .theobroma-monitor .tm-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .theobroma-monitor .tm-card, .theobroma-monitor .tm-panel { padding: 16px; }
+  .theobroma-monitor .tm-card strong { font-size: 25px; }
+  .theobroma-monitor .tm-form-row { flex-direction: column; }
+  .theobroma-monitor .tm-form-row input { max-width: none; }
+}

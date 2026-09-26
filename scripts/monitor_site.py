@@ -71,6 +71,17 @@ def send_mail(config, subject, body):
         smtp.send_message(message)
 
 
+def record_event(state, level, title, detail):
+    events = state.setdefault('events', [])
+    events.append({
+        'at': datetime.now(timezone.utc).isoformat(),
+        'level': level,
+        'title': title,
+        'detail': detail[:200],
+    })
+    state['events'] = events[-40:]
+
+
 def update_alert(state, key, problem, threshold, detail, config):
     failures = state.setdefault('failures', {})
     active = state.setdefault('active', {})
@@ -78,11 +89,45 @@ def update_alert(state, key, problem, threshold, detail, config):
     if problem and failures[key] >= threshold and not active.get(key):
         send_mail(config, f'[Theobroma] Проблема: {key}', detail)
         active[key] = True
+        record_event(state, 'error', key, detail)
         print(f'ALERT {key}: {detail}')
     elif not problem and active.get(key):
         send_mail(config, f'[Theobroma] Восстановлено: {key}', f'Проверка «{key}» снова в норме.\n{detail}')
         active[key] = False
+        record_event(state, 'success', key, 'Показатель вернулся в норму.')
         print(f'RECOVERED {key}')
+
+
+def configured_recipient(config, state):
+    code = 'require "wp-load.php"; echo (string) get_option("theobroma_monitor_alert_email", "");'
+    try:
+        result = subprocess.run(
+            ['docker', 'exec', '-w', '/var/www/html', config['container'], 'php', '-r', code],
+            capture_output=True, text=True, timeout=15, check=True,
+        )
+        email = result.stdout.strip()
+        if email and re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email):
+            state['recipient'] = email
+    except Exception as exc:
+        print(f'Cannot refresh alert recipient: {exc}', file=sys.stderr)
+    return state.get('recipient') or config['to']
+
+
+def publish_dashboard(config, state):
+    payload = {
+        'last_check': state['last_check'],
+        'checks': state.get('checks', [])[-24:],
+        'events': state.get('events', [])[-30:],
+        'active': [key for key, value in state.get('active', {}).items() if value],
+    }
+    code = ('require "wp-load.php"; '
+            '$data = json_decode(stream_get_contents(STDIN), true); '
+            'if (is_array($data)) update_option("theobroma_monitor_snapshot", $data, false);')
+    subprocess.run(
+        ['docker', 'exec', '-i', '-w', '/var/www/html', config['container'], 'php', '-r', code],
+        input=json.dumps(payload, ensure_ascii=False), capture_output=True,
+        text=True, timeout=20, check=True,
+    )
 
 
 def run(config, state_path):
@@ -112,6 +157,14 @@ def run(config, state_path):
         php_count = js_count = 0
         log_error = f'{log_error}; docker: {exc}' if log_error else f'docker: {exc}'
     http_count = count_5xx(nginx_lines)
+    config = {**config, 'to': configured_recipient(config, state)}
+
+    if http_count:
+        record_event(state, 'warning', 'Ответы HTTP 5xx', f'Новых ответов: {http_count}.')
+    if php_count:
+        record_event(state, 'error', 'Ошибки PHP', f'Новых критических ошибок: {php_count}.')
+    if js_count:
+        record_event(state, 'warning', 'Ошибки JavaScript', f'Новых ошибок: {js_count}.')
 
     update_alert(state, 'Доступность сайта', bool(health_error), 2,
                  f'{config["url"]}: {health_error or "HTTP 200"}', config)
@@ -124,10 +177,26 @@ def run(config, state_path):
     update_alert(state, 'Ошибки JavaScript', js_count >= 3, 1,
                  f'За последние 2 минуты: {js_count} новых ошибок JavaScript.', config)
 
+    check = {
+        'at': now,
+        'site': 'down' if health_error else 'up',
+        'http_5xx': http_count,
+        'php': php_count,
+        'js': js_count,
+        'logs': 'error' if log_error else 'ok',
+    }
+    state['last_check'] = check
+    state['checks'] = (state.get('checks', []) + [check])[-24:]
     state_path.parent.mkdir(parents=True, exist_ok=True)
     temp = state_path.with_suffix('.tmp')
-    temp.write_text(json.dumps(state, ensure_ascii=False), encoding='utf-8')
+    fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+        json.dump(state, stream, ensure_ascii=False)
     os.replace(temp, state_path)
+    try:
+        publish_dashboard(config, state)
+    except Exception as exc:
+        print(f'Cannot publish admin dashboard: {exc}', file=sys.stderr)
     print(f'OK: homepage={"error" if health_error else "200"}, 5xx={http_count}, php={php_count}, js={js_count}')
 
 
@@ -139,6 +208,8 @@ def main():
     args = parser.parse_args()
     config = json.loads(args.config.read_text('utf-8'))
     if args.self_test:
+        saved_state = json.loads(args.state.read_text('utf-8')) if args.state.exists() else {}
+        config = {**config, 'to': configured_recipient(config, saved_state)}
         send_mail(config, '[Theobroma] Проверка оповещений',
                   'Автоматический мониторинг сайта установлен. Это тестовое письмо.')
         print('Test alert sent')

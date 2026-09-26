@@ -3,7 +3,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from monitor_site import count_5xx, count_runtime_errors, read_new_access_log, update_alert
+from monitor_site import (configured_recipient, count_5xx, count_runtime_errors,
+                          publish_dashboard, read_new_access_log, record_event, update_alert)
 
 
 class MonitorTests(unittest.TestCase):
@@ -45,6 +46,36 @@ class MonitorTests(unittest.TestCase):
             self.assertEqual(sender.call_count, 2)
         finally:
             monitor_site.send_mail = original
+
+    def test_recipient_is_refreshed_and_cached(self):
+        import monitor_site
+        original = monitor_site.subprocess.run
+        monitor_site.subprocess.run = Mock(return_value=Mock(stdout='alerts@example.org\n'))
+        try:
+            state = {}
+            self.assertEqual(configured_recipient({'container': 'wordpress', 'to': 'admin@example.org'}, state),
+                             'alerts@example.org')
+            self.assertEqual(state['recipient'], 'alerts@example.org')
+        finally:
+            monitor_site.subprocess.run = original
+
+    def test_dashboard_contains_safe_summaries_not_recipient(self):
+        import json
+        import monitor_site
+        original = monitor_site.subprocess.run
+        runner = Mock()
+        monitor_site.subprocess.run = runner
+        try:
+            state = {'recipient': 'private@example.org', 'last_check': {'site': 'up'},
+                     'checks': [{'site': 'up'}], 'events': []}
+            publish_dashboard({'container': 'wordpress'}, state)
+            payload = json.loads(runner.call_args.kwargs['input'])
+            self.assertEqual(payload['last_check']['site'], 'up')
+            self.assertNotIn('recipient', payload)
+            record_event(state, 'warning', 'PHP', 'one error')
+            self.assertEqual(state['events'][-1]['title'], 'PHP')
+        finally:
+            monitor_site.subprocess.run = original
 
 
 if __name__ == '__main__':
