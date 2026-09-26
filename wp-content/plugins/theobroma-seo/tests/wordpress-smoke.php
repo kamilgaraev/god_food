@@ -41,12 +41,25 @@ if ($productDocument->description === '' || $productDocument->imageUrl === '') {
     exit(1);
 }
 
+$publishedProducts = wc_get_products(['status' => 'publish', 'limit' => -1]);
 $titles = array_map(
     static fn (\WC_Product $product): string => $resolver->productTitle($product),
-    wc_get_products(['status' => 'publish', 'limit' => -1])
+    $publishedProducts
 );
 if (count($titles) !== count(array_unique($titles))) {
     fwrite(STDERR, "FAIL product SEO titles are not unique\n");
+    exit(1);
+}
+
+$descriptions = array_map(
+    static fn (\WC_Product $product): string => $resolver->forProduct($product)->description,
+    $publishedProducts
+);
+foreach (get_posts(['post_type' => 'theobroma_recipe', 'post_status' => 'publish', 'numberposts' => -1]) as $recipe) {
+    $descriptions[] = $resolver->forPost($recipe)->description;
+}
+if (count($descriptions) !== count(array_unique($descriptions))) {
+    fwrite(STDERR, "FAIL product or recipe SEO descriptions are not unique\n");
     exit(1);
 }
 

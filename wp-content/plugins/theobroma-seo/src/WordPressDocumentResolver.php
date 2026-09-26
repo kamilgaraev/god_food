@@ -97,7 +97,10 @@ final class WordPressDocumentResolver
 
         $description = $this->customValue($postId, '_theobroma_seo_description');
         if ($description === '') {
-            $description = $product->get_short_description() ?: $product->get_description();
+            $details = $this->description($product->get_short_description() ?: $product->get_description(), '');
+            $description = $details !== '' && mb_stripos($title, $details) === false
+                ? $title . '. ' . $details
+                : $title . '. Доставка по России в интернет-магазине «Пища Богов».';
         }
         $description = $this->description($description, sprintf('Купить %s в интернет-магазине «Пища Богов».', $title));
 
@@ -166,6 +169,9 @@ final class WordPressDocumentResolver
         $description = $this->customValue($post->ID, '_theobroma_seo_description');
         if ($description === '') {
             $description = $post->post_excerpt ?: $post->post_content;
+            if ($post->post_type === 'theobroma_recipe') {
+                $description = $title . '. ' . $description;
+            }
         }
         $description = $this->description(
             $description,
