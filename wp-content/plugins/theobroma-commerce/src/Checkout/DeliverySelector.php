@@ -139,8 +139,9 @@ final class DeliverySelector
 
         $osm = ($settings['map_provider'] ?? 'yandex') === 'osm';
         if ($osm) {
-            wp_enqueue_style('theobroma-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4');
-            wp_enqueue_script('theobroma-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true);
+            $leafletUrl = THEOBROMA_COMMERCE_URL . 'assets/vendor/leaflet-1.9.4/';
+            wp_enqueue_style('theobroma-leaflet', $leafletUrl . 'leaflet.css', [], '1.9.4');
+            wp_enqueue_script('theobroma-leaflet', $leafletUrl . 'leaflet.js', [], '1.9.4', true);
         }
         wp_enqueue_style('theobroma-commerce-delivery', THEOBROMA_COMMERCE_URL . 'assets/css/checkout-delivery.css', [], '0.4.16');
         wp_enqueue_script('theobroma-delivery-core', THEOBROMA_COMMERCE_URL . 'assets/js/delivery-selector-core.js', [], '0.2.2', true);

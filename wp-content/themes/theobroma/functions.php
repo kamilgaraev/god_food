@@ -86,6 +86,33 @@ function theobroma_redirect_legacy_wordpress_routes(): void {
 }
 add_action('template_redirect', 'theobroma_redirect_legacy_wordpress_routes');
 
+function theobroma_home_critical_css(): string {
+    static $css = null;
+    if ($css !== null) {
+        return $css;
+    }
+    $css = '';
+    $theme_dir = get_stylesheet_directory();
+    $path = $theme_dir . '/assets/css/home-critical.css';
+    if (!is_readable($path)) {
+        return $css;
+    }
+    $source = file_get_contents($path);
+    if (!is_string($source) || !preg_match('/source-sha256 style\.css=([a-f0-9]{64}) home-redesign\.css=([a-f0-9]{64})/', $source, $hashes)) {
+        return $css;
+    }
+    $style = file_get_contents($theme_dir . '/style.css');
+    $home = file_get_contents($theme_dir . '/assets/css/home-redesign.css');
+    if (!is_string($style) || !is_string($home)
+        || hash('sha256', str_replace("\r\n", "\n", $style)) !== $hashes[1]
+        || hash('sha256', str_replace("\r\n", "\n", $home)) !== $hashes[2]) {
+        return $css;
+    }
+
+    $css = str_replace('__THEME_URI__', esc_url_raw(get_template_directory_uri()), $source);
+    return $css;
+}
+
 function theobroma_assets(): void {
     $theme_dir = get_stylesheet_directory();
     wp_enqueue_style('theobroma-style', get_stylesheet_uri(), array(), (string) filemtime($theme_dir . '/style.css'));
@@ -95,6 +122,9 @@ function theobroma_assets(): void {
         array('theobroma-style'),
         (string) filemtime($theme_dir . '/assets/css/home-redesign.css')
     );
+    if (is_front_page() && theobroma_home_critical_css() !== '') {
+        wp_add_inline_style('theobroma-home-redesign', theobroma_home_critical_css());
+    }
     wp_enqueue_style(
         'theobroma-hero-alignment',
         get_template_directory_uri() . '/assets/css/hero-alignment.css',
@@ -231,6 +261,10 @@ function theobroma_defer_home_dependency_scripts(): void {
 add_action('wp_enqueue_scripts', 'theobroma_defer_home_dependency_scripts', 100);
 
 function theobroma_defer_home_hidden_styles(string $tag, string $handle): string {
+    if (is_front_page() && in_array($handle, array('theobroma-style', 'theobroma-home-redesign'), true)
+        && theobroma_home_critical_css() !== '') {
+        return str_replace(" media='all'", " media='print' onload=\"this.media='all'\"", $tag);
+    }
     if (!is_front_page() || !in_array($handle, array(
         'wc-blocks-style', 'theobroma-photo-showcases', 'woocommerce-layout',
         'woocommerce-general', 'theobroma-leaflet', 'theobroma-commerce-delivery',
@@ -270,7 +304,7 @@ function theobroma_preload_critical_fonts(): void {
         );
     }
 }
-add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
+add_action('wp_head', 'theobroma_preload_critical_fonts', 2);
 
 function theobroma_preload_home_hero(): void {
     if (!is_front_page()) {
@@ -280,7 +314,7 @@ function theobroma_preload_home_hero(): void {
     printf('<link rel="preload" href="%s" as="image" fetchpriority="high">' . "\n", esc_url($images . 'hero-original-stripes.jpg'));
     printf('<link rel="preload" href="%s" as="image" type="image/webp" media="(max-width: 600px)" fetchpriority="high">' . "\n", esc_url($images . 'hero-chocolate-mobile.webp'));
 }
-add_action('wp_head', 'theobroma_preload_home_hero', 10);
+add_action('wp_head', 'theobroma_preload_home_hero', 3);
 
 add_filter('show_admin_bar', '__return_false');
 
