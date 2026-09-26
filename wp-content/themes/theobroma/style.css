@@ -184,7 +184,7 @@ h2 { margin:0; font-size:clamp(1.9375rem,4vw,3.375rem); line-height:.94; font-we
 .footer-mail:nth-of-type(7) { left:25rem; top:30.625rem; }
 .footer-mail:nth-of-type(8) { left:50rem; top:30.625rem; }
 .footer-map { display:grid; grid-template-columns:6.5625rem 1fr; gap:0.375rem 2.25rem; align-items:start; }
-.footer-map h3 { grid-column:1/-1; margin:0 0 0.5625rem; color:#000; font:400 1.625rem/1.9375rem 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
+.footer-map h2 { grid-column:1/-1; margin:0 0 0.5625rem; color:#000; font:400 1.625rem/1.9375rem 'Cormorant',Arial,sans-serif; text-transform:uppercase; }
 .footer-map ul { margin:0; padding:0; list-style:none; color:#343434; font:0.875rem/1.125rem 'Montserrat',Arial,sans-serif; }.footer-map li + li { margin-top:0.625rem; }
 .footer-logo { text-align:center; }.footer-logo img { width:9.875rem; height:4rem; object-fit:contain; margin:auto; }
 .footer-phones { height:9.1875rem; border-radius:1.25rem; background:#f3ebe4; text-align:center; }.footer-phones img { position:absolute; height:1.5625rem; }.footer-phones img:first-child { top:2.375rem; left:3.5rem; width:14.5rem; }.footer-phones img:last-child { top:5.1875rem; left:3.4375rem; width:14.625rem; }.footer-phones a { position:absolute; left:0; width:100%; color:#000; font:400 2rem/2rem 'Cormorant',Arial,sans-serif; }.footer-phones a:first-child { top:2.125rem; }.footer-phones a:last-child { top:4.9375rem; }
