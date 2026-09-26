@@ -221,11 +221,27 @@ function theobroma_defer_home_dependency_scripts(): void {
         return;
     }
 
-    foreach (array('jquery-core', 'jquery-migrate', 'sourcebuster-js', 'wc-order-attribution') as $handle) {
+    foreach (array(
+        'jquery-core', 'jquery-migrate', 'sourcebuster-js', 'wc-order-attribution',
+        'theobroma-leaflet', 'theobroma-delivery-core', 'theobroma-commerce-checkout',
+    ) as $handle) {
         wp_script_add_data($handle, 'strategy', 'defer');
     }
 }
 add_action('wp_enqueue_scripts', 'theobroma_defer_home_dependency_scripts', 100);
+
+function theobroma_defer_home_hidden_styles(string $tag, string $handle): string {
+    if (!is_front_page() || !in_array($handle, array(
+        'wc-blocks-style', 'theobroma-photo-showcases', 'woocommerce-layout',
+        'woocommerce-general', 'theobroma-leaflet', 'theobroma-commerce-delivery',
+        'theobroma-checkout-steps',
+    ), true)) {
+        return $tag;
+    }
+
+    return str_replace(" media='all'", " media='print' onload=\"this.media='all'\"", $tag);
+}
+add_filter('style_loader_tag', 'theobroma_defer_home_hidden_styles', 10, 2);
 
 function theobroma_noncritical_script_priority(string $tag, string $handle): string {
     $noncritical = array(
