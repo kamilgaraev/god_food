@@ -54,7 +54,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
                 </div>
             </div>
             <button class="home-hero__video-trigger" type="button" aria-label="Воспроизвести анимацию шоколада" aria-busy="false" data-state="idle">
-                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.jpg'); ?>">
+                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>">
                     <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.mp4'); ?>" type="video/mp4">
                 </video>
                 <span class="home-hero__play-hint" aria-hidden="true"><i></i>Нажмите, чтобы оживить</span>
