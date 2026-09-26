@@ -4,7 +4,8 @@ cd /opt/god-food-prod
 umask 077
 config_tmp=$(mktemp)
 trap 'rm -f "$config_tmp"' EXIT
-docker exec theobroma-prod-wordpress-1 wp --allow-root eval '
+docker exec -w /var/www/html theobroma-prod-wordpress-1 php -r '
+  require "wp-load.php";
   $s = (array) get_option("theobroma_commerce_settings", []);
   echo wp_json_encode([
     "url" => home_url("/"),
