@@ -54,8 +54,9 @@ final class OzonOrderPrices
                 $item['price'] = self::money($lines[$sku]['total'] / $lines[$sku]['quantity'], $order->get_currency());
             }
             unset($item);
-            if (count($splits) === 1) {
-                $split['delivery_method']['price'] = self::money((float) $order->get_shipping_total() + (float) $order->get_shipping_tax(), $order->get_currency());
+            $customerShipping = (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
+            if ($customerShipping <= 0.0 || count($splits) === 1) {
+                $split['delivery_method']['price'] = self::money(max(0.0, $customerShipping), $order->get_currency());
             } else {
                 $price = $split['delivery_method']['price'] ?? [];
                 if (isset($price['amount'], $price['currency']) && is_numeric($price['amount'])) {

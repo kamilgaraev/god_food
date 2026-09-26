@@ -18,6 +18,7 @@ use Theobroma\Commerce\Integrations\Cdek\WordPressTokenStore as CdekTokenStore;
 use Theobroma\Commerce\Integrations\Ozon\OzonClientFactory;
 use Theobroma\Commerce\Integrations\Ozon\WordPressTokenStore as OzonTokenStore;
 use Theobroma\Commerce\Shipping\CdekPackageBuilder;
+use Theobroma\Commerce\Shipping\FreeShippingPolicy;
 
 final class DeliveryCheckoutController
 {
@@ -223,11 +224,15 @@ final class DeliveryCheckoutController
             ]);
             (new DeliverySelectionStore())->save($selection);
             (new ShippingRateCache())->invalidate();
+            $cartAmount = FreeShippingPolicy::cartAmount();
             return rest_ensure_response([
                 'provider' => $provider,
                 'kind' => $kind,
                 'point' => $point,
-                'quote' => ['cost' => $quote->cost(), 'label' => $quote->label()],
+                'quote' => [
+                    'cost' => FreeShippingPolicy::customerCost($quote->cost(), $cartAmount),
+                    'label' => FreeShippingPolicy::customerLabel($quote->label(), $cartAmount),
+                ],
             ]);
         } catch (\Throwable $exception) {
             $failure = DeliveryProviderFailure::forQuote(
