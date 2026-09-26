@@ -6,6 +6,7 @@ import json
 import os
 import re
 import smtplib
+import ssl
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -65,7 +66,7 @@ def send_mail(config, subject, body):
     message['Subject'] = subject
     message.set_content(body)
     with smtplib.SMTP(config['host'], int(config['port']), timeout=20) as smtp:
-        smtp.starttls()
+        smtp.starttls(context=ssl.create_default_context())
         smtp.login(config['username'], config['password'])
         smtp.send_message(message)
 
