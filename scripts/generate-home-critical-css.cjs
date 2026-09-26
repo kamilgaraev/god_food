@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
 const theme = path.join(__dirname, '..', 'wp-content', 'themes', 'theobroma');
 const files = ['style.css', 'assets/css/home-redesign.css'];
 const coverage = new Map(files.map((file) => [file, { text: '', ranges: new Map() }]));
-const widths = [320, 390, 600, 601, 768, 900, 1199, 1200, 1440, 1920];
+const widths = (process.env.CRITICAL_WIDTHS || '320,390,600,601,768,900,1199,1200,1440,1920').split(',').map(Number);
 
 function enclosingAtRules(text, ranges) {
   const offsets = [...new Set(ranges.map((range) => range.start))].sort((a, b) => a - b);
@@ -81,16 +81,37 @@ function singleLineMediaBlock(text, start) {
     args: ['--no-proxy-server', '--disable-http2'],
   });
   try {
+    const sourcePage = await browser.newPage();
+    await sourcePage.goto(process.env.THEOBROMA_URL || 'https://theobroma.one/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    const firstScreenHtml = await sourcePage.evaluate(() => {
+      const copy = document.documentElement.cloneNode(true);
+      const main = copy.querySelector('main');
+      if (!main?.querySelector('.home-hero')) throw new Error('Home hero not found');
+      for (const child of [...main.children]) {
+        if (!child.classList.contains('home-hero')) child.remove();
+      }
+      for (const child of [...copy.querySelector('body').children]) {
+        if (child.matches('.site-header,.mobile-menu,main,.skip-link')) continue;
+        child.remove();
+      }
+      copy.querySelectorAll('script,link[rel="preload"],link[rel="manifest"],#theobroma-home-redesign-inline-css').forEach((node) => node.remove());
+      const neededStyles = new Set(['theobroma-style-css', 'theobroma-home-redesign-css', 'theobroma-hero-alignment-css', 'theobroma-design-system-css']);
+      copy.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+        if (!neededStyles.has(link.id)) link.remove();
+        else { link.media = 'all'; link.removeAttribute('onload'); }
+      });
+      return `<!doctype html>${copy.outerHTML}`;
+    });
+    await sourcePage.close();
+
     for (const width of widths) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
-      await page.route(/^https:\/\/unpkg\.com\/leaflet@1\.9\.4\/dist\/leaflet\.(?:css|js)/, async (route) => {
-        const file = path.join(__dirname, '..', 'wp-content', 'plugins', 'theobroma-commerce', 'assets', 'vendor', 'leaflet-1.9.4', path.basename(new URL(route.request().url()).pathname));
-        await route.fulfill({ path: file });
-      });
       await page.coverage.startCSSCoverage();
-      await page.goto(process.env.THEOBROMA_URL || 'https://theobroma.one/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.setContent(firstScreenHtml, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForFunction(() => ['theobroma-style-css', 'theobroma-home-redesign-css'].every((id) => document.getElementById(id)?.sheet), undefined, { timeout: 60000 });
       await page.evaluate(() => document.fonts.ready);
-      for (const entry of await page.coverage.stopCSSCoverage()) {
+      const entries = await page.coverage.stopCSSCoverage();
+      for (const entry of entries) {
         const file = files.find((candidate) => entry.url.endsWith(`/${candidate}`) || entry.url.includes(`/${candidate}?`));
         if (!file) continue;
         const item = coverage.get(file);

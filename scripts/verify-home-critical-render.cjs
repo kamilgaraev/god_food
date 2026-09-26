@@ -25,9 +25,11 @@ const critical = fs.readFileSync(path.join(__dirname, '..', 'wp-content', 'theme
         if (onlyCritical) {
           await page.route(url, async (route) => {
             const response = await route.fetch();
-            const body = (await response.text())
-              .replace(/<link rel='stylesheet' id='theobroma-style-css'[^>]*>\s*/, '')
-              .replace(/<link rel='stylesheet' id='theobroma-home-redesign-css'[^>]*>\s*/, `<style id="test-home-critical">${critical}</style>`);
+            const html = await response.text();
+            const inline = /<style id="theobroma-home-redesign-inline-css">[\s\S]*?<\/style>/;
+            let body = html.replace(/<link rel='stylesheet' id='theobroma-style-css'[^>]*>\s*/, '');
+            body = body.replace(/<link rel='stylesheet' id='theobroma-home-redesign-css'[^>]*>\s*/, inline.test(body) ? '' : `<style id="test-home-critical">${critical}</style>`);
+            if (inline.test(body)) body = body.replace(inline, `<style id="test-home-critical">${critical}</style>`);
             await route.fulfill({ response, body });
           });
         }
