@@ -250,6 +250,71 @@
     if (node instanceof Element) enhanceWithin(node);
   }))).observe(document.body, { childList: true, subtree: true });
 
+  async function changeCoupon(section, code, mode) {
+    const input = section.querySelector('[data-coupon-input]');
+    const status = section.querySelector('[data-coupon-status]');
+    if (section.dataset.couponBusy) return;
+    if (!code) {
+      status.textContent = 'Введите промокод.';
+      status.classList.add('is-error');
+      input.focus();
+      return;
+    }
+
+    section.dataset.couponBusy = '1';
+    section.setAttribute('aria-busy', 'true');
+    status.textContent = mode === 'remove' ? 'Удаляем промокод…' : 'Проверяем промокод…';
+    status.classList.remove('is-error');
+    const buttons = [...section.querySelectorAll('[data-coupon-apply], [data-coupon-remove]')];
+    buttons.forEach(button => { button.disabled = true; });
+    try {
+      const response = await fetch(section.dataset.couponAjax, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: new URLSearchParams({
+          action: 'theobroma_checkout_coupon', nonce: section.dataset.couponNonce,
+          code, mode,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!result) throw new Error('Не удалось обновить промокод. Попробуйте ещё раз.');
+      if (!result.success) throw new Error(result.data?.message || 'Не удалось проверить промокод.');
+      section.querySelector('[data-coupon-list]').innerHTML = result.data.applied_html || '';
+      if (mode === 'apply') input.value = '';
+      status.textContent = result.data.message;
+      $(document.body).trigger('update_checkout');
+    } catch (error) {
+      status.textContent = error instanceof TypeError
+        ? 'Не удалось связаться с сайтом. Попробуйте ещё раз.'
+        : (error.message || 'Промокод не применён. Попробуйте ещё раз.');
+      status.classList.add('is-error');
+    } finally {
+      delete section.dataset.couponBusy;
+      section.removeAttribute('aria-busy');
+      section.querySelectorAll('[data-coupon-apply], [data-coupon-remove]').forEach(button => { button.disabled = false; });
+    }
+  }
+
+  document.addEventListener('click', event => {
+    const button = event.target.closest('[data-coupon-apply], [data-coupon-remove]');
+    const section = button?.closest('.commerce-coupon');
+    if (!section) return;
+    event.preventDefault();
+    changeCoupon(section, button.dataset.couponRemove || section.querySelector('[data-coupon-input]').value.trim(),
+      button.hasAttribute('data-coupon-remove') ? 'remove' : 'apply');
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || !event.target.matches('[data-coupon-input]')) return;
+    event.preventDefault();
+    event.target.closest('.commerce-coupon')?.querySelector('[data-coupon-apply]')?.click();
+  });
+  document.addEventListener('input', event => {
+    if (!event.target.matches('[data-coupon-input]')) return;
+    const status = event.target.closest('.commerce-coupon')?.querySelector('[data-coupon-status]');
+    if (status) { status.textContent = ''; status.classList.remove('is-error'); }
+  });
+
   document.addEventListener('click', event => {
     const button = event.target.closest('[data-checkout-go], .theobroma-delivery-open, .open-pvz-btn');
     const state = button && states.get(button.closest('form.checkout'));
