@@ -288,6 +288,21 @@
         $(document.body).trigger('update_checkout');
     };
 
+    const ensureCheckoutStyles = async () => {
+        const style = document.querySelector('#theobroma-checkout-steps-css');
+        if (!style) return;
+        // Checkout CSS is deferred on the homepage until a customer opens the cart.
+        style.media = 'all';
+        if (style.sheet) return;
+        await Promise.race([
+            new Promise(resolve => {
+                style.addEventListener('load', resolve, { once: true });
+                style.addEventListener('error', resolve, { once: true });
+            }),
+            new Promise(resolve => window.setTimeout(resolve, 5000)),
+        ]);
+    };
+
     const bindProductGallery = () => {
         const mainImage = content.querySelector('[data-product-main-image]');
         if (!mainImage) {
@@ -416,6 +431,7 @@
             if (!response.success) {
                 throw new Error(response.data?.message || 'Cart request failed');
             }
+            await ensureCheckoutStyles();
             renderCart(response.data);
             showModal('cart', 'Корзина и оформление заказа');
             focusFirstModalControl();
