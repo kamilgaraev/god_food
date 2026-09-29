@@ -76,6 +76,11 @@ async function testWidth(browser, width) {
     await apply('THEO-TEST-100', 100);
     await remove();
     assert.equal(await coupon.locator('[data-coupon-remove]').count(), 0);
+    const checkoutResponse = await page.goto(new URL('/checkout/', base).href, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    assert.equal(checkoutResponse.status(), 200);
+    const directCoupon = page.locator('form.checkout #order_review .commerce-coupon');
+    await directCoupon.waitFor({ state: 'attached', timeout: 30000 });
+    assert.equal(await directCoupon.count(), 1, `${width}: coupon field missing from direct checkout`);
     console.log(`${width}: invalid code, apply, remove, and payment-pane layout passed`);
   } finally {
     await page.close();
