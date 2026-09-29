@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+function theobroma_welcome_email_heading(): string {
+    return 'Добро пожаловать на сайт шоколадной фабрики Theobroma Пища богов';
+}
+add_filter('woocommerce_email_heading_customer_new_account', 'theobroma_welcome_email_heading');
+add_filter('woocommerce_email_subject_customer_new_account', 'theobroma_welcome_email_heading');
+
 /**
  * Shared branded email renderer for the Theobroma theme.
  *

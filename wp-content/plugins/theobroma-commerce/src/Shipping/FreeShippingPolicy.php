@@ -6,7 +6,7 @@ namespace Theobroma\Commerce\Shipping;
 
 final class FreeShippingPolicy
 {
-    public const MINIMUM_RUBLES = 2500;
+    public const MINIMUM_RUBLES = 3000;
 
     public static function cartAmount(): float
     {

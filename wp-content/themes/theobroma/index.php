@@ -31,10 +31,6 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
             <h1 id="home-hero-title" class="screen-reader-text">Абсолютно натуральный шоколад</h1>
             <div class="home-hero__copy">
                 <p class="home-eyebrow" aria-hidden="true"><span>Абсолютно</span> <span>натуральный</span> <span>шоколад</span></p>
-                <picture class="home-hero__mobile-art">
-                    <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-mobile.webp'); ?>" type="image/webp">
-                    <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate.png'); ?>" width="480" height="600" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
-                </picture>
                 <div class="home-hero__lead">
                     <p>Четыре ингредиента. Пористая кусковая текстура, которой нет ни у одной плитки в магазине.</p>
                     <div class="home-hero__actions">
@@ -43,15 +39,20 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
                     </div>
                 </div>
                 <div class="home-hero__trust" aria-label="Гликемический индекс 35 вместо 70, рейтинг 4,9 по 1 200 отзывам">
-                    <div>
-                        <strong>ГИ 35</strong>
+                    <div class="home-gi" data-gi-help>
+                        <div class="home-gi__value"><strong>ГИ 35</strong><button class="home-gi__button" type="button" aria-label="Что такое гликемический индекс" aria-expanded="false" aria-controls="home-gi-help" aria-describedby="home-gi-help">!</button></div>
                         <span>вместо 70</span>
+                        <div class="home-gi__tooltip" id="home-gi-help" role="tooltip" hidden>ГИ — гликемический индекс. Он показывает, насколько быстро углеводы в продукте повышают уровень глюкозы в крови.</div>
                     </div>
                     <div>
                         <strong>4,9</strong>
                         <span>1 200 отзывов</span>
                     </div>
                 </div>
+                <picture class="home-hero__mobile-art">
+                    <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-mobile.webp'); ?>" type="image/webp">
+                    <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate.png'); ?>" width="480" height="600" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+                </picture>
             </div>
             <button class="home-hero__video-trigger" type="button" aria-label="Воспроизвести анимацию шоколада" aria-busy="false" data-state="idle">
                 <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>">
@@ -62,7 +63,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
         </div>
     </section>
 
-    <?php $home_benefits = array('Без белого сахара', 'Без заменителей какао-масла', 'Своя фабрика', 'Бесплатная доставка от 2 500 ₽'); ?>
+    <?php $home_benefits = array('Без белого сахара', 'Без заменителей какао-масла', 'Своя фабрика', 'Бесплатная доставка от 3 000 ₽'); ?>
     <div class="home-benefit-strip" role="group" aria-label="Преимущества Theobroma: <?php echo esc_attr(implode(', ', $home_benefits)); ?>">
         <div class="home-benefit-strip__track" aria-hidden="true">
             <?php for ($group_index = 0; $group_index < 2; $group_index++) : ?>

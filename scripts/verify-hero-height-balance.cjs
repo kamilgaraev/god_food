@@ -43,12 +43,15 @@ const url = process.env.THEOBROMA_URL || 'https://theobroma.one/';
       const gap=boxes.trust.top-boxes.actions.bottom;
       assert(gap>=20 && gap<=42,`${width}: excessive space below buttons: ${gap}`);
       assert(boxes.trust.bottom<=boxes.hero.bottom+1,`${width}: proof points outside hero`);
-      assert(boxes.hero.bottom-boxes.trust.bottom <= 55, `${width}: excessive empty space below proof points: ${boxes.hero.bottom-boxes.trust.bottom}`);
       if (width <= 600) {
         assert(boxes.art.width >= 180 && boxes.art.height >= 225, `${width}: mobile artwork too small`);
-        assert(boxes.art.top >= boxes.title.bottom, `${width}: artwork overlaps heading`);
-        assert(boxes.art.bottom <= boxes.actions.top, `${width}: artwork overlaps actions`);
+        assert(boxes.art.top >= boxes.trust.bottom, `${width}: artwork overlaps proof points`);
+        assert(boxes.art.top - boxes.trust.bottom < 25, `${width}: excessive gap above pyramid`);
+        assert(Math.abs(boxes.hero.bottom - boxes.art.bottom) <= 2, `${width}: pyramid must rest on hero edge`);
+        const logo = await page.locator('.nav .brand').boundingBox();
+        assert(Math.abs(logo.x + logo.width / 2 - width / 2) <= 2, `${width}: mobile logo must be centered`);
       } else {
+        assert(boxes.hero.bottom-boxes.trust.bottom <= 55, `${width}: excessive empty space below proof points: ${boxes.hero.bottom-boxes.trust.bottom}`);
         assert(boxes.art.width === 0, `${width}: mobile artwork duplicated on desktop`);
       }
       if(width>600){

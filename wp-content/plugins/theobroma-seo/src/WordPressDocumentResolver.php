@@ -187,6 +187,9 @@ final class WordPressDocumentResolver
 
         $schema = [];
         $type = 'website';
+        if ($post->post_type === 'page' && $post->post_name === 'corporate-gifts' && function_exists('theobroma_corporate_questions')) {
+            $schema = (new SchemaFactory())->faq(theobroma_corporate_questions(), $url);
+        }
         if ($post->post_type === 'post') {
             $type = 'article';
             $author = get_the_author_meta('display_name', (int) $post->post_author);
@@ -223,7 +226,7 @@ final class WordPressDocumentResolver
         $logo = $this->logoUrl();
 
         return new SeoDocument(
-            title: $this->siteName(),
+            title: 'Натуральный пористый шоколад — Theobroma Пища Богов',
             description: $description,
             canonicalUrl: $url,
             type: 'website',
@@ -267,7 +270,7 @@ final class WordPressDocumentResolver
 
     private function defaultImage(): string
     {
-        return esc_url_raw(get_theme_file_uri('assets/images/hero-bg-original.jpg'));
+        return esc_url_raw(get_theme_file_uri('assets/images/social-preview.jpg'));
     }
 
     private function logoUrl(): string

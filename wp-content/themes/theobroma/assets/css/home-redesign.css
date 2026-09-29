@@ -995,3 +995,39 @@ body .home-eyebrow { font-size: clamp(32px, 5vw, 80px); }
     margin: .5rem auto -.25rem;
   }
 }
+
+/* The mobile pyramid rests on the lower edge of the hero. */
+@media (max-width: 600px) {
+  body .nav, body .nav-sticky .nav { grid-template-columns: 1fr auto 1fr; }
+  body .nav .brand { grid-column: 2; grid-row: 1; justify-self: center; }
+  body .nav .menu-toggle { grid-column: 3; grid-row: 1; justify-self: end; }
+  body .home-hero__shell { padding-top: 28px; padding-bottom: 0; }
+  body .home-hero__copy { text-align: center; }
+  body .home-eyebrow { margin-inline: auto; text-align: center; }
+  body .home-eyebrow span { padding-left: 0; }
+  body .home-hero__lead { margin-top: 20px; }
+  body .home-hero__lead > p { max-width: 320px; margin-inline: auto; font-size: 13px; }
+  body .home-hero__actions { max-width: 370px; margin-inline: auto; }
+  body .home-hero__trust { justify-content: center; margin-top: 24px; text-align: left; }
+  body .home-hero__mobile-art { width: min(90vw, 21rem); margin: 16px auto 0; }
+}
+
+.home-gi { position: relative; }
+.home-gi__value { display: flex; align-items: center; gap: 8px; }
+.home-gi__button {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; padding: 0;
+  border: 1px solid var(--home-gold); border-radius: 50%; background: transparent;
+  color: #8a6e27; font: 600 13px/1 'Montserrat',Arial,sans-serif; cursor: pointer;
+}
+.home-gi__button:hover, .home-gi__button[aria-expanded="true"] { color: #fff; background: var(--home-gold); }
+body .home-gi__button:focus-visible { outline: 2px solid var(--home-gold) !important; outline-offset: 3px; }
+.home-gi__tooltip {
+  position: absolute; z-index: 130; bottom: calc(100% + 12px); left: 0;
+  width: min(270px, calc(100vw - 36px)); padding: 16px; border: 1px solid var(--home-line);
+  border-radius: 12px; background: var(--home-paper); color: var(--home-ink);
+  box-shadow: 0 8px 24px rgba(82,57,39,.12); font: 400 13px/1.6 'Montserrat',Arial,sans-serif;
+}
+.home-gi__tooltip[hidden] { display: none; }
+@media (max-width: 600px) {
+  .home-gi__tooltip { left: -30px; width: min(270px, calc(100vw - 36px)); }
+}

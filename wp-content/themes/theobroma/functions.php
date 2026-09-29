@@ -10,6 +10,7 @@ require_once get_template_directory() . '/inc/email-template.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
 require_once get_template_directory() . '/inc/checkout-page.php';
 require_once get_template_directory() . '/inc/buy-partners.php';
+require_once get_template_directory() . '/inc/corporate-content.php';
 
 /** Canonical visual roles follow the theme and plugin layout styles. */
 function theobroma_design_system_assets(): void {
@@ -349,7 +350,7 @@ function theobroma_related_media_posts(int $post_id, int $limit = 3): array {
 
 function theobroma_content(string $key): string {
     $defaults = array(
-        'shipping_text' => 'Бесплатная доставка от 2500 рублей',
+        'shipping_text' => 'Бесплатная доставка от 3000 рублей',
         'hero_line_1' => 'Абсолютно',
         'hero_line_2' => 'натуральный',
         'hero_line_3' => 'шоколад',

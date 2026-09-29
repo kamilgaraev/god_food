@@ -6,6 +6,20 @@ namespace Theobroma\Seo;
 
 final class SchemaFactory
 {
+    /** @param list<array{0:string,1:string}> $questions */
+    public function faq(array $questions, string $url): array
+    {
+        $entities = [];
+        foreach ($questions as [$question, $answer]) {
+            if (trim($question) !== '' && trim($answer) !== '') {
+                $entities[] = ['@type' => 'Question', 'name' => $question,
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => $answer]];
+            }
+        }
+        return $entities === [] ? [] : ['@context' => 'https://schema.org', '@type' => 'FAQPage',
+            '@id' => $url . '#faq', 'url' => $url, 'mainEntity' => $entities];
+    }
+
     /** @param array<string, string> $data
      *  @return array<string, mixed>
      */

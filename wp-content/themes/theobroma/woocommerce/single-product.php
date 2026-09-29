@@ -44,7 +44,7 @@ if (!$product_image_ids) {
 }
 $detail_image_id = absint($product->get_meta('_theobroma_product_detail_image_id', true));
 $main_image_id = $detail_image_id;
-$main_image_url = $detail_image_id ? wp_get_attachment_image_url($detail_image_id, 'full') : '';
+$main_image_url = $detail_image_id ? wp_get_original_image_url($detail_image_id) : '';
 if (!$main_image_url) {
     $bundled_detail_image = '/assets/images/products/detail/' . sanitize_file_name($product->get_sku()) . '.webp';
     if (is_file(get_template_directory() . $bundled_detail_image)) {
@@ -53,7 +53,7 @@ if (!$main_image_url) {
 }
 if (!$main_image_url) {
     $main_image_id = (int) ($product_image_ids[0] ?? 0);
-    $main_image_url = $product_image_ids[0] ? wp_get_attachment_image_url($product_image_ids[0], 'full') : wc_placeholder_img_src('full');
+    $main_image_url = $product_image_ids[0] ? wp_get_original_image_url($product_image_ids[0]) : wc_placeholder_img_src('full');
 }
 $shop_url = wc_get_page_permalink('shop');
 get_header();
@@ -68,16 +68,16 @@ get_header();
             <figure class="product-detail-image">
                 <button class="product-detail-zoom-trigger" type="button" data-product-image-zoom aria-label="<?php echo esc_attr(sprintf('Увеличить изображение товара «%s»', $product->get_name())); ?>">
                     <?php if ($main_image_id) : ?>
-                        <?php echo wp_get_attachment_image($main_image_id, 'theobroma-product-detail', false, array('data-product-main-image' => '', 'decoding' => 'async', 'fetchpriority' => 'high', 'sizes' => '(max-width: 767px) calc(100vw - 32px), 560px', 'alt' => $product->get_name())); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo theobroma_product_detail_image($main_image_id, $product->get_name()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     <?php else : ?>
-                        <img data-product-main-image src="<?php echo esc_url($main_image_url ?: wc_placeholder_img_src('full')); ?>" width="560" height="745" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>">
+                        <img data-product-main-image data-product-original-image="<?php echo esc_url($main_image_url ?: wc_placeholder_img_src('full')); ?>" src="<?php echo esc_url($main_image_url ?: wc_placeholder_img_src('full')); ?>" width="560" height="745" decoding="async" fetchpriority="high" alt="<?php echo esc_attr($product->get_name()); ?>">
                     <?php endif; ?>
                 </button>
             </figure>
             <?php if (count($product_image_ids) > 1) : ?>
                 <div class="product-detail-thumbnails" aria-label="Галерея товара">
                     <?php foreach (array_slice($product_image_ids, 0, 9) as $image_index => $image_id) : ?>
-                        <?php $full_image_url = $image_index === 0 ? $main_image_url : ($image_id ? wp_get_attachment_image_url($image_id, 'full') : wc_placeholder_img_src('full')); ?>
+                        <?php $full_image_url = $image_index === 0 ? $main_image_url : ($image_id ? wp_get_original_image_url($image_id) : wc_placeholder_img_src('full')); ?>
                         <button class="<?php echo $image_index === 0 ? 'is-active' : ''; ?>" type="button" data-product-gallery-image="<?php echo esc_url($full_image_url ?: wc_placeholder_img_src('full')); ?>" aria-label="Показать изображение <?php echo esc_attr((string) ($image_index + 1)); ?>">
                             <?php echo wp_get_attachment_image($image_id, 'theobroma-product-card', false, array('loading' => 'eager', 'sizes' => '96px', 'alt' => '')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                         </button>

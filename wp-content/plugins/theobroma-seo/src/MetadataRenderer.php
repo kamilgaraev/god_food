@@ -23,7 +23,17 @@ final class MetadataRenderer
 
         if ($document->imageUrl !== '') {
             $lines[] = $this->meta('property', 'og:image', $document->imageUrl);
+            $lines[] = $this->meta('property', 'og:image:alt', $document->title);
+            if (str_starts_with($document->imageUrl, 'https://')) {
+                $lines[] = $this->meta('property', 'og:image:secure_url', $document->imageUrl);
+            }
+            if (str_ends_with($document->imageUrl, '/social-preview.jpg')) {
+                $lines[] = $this->meta('property', 'og:image:type', 'image/jpeg');
+                $lines[] = $this->meta('property', 'og:image:width', '1200');
+                $lines[] = $this->meta('property', 'og:image:height', '630');
+            }
             $lines[] = $this->meta('name', 'twitter:image', $document->imageUrl);
+            $lines[] = $this->meta('name', 'twitter:image:alt', $document->title);
         }
 
         if ($document->schema !== []) {

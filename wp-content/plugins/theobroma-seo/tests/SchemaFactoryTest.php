@@ -8,6 +8,14 @@ use Theobroma\Seo\SchemaFactory;
 
 final class SchemaFactoryTest extends TestCase
 {
+    public function testFaqUsesOnlyVisibleNonemptyQuestionsAndAnswers(): void
+    {
+        $schema = (new SchemaFactory())->faq([['Минимальный тираж?', 'От 20 наборов.'], ['', 'Не показывается.']], 'https://example.test/corporate-gifts/');
+        $this->assertSame('FAQPage', $schema['@type']);
+        $this->assertSame(1, count($schema['mainEntity']));
+        $this->assertSame('От 20 наборов.', $schema['mainEntity'][0]['acceptedAnswer']['text']);
+        $this->assertSame([], (new SchemaFactory())->faq([], 'https://example.test/'));
+    }
     public function testBuildsSearchReadyProductSchema(): void
     {
         $schema = (new SchemaFactory())->product([

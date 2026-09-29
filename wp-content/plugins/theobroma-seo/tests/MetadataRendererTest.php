@@ -9,6 +9,15 @@ use Theobroma\Seo\SeoDocument;
 
 final class MetadataRendererTest extends TestCase
 {
+    public function testSocialPreviewHasSecureImageDimensionsAndAlt(): void
+    {
+        $document = new SeoDocument('Theobroma', 'Шоколад', 'https://example.test/', 'website', 'Theobroma', 'https://example.test/social-preview.jpg');
+        $html = (new MetadataRenderer())->render($document);
+        $this->assertContains('property="og:image:width" content="1200"', $html);
+        $this->assertContains('property="og:image:height" content="630"', $html);
+        $this->assertContains('property="og:image:secure_url" content="https://example.test/social-preview.jpg"', $html);
+        $this->assertContains('property="og:image:alt" content="Theobroma"', $html);
+    }
     public function testRendersEscapedSocialMetadata(): void
     {
         $document = new SeoDocument(

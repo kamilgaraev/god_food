@@ -9,6 +9,7 @@ final class Plugin
     public static function boot(): void
     {
         add_action('wp_head', [self::class, 'renderHead'], 2);
+        add_action('template_redirect', [self::class, 'serveLlms'], 0);
         add_filter('document_title_parts', [self::class, 'titleParts']);
         add_filter('wp_robots', [self::class, 'robots']);
         add_filter('wp_sitemaps_add_provider', [self::class, 'sitemapProvider'], 10, 2);
@@ -36,11 +37,27 @@ final class Plugin
         );
     }
 
+    public static function serveLlms(): void
+    {
+        $path = wp_parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+        if ($path !== wp_parse_url(home_url('/llms.txt'), PHP_URL_PATH)) {
+            return;
+        }
+        status_header(200);
+        header('Content-Type: text/plain; charset=utf-8');
+        header('X-Content-Type-Options: nosniff');
+        echo (new LlmsRenderer())->render(home_url('/'));
+        exit;
+    }
+
     /** @param array<string, string> $parts
      *  @return array<string, string>
      */
     public static function titleParts(array $parts): array
     {
+        if (is_front_page()) {
+            return ['title' => (new WordPressDocumentResolver())->forSite()->title];
+        }
         if (is_singular()) {
             $custom = trim((string) get_post_meta(get_queried_object_id(), '_theobroma_seo_title', true));
             if ($custom !== '') {

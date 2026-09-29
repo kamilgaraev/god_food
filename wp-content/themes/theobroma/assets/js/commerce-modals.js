@@ -127,7 +127,7 @@
         }
         const lightbox = ensureImageLightbox();
         const image = lightbox.querySelector('[data-product-lightbox-image]');
-        image.src = sourceImage.currentSrc || sourceImage.src;
+        image.src = sourceImage.dataset.productOriginalImage || sourceImage.currentSrc || sourceImage.src;
         image.alt = sourceImage.alt;
         imageLightboxTrigger = button;
         lightbox.hidden = false;
@@ -294,17 +294,19 @@
             return;
         }
         const defaultImage = {
-            src: mainImage.currentSrc || mainImage.src,
+            src: mainImage.src,
             srcset: mainImage.srcset,
             sizes: mainImage.sizes,
+            original: mainImage.dataset.productOriginalImage || mainImage.src,
         };
-        const showImage = ({ src = '', srcset = '', sizes = '' } = {}) => {
+        const showImage = ({ src = '', srcset = '', sizes = '', original = src } = {}) => {
             if (!src) {
                 return;
             }
             mainImage.src = src;
             mainImage.srcset = srcset;
             mainImage.sizes = sizes;
+            mainImage.dataset.productOriginalImage = original;
             content.querySelectorAll('[data-product-gallery-image]').forEach((item) => item.classList.remove('is-active'));
         };
         content.querySelectorAll('[data-product-gallery-image]').forEach((button) => {
