@@ -7,13 +7,15 @@ const url = process.env.THEOBROMA_URL || 'https://theobroma.one/';
   const launchOptions = process.env.CHROME_PATH
     ? { executablePath: process.env.CHROME_PATH }
     : { channel: 'chrome' };
+  launchOptions.args = ['--disable-http2'];
+  if (!process.env.HTTPS_PROXY) launchOptions.args.push('--no-proxy-server');
   if (process.env.HTTPS_PROXY) launchOptions.proxy = { server: process.env.HTTPS_PROXY };
   const browser = await chromium.launch(launchOptions);
   try {
     for (const width of (process.env.HERO_WIDTHS || "320,390,600,601,768,900,1024,1199,1200,1280,1366,1440,1600,1920,2560").split(",").map(Number)) {
       const page = await browser.newPage({viewport:{width,height:1100}});
       await page.addInitScript(() => localStorage.setItem('theobroma_cookie_notice_accepted','0'));
-      await page.goto(url, {waitUntil:'domcontentloaded'});
+      await page.goto(url, {waitUntil:'domcontentloaded',timeout:60000});
       await page.evaluate(() => document.fonts.ready);
       if (process.env.HERO_PATCH) await page.evaluate(() => {
         const img = document.createElement('img');
