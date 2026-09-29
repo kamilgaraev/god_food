@@ -16,7 +16,7 @@ $catalog_url = wc_get_page_permalink('shop');
     <p>Пароль: тот, который вы указали при регистрации.</p>
 <?php endif; ?>
 <p>В личном кабинете можно смотреть историю заказов, менять пароль и управлять данными доставки.</p>
-<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:24px 0;width:100%;"><tr><td align="center"><a class="theobroma-email-button" href="<?php echo esc_url($account_url); ?>" style="display:inline-block;padding:14px 24px;background:#b0903d;border:1px solid #b0903d;border-radius:28px;color:#fff;font:600 14px/1.4 Arial,sans-serif;text-decoration:none;">Перейти в аккаунт</a></td></tr></table>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:24px 0;width:100%;"><tr><td align="center"><a class="theobroma-email-button theobroma-email-button--primary" href="<?php echo esc_url($account_url); ?>" style="display:inline-block;padding:14px 24px;background:#b0903d;border:1px solid #b0903d;border-radius:28px;color:#ffffff!important;font:600 14px/1.4 Arial,sans-serif;text-decoration:none;">Перейти в аккаунт</a></td></tr></table>
 <p>А если захочется выбрать что-то для себя или в подарок, весь ассортимент ждёт вас в каталоге.</p>
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:24px 0;width:100%;"><tr><td align="center"><a class="theobroma-email-button" href="<?php echo esc_url($catalog_url); ?>" style="display:inline-block;padding:14px 24px;background:#fbf7f1;border:1px solid #b0903d;border-radius:28px;color:#8a6e27;font:600 14px/1.4 Arial,sans-serif;text-decoration:none;">Выбрать шоколад</a></td></tr></table>
 <p>До встречи,<br>команда Theobroma Пища Богов.<br>Натуральный шоколад без белого сахара.</p>

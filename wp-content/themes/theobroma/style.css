@@ -3556,3 +3556,6 @@ html.commerce-modal-open,body.commerce-modal-open { overflow:hidden !important; 
 .site-not-found__button:hover { background:#987929; }
 .site-not-found__link { color:var(--gold); text-decoration:underline; text-underline-offset:.25rem; }
 .site-not-found__button:focus-visible, .site-not-found__link:focus-visible { outline:2px solid #826323; outline-offset:3px; }
+
+/* Product detail photos retain the complete uploaded composition. */
+body .product-detail-image img { object-fit:contain; object-position:center; }

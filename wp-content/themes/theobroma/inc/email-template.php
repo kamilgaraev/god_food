@@ -186,6 +186,10 @@ body, #outer_wrapper {
 #body_content a, #body_content_inner a {
     color: #b0903d !important;
 }
+#body_content a.theobroma-email-button--primary {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
 #body_content .td {
     border: 0 !important;
 }

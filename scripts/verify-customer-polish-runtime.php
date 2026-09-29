@@ -21,7 +21,7 @@ foreach ($products as $product) {
     if ($product->get_status() !== 'publish') continue;
     foreach (array_unique(array_filter(array_merge([$product->get_image_id(), (int) $product->get_meta('_theobroma_product_detail_image_id')], $product->get_gallery_image_ids()))) as $id) {
         require_polish(is_file(wp_get_original_image_path($id) ?: ''), 'Missing original: ' . $id);
-        $html = theobroma_product_detail_image($id, $product->get_name());
+        $html = theobroma_product_detail_image((int) $id, $product->get_name());
         require_polish(str_contains($html, 'data-product-original-image=') && str_contains($html, 'srcset='), 'Missing original/srcset: ' . $id);
         $originals[$id] = true;
     }
