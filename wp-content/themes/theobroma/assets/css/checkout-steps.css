@@ -4,6 +4,7 @@
 .commerce-cart-notes > summary { padding:12px 0; color:#766655; font:500 13px/1.5 'Montserrat',Arial,sans-serif; cursor:pointer; }
 .commerce-cart-notes[open] { padding-bottom:12px; }
 .commerce-cart-notes[open] p { font-size:13px; line-height:1.6; }
+.commerce-cart-checkout { --checkout-card-bg:#faf5ed; --checkout-card-border:#e4d8c7; --checkout-card-input:#fffdfa; }
 .commerce-cart-checkout .checkout-wizard { --checkout-gold:#b0903d; --checkout-ink:#34291f; --checkout-muted:#7e7368; color:var(--checkout-ink); }
 .commerce-cart-checkout .checkout-wizard [hidden] { display:none !important; }
 .commerce-cart-checkout .checkout-progress { margin:0 0 26px; padding:0; }
@@ -60,10 +61,10 @@
 .commerce-cart-checkout .checkout-wizard .woocommerce-terms-and-conditions-wrapper,
 .commerce-cart-checkout .checkout-wizard .commerce-checkout-afterword { font-size:12px; line-height:1.6; }
 .commerce-cart-checkout .checkout-wizard .woocommerce-error { margin:0 0 20px; padding:16px 16px 16px 34px; font:400 13px/1.6 'Montserrat',Arial,sans-serif; }
-.commerce-cart-checkout .commerce-coupon { margin:20px 0 24px; padding:18px; border:1px solid #e4d8c7; border-radius:14px; background:#faf5ed; }
+.commerce-cart-checkout .commerce-coupon { margin:20px 0 24px; padding:18px; border:1px solid var(--checkout-card-border); border-radius:14px; background:var(--checkout-card-bg); }
 .commerce-cart-checkout .commerce-coupon__label { display:block; margin:0 0 12px; color:#34291f; font:500 16px/1.4 'Montserrat',Arial,sans-serif; }
 .commerce-cart-checkout .commerce-coupon__controls { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; }
-.commerce-cart-checkout .commerce-coupon input[data-coupon-input] { box-sizing:border-box; width:100%; min-width:0; min-height:48px; padding:11px 14px; border:1px solid #d8c9b5; border-radius:9px; background:#fffdfa; color:#34291f; font:400 16px/1.4 'Montserrat',Arial,sans-serif; }
+.commerce-cart-checkout .commerce-coupon input[data-coupon-input] { box-sizing:border-box; width:100%; min-width:0; min-height:48px; padding:11px 14px; border:1px solid #d8c9b5; border-radius:9px; background:var(--checkout-card-input); color:#34291f; font:400 16px/1.4 'Montserrat',Arial,sans-serif; }
 .commerce-cart-checkout .commerce-coupon input[data-coupon-input]::placeholder { color:#8b8175; }
 .commerce-cart-checkout .commerce-coupon button[data-coupon-apply] { min-width:126px; min-height:48px; padding:11px 18px; border:1px solid #b0903d; border-radius:9px; background:#b0903d; color:#fff; font:600 13px/1.4 'Montserrat',Arial,sans-serif; cursor:pointer; }
 .commerce-cart-checkout .commerce-coupon button[data-coupon-apply]:hover { background:#98782f; border-color:#98782f; }
@@ -71,10 +72,59 @@
 .commerce-cart-checkout .commerce-coupon__status { margin:10px 0 0; color:#6e614f; font:400 12px/1.5 'Montserrat',Arial,sans-serif; }
 .commerce-cart-checkout .commerce-coupon__status:empty { display:none; }
 .commerce-cart-checkout .commerce-coupon__status.is-error { color:#a74332; }
-.commerce-cart-checkout .commerce-coupon__applied { display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-top:12px; padding-top:12px; border-top:1px solid #e4d8c7; color:#554a3d; font:400 12px/1.5 'Montserrat',Arial,sans-serif; }
+.commerce-cart-checkout .commerce-coupon__applied { display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-top:12px; padding-top:12px; border-top:1px solid var(--checkout-card-border); color:#554a3d; font:400 12px/1.5 'Montserrat',Arial,sans-serif; }
 .commerce-cart-checkout .commerce-coupon__applied strong { color:#34291f; font-weight:600; }
 .commerce-cart-checkout .commerce-coupon__discount { margin-left:auto; color:#7b6129; font-weight:600; white-space:nowrap; }
 .commerce-cart-checkout .commerce-coupon__applied button { padding:0; border:0; border-bottom:1px solid currentColor; border-radius:0; background:transparent; color:#7b6129; font:500 12px/1.5 'Montserrat',Arial,sans-serif; cursor:pointer; }
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-payment-heading {
+  margin:0 !important; padding:18px 18px 0; border:1px solid var(--checkout-card-border); border-bottom:0;
+  border-radius:14px 14px 0 0; background:var(--checkout-card-bg); color:var(--checkout-ink) !important;
+  font:500 16px/1.4 'Montserrat',Arial,sans-serif !important;
+}
+.commerce-cart-checkout .checkout-wizard #payment .wc_payment_methods,
+.commerce-cart-checkout .checkout-wizard #payment:has(.theobroma-loyalty-checkout) .wc_payment_methods {
+  box-sizing:border-box; margin:0 0 24px !important; padding:12px 18px 18px !important;
+  border:1px solid var(--checkout-card-border); border-top:0; border-radius:0 0 14px 14px;
+  background:var(--checkout-card-bg);
+}
+.commerce-cart-checkout .checkout-wizard #payment .wc_payment_method {
+  border-color:#d8c9b5; border-radius:9px; background:var(--checkout-card-input);
+}
+.commerce-cart-checkout .checkout-wizard #payment .wc_payment_method:has(> input[type="radio"]:checked) {
+  background:var(--checkout-card-input); box-shadow:none;
+}
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-checkout {
+  box-sizing:border-box; margin:0 0 24px; padding:18px; border:1px solid var(--checkout-card-border);
+  border-radius:14px; background:var(--checkout-card-bg); color:var(--checkout-ink);
+}
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-checkout h3 {
+  margin:0 0 12px !important; color:var(--checkout-ink) !important;
+  font:500 16px/1.4 'Montserrat',Arial,sans-serif !important;
+}
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-control label {
+  color:#6e614f !important; font:400 12px/1.5 'Montserrat',Arial,sans-serif !important;
+}
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-control input {
+  min-height:48px !important; height:48px !important; border-color:#d8c9b5 !important;
+  border-radius:9px !important; background:var(--checkout-card-input) !important;
+  color:var(--checkout-ink) !important; font:400 16px/1.4 'Montserrat',Arial,sans-serif !important;
+}
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-control button.button {
+  min-height:48px; height:48px; border:1px solid var(--checkout-gold); border-radius:9px;
+  background:var(--checkout-gold); background-image:none; color:#fff;
+  font:600 13px/1.4 'Montserrat',Arial,sans-serif;
+}
+.commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-control button.button:hover {
+  border-color:#98782f; background:#98782f;
+}
+@media(min-width:481px) and (max-width:600px) {
+  .commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-control {
+    grid-template-columns:minmax(0,1fr) 8.125rem;
+  }
+  .commerce-cart-checkout .checkout-wizard #payment .theobroma-loyalty-control label {
+    grid-column:1 / -1;
+  }
+}
 @media(max-width:480px) {
   .commerce-cart-checkout .commerce-coupon { padding:16px; }
   .commerce-cart-checkout .commerce-coupon__controls { grid-template-columns:minmax(0,1fr); }
