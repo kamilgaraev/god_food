@@ -97,4 +97,23 @@ if (($articleDocument->schema['@type'] ?? '') !== 'Article') {
     exit(1);
 }
 
+$portraitArticle = get_page_by_path('kak-vybrat-nastoyashchiy-shokolad-dlya-rebenka', OBJECT, 'post');
+$portraitMetadata = $portraitArticle instanceof WP_Post
+    ? wp_get_attachment_metadata((int) get_post_thumbnail_id($portraitArticle))
+    : false;
+if ($portraitArticle instanceof WP_Post
+    && get_post_meta($portraitArticle->ID, '_theobroma_seo_og_image', true) === ''
+    && is_array($portraitMetadata)
+    && (int) ($portraitMetadata['height'] ?? 0) > (int) ($portraitMetadata['width'] ?? 0)) {
+    $portraitDocument = $resolver->forPost($portraitArticle);
+    $portraitHtml = (new MetadataRenderer())->render($portraitDocument);
+    $expectedPreview = get_theme_file_uri('assets/images/social-preview.jpg');
+    if ($portraitDocument->imageUrl !== $expectedPreview
+        || !str_contains($portraitHtml, 'property="og:image:width" content="1200"')
+        || !str_contains($portraitHtml, 'property="og:image:height" content="630"')) {
+        fwrite(STDERR, "FAIL portrait article lacks a wide social preview\n");
+        exit(1);
+    }
+}
+
 echo "WordPress SEO smoke passed\n";

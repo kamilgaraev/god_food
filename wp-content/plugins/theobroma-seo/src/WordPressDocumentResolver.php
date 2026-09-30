@@ -52,12 +52,8 @@ final class WordPressDocumentResolver
         );
         $url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/catalog/');
         $image = $shopId > 0 ? $this->customValue($shopId, '_theobroma_seo_og_image') : '';
-        if ($image === '' && $shopId > 0) {
-            $featured = get_the_post_thumbnail_url($shopId, 'full');
-            $image = is_string($featured) ? $featured : '';
-        }
         if ($image === '') {
-            $image = $this->defaultImage();
+            $image = $this->socialImageForAttachment($shopId > 0 ? (int) get_post_thumbnail_id($shopId) : 0);
         }
 
         return new SeoDocument(
@@ -78,7 +74,7 @@ final class WordPressDocumentResolver
             sprintf('%s — натуральный шоколад Theobroma. Выберите вкус и закажите с доставкой по России.', $term->name)
         );
         $thumbnailId = (int) get_term_meta($term->term_id, 'thumbnail_id', true);
-        $image = $thumbnailId > 0 ? wp_get_attachment_image_url($thumbnailId, 'full') : false;
+        $image = $this->socialImageForAttachment($thumbnailId);
 
         return new SeoDocument(
             title: $term->name,
@@ -86,7 +82,7 @@ final class WordPressDocumentResolver
             canonicalUrl: is_string($url) ? $url : home_url('/catalog/'),
             type: 'website',
             siteName: $this->siteName(),
-            imageUrl: is_string($image) ? $image : $this->defaultImage()
+            imageUrl: $image
         );
     }
 
@@ -134,13 +130,17 @@ final class WordPressDocumentResolver
             'in_stock' => $product->is_in_stock(),
         ]);
 
+        $socialImage = $customImage !== ''
+            ? esc_url_raw($customImage)
+            : $this->socialImageForAttachment((int) ($product->get_image_id() ?: ($product->get_gallery_image_ids()[0] ?? 0)));
+
         return new SeoDocument(
             title: $title,
             description: $description,
             canonicalUrl: $url,
             type: 'product',
             siteName: $this->siteName(),
-            imageUrl: $images[0] ?? $this->defaultImage(),
+            imageUrl: $socialImage,
             schema: $schema
         );
     }
@@ -180,9 +180,10 @@ final class WordPressDocumentResolver
         $url = get_permalink($post);
         $url = is_string($url) ? $url : home_url('/');
         $image = $this->customValue($post->ID, '_theobroma_seo_og_image');
+        $featured = get_the_post_thumbnail_url($post, 'full');
+        $articleImage = $image !== '' ? $image : (is_string($featured) ? $featured : $this->defaultImage());
         if ($image === '') {
-            $featured = get_the_post_thumbnail_url($post, 'full');
-            $image = is_string($featured) ? $featured : $this->defaultImage();
+            $image = $this->socialImageForAttachment((int) get_post_thumbnail_id($post));
         }
 
         $schema = [];
@@ -197,7 +198,7 @@ final class WordPressDocumentResolver
                 'headline' => $title,
                 'description' => $description,
                 'url' => $url,
-                'image' => $image,
+                'image' => $articleImage,
                 'date_published' => get_post_time(DATE_W3C, true, $post),
                 'date_modified' => get_post_modified_time(DATE_W3C, true, $post),
                 'author' => is_string($author) && $author !== '' ? $author : 'Редакция Пища Богов',
@@ -271,6 +272,28 @@ final class WordPressDocumentResolver
     private function defaultImage(): string
     {
         return esc_url_raw(get_theme_file_uri('assets/images/social-preview.jpg'));
+    }
+
+    private function socialImageForAttachment(int $attachmentId): string
+    {
+        if ($attachmentId <= 0) {
+            return $this->defaultImage();
+        }
+
+        $image = wp_get_attachment_image_url($attachmentId, 'full');
+        $metadata = wp_get_attachment_metadata($attachmentId);
+        if (!is_string($image) || $image === '' || !is_array($metadata)) {
+            return $this->defaultImage();
+        }
+
+        $width = (int) ($metadata['width'] ?? 0);
+        $height = (int) ($metadata['height'] ?? 0);
+        // Portrait and square photos are unsuitable for wide link previews.
+        if ($width < 600 || $height < 315 || $width / $height < 1.5) {
+            return $this->defaultImage();
+        }
+
+        return esc_url_raw($image);
     }
 
     private function logoUrl(): string
