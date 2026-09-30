@@ -300,7 +300,7 @@ function theobroma_preload_critical_fonts(): void {
     printf('<link rel="icon" href="%s" type="image/png" sizes="32x32">' . "\n", esc_url($icon_base . 'favicon-32.png'));
     printf('<link rel="apple-touch-icon" href="%s" sizes="180x180">' . "\n", esc_url($icon_base . 'apple-touch-icon.png'));
     printf('<link rel="manifest" href="%s">' . "\n", esc_url($icon_base . 'site.webmanifest'));
-    foreach (array('montserrat-cyrillic.woff2', 'cormorant-cyrillic-variable.woff2') as $font) {
+    foreach (array('montserrat-cyrillic.woff2', is_front_page() ? 'cormorant-hero-400.woff2' : 'cormorant-cyrillic-variable.woff2') as $font) {
         printf(
             '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
             esc_url($font_base . $font)

@@ -16,8 +16,8 @@ $details = array(
 );
 $questions = theobroma_corporate_questions();
 $gallery = array(
-    array('url' => $asset_base . 'gallery-chocolate-original.jpg', 'alt' => 'Кусочки шоколада Theobroma'),
-    array('url' => $asset_base . 'gallery-packaging-original.jpg', 'alt' => 'Подарочная коллекция Theobroma на постаменте'),
+    array('url' => $asset_base . 'gallery-chocolate-original.jpg', 'preview' => $asset_base . 'gallery-chocolate.webp', 'alt' => 'Кусочки шоколада Theobroma'),
+    array('url' => $asset_base . 'gallery-packaging-original.jpg', 'preview' => $asset_base . 'gallery-packaging.webp', 'alt' => 'Подарочная коллекция Theobroma на постаменте'),
 );
 $gallery_title = '';
 $gallery_enabled = true;
@@ -31,7 +31,8 @@ if (is_array($saved_showcases) && class_exists('Theobroma\\PhotoShowcases\\Setti
     foreach ($showcase['images'] as $row) {
         $url = wp_get_original_image_url($row['attachment_id']);
         if ($url) {
-            $gallery[] = array('url' => $url, 'alt' => $row['alt'] ?: (string) get_post_meta($row['attachment_id'], '_wp_attachment_image_alt', true));
+            $preview = wp_get_attachment_image_url($row['attachment_id'], 'medium');
+            $gallery[] = array('url' => $url, 'preview' => $preview && $preview !== $url ? $preview : '', 'alt' => $row['alt'] ?: (string) get_post_meta($row['attachment_id'], '_wp_attachment_image_alt', true));
         }
     }
 }
@@ -39,7 +40,9 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
 ?>
 <main class="corporate-gifts-page corporate-redesign" id="theobroma-main">
     <section class="cg-hero" aria-labelledby="cg-title">
-        <img class="cg-hero-image" src="<?php echo esc_url($asset_base . 'hero-original.jpg'); ?>" width="1440" height="810" fetchpriority="high" alt="Подарочные коробки шоколада Theobroma">
+        <img class="cg-hero-image" src="<?php echo esc_url($asset_base . 'hero-video-poster.webp'); ?>" width="1920" height="1080" fetchpriority="high" alt="Подарочные коробки шоколада Theobroma">
+        <video class="cg-hero-image cg-hero-video" data-cg-video data-video-src="<?php echo esc_url(get_template_directory_uri() . '/assets/videos/corporate-hero.mp4'); ?>" width="1920" height="1080" muted autoplay loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+        <button class="cg-video-toggle" type="button" data-cg-video-toggle hidden>Воспроизвести видео</button>
         <div class="cg-shell cg-hero-content">
             <p class="cg-eyebrow">Корпоративные подарки · Своя фабрика</p>
             <h1 id="cg-title">Подарок,<br><em>который<br>запоминают</em></h1>
@@ -75,7 +78,9 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
     <section class="cg-gallery cg-shell" aria-labelledby="cg-gallery-title" data-cg-carousel>
         <h2 id="cg-gallery-title"><?php if ($gallery_title !== '') : ?><?php echo esc_html($gallery_title); ?><?php else : ?>Шоколад, который точно<br><em>понравится и удивит</em><?php endif; ?></h2>
         <div class="cg-gallery-track" data-cg-track tabindex="0" aria-label="Фотографии шоколада и подарков">
-            <?php foreach ($gallery as $photo) : ?><img src="<?php echo esc_url($photo['url']); ?>" alt="<?php echo esc_attr($photo['alt']); ?>" width="560" height="840" loading="lazy" decoding="async"><?php endforeach; ?>
+            <?php foreach ($gallery as $photo) : ?>
+            <div class="cg-gallery-photo"<?php if ($photo['preview'] !== '') : ?> data-cg-progressive style="background-image:url('<?php echo esc_url($photo['preview']); ?>')"<?php endif; ?>><img src="<?php echo esc_url($photo['url']); ?>" alt="<?php echo esc_attr($photo['alt']); ?>" width="560" height="840" loading="lazy" decoding="async" fetchpriority="low"></div>
+            <?php endforeach; ?>
         </div>
         <?php if (count($gallery) > 1) : ?><div class="cg-carousel-controls"><button type="button" data-cg-direction="-1" aria-label="Предыдущие фотографии">‹</button><button type="button" data-cg-direction="1" aria-label="Следующие фотографии">›</button></div><?php endif; ?>
     </section>

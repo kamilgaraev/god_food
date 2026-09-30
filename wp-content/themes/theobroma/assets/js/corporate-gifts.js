@@ -2,6 +2,68 @@
   'use strict';
   const root = document.querySelector('.corporate-redesign');
   if (!root) return;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  root.querySelectorAll('[data-cg-progressive]').forEach(photo => {
+    const image = photo.querySelector('img');
+    const reveal = async () => {
+      try { await image.decode(); } catch (_) { /* Keep the preview if the original fails. */ }
+      if (image.naturalWidth) photo.classList.add('is-ready');
+    };
+    image.addEventListener('load', reveal, { once: true });
+    if (image.complete && image.naturalWidth) reveal();
+  });
+  root.classList.add('cg-media-ready');
+
+  const heroVideo = root.querySelector('[data-cg-video]');
+  const videoToggle = root.querySelector('[data-cg-video-toggle]');
+  if (heroVideo && videoToggle) {
+    let userPaused = false;
+    let userRequested = false;
+    let visible = !('IntersectionObserver' in window);
+    const syncVideoButton = () => {
+      const label = heroVideo.paused ? 'Воспроизвести видео' : 'Пауза';
+      videoToggle.textContent = label;
+      videoToggle.setAttribute('aria-label', heroVideo.paused ? label : 'Приостановить видео');
+      videoToggle.hidden = false;
+    };
+    const playVideo = () => {
+      if (!visible || document.hidden || userPaused || (!userRequested && (reducedMotion.matches || navigator.connection?.saveData))) return;
+      if (!heroVideo.getAttribute('src')) heroVideo.src = heroVideo.dataset.videoSrc;
+      heroVideo.muted = true;
+      heroVideo.play().catch(() => { if (!heroVideo.error) syncVideoButton(); });
+    };
+    heroVideo.addEventListener('playing', () => {
+      heroVideo.classList.add('is-playing');
+      syncVideoButton();
+    });
+    heroVideo.addEventListener('pause', syncVideoButton);
+    heroVideo.addEventListener('error', () => {
+      heroVideo.classList.remove('is-playing');
+      videoToggle.hidden = true;
+    });
+    videoToggle.addEventListener('click', () => {
+      userPaused = !heroVideo.paused;
+      if (userPaused) heroVideo.pause();
+      else { userRequested = true; playVideo(); }
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => {
+        visible = entries[0].isIntersecting;
+        if (visible) playVideo();
+        else heroVideo.pause();
+      }).observe(heroVideo.closest('.cg-hero'));
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) heroVideo.pause();
+      else playVideo();
+    });
+    reducedMotion.addEventListener('change', () => {
+      if (reducedMotion.matches) { userRequested = false; heroVideo.pause(); }
+      else playVideo();
+    });
+    syncVideoButton();
+    playVideo();
+  }
   const dialog = root.querySelector('.cg-dialog');
   const form = root.querySelector('[data-cg-form]');
   const cards = Array.from(root.querySelectorAll('[data-cg-gift]'));
@@ -91,7 +153,6 @@
     new ResizeObserver(sync).observe(track);
     sync();
   });
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   root.querySelectorAll('.cg-faq details').forEach(details => {
     const summary = details.querySelector('summary');
     let animation = null;
