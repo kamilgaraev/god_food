@@ -102,6 +102,14 @@ assert.equal(new Set(plan.seo.map(row => row.description)).size, plan.seo.length
         if (await cookie.isVisible()) await cookie.click();
         await page.locator('h1:visible').first().waitFor({ state: 'visible' });
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width} ${route}: overflow`);
+        if (route === '/product-category/cacao/') {
+          const thumbnails = page.locator('ul.products li.product img');
+          assert.equal(await thumbnails.count(), 3);
+          for (const thumbnail of await thumbnails.all()) {
+            await thumbnail.evaluate(img => img.decode());
+            assert.ok(!(await thumbnail.getAttribute('src')).includes('placeholder'), 'Cacao catalog photo must exist');
+          }
+        }
         if (route.startsWith('/product/')) {
           assert.equal(await page.locator('h1:visible').first().evaluate(node => getComputedStyle(node).textTransform), 'none');
           await page.locator('[data-product-main-image]:visible').first().evaluate(img => img.decode());
@@ -115,9 +123,10 @@ assert.equal(new Set(plan.seo.map(row => row.description)).size, plan.seo.length
       console.log(`${width}: page headings, product images and layout passed`);
     }
     const cart = await browser.newPage({ viewport: { width: 390, height: 1000 } });
-    await cart.goto(base + '/product/theobroma-100-68-coriander/', { waitUntil: 'domcontentloaded' });
+    await cart.goto(base + '/catalog/', { waitUntil: 'domcontentloaded' });
     const cookie = cart.getByRole('button', { name: 'Только необходимые' });
     if (await cookie.isVisible()) await cookie.click();
+    await cart.goto(base + '/product/theobroma-100-68-coriander/', { waitUntil: 'domcontentloaded' });
     await cart.locator('#commerce-modal .single_add_to_cart_button').click();
     const price = cart.locator('#commerce-modal[data-commerce-type="cart"] .commerce-cart-price').first();
     await price.waitFor();

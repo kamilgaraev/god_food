@@ -33,7 +33,7 @@ $backup = ['products' => [], 'posts' => [], 'terms' => [], 'options' => []];
 foreach ($optionKeys as $key) $backup['options'][$key] = get_option($key, null);
 foreach ($products as $p) {
     $backup['products'][$p->get_id()] = ['price' => $p->get_price(), 'regular' => $p->get_regular_price(), 'sale' => $p->get_sale_price(),
-        'sale_from' => $p->get_date_on_sale_from()?->date(DATE_ATOM), 'sale_to' => $p->get_date_on_sale_to()?->date(DATE_ATOM), 'status' => $p->get_status(), 'sku' => $p->get_sku(), 'slug' => $p->get_slug()];
+        'sale_from' => $p->get_date_on_sale_from()?->date(DATE_ATOM), 'sale_to' => $p->get_date_on_sale_to()?->date(DATE_ATOM), 'status' => $p->get_status(), 'sku' => $p->get_sku(), 'slug' => $p->get_slug(), 'image_id' => $p->get_image_id()];
 }
 foreach ($plan['seo'] as $row) {
     if ($row['kind'] === 'site') continue;
@@ -77,6 +77,14 @@ $strawberry->set_sku('theobroma-30-strawberry');
 $strawberry->set_slug('theobroma-30-strawberry');
 $strawberry->set_short_description('С клубникой');
 $strawberry->save();
+$cacao = wc_get_product(82);
+if ($cacao && !$cacao->get_image_id()) {
+    $detailImage = (int) $cacao->get_meta('_theobroma_product_detail_image_id');
+    if ($detailImage && wp_attachment_is_image($detailImage)) {
+        $cacao->set_image_id($detailImage);
+        $cacao->save();
+    }
+}
 $chiaId = wc_get_product_id_by_sku('theobroma-chia-100');
 if ($chiaId) { $chia = wc_get_product($chiaId); $chia->set_status('draft'); $chia->save(); }
 update_option('blogname', 'Theobroma Пища богов');
