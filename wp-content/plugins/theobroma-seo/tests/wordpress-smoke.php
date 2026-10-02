@@ -107,7 +107,7 @@ if ($portraitArticle instanceof WP_Post
     && (int) ($portraitMetadata['height'] ?? 0) > (int) ($portraitMetadata['width'] ?? 0)) {
     $portraitDocument = $resolver->forPost($portraitArticle);
     $portraitHtml = (new MetadataRenderer())->render($portraitDocument);
-    $expectedPreview = get_theme_file_uri('assets/images/social-preview.jpg');
+    $expectedPreview = get_option('theobroma_seo_social_image', '') ?: get_theme_file_uri('assets/images/social-preview.jpg');
     if ($portraitDocument->imageUrl !== $expectedPreview
         || !str_contains($portraitHtml, 'property="og:image:width" content="1200"')
         || !str_contains($portraitHtml, 'property="og:image:height" content="630"')) {

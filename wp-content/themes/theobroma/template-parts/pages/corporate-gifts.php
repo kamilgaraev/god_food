@@ -45,7 +45,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
         <button class="cg-video-toggle" type="button" data-cg-video-toggle hidden>Воспроизвести видео</button>
         <div class="cg-shell cg-hero-content">
             <p class="cg-eyebrow">Корпоративные подарки · Своя фабрика</p>
-            <h1 id="cg-title">Подарок,<br><em>который<br>запоминают</em></h1>
+            <h1 id="cg-title">Подарок,<br> <em>который<br> запоминают</em></h1>
             <p class="cg-intro">Натуральный шоколад без белого сахара.<br>Приятно подарить и получить в подарок.</p>
             <div class="cg-hero-actions"><a class="button" href="#corporate-request">Рассчитать заказ</a><?php if ($catalog_url !== '') : ?><a class="button" href="<?php echo $catalog_url; ?>" download>Скачать презентацию</a><?php endif; ?></div>
         </div>

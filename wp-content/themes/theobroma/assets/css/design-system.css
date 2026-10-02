@@ -73,10 +73,14 @@ body :is(.buy-location h2, .recipe-card h2, .cooperation-benefits h3,
   font-weight:400; line-height:1.15; letter-spacing:normal;
   text-transform:uppercase; color:var(--ds-title); height:auto; white-space:normal;
 }
-body :is(.home-product-card h3, .home-product-card h3 a,
-  .product-detail-summary h1, .market-product h2) {
+body :is(.home-product-card h3, .home-product-card h3 a, .market-product h2) {
   font:500 14px/1.35 var(--ds-text) !important;
   letter-spacing:normal !important; text-transform:uppercase !important;
+  color:var(--ds-ink) !important; height:auto; overflow-wrap:break-word;
+}
+body .product-detail-summary h1 {
+  font:500 14px/1.35 var(--ds-text) !important;
+  letter-spacing:normal !important; text-transform:none !important;
   color:var(--ds-ink) !important; height:auto; overflow-wrap:break-word;
 }
 body :is(.product-related > h2, .media-article-products h2, .media-article-related h2) {

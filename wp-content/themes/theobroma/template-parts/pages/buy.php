@@ -7,7 +7,7 @@ $partners = function_exists('theobroma_buy_get_entries') ? theobroma_buy_get_ent
         <div class="buy-decor buy-decor-left" aria-hidden="true"></div>
         <div class="buy-decor buy-decor-right" aria-hidden="true"></div>
         <nav class="buy-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Где купить</strong></nav>
-        <h1><em>Покупайте</em> нашу продукцию</h1>
+        <h1><?php echo theobroma_seo_heading_markup('Где купить шоколад Theobroma Пища богов', 'Где купить'); ?></h1>
         <p class="buy-lead">В розничных и интернет магазинах наших партнёров</p>
 
         <nav class="buy-tabs" role="tablist" aria-label="Тип магазина">

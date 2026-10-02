@@ -27,8 +27,8 @@ final class MetadataRenderer
             if (str_starts_with($document->imageUrl, 'https://')) {
                 $lines[] = $this->meta('property', 'og:image:secure_url', $document->imageUrl);
             }
-            if (str_ends_with($document->imageUrl, '/social-preview.jpg')) {
-                $lines[] = $this->meta('property', 'og:image:type', 'image/jpeg');
+            if (preg_match('~/social-preview(?:-\d+)?\.(jpg|png)$~', $document->imageUrl, $preview)) {
+                $lines[] = $this->meta('property', 'og:image:type', $preview[1] === 'png' ? 'image/png' : 'image/jpeg');
                 $lines[] = $this->meta('property', 'og:image:width', '1200');
                 $lines[] = $this->meta('property', 'og:image:height', '630');
             }

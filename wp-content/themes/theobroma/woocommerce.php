@@ -23,7 +23,7 @@ $cacao_percentage = $is_catalog ? theobroma_requested_cacao_percentage() : null;
 <main class="shop-page<?php echo $is_catalog ? ' catalog-page catalog-group-' . esc_attr($catalog_group) : ''; ?>"><div class="shop-shell">
     <?php if ($is_catalog) : ?>
         <nav class="catalog-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Продукция Пища богов</strong></nav>
-        <h1 class="catalog-title">Продукция Пища богов</h1>
+        <h1 class="catalog-title"><?php echo esc_html(theobroma_seo_heading('Продукция Пища богов')); ?></h1>
         <nav class="catalog-filters" aria-label="Категории товаров">
             <?php foreach ($catalog_categories as $catalog_category) :
                 $category_slug = $catalog_category->slug;

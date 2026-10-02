@@ -698,12 +698,30 @@ function theobroma_frontend_product_title(string $title, int $post_id): string {
 add_filter('the_title', 'theobroma_frontend_product_title', 10, 2);
 
 function theobroma_product_modal_title(WC_Product $product): string {
+    $heading = trim((string) $product->get_meta('_theobroma_seo_h1', true));
+    if ($heading !== '') return $heading;
     $title = $product->get_name();
     if (has_term(array('cacao', 'chia'), 'product_cat', $product->get_id())) {
         return $title;
     }
 
     return theobroma_frontend_product_title($title, $product->get_id());
+}
+
+function theobroma_seo_heading(string $fallback): string {
+    $post_id = function_exists('is_shop') && is_shop() ? wc_get_page_id('shop') : get_queried_object_id();
+    $heading = is_tax('product_cat')
+        ? get_term_meta(get_queried_object_id(), '_theobroma_seo_h1', true)
+        : get_post_meta($post_id, '_theobroma_seo_h1', true);
+    return trim((string) $heading) ?: $fallback;
+}
+
+function theobroma_seo_heading_markup(string $fallback, string $accent = ''): string {
+    $heading = theobroma_seo_heading($fallback);
+    if ($accent !== '' && str_starts_with($heading, $accent)) {
+        return '<em>' . esc_html($accent) . '</em>' . esc_html(substr($heading, strlen($accent)));
+    }
+    return esc_html($heading);
 }
 
 function theobroma_product_benefit_title(WC_Product $product): string {

@@ -10,6 +10,7 @@ final class Plugin
     {
         add_action('wp_head', [self::class, 'renderHead'], 2);
         add_action('template_redirect', [self::class, 'serveLlms'], 0);
+        add_action('template_redirect', [self::class, 'legacyRedirects'], 0);
         add_filter('document_title_parts', [self::class, 'titleParts']);
         add_filter('wp_robots', [self::class, 'robots']);
         add_filter('wp_sitemaps_add_provider', [self::class, 'sitemapProvider'], 10, 2);
@@ -50,6 +51,19 @@ final class Plugin
         exit;
     }
 
+    public static function legacyRedirects(): void
+    {
+        if (is_admin() || !in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) return;
+        $path = rawurldecode((string) wp_parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH));
+        $path = '/' . trim($path, '/') . '/';
+        foreach ((array) get_option('theobroma_seo_redirects', []) as $source => $target) {
+            if ($path !== '/' . trim(rawurldecode((string) $source), '/') . '/') continue;
+            if (!is_string($target) || !str_starts_with($target, '/') || str_starts_with($target, '//') || str_contains($target, '\\')) return;
+            wp_safe_redirect(home_url($target), 301, 'Theobroma SEO');
+            exit;
+        }
+    }
+
     /** @param array<string, string> $parts
      *  @return array<string, string>
      */
@@ -58,10 +72,14 @@ final class Plugin
         if (is_front_page()) {
             return ['title' => (new WordPressDocumentResolver())->forSite()->title];
         }
+        if ((function_exists('is_shop') && is_shop()) || is_tax('product_cat')) {
+            $document = (new WordPressDocumentResolver())->current();
+            if ($document) return ['title' => $document->title];
+        }
         if (is_singular()) {
             $custom = trim((string) get_post_meta(get_queried_object_id(), '_theobroma_seo_title', true));
             if ($custom !== '') {
-                $parts['title'] = $custom;
+                return ['title' => $custom];
             } elseif (is_singular('product') && function_exists('wc_get_product')) {
                 $product = wc_get_product(get_queried_object_id());
                 if ($product instanceof \WC_Product) {

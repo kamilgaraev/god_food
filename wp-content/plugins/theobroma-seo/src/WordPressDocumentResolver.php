@@ -51,7 +51,7 @@ final class WordPressDocumentResolver
             'Каталог натурального пористого шоколада и какао Theobroma. Доставка заказов по России.'
         );
         $url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/catalog/');
-        $image = $shopId > 0 ? $this->customValue($shopId, '_theobroma_seo_og_image') : '';
+        $image = $this->globalSocialImage() ?: ($shopId > 0 ? $this->customValue($shopId, '_theobroma_seo_og_image') : '');
         if ($image === '') {
             $image = $this->socialImageForAttachment($shopId > 0 ? (int) get_post_thumbnail_id($shopId) : 0);
         }
@@ -62,27 +62,31 @@ final class WordPressDocumentResolver
             canonicalUrl: is_string($url) ? $url : home_url('/catalog/'),
             type: 'website',
             siteName: $this->siteName(),
-            imageUrl: esc_url_raw($image)
+            imageUrl: esc_url_raw($image),
+            schema: (new SchemaFactory())->collection($title, $description, (string) $url, $this->catalogItems())
         );
     }
 
     public function forProductCategory(\WP_Term $term): SeoDocument
     {
         $url = get_term_link($term);
+        $title = trim((string) get_term_meta($term->term_id, '_theobroma_seo_title', true)) ?: $term->name;
+        $customDescription = trim((string) get_term_meta($term->term_id, '_theobroma_seo_description', true));
         $description = $this->description(
-            $term->description,
+            $customDescription ?: $term->description,
             sprintf('%s — натуральный шоколад Theobroma. Выберите вкус и закажите с доставкой по России.', $term->name)
         );
         $thumbnailId = (int) get_term_meta($term->term_id, 'thumbnail_id', true);
         $image = $this->socialImageForAttachment($thumbnailId);
 
         return new SeoDocument(
-            title: $term->name,
+            title: $title,
             description: $description,
             canonicalUrl: is_string($url) ? $url : home_url('/catalog/'),
             type: 'website',
             siteName: $this->siteName(),
-            imageUrl: $image
+            imageUrl: $image,
+            schema: (new SchemaFactory())->collection($title, $description, (string) $url, $this->catalogItems())
         );
     }
 
@@ -102,7 +106,7 @@ final class WordPressDocumentResolver
 
         $images = [];
         foreach (array_slice(array_values(array_filter(array_merge(
-            [$product->get_image_id()],
+            [$product->get_image_id(), (int) $product->get_meta('_theobroma_product_detail_image_id')],
             $product->get_gallery_image_ids()
         ))), 0, 9) as $attachmentId) {
             $url = wp_get_attachment_image_url((int) $attachmentId, 'full');
@@ -111,16 +115,12 @@ final class WordPressDocumentResolver
             }
         }
         $customImage = $this->customValue($postId, '_theobroma_seo_og_image');
-        if ($customImage !== '') {
-            array_unshift($images, esc_url_raw($customImage));
-            $images = array_values(array_unique($images));
-        }
 
         $url = get_permalink($postId);
         $url = is_string($url) ? $url : home_url('/');
         $price = number_format((float) $product->get_price(), wc_get_price_decimals(), '.', '');
         $schema = (new SchemaFactory())->product([
-            'name' => $title,
+            'name' => $this->customValue($postId, '_theobroma_seo_h1') ?: $product->get_name(),
             'description' => $description,
             'url' => $url,
             'sku' => $product->get_sku(),
@@ -130,9 +130,9 @@ final class WordPressDocumentResolver
             'in_stock' => $product->is_in_stock(),
         ]);
 
-        $socialImage = $customImage !== ''
+        $socialImage = $this->globalSocialImage() ?: ($customImage !== ''
             ? esc_url_raw($customImage)
-            : $this->socialImageForAttachment((int) ($product->get_image_id() ?: ($product->get_gallery_image_ids()[0] ?? 0)));
+            : $this->socialImageForAttachment((int) ($product->get_image_id() ?: ($product->get_gallery_image_ids()[0] ?? 0))));
 
         return new SeoDocument(
             title: $title,
@@ -182,11 +182,13 @@ final class WordPressDocumentResolver
         $image = $this->customValue($post->ID, '_theobroma_seo_og_image');
         $featured = get_the_post_thumbnail_url($post, 'full');
         $articleImage = $image !== '' ? $image : (is_string($featured) ? $featured : $this->defaultImage());
-        if ($image === '') {
+        if ($this->globalSocialImage() !== '') {
+            $image = $this->globalSocialImage();
+        } elseif ($image === '') {
             $image = $this->socialImageForAttachment((int) get_post_thumbnail_id($post));
         }
 
-        $schema = [];
+        $schema = (new SchemaFactory())->page($title, $description, $url);
         $type = 'website';
         if ($post->post_type === 'page' && $post->post_name === 'corporate-gifts' && function_exists('theobroma_corporate_questions')) {
             $schema = (new SchemaFactory())->faq(theobroma_corporate_questions(), $url);
@@ -203,7 +205,19 @@ final class WordPressDocumentResolver
                 'date_modified' => get_post_modified_time(DATE_W3C, true, $post),
                 'author' => is_string($author) && $author !== '' ? $author : 'Редакция Пища Богов',
                 'logo' => $this->logoUrl(),
+                'publisher' => $this->siteName(),
             ]);
+        }
+        if ($post->post_type === 'theobroma_recipe') {
+            $schema = $this->recipeSchema($post, $description, $url);
+        }
+        if ($post->post_type === 'page' && in_array($post->post_name, ['media', 'recipes'], true)) {
+            $items = [];
+            foreach (get_posts(['post_type' => $post->post_name === 'media' ? 'post' : 'theobroma_recipe',
+                'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'menu_order date', 'order' => 'ASC']) as $entry) {
+                $items[] = ['name' => $entry->post_title, 'url' => (string) get_permalink($entry)];
+            }
+            $schema = (new SchemaFactory())->collection($title, $description, $url, $items);
         }
 
         return new SeoDocument(
@@ -221,13 +235,13 @@ final class WordPressDocumentResolver
     {
         $url = home_url('/');
         $description = $this->description(
-            (string) get_option('blogdescription', ''),
+            (string) get_option('theobroma_seo_home_description', get_option('blogdescription', '')),
             'Натуральный пористый шоколад Theobroma — интернет-магазин «Пища Богов».'
         );
         $logo = $this->logoUrl();
 
         return new SeoDocument(
-            title: 'Натуральный пористый шоколад — Theobroma Пища Богов',
+            title: (string) get_option('theobroma_seo_home_title', 'Натуральный пористый шоколад — Theobroma Пища Богов'),
             description: $description,
             canonicalUrl: $url,
             type: 'website',
@@ -271,11 +285,17 @@ final class WordPressDocumentResolver
 
     private function defaultImage(): string
     {
-        return esc_url_raw(get_theme_file_uri('assets/images/social-preview.jpg'));
+        return $this->globalSocialImage() ?: esc_url_raw(get_theme_file_uri('assets/images/social-preview.jpg'));
+    }
+
+    private function globalSocialImage(): string
+    {
+        return esc_url_raw(trim((string) get_option('theobroma_seo_social_image', '')));
     }
 
     private function socialImageForAttachment(int $attachmentId): string
     {
+        if ($this->globalSocialImage() !== '') return $this->globalSocialImage();
         if ($attachmentId <= 0) {
             return $this->defaultImage();
         }
@@ -294,6 +314,40 @@ final class WordPressDocumentResolver
         }
 
         return esc_url_raw($image);
+    }
+
+    /** @return list<array{name:string,url:string}> */
+    private function catalogItems(): array
+    {
+        $items = [];
+        foreach (($GLOBALS['wp_query']->posts ?? []) as $post) {
+            if (!$post instanceof \WP_Post || $post->post_type !== 'product' || $post->post_status !== 'publish') continue;
+            $items[] = ['name' => $post->post_title, 'url' => (string) get_permalink($post)];
+        }
+        return $items;
+    }
+
+    private function recipeSchema(\WP_Post $post, string $description, string $url): array
+    {
+        $readRows = static function(string $key) use ($post): array {
+            $value = get_post_meta($post->ID, $key, true);
+            return is_array($value) ? $value : (json_decode((string) $value, true) ?: []);
+        };
+        $ingredients = [];
+        foreach ($readRows('_theobroma_ingredients') as $row) {
+            if (trim((string) ($row['name'] ?? '')) !== '') $ingredients[] = trim(($row['amount'] ?? '') . ' ' . $row['name']);
+        }
+        $steps = [];
+        foreach ($readRows('_theobroma_steps') as $row) {
+            if (trim((string) ($row['text'] ?? '')) !== '') $steps[] = $row['text'];
+        }
+        $imageId = (int) get_post_meta($post->ID, '_theobroma_detail_image_id', true);
+        $image = $imageId ? wp_get_attachment_image_url($imageId, 'full') : '';
+        if (!$image) $image = get_theme_file_uri('assets/images/' . basename((string) get_post_meta($post->ID, '_theobroma_image', true)));
+        preg_match('/^(\d+)\s*мин/u', (string) get_post_meta($post->ID, '_theobroma_cooking_time', true), $time);
+        return (new SchemaFactory())->recipe(['name' => $this->customValue($post->ID, '_theobroma_seo_h1') ?: $post->post_title,
+            'description' => $description, 'url' => $url, 'image' => (string) $image, 'author' => $this->siteName(),
+            'ingredients' => $ingredients, 'steps' => $steps, 'minutes' => (int) ($time[1] ?? 0)]);
     }
 
     private function logoUrl(): string
