@@ -199,11 +199,11 @@
         reveal.unobserve(entry.target);
         if (reducedMotion.matches || entry.target.contains(document.activeElement)) return;
         const siblings = Array.from(entry.target.parentElement.children);
-        const stagger = entry.target.matches('.cg-gift,.cg-detail-grid article') ? (siblings.indexOf(entry.target) % 3) * 70 : 0;
+        const stagger = entry.target.matches('.cg-gift,.cg-detail-grid article') ? (siblings.indexOf(entry.target) % 3) * 100 : 0;
         const animation = entry.target.animate([
-          { opacity:0, transform:'translateY(18px)' },
-          { opacity:1, transform:'translateY(0)' },
-        ], { duration:500, delay:stagger, easing:'cubic-bezier(.2,.65,.3,1)', fill:'backwards' });
+          { transform:'translateY(10px)' },
+          { transform:'translateY(0)' },
+        ], { duration:900, delay:stagger, easing:'cubic-bezier(.22,.61,.36,1)', fill:'backwards' });
         activeAnimations.add(animation);
         animation.finished.then(() => activeAnimations.delete(animation), () => activeAnimations.delete(animation));
       });
