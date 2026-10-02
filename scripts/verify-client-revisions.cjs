@@ -6,6 +6,7 @@ const plan = require('../data/releases/2026-10-02-client-revisions.json');
 const base = process.env.SITE_URL || 'https://theobroma.one';
 const image = base + '/wp-content/themes/theobroma/assets/images/social-preview-20261002.png';
 const normalize = value => value.replace(/\s+/g, ' ').trim();
+assert.equal(new Set(plan.seo.map(row => row.description)).size, plan.seo.length, 'Unique page descriptions');
 
 (async () => {
   const api = await request.newContext();
@@ -103,13 +104,25 @@ const normalize = value => value.replace(/\s+/g, ' ').trim();
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width} ${route}: overflow`);
         if (route.startsWith('/product/')) {
           assert.equal(await page.locator('h1:visible').first().evaluate(node => getComputedStyle(node).textTransform), 'none');
-          await page.locator('[data-product-main-image]').first().evaluate(img => img.decode());
+          await page.locator('[data-product-main-image]:visible').first().evaluate(img => img.decode());
         }
+        await page.evaluate(() => Promise.all(document.getAnimations().filter(animation =>
+          animation.effect.getComputedTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))));
         await page.screenshot({ path: path.join(output, `${width}-${route.split('/').filter(Boolean).join('-')}.png`) });
       }
       assert.deepEqual(errors, []);
       await page.close();
       console.log(`${width}: page headings, product images and layout passed`);
     }
+    const cart = await browser.newPage({ viewport: { width: 390, height: 1000 } });
+    await cart.goto(base + '/product/theobroma-100-68-coriander/', { waitUntil: 'domcontentloaded' });
+    const cookie = cart.getByRole('button', { name: 'Только необходимые' });
+    if (await cookie.isVisible()) await cookie.click();
+    await cart.locator('#commerce-modal .single_add_to_cart_button').click();
+    const price = cart.locator('#commerce-modal[data-commerce-type="cart"] .commerce-cart-price').first();
+    await price.waitFor();
+    assert.match(await price.innerText(), /780\s*(?:р|₽)/, 'New price must reach the actual shopping cart');
+    console.log('Cart: coriander 100 g costs 780 RUB');
+    await cart.close();
   } finally { await parser.close(); await browser.close(); await api.dispose(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
