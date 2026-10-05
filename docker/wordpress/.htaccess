@@ -1,3 +1,9 @@
+# Standalone links page: serve the supplied HTML without a WordPress page record.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^linkpage/?$ wp-content/linkpage/index.html [END]
+</IfModule>
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
