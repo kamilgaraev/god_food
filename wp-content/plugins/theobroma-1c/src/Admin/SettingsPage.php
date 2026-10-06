@@ -30,7 +30,7 @@ final class SettingsPage
         if ($hook !== self::SCREEN) {
             return;
         }
-        wp_enqueue_style('theobroma-1c-admin', plugins_url('assets/admin.css', THEOBROMA_1C_FILE), [], '0.2.0');
+        wp_enqueue_style('theobroma-1c-admin', plugins_url('assets/admin.css', THEOBROMA_1C_FILE), [], '0.3.1');
         wp_enqueue_style('theobroma-1c-directions', plugins_url('assets/directions.css', THEOBROMA_1C_FILE), ['theobroma-1c-admin'], '0.3.0');
     }
 
@@ -64,18 +64,20 @@ final class SettingsPage
         $directionsEnabled = $settings['export_orders'] || $settings['import_order_statuses'] || $settings['import_stock'] || $settings['import_prices'];
         $ready = $settings['enabled'] && $configured && $directionsEnabled;
         $url = home_url('/theobroma-1c/exchange');
+        $checkAuthUrl = add_query_arg(['type' => 'sale', 'mode' => 'checkauth'], $url);
 
         echo '<div class="wrap theobroma-1c">';
         echo '<header class="theobroma-1c__hero">';
         echo '<div><p class="theobroma-1c__eyebrow">WooCommerce · CommerceML 2.05</p><h1>Интеграция с 1С</h1><p class="theobroma-1c__lead">Передача оплаченных заказов из интернет-магазина в 1С.</p></div>';
         echo '<span class="theobroma-1c-status ' . ($ready ? 'is-ready' : 'is-pending') . '"><span aria-hidden="true"></span>' . ($ready ? 'Обмен готов' : 'Требуется настройка') . '</span>';
         echo '</header>';
-        echo '<section class="theobroma-1c-endpoint"><div><span>URL для разработчиков 1С</span><code>' . esc_html($url) . '</code></div><a class="button" href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">Проверить URL</a></section>';
+        echo '<section class="theobroma-1c-endpoint"><div><span>Базовый URL для настройки обмена в 1С</span><code>' . esc_html($url) . '</code></div><a class="button" href="' . esc_url($checkAuthUrl) . '" target="_blank" rel="noopener noreferrer">Проверить авторизацию</a></section>';
 
         echo '<div class="theobroma-1c__grid">';
         $this->connection($settings);
         $this->diagnostics();
         echo '</div>';
+        $this->protocol($checkAuthUrl);
         $this->history();
         $this->import();
         echo '</div>';
@@ -108,6 +110,47 @@ final class SettingsPage
             echo '<li class="' . ($passed ? 'is-passed' : 'is-failed') . '"><span class="dashicons ' . ($passed ? 'dashicons-yes-alt' : 'dashicons-warning') . '" aria-hidden="true"></span><span>' . esc_html($label) . '</span><strong>' . ($passed ? 'Готово' : 'Проверьте') . '</strong></li>';
         }
         echo '</ul><div class="theobroma-1c-note"><strong>Что передать разработчикам 1С</strong><span>URL обмена, логин, пароль и тип обмена <code>sale</code>.</span></div></section>';
+    }
+
+    private function protocol(string $checkAuthUrl): void
+    {
+        echo '<section class="theobroma-1c-card theobroma-1c-protocol" aria-labelledby="theobroma-1c-protocol-title">';
+        echo '<div class="theobroma-1c-card__head"><span class="dashicons dashicons-media-code" aria-hidden="true"></span><div><h2 id="theobroma-1c-protocol-title">Параметры запросов 1С</h2><p>Памятка для подключения и проверки обмена CommerceML.</p></div></div>';
+        echo '<div class="theobroma-1c-note"><strong>Перед первой проверкой</strong><span>Включите интеграцию, задайте отдельные логин и пароль обмена и сохраните настройки. В 1С укажите базовый URL из верхнего блока: параметры запросов 1С добавляет сама.</span></div>';
+        echo '<h3>Параметры URL</h3><div class="theobroma-1c-table-wrap" tabindex="0" role="region" aria-label="Параметры URL обмена"><table><thead><tr><th scope="col">Параметр</th><th scope="col">Значения</th><th scope="col">Назначение</th></tr></thead><tbody>';
+        foreach ([
+            ['type', '<code>sale</code>, <code>catalog</code>', 'Обязателен. sale — экспорт заказов и импорт их статусов; catalog — импорт остатков и цен.'],
+            ['mode', 'См. режимы ниже', 'Обязателен. Определяет этап обмена.'],
+            ['filename', 'Например, <code>import.xml</code>', 'Нужен для file и import. Одинаковое имя при загрузке и обработке: латинские буквы, цифры, точки, дефисы и подчёркивания, расширение .xml. Без пути и пробелов.'],
+        ] as [$parameter, $values, $description]) {
+            echo '<tr><th scope="row"><code>' . esc_html($parameter) . '</code></th><td>' . $values . '</td><td>' . esc_html($description) . '</td></tr>';
+        }
+        echo '</tbody></table></div>';
+        echo '<h3>Режимы обмена</h3><div class="theobroma-1c-table-wrap" tabindex="0" role="region" aria-label="Режимы обмена 1С"><table><thead><tr><th scope="col">mode</th><th scope="col">type</th><th scope="col">Что делает запрос</th></tr></thead><tbody>';
+        foreach ([
+            ['checkauth', 'sale, catalog', 'Проверяет логин и пароль. При успехе возвращает success, имя cookie и значение сессии.'],
+            ['init', 'sale, catalog', 'Возвращает zip=no и file_limit — максимальный размер XML в байтах. ZIP не поддерживается.'],
+            ['query', 'sale', 'Выгружает пакет оплаченных заказов в XML. Требует включённого экспорта заказов.'],
+            ['success', 'sale', 'Подтверждает получение предыдущего пакета заказов. Вызывается 1С после успешной обработки выгрузки.'],
+            ['file', 'sale, catalog', 'Загружает XML: POST, содержимое файла в теле запроса и filename в URL. Для sale включите импорт статусов; для catalog — импорт остатков или цен.'],
+            ['import', 'sale, catalog', 'Обрабатывает загруженный XML с тем же filename. Применяет только включённые направления импорта.'],
+        ] as [$mode, $type, $description]) {
+            echo '<tr><th scope="row"><code>' . esc_html($mode) . '</code></th><td>' . esc_html($type) . '</td><td>' . esc_html($description) . '</td></tr>';
+        }
+        echo '</tbody></table></div>';
+        echo '<h3>Авторизация и сессия</h3><p>Каждый запрос передаёт логин и пароль обмена через HTTP Basic Auth в заголовке <code>Authorization</code>. Учётная запись администратора WordPress для этого не используется. После <code>checkauth</code> 1С передаёт полученную cookie <code>theobroma_1c_session</code> в следующих запросах той же сессии.</p>';
+        echo '<h3>Пример проверки авторизации</h3><div class="theobroma-1c-protocol__example"><code>' . esc_html($checkAuthUrl) . '</code></div><p>Кнопка «Проверить авторизацию» открывает этот запрос. Если браузер запросит учётные данные, введите логин и пароль обмена. Успешный ответ начинается с <code>success</code>.</p>';
+        echo '<h3>Что означают ответы</h3><dl class="theobroma-1c-protocol__responses">';
+        foreach ([
+            ['400 · Unsupported type', 'URL открыт без type или с неподдерживаемым значением. Открытие одного базового URL не проверяет готовность обмена.'],
+            ['400 · Unsupported mode', 'Для выбранного type указан неподдерживаемый mode.'],
+            ['503 · Exchange disabled', 'Плагин активен, но интеграция выключена в настройках подключения.'],
+            ['401 · Unauthorized', 'Логин и пароль обмена не переданы или неверны.'],
+            ['429 · Too many authentication attempts', 'После пяти неверных попыток авторизации нужно подождать 15 минут.'],
+        ] as [$response, $description]) {
+            echo '<div><dt><code>' . esc_html($response) . '</code></dt><dd>' . esc_html($description) . '</dd></div>';
+        }
+        echo '</dl></section>';
     }
 
     private function history(): void
