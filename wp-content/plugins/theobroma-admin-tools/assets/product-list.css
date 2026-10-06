@@ -1,4 +1,8 @@
 @media screen and (min-width: 783px) {
+    .post-type-product #posts-filter {
+        overflow-x: auto;
+    }
+
     /* Let extra columns participate in sizing instead of receiving zero width. */
     .post-type-product .wp-list-table {
         table-layout: auto;
@@ -6,6 +10,20 @@
 
     .post-type-product .wp-list-table .column-name {
         width: auto;
+        min-width: 16em;
+    }
+
+    .post-type-product .wp-list-table .column-product_cat,
+    .post-type-product .wp-list-table .column-product_tag {
+        width: 8% !important;
+    }
+
+    .post-type-product .wp-list-table .column-taxonomy-product_brand {
+        width: 6%;
+    }
+
+    .post-type-product .wp-list-table .column-date {
+        width: 10%;
     }
 
     .post-type-product .wp-list-table .column-theobroma_sku {
@@ -14,6 +32,7 @@
 
     .post-type-product .wp-list-table .column-theobroma_source {
         width: 9em;
+        min-width: 8em;
     }
 
     .post-type-product .wp-list-table .column-sku,
