@@ -215,10 +215,12 @@ add_filter('script_loader_tag', 'theobroma_noncritical_script_priority', 10, 2);
 
 function theobroma_preload_critical_fonts(): void {
     $font_base = get_template_directory_uri() . '/assets/fonts/';
-    printf(
-        '<link rel="icon" href="%s" type="image/webp">' . "\n",
-        esc_url(get_template_directory_uri() . '/assets/images/logo.webp')
-    );
+    if (!has_site_icon()) {
+        printf(
+            '<link rel="icon" href="%s" type="image/webp">' . "\n",
+            esc_url(get_template_directory_uri() . '/assets/images/logo.webp')
+        );
+    }
     foreach (array('montserrat-cyrillic.woff2', 'cormorant-cyrillic-variable.woff2') as $font) {
         printf(
             '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
