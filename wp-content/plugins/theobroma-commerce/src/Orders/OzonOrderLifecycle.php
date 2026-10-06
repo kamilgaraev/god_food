@@ -48,6 +48,7 @@ final class OzonOrderLifecycle
         }
 
         try {
+            $payload = (new \Theobroma\Commerce\Checkout\OzonCourierAddress())->apply($payload, $order->get_address('shipping'), $order->get_address('billing'));
             $client = (new OzonClientFactory(new WpTransport(), new WordPressTokenStore()))->clientFromSettings($settings);
             (new OzonOrderService($client))->create(new WooShipmentOrder($order), true, $payload);
         } catch (\Throwable $exception) {
