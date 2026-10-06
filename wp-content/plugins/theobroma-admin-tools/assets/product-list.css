@@ -1,5 +1,6 @@
 @media screen and (min-width: 783px) {
     .post-type-product #posts-filter {
+        clear: both;
         overflow-x: auto;
     }
 
