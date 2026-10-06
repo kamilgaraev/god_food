@@ -211,7 +211,7 @@ final class DeliveryCheckoutController
                     $delivery = ['courier' => ['coordinates' => ['latitude' => (float) $latitude, 'longitude' => (float) $longitude]]];
                 }
                 $buyer = $this->person($request);
-                $quote = $ozon->quote($buyer, $delivery, $items, $buyer);
+                $quote = $ozon->quote($buyer, $delivery, $items, $buyer, $destination);
             }
 
             $selection = DeliverySelection::fromArray([
