@@ -431,6 +431,10 @@ final class Theobroma_Admin_Tools {
 
     public static function render_product_box(WP_Post $post): void {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
+        printf(
+            '<p><label><input type="checkbox" name="theobroma_bestseller" value="1"%s> Бестселлер</label></p><p class="description">Показывать метку «Бестселлер» на карточках этого товара.</p>',
+            checked(get_post_meta($post->ID, '_theobroma_bestseller', true), '1', false)
+        );
         $detail_image_id = absint(get_post_meta($post->ID, '_theobroma_product_detail_image_id', true));
         $copy = get_post_meta($post->ID, '_theobroma_detail_copy', true);
         $copy_text = is_array($copy) ? implode("\n\n", $copy) : '';
@@ -611,6 +615,7 @@ final class Theobroma_Admin_Tools {
         if (!self::can_save($post_id)) {
             return;
         }
+        update_post_meta($post_id, '_theobroma_bestseller', ($_POST['theobroma_bestseller'] ?? '') === '1' ? '1' : '0');
         update_post_meta($post_id, '_theobroma_product_detail_image_id', absint($_POST['theobroma_product_detail_image_id'] ?? 0));
         $copy_raw = isset($_POST['theobroma_detail_copy']) ? sanitize_textarea_field(wp_unslash($_POST['theobroma_detail_copy'])) : '';
         $copy = theobroma_parse_detail_copy($copy_raw);
