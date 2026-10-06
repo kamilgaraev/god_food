@@ -80,8 +80,8 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
         </div>
         <?php if ($homepage_products) : ?>
             <div class="home-product-grid">
-                <?php foreach ($homepage_products as $index => $homepage_product) : ?>
-                    <?php get_template_part('template-parts/home/product-card', null, array('product' => $homepage_product, 'bestseller' => $index === 0)); ?>
+                <?php foreach ($homepage_products as $homepage_product) : ?>
+                    <?php get_template_part('template-parts/home/product-card', null, array('product' => $homepage_product)); ?>
                 <?php endforeach; ?>
             </div>
         <?php else : ?>
