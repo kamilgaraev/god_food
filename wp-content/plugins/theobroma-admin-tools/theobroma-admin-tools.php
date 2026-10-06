@@ -45,9 +45,10 @@ final class Theobroma_Admin_Tools {
         add_action('save_post_theobroma_recipe', array(self::class, 'save_recipe_fields'));
         add_action('admin_enqueue_scripts', array(self::class, 'enqueue_recipe_assets'));
         add_action('admin_enqueue_scripts', array(self::class, 'enqueue_content_settings_assets'));
+        add_action('admin_enqueue_scripts', array(self::class, 'enqueue_product_list_assets'), 20);
         add_filter('use_block_editor_for_post_type', array(self::class, 'use_classic_recipe_editor'), 10, 2);
         add_filter('wp_insert_post_data', array(self::class, 'append_new_recipe'), 10, 2);
-        add_filter('manage_product_posts_columns', array(self::class, 'add_product_columns'));
+        add_filter('manage_product_posts_columns', array(self::class, 'add_product_columns'), 20);
         add_action('manage_product_posts_custom_column', array(self::class, 'render_product_column'), 10, 2);
     }
 
@@ -525,6 +526,19 @@ final class Theobroma_Admin_Tools {
         );
     }
 
+    public static function enqueue_product_list_assets(string $hook): void {
+        $screen = get_current_screen();
+        if ($hook !== 'edit.php' || !$screen || $screen->post_type !== 'product') {
+            return;
+        }
+        wp_enqueue_style(
+            'theobroma-product-list',
+            plugin_dir_url(__FILE__) . 'assets/product-list.css',
+            array('list-tables'),
+            (string) filemtime(plugin_dir_path(__FILE__) . 'assets/product-list.css')
+        );
+    }
+
     public static function render_recipe_box(WP_Post $post): void {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
         $ingredients = self::decode_rows($post->ID, '_theobroma_ingredients');
@@ -727,7 +741,9 @@ final class Theobroma_Admin_Tools {
     }
 
     public static function add_product_columns(array $columns): array {
-        $columns['theobroma_sku'] = 'Артикул';
+        if (!isset($columns['sku'])) {
+            $columns['theobroma_sku'] = 'Артикул';
+        }
         $columns['theobroma_source'] = 'Данные оригинала';
         return $columns;
     }
