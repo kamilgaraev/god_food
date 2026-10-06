@@ -1,0 +1,28 @@
+@media screen and (min-width: 783px) {
+    /* Let extra columns participate in sizing instead of receiving zero width. */
+    .post-type-product .wp-list-table {
+        table-layout: auto;
+    }
+
+    .post-type-product .wp-list-table .column-name {
+        width: auto;
+    }
+
+    .post-type-product .wp-list-table .column-theobroma_sku {
+        width: 10%;
+    }
+
+    .post-type-product .wp-list-table .column-theobroma_source {
+        width: 9em;
+    }
+
+    .post-type-product .wp-list-table .column-sku,
+    .post-type-product .wp-list-table .column-theobroma_sku {
+        overflow-wrap: anywhere;
+    }
+
+    .post-type-product .wp-list-table th.column-theobroma_source {
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+}

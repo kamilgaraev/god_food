@@ -24,6 +24,13 @@ function esc_attr(mixed $value): string { return htmlspecialchars((string) $valu
 function esc_html(mixed $value): string { return htmlspecialchars((string) $value, ENT_QUOTES); }
 function esc_textarea(mixed $value): string { return htmlspecialchars((string) $value, ENT_QUOTES); }
 function esc_url(mixed $value): string { return (string) $value; }
+function get_current_screen(): ?object { return $GLOBALS['test_screen'] ?? null; }
+function plugin_dir_url(string $file): string { return 'https://example.test/admin-tools/'; }
+function plugin_dir_path(string $file): string { return dirname($file) . '/'; }
+function wp_enqueue_style(string $handle, string $url, array $dependencies, string $version): void
+{
+    $GLOBALS['test_styles'][$handle] = compact('url', 'dependencies', 'version');
+}
 
 require dirname(__DIR__) . '/theobroma-admin-tools.php';
 
@@ -51,3 +58,33 @@ if (substr_count($markup, 'type="text"') < 3) {
 }
 
 echo "PASS product meta box renders all benefit title fields\n";
+
+$columns = Theobroma_Admin_Tools::add_product_columns(['name' => 'Имя', 'sku' => 'Артикул']);
+if (isset($columns['theobroma_sku']) || !isset($columns['sku'], $columns['theobroma_source'])) {
+    fwrite(STDERR, "FAIL product list must keep the sortable WooCommerce SKU without a duplicate\n");
+    exit(1);
+}
+$columns = Theobroma_Admin_Tools::add_product_columns(['name' => 'Имя']);
+if (!isset($columns['theobroma_sku'], $columns['theobroma_source'])) {
+    fwrite(STDERR, "FAIL product list must retain a SKU fallback when WooCommerce does not provide one\n");
+    exit(1);
+}
+echo "PASS product list avoids duplicate SKU and retains its fallback\n";
+
+foreach ([['edit.php', null], ['edit.php', 'post'], ['post.php', 'product'], ['post-new.php', 'product'], ['admin.php', 'product']] as [$hook, $postType]) {
+    $GLOBALS['test_styles'] = [];
+    $GLOBALS['test_screen'] = $postType === null ? null : (object) ['post_type' => $postType];
+    Theobroma_Admin_Tools::enqueue_product_list_assets($hook);
+    if ($GLOBALS['test_styles'] !== []) {
+        fwrite(STDERR, "FAIL product list CSS must not load on unrelated admin screens\n");
+        exit(1);
+    }
+}
+$GLOBALS['test_screen'] = (object) ['post_type' => 'product'];
+Theobroma_Admin_Tools::enqueue_product_list_assets('edit.php');
+$style = $GLOBALS['test_styles']['theobroma-product-list'] ?? null;
+if (!$style || !str_ends_with($style['url'], 'assets/product-list.css') || !ctype_digit($style['version'])) {
+    fwrite(STDERR, "FAIL product list must enqueue its versioned stylesheet\n");
+    exit(1);
+}
+echo "PASS product list stylesheet loads only on the product list screen\n";
