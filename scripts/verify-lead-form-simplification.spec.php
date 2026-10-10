@@ -6,6 +6,9 @@ require_once dirname(__DIR__) . '/wp-content/plugins/theobroma-contact-forms/src
 require_once dirname(__DIR__) . '/wp-content/plugins/theobroma-contact-forms/src/FieldRenderer.php';
 
 function esc_html(mixed $value): string { return htmlspecialchars((string) $value, ENT_QUOTES); }
+function esc_attr(mixed $value): string { return esc_html($value); }
+function get_option(string $name, mixed $default = false): mixed { return $default; }
+function get_posts(array $args): array { return array(); }
 function esc_url(mixed $value): string { return (string) $value; }
 function admin_url(string $path = ''): string { return 'https://example.test/wp-admin/' . $path; }
 function home_url(string $path = ''): string { return 'https://example.test' . $path; }
@@ -55,7 +58,7 @@ $theme = dirname(__DIR__) . '/wp-content/themes/theobroma/template-parts';
 $cases = array(
     'main contact form' => array($theme . '/contact-section.php', 'home', array('name', 'phone', 'message')),
     'cooperation form' => array($theme . '/pages/cooperation.php', 'cooperation', array('name', 'phone', 'message')),
-    'corporate gifts form' => array($theme . '/pages/corporate-gifts.php', '', array('name', 'phone', 'message')),
+    'corporate gifts form' => array($theme . '/pages/corporate-gifts.php', 'corporate', array('name', 'phone', 'message', 'custom[company]', 'custom[volume]', 'custom[occasion]', 'custom[timing]', 'custom[gift]')),
 );
 
 $failures = array();

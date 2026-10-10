@@ -37,7 +37,7 @@ final class WishlistController
             if (!$product instanceof \WC_Product) {
                 continue;
             }
-            $image = wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail');
+            $image = wp_get_attachment_image_url($product->get_image_id(), 'medium_large');
             $items[] = [
                 'id' => $id,
                 'title' => wp_strip_all_tags($product->get_name()),

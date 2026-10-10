@@ -250,6 +250,33 @@ if (!is_file($entry)) {
     $same(true, function_exists('theobroma_contact_forms_values'), 'enabled values API is available');
 }
 
+$same(true, in_array('corporate', $settings->formIds(), true), 'corporate form has its own settings');
+$same(true, str_contains($settingsHtml, 'data-form-tab="corporate"'), 'corporate settings tab is rendered');
+$corporate = $defaults['corporate'];
+$same(5, count($corporate['custom_fields']), 'corporate defaults provide the brief fields');
+$same(true, str_contains($renderer->render($corporate), 'name="custom[gift]"'), 'gift selector comes from plugin');
+$corporate['recipient'] = 'corporate@example.test';
+$corporate['fields']['phone'] = array('enabled' => false, 'required' => false);
+$corporate['fields']['email'] = array('enabled' => true, 'required' => true);
+$corporate['custom_fields'][0]['required'] = true;
+$configured = $settings->sanitize(array('corporate' => $corporate), 'owner@example.test');
+$same($defaults['home'], $configured['home'], 'corporate configuration leaves home defaults intact');
+$same('corporate@example.test', $configured['corporate']['recipient'], 'corporate recipient is independent');
+$corporateValues = array('name' => '', 'phone' => 'ignored', 'email' => 'buyer@example.test', 'custom' => array('company' => 'Example Ltd', 'gift' => 'Знакомство'));
+$same(true, $submission->isValid($corporateValues, $configured['corporate']), 'corporate supports email-only contact when configured');
+$corporateValues['custom']['company'] = '';
+$same(false, $submission->isValid($corporateValues, $configured['corporate']), 'required corporate custom field is validated');
+$corporateValues['custom']['company'] = 'Example Ltd';
+$corporateValues['custom']['gift'] = 'Invalid gift';
+$same(false, $submission->isValid($corporateValues, $configured['corporate']), 'unknown gift is rejected');
+$corporateValues['custom']['gift'] = 'Знакомство';
+$corporateLines = $submission->lines($corporateValues, $configured['corporate']);
+$same(true, in_array('Набор: Знакомство', $corporateLines, true), 'chosen gift reaches notification');
+$same(false, in_array('Телефон: ignored', $corporateLines, true), 'disabled corporate fields are excluded');
+$corporate['custom_fields'] = array();
+$emptyCorporate = $settings->sanitize(array('corporate' => $corporate), 'owner@example.test');
+$same(array(), $emptyCorporate['corporate']['custom_fields'], 'admin can remove all corporate custom fields');
+
 if ($failures !== array()) {
     fwrite(STDERR, implode(PHP_EOL, $failures) . PHP_EOL);
     exit(1);

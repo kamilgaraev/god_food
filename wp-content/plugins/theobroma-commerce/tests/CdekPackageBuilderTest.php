@@ -40,12 +40,12 @@ final class CdekPackageBuilderTest extends TestCase
     {
         $selector = new CdekRateSelector();
         $rates = [
-            ['tariff_code' => 136, 'tariff_name' => 'Посылка склад-склад', 'delivery_mode' => 4, 'delivery_sum' => 450.0, 'period_min' => 2, 'period_max' => 3],
-            ['tariff_code' => 234, 'tariff_name' => 'Эконом склад-склад', 'delivery_mode' => 4, 'delivery_sum' => 390.0, 'period_min' => 4, 'period_max' => 6],
-            ['tariff_code' => 137, 'tariff_name' => 'Посылка склад-дверь', 'delivery_mode' => 3, 'delivery_sum' => 610.0, 'period_min' => 2, 'period_max' => 4],
+            ['tariff_code' => 138, 'tariff_name' => 'Посылка дверь-склад', 'delivery_mode' => 2, 'delivery_sum' => 450.0, 'period_min' => 2, 'period_max' => 3],
+            ['tariff_code' => 235, 'tariff_name' => 'Эконом дверь-склад', 'delivery_mode' => 2, 'delivery_sum' => 390.0, 'period_min' => 4, 'period_max' => 6],
+            ['tariff_code' => 139, 'tariff_name' => 'Посылка дверь-дверь', 'delivery_mode' => 1, 'delivery_sum' => 610.0, 'period_min' => 2, 'period_max' => 4],
         ];
 
-        $this->assertSame(234, $selector->cheapest($rates, 'pickup')['tariff_code']);
-        $this->assertSame(137, $selector->cheapest($rates, 'courier')['tariff_code']);
+        $this->assertSame(235, $selector->cheapest($rates, 'pickup')['tariff_code']);
+        $this->assertSame(139, $selector->cheapest($rates, 'courier')['tariff_code']);
     }
 }

@@ -1,0 +1,13 @@
+[Unit]
+Description=Theobroma site health and error monitor
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/god-food-prod/scripts/monitor_site.py --config /etc/theobroma-monitor.json --state /var/lib/theobroma-monitor/state.json
+User=root
+Group=root
+NoNewPrivileges=true
+PrivateTmp=true
+

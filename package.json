@@ -2,6 +2,10 @@
   "name": "theobroma-acceptance-tests",
   "private": true,
   "scripts": {
+    "test:corporate-redesign": "node scripts/verify-corporate-redesign.spec.js",
+    "test:corporate-media": "node scripts/verify-corporate-media.spec.js",
+    "test:corporate-scroll-motion": "node scripts/verify-corporate-scroll-motion.spec.js",
+    "test:hero-font-stability": "node scripts/verify-hero-font-stability.spec.js",
     "audit:cwv": "node scripts/audit-core-web-vitals.js",
     "audit:pairwise": "node scripts/pairwise-audit.js",
     "audit:seo": "node scripts/verify-seo-runtime.js",

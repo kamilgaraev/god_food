@@ -1,7 +1,7 @@
 <main class="recipes-page">
     <section class="recipes-intro">
         <nav class="recipes-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Фирменные рецепты</strong></nav>
-        <h1><em>Фирменные рецепты</em> с какао</h1>
+        <h1><?php echo theobroma_seo_heading_markup('Рецепты с какао и шоколадом', 'Рецепты'); ?></h1>
         <p class="recipes-lead">Фирменные рецепты, которые помогут вам приготовить вкуснейший напиток<br>или выпечку на основе нашего какао-порошка</p>
         <?php
         $recipes = new WP_Query(array(

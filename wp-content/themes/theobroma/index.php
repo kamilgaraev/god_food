@@ -39,18 +39,23 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
                     </div>
                 </div>
                 <div class="home-hero__trust" aria-label="Гликемический индекс 35 вместо 70, рейтинг 4,9 по 1 200 отзывам">
-                    <div>
-                        <strong>ГИ 35</strong>
+                    <div class="home-gi" data-gi-help>
+                        <div class="home-gi__value"><strong>ГИ 35</strong><button class="home-gi__button" type="button" aria-label="Что такое гликемический индекс" aria-expanded="false" aria-controls="home-gi-help" aria-describedby="home-gi-help">!</button></div>
                         <span>вместо 70</span>
+                        <div class="home-gi__tooltip" id="home-gi-help" role="tooltip" hidden>ГИ — гликемический индекс. Он показывает, насколько быстро углеводы в продукте повышают уровень глюкозы в крови.</div>
                     </div>
                     <div>
                         <strong>4,9</strong>
                         <span>1 200 отзывов</span>
                     </div>
                 </div>
+                <picture class="home-hero__mobile-art">
+                    <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-mobile.webp'); ?>" type="image/webp">
+                    <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate.png'); ?>" width="480" height="600" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+                </picture>
             </div>
             <button class="home-hero__video-trigger" type="button" aria-label="Воспроизвести анимацию шоколада" aria-busy="false" data-state="idle">
-                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.jpg'); ?>">
+                <video data-home-hero-video muted playsinline preload="metadata" poster="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-chocolate-poster.webp'); ?>">
                     <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero-chocolate.mp4'); ?>" type="video/mp4">
                 </video>
                 <span class="home-hero__play-hint" aria-hidden="true"><i></i>Нажмите, чтобы оживить</span>
@@ -58,7 +63,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
         </div>
     </section>
 
-    <?php $home_benefits = array('Без белого сахара', 'Без заменителей какао-масла', 'Своя фабрика', 'Бесплатная доставка от 2 500 ₽'); ?>
+    <?php $home_benefits = array('Без белого сахара', 'Без заменителей какао-масла', 'Своя фабрика', 'Бесплатная доставка от 3 000 ₽'); ?>
     <div class="home-benefit-strip" role="group" aria-label="Преимущества Theobroma: <?php echo esc_attr(implode(', ', $home_benefits)); ?>">
         <div class="home-benefit-strip__track" aria-hidden="true">
             <?php for ($group_index = 0; $group_index < 2; $group_index++) : ?>
@@ -75,13 +80,13 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
 
     <section class="home-catalog" id="catalog" aria-labelledby="home-catalog-title">
         <div class="home-section-heading">
-            <h2 id="home-catalog-title">Каталог</h2>
+            <h2 id="home-catalog-title">Продукция Пища богов</h2>
             <a href="<?php echo esc_url($shop_url); ?>">Весь каталог</a>
         </div>
         <?php if ($homepage_products) : ?>
             <div class="home-product-grid">
-                <?php foreach ($homepage_products as $index => $homepage_product) : ?>
-                    <?php get_template_part('template-parts/home/product-card', null, array('product' => $homepage_product, 'bestseller' => $index === 0)); ?>
+                <?php foreach ($homepage_products as $homepage_product) : ?>
+                    <?php get_template_part('template-parts/home/product-card', null, array('product' => $homepage_product)); ?>
                 <?php endforeach; ?>
             </div>
         <?php else : ?>
@@ -192,7 +197,7 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
     <section class="feature" id="about"><div class="about-stage">
         <img class="about-award" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/award.webp'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt="Награда Theobroma">
         <?php $story_heading = theobroma_content('story_heading'); ?>
-        <div class="story"><h2><em>Theobroma</em><?php echo wp_kses_post(nl2br(esc_html(str_replace('Theobroma', '', $story_heading)))); ?></h2><p><?php echo nl2br(esc_html(theobroma_content('story_text'))); ?></p></div>
+        <div class="story"><p class="story-title"><em>Theobroma</em><?php echo wp_kses_post(nl2br(esc_html(str_replace('Theobroma', '', $story_heading)))); ?></p><p><?php echo nl2br(esc_html(theobroma_content('story_text'))); ?></p></div>
         <div class="values">
             <article class="value"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/vector-4.svg'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""><div><h3><?php echo esc_html(theobroma_content('value_1_title')); ?></h3><p><?php echo esc_html(theobroma_content('value_1_text_1')); ?></p><p><?php echo esc_html(theobroma_content('value_1_text_2')); ?></p></div></article>
             <article class="value"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/cacao.svg'); ?>" loading="lazy" decoding="async" fetchpriority="low" alt=""><div><h3><?php echo esc_html(theobroma_content('value_2_title')); ?></h3><p><?php echo esc_html(theobroma_content('value_2_text')); ?></p></div></article>
@@ -200,12 +205,12 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
         </div>
     </div></section>
 
-    <section class="reviews" id="reviews"><div class="reviews-stage"><div class="section-heading"><h2 class="source-text-reveal"><span><em><?php echo esc_html(theobroma_content('reviews_accent')); ?></em> <?php echo esc_html(theobroma_content('reviews_heading')); ?></span></h2><div class="review-controls" aria-label="Навигация по отзывам"><button type="button" data-review-direction="-1" aria-label="Предыдущие отзывы">‹</button><button type="button" data-review-direction="1" aria-label="Следующие отзывы">›</button></div></div><div class="review-grid">
+    <section class="reviews" id="reviews"><div class="reviews-stage"><div class="section-heading"><h2 class="source-text-reveal"><span><em><?php echo esc_html(theobroma_content('reviews_accent')); ?></em> <?php echo esc_html(theobroma_content('reviews_heading')); ?></span></h2></div><div class="review-grid">
         <?php $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => array('menu_order' => 'ASC', 'date' => 'ASC'))); ?>
         <?php foreach ($site_reviews as $site_review) : ?>
             <article class="review"><p><?php echo wp_kses_post($site_review->post_content); ?></p><time><?php echo esc_html(get_the_date('d.m.Y', $site_review)); ?></time><strong><?php echo esc_html($site_review->post_title); ?></strong></article>
         <?php endforeach; ?>
-    </div><div class="reviews-button"><a class="button" href="#catalog">Купить</a></div></div></section>
+    </div><div class="review-controls" aria-label="Навигация по отзывам"><button type="button" data-review-direction="-1" aria-label="Предыдущие отзывы">‹</button><button type="button" data-review-direction="1" aria-label="Следующие отзывы">›</button></div><div class="reviews-button"><a class="button" href="#catalog">Купить</a></div></div></section>
     <?php get_template_part('template-parts/contact-section'); ?>
 </main>
 <?php get_footer(); ?>

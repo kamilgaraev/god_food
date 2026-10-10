@@ -27,7 +27,7 @@ final class CdekOrderPayloadFactory
                 'ware_key' => (string) ($item['sku'] ?? ''),
                 'name' => (string) ($item['name'] ?? ''),
                 'cost' => (float) ($item['unit_price'] ?? 0),
-                'payment' => !empty($data['cod']) ? (float) ($item['unit_price'] ?? 0) : 0.0,
+                'payment' => ['value' => !empty($data['cod']) ? (float) ($item['unit_price'] ?? 0) : 0.0],
                 'weight' => $weight,
                 'amount' => $quantity,
             ];
@@ -61,6 +61,7 @@ final class CdekOrderPayloadFactory
             $payload['delivery_point'] = (string) ($data['pickup_code'] ?? '');
         } else {
             $payload['to_location'] = array_filter([
+                'country_code' => (string) ($destination['country_code'] ?? ''),
                 'postal_code' => (string) ($destination['postal_code'] ?? ''),
                 'city' => (string) ($destination['city'] ?? ''),
                 'address' => (string) ($destination['address'] ?? ''),

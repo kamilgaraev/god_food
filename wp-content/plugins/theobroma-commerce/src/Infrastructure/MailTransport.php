@@ -25,6 +25,14 @@ final class MailTransport
 
     public static function fromEnvironment(): self
     {
+        $options = function_exists('get_option') ? (array) get_option('theobroma_commerce_settings', []) : [];
+        if (($options['smtp_enabled'] ?? 'no') === 'yes' && !empty($options['smtp_host'])) {
+            $settings = [];
+            foreach (['host', 'port', 'username', 'password', 'encryption', 'from_address', 'from_name'] as $key) {
+                $settings[$key] = (string) ($options['smtp_' . $key] ?? '');
+            }
+            return new self($settings);
+        }
         $read = static fn (string $name): string => trim((string) getenv($name));
         return new self([
             'host' => $read('THEOBROMA_SMTP_HOST'),

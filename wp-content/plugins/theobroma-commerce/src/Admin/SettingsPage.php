@@ -102,7 +102,13 @@ final class SettingsPage
                 <?php $this->secret('ozon_client_secret', __('Secret частного приложения', 'theobroma-commerce'), $values, defined('THEOBROMA_OZON_CLIENT_SECRET')); ?>
 
                 <h2><?php esc_html_e('Карты пунктов выдачи', 'theobroma-commerce'); ?></h2>
-                <p><?php esc_html_e('Ключи необязательны: без них покупатель выберет ПВЗ из списка.', 'theobroma-commerce'); ?></p>
+                <p><label for="theobroma-map-provider">Карта и поиск адресов</label><br>
+                    <select id="theobroma-map-provider" name="theobroma_commerce_settings[map_provider]">
+                        <option value="yandex" <?php selected($values['map_provider'] ?? 'yandex', 'yandex'); ?>>Яндекс Карты</option>
+                        <option value="osm" <?php selected($values['map_provider'] ?? 'yandex', 'osm'); ?>>OpenStreetMap + Photon</option>
+                    </select>
+                </p>
+                <p>OpenStreetMap + Photon работают без ключей Яндекса. Ключи сохраняются при переключении. Публичные сервисы OSM и Photon могут ограничивать нагрузку; список ПВЗ и ручной ввод остаются доступны.</p>
                 <?php $this->text('yandex_maps_js_key', __('Ключ JavaScript API Яндекс Карт', 'theobroma-commerce'), $values); ?>
                 <?php $this->secret('yandex_suggest_key', __('Ключ API Геосаджеста Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_SUGGEST_KEY')); ?>
                 <?php $this->secret('yandex_geocoder_key', __('Ключ HTTP Геокодера Яндекс', 'theobroma-commerce'), $values, defined('THEOBROMA_YANDEX_GEOCODER_KEY')); ?>
@@ -115,6 +121,24 @@ final class SettingsPage
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <p><button type="submit" class="button" form="theobroma-yandex-maps-check"><?php esc_html_e('Проверить ключи карт', 'theobroma-commerce'); ?></button></p>
+                <h2>Почта — SMTP</h2>
+                <p>Эти настройки применяются ко всем письмам сайта, включая уведомления о заказах. Включённые настройки ниже заменяют почтовую конфигурацию сервера. После отключения используется конфигурация сервера.</p>
+                <?php if (($values['smtp_enabled'] ?? 'no') !== 'yes' && getenv('THEOBROMA_SMTP_HOST') === 'mailpit') : ?>
+                    <div class="notice notice-warning inline"><p>Сейчас письма сохраняются в тестовом Mailpit и не доставляются покупателям. Заполните и включите SMTP вашего почтового сервиса.</p></div>
+                <?php endif; ?>
+                <?php $this->checkbox('smtp_enabled', 'Использовать SMTP из этих настроек', $values); ?>
+                <?php $this->text('smtp_host', 'SMTP-сервер (без https://)', $values); ?>
+                <?php $this->number('smtp_port', 'Порт SMTP', $values); ?>
+                <p><label>Шифрование<br><select name="theobroma_commerce_settings[smtp_encryption]">
+                    <option value="tls" <?php selected($values['smtp_encryption'], 'tls'); ?>>STARTTLS (обычно порт 587)</option>
+                    <option value="ssl" <?php selected($values['smtp_encryption'], 'ssl'); ?>>SSL/TLS (обычно порт 465)</option>
+                    <option value="none" <?php selected($values['smtp_encryption'], 'none'); ?>>Без шифрования</option>
+                </select></label></p>
+                <?php $this->text('smtp_username', 'Логин SMTP', $values); ?>
+                <?php $this->secret('smtp_password', 'Пароль SMTP / пароль приложения', $values, false); ?>
+                <?php $this->text('smtp_from_address', 'Email отправителя', $values); ?>
+                <?php $this->text('smtp_from_name', 'Имя отправителя', $values); ?>
+                <p>Используйте адрес отправителя, разрешённый вашим почтовым сервисом. Пустое поле пароля сохраняет ранее заданный пароль.</p>
                 <?php submit_button(); ?>
             </form>
             <form id="theobroma-yandex-maps-check" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:none">

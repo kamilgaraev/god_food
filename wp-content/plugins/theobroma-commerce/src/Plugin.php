@@ -54,6 +54,7 @@ final class Plugin
         (new DeliveryOrderMeta())->register();
         (new CdekOrderLifecycle())->register();
         (new OzonOrderLifecycle())->register();
+        (new \Theobroma\Commerce\Orders\DeliveryStatusLifecycle())->register();
         (new WooLoyaltyLifecycle())->register();
         (new LoyaltyCheckout())->register();
         (new LoyaltyAccountEndpoint())->register();
@@ -61,6 +62,7 @@ final class Plugin
         (new ProductWeightBackfill())->register();
         (new WishlistController())->register();
         MailTransport::fromEnvironment()->register();
+        (new \Theobroma\Commerce\Accounts\EmailVerification())->register();
     }
 
     /** @param array<string, class-string> $methods

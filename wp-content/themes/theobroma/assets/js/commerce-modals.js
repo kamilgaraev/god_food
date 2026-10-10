@@ -81,7 +81,9 @@
         modal.setAttribute('aria-hidden', 'false');
         document.documentElement.classList.add('commerce-modal-open');
         document.body.classList.add('commerce-modal-open');
-        window.requestAnimationFrame(() => modal.classList.add('is-open'));
+        // Commit the initial opacity before starting the single opening transition.
+        void modal.offsetWidth;
+        modal.classList.add('is-open');
         closeButton.focus({ preventScroll: true });
     };
 
@@ -125,7 +127,7 @@
         }
         const lightbox = ensureImageLightbox();
         const image = lightbox.querySelector('[data-product-lightbox-image]');
-        image.src = sourceImage.currentSrc || sourceImage.src;
+        image.src = sourceImage.dataset.productOriginalImage || sourceImage.currentSrc || sourceImage.src;
         image.alt = sourceImage.alt;
         imageLightboxTrigger = button;
         lightbox.hidden = false;
@@ -286,23 +288,40 @@
         $(document.body).trigger('update_checkout');
     };
 
+    const ensureCheckoutStyles = async () => {
+        const style = document.querySelector('#theobroma-checkout-steps-css');
+        if (!style) return;
+        // Checkout CSS is deferred on the homepage until a customer opens the cart.
+        style.media = 'all';
+        if (style.sheet) return;
+        await Promise.race([
+            new Promise(resolve => {
+                style.addEventListener('load', resolve, { once: true });
+                style.addEventListener('error', resolve, { once: true });
+            }),
+            new Promise(resolve => window.setTimeout(resolve, 5000)),
+        ]);
+    };
+
     const bindProductGallery = () => {
         const mainImage = content.querySelector('[data-product-main-image]');
         if (!mainImage) {
             return;
         }
         const defaultImage = {
-            src: mainImage.currentSrc || mainImage.src,
+            src: mainImage.src,
             srcset: mainImage.srcset,
             sizes: mainImage.sizes,
+            original: mainImage.dataset.productOriginalImage || mainImage.src,
         };
-        const showImage = ({ src = '', srcset = '', sizes = '' } = {}) => {
+        const showImage = ({ src = '', srcset = '', sizes = '', original = src } = {}) => {
             if (!src) {
                 return;
             }
             mainImage.src = src;
             mainImage.srcset = srcset;
             mainImage.sizes = sizes;
+            mainImage.dataset.productOriginalImage = original;
             content.querySelectorAll('[data-product-gallery-image]').forEach((item) => item.classList.remove('is-active'));
         };
         content.querySelectorAll('[data-product-gallery-image]').forEach((button) => {
@@ -405,20 +424,24 @@
         if (opener) {
             trigger = opener;
         }
-        showModal('cart', 'Корзина и оформление заказа');
-        setLoading('Загрузка корзины…');
+        if (opener?.getAttribute('aria-busy') === 'true') return;
+        opener?.setAttribute('aria-busy', 'true');
         try {
             const response = await request({ action: 'theobroma_cart_modal' });
             if (!response.success) {
                 throw new Error(response.data?.message || 'Cart request failed');
             }
+            await ensureCheckoutStyles();
             renderCart(response.data);
+            showModal('cart', 'Корзина и оформление заказа');
             focusFirstModalControl();
         } catch (error) {
             if (error.name === 'AbortError') {
                 return;
             }
             window.location.assign(config.cartUrl);
+        } finally {
+            opener?.removeAttribute('aria-busy');
         }
     };
 

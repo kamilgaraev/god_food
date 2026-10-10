@@ -6,7 +6,24 @@ require_once get_template_directory() . '/inc/checkout-order-button.php';
 require_once get_template_directory() . '/inc/product-images.php';
 require_once get_template_directory() . '/inc/contact-request-validation.php';
 require_once get_template_directory() . '/inc/chocolate-sample-request.php';
+require_once get_template_directory() . '/inc/email-template.php';
 require_once get_template_directory() . '/inc/account-addresses.php';
+require_once get_template_directory() . '/inc/checkout-page.php';
+require_once get_template_directory() . '/inc/buy-partners.php';
+require_once get_template_directory() . '/inc/corporate-content.php';
+
+/** Canonical visual roles follow the theme and plugin layout styles. */
+function theobroma_design_system_assets(): void {
+    $path = get_template_directory() . '/assets/css/design-system.css';
+    wp_enqueue_style(
+        'theobroma-design-system',
+        get_template_directory_uri() . '/assets/css/design-system.css',
+        array('theobroma-home-redesign'),
+        (string) filemtime($path)
+    );
+}
+add_action('wp_enqueue_scripts', 'theobroma_design_system_assets', 100);
+
 
 function theobroma_setup(): void {
     add_theme_support('title-tag');
@@ -70,14 +87,56 @@ function theobroma_redirect_legacy_wordpress_routes(): void {
 }
 add_action('template_redirect', 'theobroma_redirect_legacy_wordpress_routes');
 
+function theobroma_home_bundle_is_current(): bool {
+    static $current = null;
+    if ($current !== null) {
+        return $current;
+    }
+    $current = false;
+    $theme_dir = get_stylesheet_directory();
+    $path = $theme_dir . '/assets/css/home-bundle.css';
+    if (!is_readable($path)) {
+        return $current;
+    }
+    $handle = fopen($path, 'rb');
+    $header = $handle ? fgets($handle) : false;
+    if ($handle) {
+        fclose($handle);
+    }
+    if (!is_string($header) || !preg_match('/source-sha256 style\.css=([a-f0-9]{64}) home-redesign\.css=([a-f0-9]{64})/', $header, $hashes)) {
+        return $current;
+    }
+    $style = file_get_contents($theme_dir . '/style.css');
+    $home = file_get_contents($theme_dir . '/assets/css/home-redesign.css');
+    if (!is_string($style) || !is_string($home)
+        || hash('sha256', str_replace("\r\n", "\n", $style)) !== $hashes[1]
+        || hash('sha256', str_replace("\r\n", "\n", $home)) !== $hashes[2]) {
+        return $current;
+    }
+    $current = true;
+    return $current;
+}
+
 function theobroma_assets(): void {
     $theme_dir = get_stylesheet_directory();
-    wp_enqueue_style('theobroma-style', get_stylesheet_uri(), array(), (string) filemtime($theme_dir . '/style.css'));
+    $home_bundle = is_front_page() && theobroma_home_bundle_is_current();
+    wp_enqueue_style(
+        'theobroma-style',
+        $home_bundle ? get_template_directory_uri() . '/assets/css/home-bundle.css' : get_stylesheet_uri(),
+        array(),
+        (string) filemtime($theme_dir . ($home_bundle ? '/assets/css/home-bundle.css' : '/style.css'))
+    );
     wp_enqueue_style(
         'theobroma-home-redesign',
-        get_template_directory_uri() . '/assets/css/home-redesign.css',
+        $home_bundle ? false : get_template_directory_uri() . '/assets/css/home-redesign.css',
         array('theobroma-style'),
         (string) filemtime($theme_dir . '/assets/css/home-redesign.css')
+    );
+    wp_enqueue_style(
+        'theobroma-hero-alignment',
+        get_template_directory_uri() . '/assets/css/hero-alignment.css',
+        array('theobroma-home-redesign'),
+        (string) filemtime($theme_dir . '/assets/css/hero-alignment.css')
     );
     wp_enqueue_script(
         'theobroma-site-header',
@@ -100,6 +159,11 @@ function theobroma_assets(): void {
         (string) filemtime($theme_dir . '/assets/js/phone-input.js'),
         array('strategy' => 'defer', 'in_footer' => true)
     );
+
+    if (is_page('Корпоративные подарки')) {
+        wp_enqueue_style('theobroma-corporate', get_template_directory_uri() . '/assets/css/corporate-gifts.css', array('theobroma-home-redesign'), (string) filemtime($theme_dir . '/assets/css/corporate-gifts.css'));
+        wp_enqueue_script('theobroma-corporate', get_template_directory_uri() . '/assets/js/corporate-gifts.js', array(), (string) filemtime($theme_dir . '/assets/js/corporate-gifts.js'), array('strategy' => 'defer', 'in_footer' => true));
+    }
 
     if (is_front_page()) {
         wp_enqueue_script(
@@ -194,11 +258,27 @@ function theobroma_defer_home_dependency_scripts(): void {
         return;
     }
 
-    foreach (array('jquery-core', 'jquery-migrate', 'sourcebuster-js', 'wc-order-attribution') as $handle) {
+    foreach (array(
+        'jquery-core', 'jquery-migrate', 'sourcebuster-js', 'wc-order-attribution',
+        'theobroma-leaflet', 'theobroma-delivery-core', 'theobroma-commerce-checkout',
+    ) as $handle) {
         wp_script_add_data($handle, 'strategy', 'defer');
     }
 }
 add_action('wp_enqueue_scripts', 'theobroma_defer_home_dependency_scripts', 100);
+
+function theobroma_defer_home_hidden_styles(string $tag, string $handle): string {
+    if (!is_front_page() || !in_array($handle, array(
+        'wc-blocks-style', 'theobroma-photo-showcases', 'woocommerce-layout',
+        'woocommerce-general', 'theobroma-leaflet', 'theobroma-commerce-delivery',
+        'theobroma-checkout-steps',
+    ), true)) {
+        return $tag;
+    }
+
+    return str_replace(" media='all'", " media='print' onload=\"this.media='all'\"", $tag);
+}
+add_filter('style_loader_tag', 'theobroma_defer_home_hidden_styles', 10, 2);
 
 function theobroma_noncritical_script_priority(string $tag, string $handle): string {
     $noncritical = array(
@@ -215,18 +295,31 @@ add_filter('script_loader_tag', 'theobroma_noncritical_script_priority', 10, 2);
 
 function theobroma_preload_critical_fonts(): void {
     $font_base = get_template_directory_uri() . '/assets/fonts/';
-    printf(
-        '<link rel="icon" href="%s" type="image/svg+xml">' . "\n",
-        esc_url(get_template_directory_uri() . '/assets/images/logo.svg')
-    );
-    foreach (array('montserrat-cyrillic.woff2', 'cormorant-cyrillic-variable.woff2') as $font) {
+    if (!has_site_icon()) {
+        $icon_base = get_template_directory_uri() . '/assets/icons/';
+        printf('<link rel="icon" href="%s" type="image/svg+xml">' . "\n", esc_url($icon_base . 'favicon.svg'));
+        printf('<link rel="icon" href="%s" type="image/png" sizes="32x32">' . "\n", esc_url($icon_base . 'favicon-32.png'));
+        printf('<link rel="apple-touch-icon" href="%s" sizes="180x180">' . "\n", esc_url($icon_base . 'apple-touch-icon.png'));
+        printf('<link rel="manifest" href="%s">' . "\n", esc_url($icon_base . 'site.webmanifest'));
+    }
+    foreach (array('montserrat-cyrillic.woff2', is_front_page() ? 'cormorant-hero-400.woff2' : 'cormorant-cyrillic-variable.woff2') as $font) {
         printf(
             '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
             esc_url($font_base . $font)
         );
     }
 }
-add_action('wp_head', 'theobroma_preload_critical_fonts', 9);
+add_action('wp_head', 'theobroma_preload_critical_fonts', 2);
+
+function theobroma_preload_home_hero(): void {
+    if (!is_front_page()) {
+        return;
+    }
+    $images = get_template_directory_uri() . '/assets/images/';
+    printf('<link rel="preload" href="%s" as="image" type="image/webp" fetchpriority="high">' . "\n", esc_url($images . 'hero-original-stripes.webp'));
+    printf('<link rel="preload" href="%s" as="image" type="image/webp" media="(max-width: 600px)" fetchpriority="high">' . "\n", esc_url($images . 'hero-chocolate-mobile.webp'));
+}
+add_action('wp_head', 'theobroma_preload_home_hero', 3);
 
 add_filter('show_admin_bar', '__return_false');
 
@@ -259,7 +352,7 @@ function theobroma_related_media_posts(int $post_id, int $limit = 3): array {
 
 function theobroma_content(string $key): string {
     $defaults = array(
-        'shipping_text' => 'Бесплатная доставка от 2500 рублей',
+        'shipping_text' => 'Бесплатная доставка от 3000 рублей',
         'hero_line_1' => 'Абсолютно',
         'hero_line_2' => 'натуральный',
         'hero_line_3' => 'шоколад',
@@ -411,6 +504,50 @@ function theobroma_catalog_layout(): void {
 }
 add_action('wp', 'theobroma_catalog_layout');
 
+/**
+ * Return the product categories that should be available in the catalog.
+ * Empty categories and WooCommerce's technical default category are hidden.
+ *
+ * @return WP_Term[]
+ */
+function theobroma_catalog_categories(): array {
+    if (!taxonomy_exists('product_cat')) {
+        return array();
+    }
+
+    $terms = get_terms(array(
+        'taxonomy' => 'product_cat',
+        'hide_empty' => true,
+        'orderby' => 'name',
+        'order' => 'ASC',
+    ));
+
+    if (is_wp_error($terms)) {
+        return array();
+    }
+
+    return array_values(array_filter($terms, static function ($term): bool {
+        return $term instanceof WP_Term && !in_array($term->slug, array('uncategorized', 'misc'), true);
+    }));
+}
+
+/**
+ * Keep the existing chocolate 200g landing tab when it exists; otherwise use
+ * the first category managed in WooCommerce.
+ *
+ * @param WP_Term[] $categories
+ */
+function theobroma_catalog_default_slug(array $categories): string {
+    foreach ($categories as $category) {
+        if ($category instanceof WP_Term && $category->slug === 'chocolate-200g') {
+            return $category->slug;
+        }
+    }
+
+    $first = $categories[0] ?? null;
+    return $first instanceof WP_Term ? $first->slug : '';
+}
+
 function theobroma_catalog_thumbnail_frame_open(): void {
     if (function_exists('is_shop') && (is_shop() || is_product_category())) {
         echo '<span class="catalog-product-image">';
@@ -435,9 +572,11 @@ function theobroma_catalog_products(WP_Query $query): void {
             $query->set('order', 'ASC');
             return;
         }
-        $groups = array('chocolate-200g', 'chocolate-100g', 'chocolate-30g', 'cacao', 'chia');
+        $catalog_categories = theobroma_catalog_categories();
+        $groups = array_values(array_filter(wp_list_pluck($catalog_categories, 'slug'), 'is_string'));
         $requested_group = sanitize_key(wp_unslash($_GET['product_group'] ?? 'chocolate-200g'));
-        $query->set('product_cat', in_array($requested_group, $groups, true) ? $requested_group : 'chocolate-200g');
+        $default_group = theobroma_catalog_default_slug($catalog_categories);
+        $query->set('product_cat', in_array($requested_group, $groups, true) ? $requested_group : $default_group);
         $query->set('posts_per_page', 12);
         $query->set('orderby', 'menu_order');
         $query->set('order', 'ASC');
@@ -539,7 +678,7 @@ function theobroma_checkout_total(): void {
 add_action('woocommerce_checkout_after_terms_and_conditions', 'theobroma_checkout_total');
 
 function theobroma_checkout_afterword(): void {
-    echo '<p class="commerce-checkout-afterword">После оформления заказа с вами свяжется наш менеджер для уточнения деталей заказа и доставки. Пожалуйста, будьте на связи, чтобы мы могли быстрее обработать ваш заказ.</p>';
+    echo '<p class="commerce-checkout-afterword">Подтверждение заказа придёт на электронную почту. Статус заказа можно посмотреть в личном кабинете.</p>';
 }
 add_action('woocommerce_review_order_after_submit', 'theobroma_checkout_afterword');
 
@@ -561,12 +700,30 @@ function theobroma_frontend_product_title(string $title, int $post_id): string {
 add_filter('the_title', 'theobroma_frontend_product_title', 10, 2);
 
 function theobroma_product_modal_title(WC_Product $product): string {
+    $heading = trim((string) $product->get_meta('_theobroma_seo_h1', true));
+    if ($heading !== '') return $heading;
     $title = $product->get_name();
     if (has_term(array('cacao', 'chia'), 'product_cat', $product->get_id())) {
         return $title;
     }
 
     return theobroma_frontend_product_title($title, $product->get_id());
+}
+
+function theobroma_seo_heading(string $fallback): string {
+    $post_id = function_exists('is_shop') && is_shop() ? wc_get_page_id('shop') : get_queried_object_id();
+    $heading = is_tax('product_cat')
+        ? get_term_meta(get_queried_object_id(), '_theobroma_seo_h1', true)
+        : get_post_meta($post_id, '_theobroma_seo_h1', true);
+    return trim((string) $heading) ?: $fallback;
+}
+
+function theobroma_seo_heading_markup(string $fallback, string $accent = ''): string {
+    $heading = theobroma_seo_heading($fallback);
+    if ($accent !== '' && str_starts_with($heading, $accent)) {
+        return '<em>' . esc_html($accent) . '</em>' . esc_html(substr($heading, strlen($accent)));
+    }
+    return esc_html($heading);
 }
 
 function theobroma_product_benefit_title(WC_Product $product): string {
@@ -602,7 +759,7 @@ function theobroma_handle_contact_request(): void {
         exit;
     }
     $form_id = sanitize_key(wp_unslash($_POST['form_id'] ?? 'home'));
-    $form_id = in_array($form_id, array('home', 'cooperation'), true) ? $form_id : 'home';
+    $form_id = in_array($form_id, array('home', 'cooperation', 'corporate'), true) ? $form_id : 'home';
     $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
     $honeypot = sanitize_text_field(wp_unslash($_POST['theobroma_website'] ?? ''));
     $started_at = absint($_POST['theobroma_form_started'] ?? 0);
@@ -620,7 +777,8 @@ function theobroma_handle_contact_request(): void {
         'started_at' => $started_at,
         'custom' => $custom,
     );
-    $is_corporate_request = $request_type === 'corporate_gift';
+    // Keep legacy corporate submissions compatible; the new form uses plugin settings.
+    $is_corporate_request = $request_type === 'corporate_gift' && $form_id !== 'corporate';
     $valid = $is_corporate_request
         ? theobroma_contact_request_is_valid($request, time())
         : theobroma_standard_contact_request_is_valid($request, $form_id, time());
@@ -673,24 +831,36 @@ function theobroma_handle_contact_request(): void {
             $content .= ($content !== '' ? "\n\n" : '') . $message;
         }
         wp_update_post(array('ID' => (int) $request_id, 'post_content' => $content));
-        wp_mail(get_option('admin_email'), 'Корпоративная заявка Theobroma', implode("\n", theobroma_contact_request_lines(array_merge($corporate_fields, array(
+        $corporate_lines = theobroma_contact_request_lines(array_merge($corporate_fields, array(
             'name' => $name,
             'phone' => $phone,
             'email' => $email,
             'message' => $message,
-        )))));
+        )));
+        theobroma_send_branded_email(
+            sanitize_email((string) get_option('admin_email')),
+            'Корпоративная заявка Theobroma',
+            'Новая корпоративная заявка',
+            $corporate_lines,
+            array('На сайте Theobroma появилась новая заявка на корпоративный заказ.')
+        );
     } else {
         update_post_meta((int) $request_id, '_theobroma_form_id', $form_id);
+        if ($form_id === 'corporate') {
+            update_post_meta((int) $request_id, '_theobroma_request_type', 'corporate_gift');
+        }
         if (($standard_values['email'] ?? '') !== '') {
             update_post_meta((int) $request_id, '_theobroma_request_email', $standard_values['email']);
         }
-        $subject = $form_id === 'cooperation'
+        $subject = $form_id === 'corporate' ? 'Корпоративная заявка Theobroma' : ($form_id === 'cooperation'
             ? 'Заявка со страницы «Сотрудничество» Theobroma'
-            : 'Заявка с сайта Theobroma';
-        wp_mail(
+            : 'Заявка с сайта Theobroma');
+        theobroma_send_branded_email(
             theobroma_standard_contact_request_recipient($form_id, sanitize_email((string) get_option('admin_email'))),
             $subject,
-            implode("\n", $standard_lines)
+            $form_id === 'corporate' ? 'Новая корпоративная заявка' : ($form_id === 'cooperation' ? 'Заявка на сотрудничество' : 'Новая заявка с сайта'),
+            $standard_lines,
+            array('На сайте Theobroma появилась новая заявка. Данные обращения собраны ниже.')
         );
     }
     wp_safe_redirect(add_query_arg('contact', 'sent', wp_get_referer() ?: home_url('/')) . '#contact-form');
