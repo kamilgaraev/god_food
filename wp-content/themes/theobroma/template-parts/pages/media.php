@@ -12,7 +12,7 @@ $media_posts = new WP_Query(array(
     <header class="media-intro">
         <nav class="media-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span aria-hidden="true">/</span><strong aria-current="page">Медиа</strong></nav>
         <p class="media-kicker">Журнал о шоколаде</p>
-        <h1>Медиа</h1>
+        <h1><?php echo esc_html(theobroma_seo_heading('Статьи о шоколаде и какао')); ?></h1>
         <p class="media-lead">Материалы СМИ, экспертные комментарии и&nbsp;авторские статьи бренда Theobroma «Пища Богов» о&nbsp;шоколаде и&nbsp;индустрии вкуса.</p>
     </header>
     <div class="media-grid">

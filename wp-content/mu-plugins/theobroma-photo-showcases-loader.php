@@ -9,6 +9,12 @@ declare(strict_types=1);
 
 defined('ABSPATH') || exit;
 
+// WP-CLI --skip-plugins filters active_plugins; auto-activation would save that
+// filtered list and unintentionally deactivate the site's other plugins.
+if (defined('WP_CLI') && WP_CLI) {
+    return;
+}
+
 $theobroma_photo_showcases_plugin = 'theobroma-photo-showcases/theobroma-photo-showcases.php';
 $theobroma_photo_showcases_file = WP_PLUGIN_DIR . '/' . $theobroma_photo_showcases_plugin;
 

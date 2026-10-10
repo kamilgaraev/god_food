@@ -24,7 +24,7 @@ get_header();
         </div>
     </header>
     <?php if (has_post_thumbnail()) : ?>
-        <figure class="media-article-cover"><?php the_post_thumbnail('full', array('loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async', 'sizes' => '(max-width: 1199px) 100vw, 1160px')); ?></figure>
+        <figure class="media-article-cover"><?php the_post_thumbnail('full', array('loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async', 'sizes' => '(max-width: 1199px) 100vw, 1160px', 'alt' => get_post_meta(get_post_thumbnail_id(), '_wp_attachment_image_alt', true) ?: get_the_title())); ?></figure>
     <?php endif; ?>
     <div class="media-article-copy"><?php echo wp_kses_post(get_the_content()); ?></div>
     <?php if ($article_link !== '') : ?>

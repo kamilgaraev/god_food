@@ -74,7 +74,7 @@ final class SettingsPage
         $fallbackEmail = sanitize_email((string) get_option('admin_email', ''));
         $stored = get_option(Settings::OPTION, array());
         $values = $this->settings->sanitize(is_array($stored) ? $stored : array(), $fallbackEmail);
-        $forms = array('home' => 'Главная страница', 'cooperation' => 'Сотрудничество');
+        $forms = array('home' => 'Главная страница', 'cooperation' => 'Сотрудничество', 'corporate' => 'Корпоративные подарки');
         $fields = array('name' => 'Имя', 'phone' => 'Телефон', 'email' => 'E-mail', 'message' => 'Комментарий');
         ?>
         <div class="wrap">
@@ -96,7 +96,7 @@ final class SettingsPage
                         <?php foreach ($forms as $formId => $title) : ?>
                             <button class="theobroma-form-tab<?php echo $formId === 'home' ? ' is-active' : ''; ?>" type="button" role="tab" data-form-tab="<?php echo esc_attr($formId); ?>" id="theobroma-form-tab-<?php echo esc_attr($formId); ?>" aria-controls="theobroma-form-panel-<?php echo esc_attr($formId); ?>" aria-selected="<?php echo $formId === 'home' ? 'true' : 'false'; ?>" tabindex="<?php echo $formId === 'home' ? '0' : '-1'; ?>">
                                 <span class="dashicons <?php echo $formId === 'home' ? 'dashicons-admin-home' : 'dashicons-groups'; ?>" aria-hidden="true"></span>
-                                <span><strong><?php echo esc_html($title); ?></strong><small><?php echo $formId === 'home' ? 'Форма внизу главной' : 'Страница для партнёров'; ?></small></span>
+                                <span><strong><?php echo esc_html($title); ?></strong><small><?php echo $formId === 'home' ? 'Форма внизу главной' : ($formId === 'corporate' ? 'Заявки на подарочные наборы' : 'Страница для партнёров'); ?></small></span>
                             </button>
                         <?php endforeach; ?>
                     </nav>

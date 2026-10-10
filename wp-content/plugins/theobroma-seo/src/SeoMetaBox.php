@@ -18,16 +18,17 @@ final class SeoMetaBox
 
     public function registerMeta(): void
     {
-        foreach (['post', 'page', 'product'] as $postType) {
+        foreach (['post', 'page', 'product', 'theobroma_recipe'] as $postType) {
             register_post_meta($postType, '_theobroma_seo_title', $this->metaArgs('sanitize_text_field'));
             register_post_meta($postType, '_theobroma_seo_description', $this->metaArgs('sanitize_textarea_field'));
             register_post_meta($postType, '_theobroma_seo_og_image', $this->metaArgs('esc_url_raw'));
+            register_post_meta($postType, '_theobroma_seo_h1', $this->metaArgs('sanitize_text_field'));
         }
     }
 
     public function add(): void
     {
-        foreach (['post', 'page', 'product'] as $postType) {
+        foreach (['post', 'page', 'product', 'theobroma_recipe'] as $postType) {
             add_meta_box(
                 'theobroma-seo',
                 __('SEO и соцсети', 'theobroma-seo'),
@@ -45,13 +46,17 @@ final class SeoMetaBox
         $title = (string) get_post_meta($post->ID, '_theobroma_seo_title', true);
         $description = (string) get_post_meta($post->ID, '_theobroma_seo_description', true);
         $image = (string) get_post_meta($post->ID, '_theobroma_seo_og_image', true);
+        $heading = (string) get_post_meta($post->ID, '_theobroma_seo_h1', true);
         ?>
         <p><label for="theobroma-seo-title"><strong><?php esc_html_e('SEO-заголовок', 'theobroma-seo'); ?></strong></label></p>
-        <input class="widefat" id="theobroma-seo-title" name="theobroma_seo_title" type="text" maxlength="70" value="<?php echo esc_attr($title); ?>" placeholder="<?php esc_attr_e('По умолчанию используется название записи', 'theobroma-seo'); ?>">
+        <input class="widefat" id="theobroma-seo-title" name="theobroma_seo_title" type="text" maxlength="130" value="<?php echo esc_attr($title); ?>" placeholder="<?php esc_attr_e('По умолчанию используется название записи', 'theobroma-seo'); ?>">
+        <p><label for="theobroma-seo-h1"><strong><?php esc_html_e('Заголовок страницы H1', 'theobroma-seo'); ?></strong></label></p>
+        <input class="widefat" id="theobroma-seo-h1" name="theobroma_seo_h1" type="text" maxlength="160" value="<?php echo esc_attr($heading); ?>">
         <p><label for="theobroma-seo-description"><strong><?php esc_html_e('Описание для поиска и соцсетей', 'theobroma-seo'); ?></strong></label></p>
         <textarea class="widefat" id="theobroma-seo-description" name="theobroma_seo_description" rows="4" maxlength="320" placeholder="<?php esc_attr_e('Рекомендуемая длина — 120–160 символов', 'theobroma-seo'); ?>"><?php echo esc_textarea($description); ?></textarea>
         <p><label for="theobroma-seo-og-image"><strong><?php esc_html_e('URL изображения Open Graph', 'theobroma-seo'); ?></strong></label></p>
         <input class="widefat" id="theobroma-seo-og-image" name="theobroma_seo_og_image" type="url" value="<?php echo esc_attr($image); ?>" placeholder="<?php esc_attr_e('Если пусто, используется изображение записи или товара', 'theobroma-seo'); ?>">
+        <?php if (get_option('theobroma_seo_social_image', '') !== '') : ?><p class="description">Сейчас для превью всех страниц используется общая фирменная обложка.</p><?php endif; ?>
         <?php
     }
 
@@ -69,6 +74,7 @@ final class SeoMetaBox
             '_theobroma_seo_title' => isset($_POST['theobroma_seo_title']) ? sanitize_text_field(wp_unslash($_POST['theobroma_seo_title'])) : '',
             '_theobroma_seo_description' => isset($_POST['theobroma_seo_description']) ? sanitize_textarea_field(wp_unslash($_POST['theobroma_seo_description'])) : '',
             '_theobroma_seo_og_image' => isset($_POST['theobroma_seo_og_image']) ? esc_url_raw(wp_unslash($_POST['theobroma_seo_og_image'])) : '',
+            '_theobroma_seo_h1' => isset($_POST['theobroma_seo_h1']) ? sanitize_text_field(wp_unslash($_POST['theobroma_seo_h1'])) : '',
         ];
         foreach ($values as $key => $value) {
             if ($value === '') {

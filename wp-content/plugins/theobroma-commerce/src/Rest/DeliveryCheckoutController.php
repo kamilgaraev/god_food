@@ -18,6 +18,7 @@ use Theobroma\Commerce\Integrations\Cdek\WordPressTokenStore as CdekTokenStore;
 use Theobroma\Commerce\Integrations\Ozon\OzonClientFactory;
 use Theobroma\Commerce\Integrations\Ozon\WordPressTokenStore as OzonTokenStore;
 use Theobroma\Commerce\Shipping\CdekPackageBuilder;
+use Theobroma\Commerce\Shipping\FreeShippingPolicy;
 
 final class DeliveryCheckoutController
 {
@@ -55,7 +56,7 @@ final class DeliveryCheckoutController
             'permission_callback' => [$this, 'publicAccess'],
         ]);
         register_rest_route('theobroma-commerce/v1', '/delivery/suggestions', [
-            'methods' => 'GET',
+            'methods' => ['GET', 'POST'],
             'callback' => [$this, 'suggestions'],
             'permission_callback' => [$this, 'publicAccess'],
         ]);
@@ -81,7 +82,7 @@ final class DeliveryCheckoutController
             $provider = sanitize_key((string) $request->get_param('provider'));
             $settings = (array) get_option('theobroma_commerce_settings', []);
             if ($provider === 'cdek') {
-                $points = $this->cdek($settings)->points(sanitize_text_field((string) $request->get_param('city')));
+                $points = $this->cdek($settings)->points(sanitize_text_field((string) $request->get_param('city')), strtoupper(sanitize_text_field((string) ($request->get_param('country') ?: 'RU'))));
             } elseif ($provider === 'ozon') {
                 $points = $this->ozon($settings)->points($this->viewport($request));
             } else {
@@ -100,22 +101,52 @@ final class DeliveryCheckoutController
 
     public function suggestions(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        if ($request->get_param('type') === 'location') {
+            $lat = $request->get_param('lat');
+            $lon = $request->get_param('lon');
+            if (!is_numeric($lat) || !is_numeric($lon) || abs((float) $lat) > 90 || abs((float) $lon) > 180) {
+                return new \WP_Error('invalid_coordinates', 'Некорректные координаты.', ['status' => 400]);
+            }
+            // POST keeps coordinates out of the website's access-log URLs.
+            $addressLookup = $request->get_method() === 'POST';
+            $precision = $addressLookup ? 5 : 2;
+            $url = 'https://photon.komoot.io/reverse?' . http_build_query(['lat' => round((float) $lat, $precision), 'lon' => round((float) $lon, $precision), 'limit' => 1]);
+            $response = wp_remote_get($url, ['timeout' => 8, 'limit_response_size' => 65536]);
+            if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+                return new \WP_Error('city_unavailable', 'Не удалось определить город. Введите его вручную.', ['status' => 502]);
+            }
+            $data = json_decode(wp_remote_retrieve_body($response), true);
+            $properties = $data['features'][0]['properties'] ?? [];
+            $city = sanitize_text_field((string) ($properties['city'] ?? $properties['town'] ?? $properties['village'] ?? ''));
+            $country = strtoupper((string) ($properties['countrycode'] ?? ''));
+            $allowed = WC()->countries->get_shipping_countries();
+            if ($city === '' || !isset($allowed[$country])) {
+                return new \WP_Error('city_unavailable', 'Выберите город доставки вручную.', ['status' => 404]);
+            }
+            $address = $addressLookup ? sanitize_text_field(trim(implode(', ', array_filter([
+                (string) ($properties['street'] ?? ''), (string) ($properties['housenumber'] ?? ''),
+            ])))) : '';
+            $result = rest_ensure_response(['city' => $city, 'country' => $country, 'address' => $address,
+                'postcode' => $addressLookup && !empty($properties['housenumber']) ? sanitize_text_field((string) ($properties['postcode'] ?? '')) : '']);
+            $result->header('Cache-Control', 'private, no-store');
+            return $result;
+        }
         $settings = (array) get_option('theobroma_commerce_settings', []);
         $key = defined('THEOBROMA_YANDEX_GEOCODER_KEY')
             ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY')
             : (string) ($settings['yandex_geocoder_key'] ?? '');
-        if (trim($key) === '') {
+        $geocoder = ($settings['map_provider'] ?? 'yandex') === 'osm'
+            ? new \Theobroma\Commerce\Checkout\PhotonGeocoder() : new YandexGeocoder();
+        if (($settings['map_provider'] ?? 'yandex') !== 'osm' && trim($key) === '') {
             return rest_ensure_response(['configured' => false, 'suggestions' => []]);
         }
 
         try {
-            return rest_ensure_response([
-                'configured' => true,
-                'suggestions' => (new YandexGeocoder())->suggestions(
-                    sanitize_text_field((string) $request->get_param('query')),
-                    $key
-                ),
-            ]);
+            $query = sanitize_text_field((string) $request->get_param('query'));
+            $items = $geocoder instanceof \Theobroma\Commerce\Checkout\PhotonGeocoder
+                ? $geocoder->search($query, sanitize_text_field((string) $request->get_param('country')), $request->get_param('type') === 'city')
+                : $geocoder->suggestions($query, $key);
+            return rest_ensure_response(['configured' => true, 'suggestions' => $items]);
         } catch (\Throwable $exception) {
             wc_get_logger()->error('Address suggestions unavailable', ['source' => 'theobroma-delivery']);
             return new \WP_Error('delivery_suggestions_unavailable', __('Не удалось загрузить подсказки адреса.', 'theobroma-commerce'), ['status' => 502]);
@@ -130,9 +161,18 @@ final class DeliveryCheckoutController
             if (!in_array($provider, ['cdek', 'ozon'], true) || !in_array($kind, ['pickup', 'courier'], true)) {
                 return new \WP_Error('invalid_delivery', __('Выберите службу и способ доставки.', 'theobroma-commerce'), ['status' => 400]);
             }
+            if ($provider === 'ozon') {
+                $nameError = \Theobroma\Commerce\Checkout\DeliveryCustomerName::error($this->person($request));
+                if ($nameError !== null) {
+                    return new \WP_Error('invalid_delivery_name', $nameError, ['status' => 422]);
+                }
+            }
             $package = DeliveryRuntime::currentPackage();
             $contents = (array) $package['contents'];
             $destination = $this->destination($request, (array) $package['destination']);
+            if (!in_array($destination['country'] ?? 'RU', array_keys(array_intersect_key(WC()->countries->get_shipping_countries(), WC()->countries->get_allowed_countries())), true)) {
+                return new \WP_Error('invalid_delivery_country', 'Выберите доступную страну доставки.', ['status' => 422]);
+            }
             $quoteContext = DeliveryRuntime::quoteContext($package, $destination);
             $package = $quoteContext['package'];
             $fingerprint = $quoteContext['fingerprint'];
@@ -146,9 +186,10 @@ final class DeliveryCheckoutController
                     'city' => (string) ($destination['city'] ?? ''),
                     'address' => trim((string) ($destination['address'] ?? '') . ' ' . (string) ($destination['address_2'] ?? '')),
                 ], $lines);
+                $payload['to_location']['country_code'] = (string) ($destination['country'] ?? 'RU');
                 $quote = $this->cdek($settings)->quote($payload, $kind);
                 if ($kind === 'pickup') {
-                    $point = $this->findPoint($this->cdek($settings)->points((string) ($destination['city'] ?? '')), (string) $request->get_param('point_id'));
+                    $point = $this->findPoint($this->cdek($settings)->points((string) ($destination['city'] ?? ''), (string) ($destination['country'] ?? 'RU')), (string) $request->get_param('point_id'));
                 }
             } else {
                 $ozon = $this->ozon($settings);
@@ -161,14 +202,16 @@ final class DeliveryCheckoutController
                     $longitude = $request->get_param('longitude');
                     if (!is_numeric($latitude) || !is_numeric($longitude)) {
                         $geocoderKey = defined('THEOBROMA_YANDEX_GEOCODER_KEY') ? (string) constant('THEOBROMA_YANDEX_GEOCODER_KEY') : (string) ($settings['yandex_geocoder_key'] ?? '');
-                        $coordinates = (new YandexGeocoder())->coordinates($this->address($destination), $geocoderKey);
+                        $geocoder = ($settings['map_provider'] ?? 'yandex') === 'osm'
+                            ? new \Theobroma\Commerce\Checkout\PhotonGeocoder() : new YandexGeocoder();
+                        $coordinates = $geocoder->coordinates($this->address($destination), $geocoderKey);
                         $latitude = $coordinates['latitude'];
                         $longitude = $coordinates['longitude'];
                     }
                     $delivery = ['courier' => ['coordinates' => ['latitude' => (float) $latitude, 'longitude' => (float) $longitude]]];
                 }
                 $buyer = $this->person($request);
-                $quote = $ozon->quote($buyer, $delivery, $items, $buyer);
+                $quote = $ozon->quote($buyer, $delivery, $items, $buyer, $destination);
             }
 
             $selection = DeliverySelection::fromArray([
@@ -181,11 +224,15 @@ final class DeliveryCheckoutController
             ]);
             (new DeliverySelectionStore())->save($selection);
             (new ShippingRateCache())->invalidate();
+            $cartAmount = FreeShippingPolicy::cartAmount();
             return rest_ensure_response([
                 'provider' => $provider,
                 'kind' => $kind,
                 'point' => $point,
-                'quote' => ['cost' => $quote->cost(), 'label' => $quote->label()],
+                'quote' => [
+                    'cost' => FreeShippingPolicy::customerCost($quote->cost(), $cartAmount),
+                    'label' => FreeShippingPolicy::customerLabel($quote->label(), $cartAmount),
+                ],
             ]);
         } catch (\Throwable $exception) {
             $failure = DeliveryProviderFailure::forQuote(
@@ -267,6 +314,7 @@ final class DeliveryCheckoutController
     private function address(array $destination): string
     {
         return trim(implode(', ', array_filter([
+            (string) (WC()->countries->get_shipping_countries()[$destination['country'] ?? ''] ?? ''),
             (string) ($destination['postcode'] ?? ''),
             (string) ($destination['city'] ?? ''),
             (string) ($destination['address'] ?? ''),

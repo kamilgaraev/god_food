@@ -1,0 +1,16 @@
+/* Keep the corporate navigation at the top without a shipping announcement. */
+body.corporate-no-shipping { --home-shipping-height: 0px; }
+
+/* Anchor the artwork, including its small built-in bottom margin, to the hero. */
+@media (min-width: 601px) {
+  body .home-hero__shell { --hero-bottom-padding: 2.25rem; }
+  body .home-hero__video-trigger { align-self: end; height: 100%; }
+  body .home-hero__video-trigger video {
+    top: auto;
+    bottom: calc(-1 * var(--hero-bottom-padding));
+    transform: translateY(4.2%);
+  }
+}
+@media (min-width: 601px) and (max-width: 1199px) {
+  body .home-hero__shell { --hero-bottom-padding: 2rem; }
+}

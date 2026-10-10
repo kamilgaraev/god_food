@@ -45,9 +45,10 @@ final class Theobroma_Admin_Tools {
         add_action('save_post_theobroma_recipe', array(self::class, 'save_recipe_fields'));
         add_action('admin_enqueue_scripts', array(self::class, 'enqueue_recipe_assets'));
         add_action('admin_enqueue_scripts', array(self::class, 'enqueue_content_settings_assets'));
+        add_action('admin_enqueue_scripts', array(self::class, 'enqueue_product_list_assets'), 20);
         add_filter('use_block_editor_for_post_type', array(self::class, 'use_classic_recipe_editor'), 10, 2);
         add_filter('wp_insert_post_data', array(self::class, 'append_new_recipe'), 10, 2);
-        add_filter('manage_product_posts_columns', array(self::class, 'add_product_columns'));
+        add_filter('manage_product_posts_columns', array(self::class, 'add_product_columns'), 20);
         add_action('manage_product_posts_custom_column', array(self::class, 'render_product_column'), 10, 2);
     }
 
@@ -102,6 +103,7 @@ final class Theobroma_Admin_Tools {
                 'contact_success' => array('Сообщение после отправки', 'text'),
             ),
             'Корпоративные подарки' => array(
+                'corporate_catalog_url' => array('Ссылка на презентацию', 'url', null, 'Загрузите презентацию (PPTX или PDF) в медиатеку и вставьте ссылку для кнопки «Скачать презентацию». Если поле пустое, кнопка скрыта.'),
                 'corporate_hero_title' => array('Заголовок', 'text'),
                 'corporate_hero_accent' => array('Акцентная строка', 'text'),
                 'corporate_intro' => array('Вступительный текст', 'textarea'),
@@ -279,7 +281,7 @@ final class Theobroma_Admin_Tools {
             'cacao_intro',
         );
         $emails = array('footer_info_email', 'footer_opt_email', 'footer_press_email');
-        $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen');
+        $urls = array('social_vk', 'social_telegram', 'social_whatsapp', 'social_dzen', 'corporate_catalog_url');
         $cacao_profiles = isset($input['cacao_profiles']) && is_array($input['cacao_profiles']) ? $input['cacao_profiles'] : array();
         unset($input['cacao_profiles']);
         $clean = array();
@@ -430,6 +432,10 @@ final class Theobroma_Admin_Tools {
 
     public static function render_product_box(WP_Post $post): void {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
+        printf(
+            '<p><label><input type="checkbox" name="theobroma_bestseller" value="1"%s> Бестселлер</label></p><p class="description">Показывать метку «Бестселлер» на карточках этого товара.</p>',
+            checked(get_post_meta($post->ID, '_theobroma_bestseller', true), '1', false)
+        );
         $detail_image_id = absint(get_post_meta($post->ID, '_theobroma_product_detail_image_id', true));
         $copy = get_post_meta($post->ID, '_theobroma_detail_copy', true);
         $copy_text = is_array($copy) ? implode("\n\n", $copy) : '';
@@ -517,6 +523,19 @@ final class Theobroma_Admin_Tools {
             array(),
             (string) filemtime(plugin_dir_path(__FILE__) . 'assets/content-settings.js'),
             true
+        );
+    }
+
+    public static function enqueue_product_list_assets(string $hook): void {
+        $screen = get_current_screen();
+        if ($hook !== 'edit.php' || !$screen || $screen->post_type !== 'product') {
+            return;
+        }
+        wp_enqueue_style(
+            'theobroma-product-list',
+            plugin_dir_url(__FILE__) . 'assets/product-list.css',
+            array('list-tables'),
+            (string) filemtime(plugin_dir_path(__FILE__) . 'assets/product-list.css')
         );
     }
 
@@ -610,6 +629,7 @@ final class Theobroma_Admin_Tools {
         if (!self::can_save($post_id)) {
             return;
         }
+        update_post_meta($post_id, '_theobroma_bestseller', ($_POST['theobroma_bestseller'] ?? '') === '1' ? '1' : '0');
         update_post_meta($post_id, '_theobroma_product_detail_image_id', absint($_POST['theobroma_product_detail_image_id'] ?? 0));
         $copy_raw = isset($_POST['theobroma_detail_copy']) ? sanitize_textarea_field(wp_unslash($_POST['theobroma_detail_copy'])) : '';
         $copy = theobroma_parse_detail_copy($copy_raw);
@@ -721,7 +741,9 @@ final class Theobroma_Admin_Tools {
     }
 
     public static function add_product_columns(array $columns): array {
-        $columns['theobroma_sku'] = 'Артикул';
+        if (!isset($columns['sku'])) {
+            $columns['theobroma_sku'] = 'Артикул';
+        }
         $columns['theobroma_source'] = 'Данные оригинала';
         return $columns;
     }

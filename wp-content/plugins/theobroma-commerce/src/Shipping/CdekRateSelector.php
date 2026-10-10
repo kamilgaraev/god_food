@@ -11,7 +11,9 @@ final class CdekRateSelector
      */
     public function cheapest(array $rates, string $kind): ?array
     {
-        $modes = $kind === 'pickup' ? [2, 4] : [1, 3];
+        // The request contains from_location, so only door-origin tariffs can be
+        // registered. Warehouse-origin tariffs require a configured shipment_point.
+        $modes = $kind === 'pickup' ? [2] : [1];
         $eligible = array_values(array_filter($rates, static function (array $rate) use ($modes): bool {
             return in_array((int) ($rate['delivery_mode'] ?? 0), $modes, true)
                 && isset($rate['delivery_sum'])

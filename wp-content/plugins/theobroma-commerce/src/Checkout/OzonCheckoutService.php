@@ -73,8 +73,9 @@ final class OzonCheckoutService
      * @param array<string,mixed> $delivery
      * @param list<array{quantity:int,sku:int}> $items
      * @param array{first_name?:string,last_name?:string,middle_name?:string,phone?:string} $recipient
+     * @param array<string,mixed> $destination
      */
-    public function quote(array $buyer, array $delivery, array $items, array $recipient): DeliveryQuote
+    public function quote(array $buyer, array $delivery, array $items, array $recipient, array $destination = []): DeliveryQuote
     {
         $phone = preg_replace('/\D+/', '', (string) ($buyer['phone'] ?? '')) ?? '';
         $missing = [];
@@ -127,6 +128,7 @@ final class OzonCheckoutService
                     'delivery_type' => (string) ($method['delivery_type'] ?? ''),
                     'logistic_date_range' => (array) ($timeslot['logistic_date_range'] ?? []),
                     'timeslot_id' => (int) ($timeslot['timeslot_id'] ?? 0),
+                    'price' => (array) ($split['commissions']['total'] ?? $method['price'] ?? []),
                 ],
                 'items' => array_values(array_filter((array) ($split['items'] ?? []), 'is_array')),
                 'warehouse_id' => (int) ($split['warehouse_id'] ?? 0),
@@ -140,7 +142,9 @@ final class OzonCheckoutService
 
         return new DeliveryQuote('ozon', $kind, $cost, $label, [
             'buyer' => $buyerPayload,
-            'delivery' => $delivery,
+            'delivery' => isset($delivery['courier']) && $destination !== []
+                ? ['courier' => (new OzonCourierAddress())->build($destination, (array) $delivery['courier'])]
+                : $delivery,
             'delivery_schema' => $deliverySchema ?: 'MIX',
             'recipient' => $recipientPayload,
             'splits' => $createSplits,

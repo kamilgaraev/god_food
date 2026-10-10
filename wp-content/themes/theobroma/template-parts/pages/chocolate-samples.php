@@ -9,7 +9,7 @@
     <section class="samples-hero" aria-labelledby="samples-title">
         <div class="samples-hero-copy">
             <p class="samples-eyebrow">Для ресторанов, кофеен и кондитерских</p>
-            <h1 id="samples-title">Запросить<br><em>пробники шоколада</em></h1>
+            <h1 id="samples-title">Запросить<br> <em>пробники шоколада</em></h1>
             <p class="samples-lead">Познакомьтесь с шоколадом Theobroma до первой поставки. Соберём пробный набор продукции, чтобы вы могли оценить вкус, состав и то, как шоколад работает в вашем меню.</p>
             <ul class="samples-promises" aria-label="Что входит в предложение">
                 <li>Натуральный состав</li>

@@ -1,6 +1,6 @@
 <footer class="site-footer" id="contacts">
     <div class="footer-shell">
-        <div class="footer-map"><h3>Карта сайта</h3><ul><li><a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/')); ?>">Каталог</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a></li></ul><ul><li><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">Доставка и оплата</a></li></ul></div>
+        <div class="footer-map"><h2>Карта сайта</h2><ul><li><a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/')); ?>">Каталог</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Где купить')); ?>">Где купить</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Рецепты')); ?>">Рецепты</a></li></ul><ul><li><a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a></li><li><a href="<?php echo esc_url(theobroma_page_url('Доставка и оплата')); ?>">Доставка и оплата</a></li></ul></div>
         <div class="footer-logo"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/logo.svg'); ?>" width="252" height="106" loading="lazy" decoding="async" alt="Theobroma — Пища богов"></div>
         <?php
         $footer_phone_1 = theobroma_content('footer_phone_1');
@@ -19,9 +19,15 @@
     </div>
     <div class="copyright"><span><?php echo nl2br(esc_html(theobroma_content('footer_company'))); ?></span><span><?php echo nl2br(esc_html(theobroma_content('footer_bank'))); ?></span><span><a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Политика конфиденциальности</a><br><a href="<?php echo esc_url(theobroma_page_url('Пользовательское соглашение')); ?>">Пользовательское соглашение</a><br><a href="<?php echo esc_url(theobroma_page_url('Публичная оферта')); ?>">Публичная оферта</a></span></div>
 </footer>
-<aside class="cookie-notice" aria-label="Уведомление о файлах cookie" hidden>
-    <p>Используя данный сайт, вы даете <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">согласие на использование файлов cookie</a>, помогающих нам сделать его удобнее для вас</p>
-    <button type="button">ОК, НЕ ПОКАЗЫВАТЬ СНОВА</button>
+<aside class="cookie-notice" aria-labelledby="cookie-notice-title" hidden>
+    <div class="cookie-notice-copy">
+        <strong id="cookie-notice-title">Немного заботы о вашем удобстве</strong>
+        <p>Мы используем cookie для работы сайта и аналитики. Вы можете разрешить все или оставить только необходимые. <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Подробнее в политике конфиденциальности</a>.</p>
+    </div>
+    <div class="cookie-notice-actions">
+        <button type="button" data-cookie-choice="0">Только необходимые</button>
+        <button type="button" data-cookie-choice="1">Принять</button>
+    </div>
 </aside>
 <?php wp_footer(); ?>
 </body>

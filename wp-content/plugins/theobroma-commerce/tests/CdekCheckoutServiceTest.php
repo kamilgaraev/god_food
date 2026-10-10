@@ -33,6 +33,23 @@ final class CdekCheckoutServiceTest extends TestCase
         $this->assertSame(37.59, $points[0]['longitude']);
     }
 
+    public function testResolvesKazakhstanCityForQuote(): void
+    {
+        $tokens = new MemoryTokenStore();
+        $tokens->put('token', time() + 3600);
+        $transport = new RecordingTransport([
+            ['status' => 200, 'body' => [['code' => 4756, 'country_code' => 'KZ']]],
+            ['status' => 200, 'body' => ['tariff_codes' => [
+                ['tariff_code' => 136, 'delivery_mode' => 2, 'delivery_sum' => 900],
+            ]]],
+        ]);
+        $service = new CdekCheckoutService(new CdekClient($transport, $tokens, 'id', 'secret'));
+        $quote = $service->quote(['to_location' => ['country_code' => 'KZ', 'city' => 'Алматы']], 'pickup');
+        $this->assertSame('KZ', $transport->requests[0]['options']['query']['country_codes']);
+        $this->assertSame(4756, $transport->requests[1]['options']['json']['to_location']['code']);
+        $this->assertSame(900.0, $quote->cost());
+    }
+
     public function testReturnsCheapestConfirmedRateForRequestedKind(): void
     {
         $tokens = new MemoryTokenStore();

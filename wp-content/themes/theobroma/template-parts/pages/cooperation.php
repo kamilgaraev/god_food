@@ -2,8 +2,8 @@
     <div class="cooperation-decor cooperation-decor-left" aria-hidden="true"></div>
     <div class="cooperation-decor cooperation-decor-right" aria-hidden="true"></div>
     <nav class="cooperation-breadcrumb" aria-label="Хлебные крошки"><a href="<?php echo esc_url(home_url('/')); ?>">Главная</a><span>/</span><strong>Сотрудничество</strong></nav>
-    <h1>Сотрудничество</h1>
-    <p class="cooperation-lead">Чистота, надежность, честность — три символа успешного сотрудничества.<br>Мы уверены, что Вы придерживаетесь тех же принципов и правил,<br>поэтому с удовольствием приглашаем Вас к совместному партнёрству!</p>
+    <h1><?php echo esc_html(theobroma_seo_heading('Сотрудничество и оптовые поставки')); ?></h1>
+    <p class="cooperation-lead">Theobroma Пища богов: 12 лет создаем натуральный кусковый шоколад.<br>Производим его на собственной фабрике в Подмосковье.<br>Приглашаем магазины, кофейни, рестораны и отели к партнерству.</p>
     <img class="cooperation-chocolate" src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/cooperation-chocolate.webp'); ?>" width="321" height="315" loading="eager" decoding="async" alt="">
     <section class="cooperation-form" aria-labelledby="cooperation-form-title">
         <h2 id="cooperation-form-title">Заполните форму</h2>

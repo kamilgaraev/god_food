@@ -38,10 +38,11 @@ final class CdekShippingMethod extends \WC_Shipping_Method
             return;
         }
         $quote = (new DeliveryRateResolver(new DeliverySelectionStore()))->resolve('cdek', DeliveryRuntime::fingerprint((array) $package));
+        $cartAmount = FreeShippingPolicy::cartAmount();
         $this->add_rate([
             'id' => $this->get_rate_id((string) $quote['kind']),
-            'label' => sanitize_text_field((string) $quote['label']),
-            'cost' => max(0.0, (float) $quote['cost']),
+            'label' => sanitize_text_field(FreeShippingPolicy::customerLabel((string) $quote['label'], $cartAmount)),
+            'cost' => FreeShippingPolicy::customerCost((float) $quote['cost'], $cartAmount),
             'meta_data' => (array) $quote['meta_data'],
             'package' => $package,
         ]);

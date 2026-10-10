@@ -154,10 +154,12 @@ function theobroma_save_chocolate_sample_request(array $request, string $clientA
         update_post_meta((int) $request_id, '_theobroma_request_email', (string) $request['email']);
     }
 
-    $mail_sent = wp_mail(
+    $mail_sent = theobroma_send_branded_email(
         sanitize_email((string) get_option('admin_email')),
         'Запрос пробников шоколада — ' . (string) $request['company'],
-        implode("\n", $lines)
+        'Запрос пробников шоколада',
+        $lines,
+        array('Партнёр оставил заявку на пробники шоколада. Данные запроса собраны ниже.')
     );
     update_post_meta((int) $request_id, '_theobroma_request_mail_sent', $mail_sent ? '1' : '0');
 

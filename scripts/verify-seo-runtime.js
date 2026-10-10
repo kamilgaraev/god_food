@@ -84,7 +84,7 @@ function findSchema(documents, type) {
   assert.ok(article, 'Article JSON-LD is required.');
   assert.ok(article.datePublished);
   assert.ok(article.dateModified);
-  assert.equal(article.publisher.name, 'Пища Богов');
+  assert.equal(article.publisher.name, 'Theobroma Пища богов');
 
   for (const path of ['/cart/', '/my-account/']) {
     const html = await get(path);

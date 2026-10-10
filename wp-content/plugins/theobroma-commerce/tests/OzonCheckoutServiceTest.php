@@ -11,6 +11,32 @@ use Theobroma\Commerce\Tests\Fakes\StaticAccessTokenProvider;
 
 final class OzonCheckoutServiceTest extends TestCase
 {
+    public function testAddsAddressToCreatePayloadWithoutChangingCoordinatesOnlyQuoteRequest(): void
+    {
+        $transport = new RecordingTransport([
+            ['status' => 200, 'body' => ['result' => ['available' => true]]],
+            ['status' => 200, 'body' => ['result' => ['splits' => [[
+                'warehouse_id' => 777, 'delivery_schema' => 'FBO',
+                'delivery_method' => ['id' => 125, 'delivery_type' => 'COURIER'],
+                'items' => [['quantity' => 1, 'sku' => 100500]],
+            ]]]]],
+        ]);
+        $service = new OzonCheckoutService(new OzonClient($transport, new StaticAccessTokenProvider(['token'])));
+        $delivery = ['courier' => ['coordinates' => ['latitude' => 55.9, 'longitude' => 37.5]]];
+        $person = ['first_name' => 'Иван', 'last_name' => 'Иванов', 'phone' => '+79990000000'];
+
+        $quote = $service->quote($person, $delivery, [['quantity' => 1, 'sku' => 100500]], $person, [
+            'country' => 'RU', 'city' => 'Казань', 'address' => 'улица Ленина, 19',
+        ]);
+
+        $this->assertSame($delivery, $transport->requests[0]['options']['json']['delivery_type']);
+        $this->assertSame($delivery, $transport->requests[1]['options']['json']['delivery_type']);
+        $this->assertSame('Россия', $quote->createPayload()['delivery']['courier']['country']);
+        $this->assertSame('Казань', $quote->createPayload()['delivery']['courier']['city']);
+        $this->assertSame('19', $quote->createPayload()['delivery']['courier']['house_number']);
+        $this->assertSame($delivery['courier']['coordinates'], $quote->createPayload()['delivery']['courier']['coordinates']);
+    }
+
     public function testReportsOnlyMissingCheckoutFieldNamesForServerDiagnostics(): void
     {
         $service = new OzonCheckoutService(new OzonClient(

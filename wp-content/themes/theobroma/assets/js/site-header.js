@@ -64,16 +64,18 @@
     });
 
     const cookieNotice = document.querySelector('.cookie-notice');
-    const cookieButton = cookieNotice?.querySelector('button');
     const cookieKey = 'theobroma_cookie_notice_accepted';
-    if (cookieNotice && window.localStorage.getItem(cookieKey) !== '1') {
+    let cookieChoice = null;
+    try { cookieChoice = window.localStorage.getItem(cookieKey); } catch (_) { /* Storage may be unavailable in private browsers. */ }
+    if (cookieNotice && !['0', '1'].includes(cookieChoice)) {
         cookieNotice.hidden = false;
     }
-    cookieButton?.addEventListener('click', () => {
-        window.localStorage.setItem(cookieKey, '1');
+    cookieNotice?.querySelectorAll('[data-cookie-choice]').forEach(button => button.addEventListener('click', () => {
+        const choice = button.dataset.cookieChoice;
+        try { window.localStorage.setItem(cookieKey, choice); } catch (_) { /* Dismiss for this page even when storage is blocked. */ }
         cookieNotice.hidden = true;
-        window.dispatchEvent(new CustomEvent('theobroma:cookie-consent'));
-    });
+        if (choice === '1') window.dispatchEvent(new CustomEvent('theobroma:cookie-consent'));
+    }));
 
     const sourceTextReveals = document.querySelectorAll('.source-text-reveal');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
