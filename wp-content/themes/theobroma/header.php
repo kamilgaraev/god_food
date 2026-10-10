@@ -27,7 +27,7 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
             <a href="<?php echo esc_url(theobroma_page_url('Сотрудничество')); ?>">Сотрудничество</a>
         </div>
         <a class="brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Theobroma — Пища Богов, на главную">
-            <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" decoding="async" fetchpriority="high" alt="Theobroma — Пища Богов">
+            <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.svg'); ?>" width="252" height="106" decoding="async" fetchpriority="high" alt="Theobroma — Пища Богов">
         </a>
         <div class="nav-links nav-links-transactional floating-actions">
             <a class="header-icon header-cart" href="<?php echo esc_url($cart_url); ?>" data-commerce-cart-open aria-label="Корзина, товаров: <?php echo esc_attr((string) $cart_count); ?>">
@@ -44,7 +44,7 @@ $cart_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_content
 <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
     <button class="mobile-menu-close" type="button" aria-label="Закрыть меню"></button>
     <a class="mobile-menu-brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Theobroma — Пища Богов, на главную">
-        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.webp'); ?>" width="252" height="106" decoding="async" alt="Theobroma — Пища Богов">
+        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.svg'); ?>" width="252" height="106" decoding="async" alt="Theobroma — Пища Богов">
     </a>
     <nav aria-label="Мобильная навигация">
         <p class="mobile-menu-label">О продукте</p>
