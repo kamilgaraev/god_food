@@ -13,7 +13,7 @@ if (!$portfolio['enabled'] || $cards === array()) {
 ?>
 <section class="cg-portfolio cg-shell" aria-labelledby="cg-portfolio-title" data-cg-carousel>
     <header class="cg-section-intro">
-        <div><p class="cg-section-label">Портфолио</p><h2 id="cg-portfolio-title"><?php echo esc_html($portfolio['title']); ?></h2></div>
+        <h2 id="cg-portfolio-title"><?php echo theobroma_corporate_section_heading($portfolio); ?></h2>
         <?php if ($portfolio['intro'] !== '') : ?><p class="cg-section-description"><?php echo esc_html($portfolio['intro']); ?></p><?php endif; ?>
     </header>
     <div class="cg-portfolio-track" data-cg-track tabindex="0" role="region" aria-label="Примеры подарков Theobroma">
