@@ -8,7 +8,7 @@ const base = process.env.CORPORATE_BASE_URL || 'https://theobroma.one';
 const source = process.env.CORPORATE_MEDIA_SOURCE === '1';
 const engine = process.env.BROWSER_ENGINE || 'chromium';
 const theme = path.resolve(__dirname, '../wp-content/themes/theobroma');
-const output = path.resolve(__dirname, '../output/corporate-media', source ? 'source' : 'live', engine);
+const output = process.env.CORPORATE_MEDIA_OUTPUT || path.resolve(__dirname, '../output/corporate-media', source ? 'source' : 'live', engine);
 
 async function serveSource(page, html) {
   if (!source) return;
@@ -54,17 +54,23 @@ async function serveSource(page, html) {
   }
   const browser = await (engine === 'webkit' ? webkit.launch({ headless: true }) : chromium.launch({ channel: 'chrome', headless: true }));
   try {
-    for (const width of engine === 'webkit' ? [390] : [390, 768, 1440]) {
-      const page = await browser.newPage({ viewport: { width, height: 1000 }, reducedMotion: 'no-preference' });
+    const scenarios = [[390, 1], [390, 2], [390, 3], ...(engine === 'webkit' ? [] : [[768, 1], [1440, 2]])];
+    for (const [width, deviceScaleFactor] of scenarios) {
+      const page = await browser.newPage({ viewport: { width, height: 1000 }, deviceScaleFactor, reducedMotion: 'no-preference' });
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.bringToFront();
       await serveSource(page, html);
-      let release;
-      const gate = new Promise(resolve => { release = resolve; });
-      await page.route(/gallery-(chocolate|packaging)-original(?:-\d+x\d+)?(?:-\d+)?\.jpg(?:\?.*)?$/, async route => {
-        await gate;
-        await route.continue();
+      await page.addInitScript(() => {
+        const decode = HTMLImageElement.prototype.decode;
+        let release;
+        const gate = new Promise(resolve => { release = resolve; });
+        window.releaseGalleryImages = release;
+        HTMLImageElement.prototype.decode = function (...args) {
+          return this.matches('.cg-gallery-photo > img')
+            ? gate.then(() => decode.apply(this, args))
+            : decode.apply(this, args);
+        };
       });
       await page.goto(`${base}/corporate-gifts/`, { waitUntil: 'domcontentloaded' });
       try {
@@ -89,7 +95,7 @@ async function serveSource(page, html) {
       assert.match(mediaBounds.overlay, /linear-gradient/);
       await page.getByRole('button', { name: 'Приостановить видео' }).click();
       assert.equal(await video.evaluate(v => v.paused), true);
-      await page.locator('.cg-hero').screenshot({ path: path.join(output, `hero-${width}.png`) });
+      await page.locator('.cg-hero').screenshot({ path: path.join(output, `hero-${width}-dpr${deviceScaleFactor}.png`) });
 
       await page.locator('.cg-gallery').scrollIntoViewIfNeeded();
       const photos = page.locator('[data-cg-progressive]');
@@ -102,13 +108,18 @@ async function serveSource(page, html) {
       })));
       const before = await photos.evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height, opacity: getComputedStyle(node.querySelector('img')).opacity })));
       assert.ok(before.every(photo => photo.width > 100 && photo.height > 100 && Number(photo.opacity) === 0), 'light previews appear before originals');
-      if (width !== 768) await page.locator('.cg-gallery').screenshot({ path: path.join(output, `gallery-preview-${width}.png`) });
-      release();
+      if (width !== 768) await page.locator('.cg-gallery').screenshot({ path: path.join(output, `gallery-preview-${width}-dpr${deviceScaleFactor}.png`) });
+      await page.evaluate(() => window.releaseGalleryImages());
       await page.waitForFunction(() => [...document.querySelectorAll('[data-cg-progressive]')].every(node => node.classList.contains('is-ready') && Number(getComputedStyle(node.querySelector('img')).opacity) === 1));
-      const after = await photos.evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height, naturalWidth: node.querySelector('img').naturalWidth, naturalHeight: node.querySelector('img').naturalHeight })));
-      assert.ok(after.every(photo => photo.naturalWidth >= photo.width - 1 && photo.naturalHeight >= photo.height - 1), 'loaded photos must be sharp at their displayed size');
-      assert.deepEqual(after.map(p => [p.width, p.height]), before.map(p => [p.width, p.height]), 'upgrading images causes no layout shift');
-      if (width !== 768) await page.locator('.cg-gallery').screenshot({ path: path.join(output, `gallery-original-${width}.png`) });
+      const after = await photos.evaluateAll(nodes => Promise.all(nodes.map(async node => {
+        const raster = new Image();
+        raster.src = node.querySelector('img').currentSrc;
+        await raster.decode();
+        return { width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height, pixelWidth: raster.naturalWidth, pixelHeight: raster.naturalHeight, dpr: devicePixelRatio };
+      })));
+      assert.ok(after.every(photo => photo.pixelWidth >= photo.width * photo.dpr - 1 && photo.pixelHeight >= photo.height * photo.dpr - 1), 'loaded photos must be sharp in device pixels');
+      assert.ok(after.every((photo, index) => Math.abs(photo.width - before[index].width) < .01 && Math.abs(photo.height - before[index].height) < .01), 'upgrading images causes no layout shift');
+      if (width !== 768) await page.locator('.cg-gallery').screenshot({ path: path.join(output, `gallery-original-${width}-dpr${deviceScaleFactor}.png`) });
       if (width < 600) {
         await page.getByRole('button', { name: 'Следующие фотографии' }).click();
         await page.waitForFunction(() => document.querySelector('.cg-gallery-track').scrollLeft > 100);
@@ -117,7 +128,7 @@ async function serveSource(page, html) {
       assert.equal(await video.evaluate(v => v.paused), true, 'manual pause survives scrolling');
       assert.deepEqual(errors, []);
       await page.close();
-      console.log(`${engine} ${width}: autoplay, pause, crop, progressive images and original resolution passed`);
+      console.log(`${engine} ${width} DPR ${deviceScaleFactor}: autoplay, pause, crop, progressive images and Retina resolution passed`);
     }
 
     const reduced = await browser.newPage({ viewport: { width: 390, height: 1000 }, reducedMotion: 'reduce' });

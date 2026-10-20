@@ -21,7 +21,7 @@ async function verifySelectedRequest(page, value) {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
     for (const width of widths) {
-      const page = await browser.newPage({ viewport: { width, height: 1000 }, reducedMotion: 'reduce' });
+      const page = await browser.newPage({ viewport: { width, height: 1000 }, deviceScaleFactor: width <= 600 ? 3 : 1, reducedMotion: 'reduce' });
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(`${base}/corporate-gifts/`, { waitUntil: 'networkidle' });
@@ -48,10 +48,15 @@ async function verifySelectedRequest(page, value) {
         assert.ok(await page.locator('.cg-request .form-grid input,.cg-request .form-grid select,.cg-request .form-grid textarea').evaluateAll(fields => fields.every(field => parseFloat(getComputedStyle(field).fontSize) >= 16)), 'mobile inputs avoid focus zoom');
         assert.match(await page.locator('#cg-request-title').textContent(), /заявку\s+мы свяжемся\s+в течение дня/);
       }
-      const fidelity = await page.evaluate(() => {
+      const fidelity = await page.evaluate(async () => {
         const address = document.querySelector('.cg-request address');
         return {
-          photos: Array.from(document.querySelectorAll('.cg-gallery-track img')).map(image => ({ src: image.currentSrc, width: image.naturalWidth, height: image.naturalHeight, displayedWidth: image.clientWidth, displayedHeight: image.clientHeight })),
+          photos: await Promise.all(Array.from(document.querySelectorAll('.cg-gallery-track img')).map(async image => {
+            const raster = new Image();
+            raster.src = image.currentSrc;
+            await raster.decode();
+            return { src: image.currentSrc, width: raster.naturalWidth, height: raster.naturalHeight, displayedWidth: image.clientWidth, displayedHeight: image.clientHeight, dpr: devicePixelRatio };
+          })),
           fontRatio: parseFloat(getComputedStyle(address).fontSize) / parseFloat(getComputedStyle(document.documentElement).fontSize),
           contactOverflow: address.scrollWidth > address.clientWidth,
           animation: getComputedStyle(document.querySelector('.cg-ribbon-track')).animationName,
@@ -60,7 +65,7 @@ async function verifySelectedRequest(page, value) {
       assert.equal(fidelity.photos.length, 2, 'exactly the two Figma gallery frames');
       assert.match(fidelity.photos[0].src, /gallery-chocolate-original[^/]*\.jpg/);
       assert.match(fidelity.photos[1].src, /gallery-packaging-original[^/]*\.jpg/);
-      assert.ok(fidelity.photos.every(photo => photo.width >= photo.displayedWidth - 1 && photo.height >= photo.displayedHeight - 1), 'gallery photos stay sharp at their displayed size');
+      assert.ok(fidelity.photos.every(photo => photo.width >= photo.displayedWidth * photo.dpr - 1 && photo.height >= photo.displayedHeight * photo.dpr - 1), 'gallery photos stay sharp in device pixels');
       assert.ok(Math.abs(fidelity.fontRatio - (width <= 600 ? 1.375 : 1.5)) < .01, 'contacts scale with the site');
       assert.equal(fidelity.contactOverflow, false, 'contacts fit their card');
       assert.equal(fidelity.animation, 'none', 'reduced motion respected');
