@@ -62,10 +62,9 @@ async function serveSource(page, html) {
       await serveSource(page, html);
       let release;
       const gate = new Promise(resolve => { release = resolve; });
-      await page.route(/gallery-(chocolate|packaging)-original(?:-\d+)?\.jpg(?:\?.*)?$/, async route => {
+      await page.route(/gallery-(chocolate|packaging)-original(?:-\d+x\d+)?(?:-\d+)?\.jpg(?:\?.*)?$/, async route => {
         await gate;
-        const name = route.request().url().includes('gallery-chocolate-') ? 'gallery-chocolate-original.jpg' : 'gallery-packaging-original.jpg';
-        await route.fulfill({ contentType: 'image/jpeg', body: fs.readFileSync(path.join(theme, 'assets/images/corporate', name)) });
+        await route.continue();
       });
       await page.goto(`${base}/corporate-gifts/`, { waitUntil: 'domcontentloaded' });
       try {
@@ -107,7 +106,7 @@ async function serveSource(page, html) {
       release();
       await page.waitForFunction(() => [...document.querySelectorAll('[data-cg-progressive]')].every(node => node.classList.contains('is-ready') && Number(getComputedStyle(node.querySelector('img')).opacity) === 1));
       const after = await photos.evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height, naturalWidth: node.querySelector('img').naturalWidth, naturalHeight: node.querySelector('img').naturalHeight })));
-      assert.deepEqual(after.map(p => [p.naturalWidth, p.naturalHeight]), [[2731, 4096], [2723, 4096]], 'full original resolution is restored');
+      assert.ok(after.every(photo => photo.naturalWidth >= photo.width - 1 && photo.naturalHeight >= photo.height - 1), 'loaded photos must be sharp at their displayed size');
       assert.deepEqual(after.map(p => [p.width, p.height]), before.map(p => [p.width, p.height]), 'upgrading images causes no layout shift');
       if (width !== 768) await page.locator('.cg-gallery').screenshot({ path: path.join(output, `gallery-original-${width}.png`) });
       if (width < 600) {

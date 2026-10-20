@@ -29,10 +29,15 @@ if (is_array($saved_showcases) && class_exists('Theobroma\\PhotoShowcases\\Setti
     $gallery_title = $showcase['title'];
     $gallery = array();
     foreach ($showcase['images'] as $row) {
-        $url = wp_get_original_image_url($row['attachment_id']);
+        $url = wp_get_attachment_image_url($row['attachment_id'], 'large');
         if ($url) {
-            $preview = wp_get_attachment_image_url($row['attachment_id'], 'medium');
-            $gallery[] = array('url' => $url, 'preview' => $preview && $preview !== $url ? $preview : '', 'alt' => $row['alt'] ?: (string) get_post_meta($row['attachment_id'], '_wp_attachment_image_alt', true));
+            $preview = wp_get_attachment_image_url($row['attachment_id'], 'medium_large');
+            $gallery[] = array(
+                'url' => $url,
+                'srcset' => wp_get_attachment_image_srcset($row['attachment_id'], 'large'),
+                'preview' => $preview && $preview !== $url ? $preview : '',
+                'alt' => $row['alt'] ?: (string) get_post_meta($row['attachment_id'], '_wp_attachment_image_alt', true),
+            );
         }
     }
 }
@@ -79,7 +84,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
         <h2 id="cg-gallery-title"><?php if ($gallery_title !== '') : ?><?php echo esc_html($gallery_title); ?><?php else : ?>Шоколад, который точно<br><em>понравится и удивит</em><?php endif; ?></h2>
         <div class="cg-gallery-track" data-cg-track tabindex="0" aria-label="Фотографии шоколада и подарков">
             <?php foreach ($gallery as $photo) : ?>
-            <div class="cg-gallery-photo"<?php if ($photo['preview'] !== '') : ?> data-cg-progressive style="background-image:url('<?php echo esc_url($photo['preview']); ?>')"<?php endif; ?>><img src="<?php echo esc_url($photo['url']); ?>" alt="<?php echo esc_attr($photo['alt']); ?>" width="560" height="840" loading="lazy" decoding="async" fetchpriority="low"></div>
+            <div class="cg-gallery-photo"<?php if ($photo['preview'] !== '') : ?> data-cg-progressive style="background-image:url('<?php echo esc_url($photo['preview']); ?>')"<?php endif; ?>><img src="<?php echo esc_url($photo['url']); ?>"<?php if (!empty($photo['srcset'])) : ?> srcset="<?php echo esc_attr($photo['srcset']); ?>" sizes="(max-width:600px) calc(100vw - 2.5rem), (max-width:1216px) calc(50vw - 3rem), 35rem"<?php endif; ?> alt="<?php echo esc_attr($photo['alt']); ?>" width="560" height="840" loading="lazy" decoding="async"></div>
             <?php endforeach; ?>
         </div>
         <?php if (count($gallery) > 1) : ?><div class="cg-carousel-controls"><button type="button" data-cg-direction="-1" aria-label="Предыдущие фотографии">‹</button><button type="button" data-cg-direction="1" aria-label="Следующие фотографии">›</button></div><?php endif; ?>

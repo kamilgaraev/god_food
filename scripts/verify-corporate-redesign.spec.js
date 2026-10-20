@@ -51,7 +51,7 @@ async function verifySelectedRequest(page, value) {
       const fidelity = await page.evaluate(() => {
         const address = document.querySelector('.cg-request address');
         return {
-          photos: Array.from(document.querySelectorAll('.cg-gallery-track img')).map(image => ({ src: image.currentSrc, width: image.naturalWidth, height: image.naturalHeight })),
+          photos: Array.from(document.querySelectorAll('.cg-gallery-track img')).map(image => ({ src: image.currentSrc, width: image.naturalWidth, height: image.naturalHeight, displayedWidth: image.clientWidth, displayedHeight: image.clientHeight })),
           fontRatio: parseFloat(getComputedStyle(address).fontSize) / parseFloat(getComputedStyle(document.documentElement).fontSize),
           contactOverflow: address.scrollWidth > address.clientWidth,
           animation: getComputedStyle(document.querySelector('.cg-ribbon-track')).animationName,
@@ -60,7 +60,7 @@ async function verifySelectedRequest(page, value) {
       assert.equal(fidelity.photos.length, 2, 'exactly the two Figma gallery frames');
       assert.match(fidelity.photos[0].src, /gallery-chocolate-original[^/]*\.jpg/);
       assert.match(fidelity.photos[1].src, /gallery-packaging-original[^/]*\.jpg/);
-      assert.deepEqual(fidelity.photos.map(photo => [photo.width, photo.height]), [[2731, 4096], [2723, 4096]], 'original image resolution');
+      assert.ok(fidelity.photos.every(photo => photo.width >= photo.displayedWidth - 1 && photo.height >= photo.displayedHeight - 1), 'gallery photos stay sharp at their displayed size');
       assert.ok(Math.abs(fidelity.fontRatio - (width <= 600 ? 1.375 : 1.5)) < .01, 'contacts scale with the site');
       assert.equal(fidelity.contactOverflow, false, 'contacts fit their card');
       assert.equal(fidelity.animation, 'none', 'reduced motion respected');
