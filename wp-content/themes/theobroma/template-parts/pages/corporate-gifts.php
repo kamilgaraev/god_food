@@ -79,6 +79,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
             <?php foreach ($details as $index => $detail) : ?><article><h3><?php echo esc_html($detail[0]); ?></h3><p><?php echo esc_html($detail[1]); ?></p><p class="cg-detail-note"><?php echo esc_html($detail[2]); ?></p><span aria-hidden="true">0<?php echo esc_html((string) ($index + 1)); ?></span></article><?php endforeach; ?>
         </div>
     </section>
+    <?php get_template_part('template-parts/corporate/portfolio'); ?>
     <?php if ($gallery_enabled && $gallery !== array()) : ?>
     <section class="cg-gallery cg-shell" aria-labelledby="cg-gallery-title" data-cg-carousel>
         <h2 id="cg-gallery-title"><?php if ($gallery_title !== '') : ?><?php echo esc_html($gallery_title); ?><?php else : ?>Шоколад, который точно<br><em>понравится и удивит</em><?php endif; ?></h2>
@@ -90,6 +91,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
         <?php if (count($gallery) > 1) : ?><div class="cg-carousel-controls"><button type="button" data-cg-direction="-1" aria-label="Предыдущие фотографии">‹</button><button type="button" data-cg-direction="1" aria-label="Следующие фотографии">›</button></div><?php endif; ?>
     </section>
     <?php endif; ?>
+    <?php get_template_part('template-parts/corporate/process'); ?>
     <section class="cg-season cg-shell" aria-labelledby="cg-season-title"><div><h2 id="cg-season-title">Чтобы успеть<br>к <em>Новому году</em></h2><p>Оставьте заявку до 15 ноября. После этой даты принимаем заказы при наличии производственных мощностей.</p><a class="button" href="#corporate-request">Оставить заявку</a></div><img src="<?php echo esc_url($asset_base . 'chocolate-piece-original.png'); ?>" width="376" height="368" loading="lazy" decoding="async" alt="Кусочек горького шоколада"></section>
     <section class="cg-faq cg-shell" aria-labelledby="cg-faq-title"><h2 id="cg-faq-title">Частые <em>вопросы</em></h2><div class="cg-faq-list">
         <?php foreach ($questions as $index => $question) : ?><details<?php echo $index === 0 ? ' open' : ''; ?>><summary><?php echo esc_html($question[0]); ?><img src="<?php echo esc_url($asset_base . 'chevron.svg'); ?>" width="23" height="12" alt=""></summary><p><?php echo esc_html($question[1]); ?></p></details><?php endforeach; ?>
