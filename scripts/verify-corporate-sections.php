@@ -8,7 +8,7 @@ $registrations = array();
 function add_action(...$args): void {}
 function current_user_can(string $capability): bool { return $GLOBALS['can_manage'] && $capability === 'manage_options'; }
 function wp_die(string $message): never { throw new RuntimeException($message); }
-function get_option(string $name, mixed $default = false): mixed { return $GLOBALS['option']; }
+function get_option(string $name, mixed $default = false): mixed { return $name === 'theobroma_corporate_sections' ? $GLOBALS['option'] : $default; }
 function sanitize_text_field(string $value): string { return trim(strip_tags($value)); }
 function sanitize_textarea_field(string $value): string { return trim(strip_tags($value)); }
 function wp_attachment_is_image(int $id): bool { return in_array($id, array(10, 20), true); }
@@ -18,6 +18,12 @@ function esc_textarea(string $value): string { return esc_html($value); }
 function esc_url(string $value): string { return esc_html($value); }
 function get_template_directory_uri(): string { return '/wp-content/themes/theobroma'; }
 function admin_url(string $path): string { return '/wp-admin/' . $path; }
+function theobroma_content(string $key): string { return ''; }
+function get_posts(array $args): array { return array(); }
+function theobroma_page_url(string $title): string { return '/'; }
+function theobroma_contact_antispam_fields(): void {}
+function wp_nonce_field(string $action, string $name): void { echo '<input type="hidden" name="' . esc_attr($name) . '" value="fixture-nonce">'; }
+function get_template_part(string $slug): void { include dirname(__DIR__) . '/wp-content/themes/theobroma/' . $slug . '.php'; }
 function checked(bool $value): void { if ($value) echo 'checked'; }
 function settings_errors(): void {}
 function settings_fields(string $group): void {
@@ -37,9 +43,14 @@ function render_section(string $name): string {
 }
 require dirname(__DIR__) . '/wp-content/themes/theobroma/inc/corporate-sections.php';
 require dirname(__DIR__) . '/wp-content/themes/theobroma/inc/admin-corporate-sections.php';
+require dirname(__DIR__) . '/wp-content/themes/theobroma/inc/corporate-content.php';
 
 $defaults = theobroma_corporate_sections_defaults();
 check(theobroma_corporate_sections() == $defaults, 'Unsaved settings must have useful initial content.');
+check(theobroma_corporate_section_heading($defaults['portfolio']) === 'Подарки с вашим <em>характером</em>', 'The default portfolio heading uses the existing gold accent.');
+check(theobroma_corporate_section_heading(array('title' => '<script> & Пример', 'title_accent' => 'Пример')) === '&lt;script&gt; &amp; <em>Пример</em>', 'Heading text is escaped around the trusted accent markup.');
+check(theobroma_corporate_section_heading(array('title' => 'Другой текст', 'title_accent' => 'характером')) === 'Другой текст', 'Existing custom headings remain unchanged when the accent phrase is absent.');
+check(theobroma_corporate_section_heading(array('title' => 'Без акцента', 'title_accent' => '')) === 'Без акцента', 'An empty accent is supported.');
 $malformed = theobroma_sanitize_corporate_sections(array('portfolio' => array(
     'enabled' => '0', 'title' => array('invalid'), 'intro' => '<b>Вступление</b>',
     'items' => array(
@@ -98,7 +109,10 @@ if (isset($argv[1])) {
     foreach (array('style.css', 'assets/css/home-redesign.css', 'assets/css/corporate-gifts.css', 'assets/css/design-system.css') as $file) {
         $styles .= '<link rel="stylesheet" href="' . get_template_directory_uri() . '/' . $file . '">';
     }
-    $html = $head . $styles . '<body><main class="corporate-redesign" style="padding-top:3rem">' . render_section('portfolio') . render_section('process') . '<section id="corporate-request" tabindex="-1">Заявка</section></main><script src="' . get_template_directory_uri() . '/assets/js/corporate-gifts.js"></script></body></html>';
+    ob_start();
+    include dirname(__DIR__) . '/wp-content/themes/theobroma/template-parts/pages/corporate-gifts.php';
+    $page = (string) ob_get_clean();
+    $html = $head . $styles . '<body>' . $page . '<script src="' . get_template_directory_uri() . '/assets/js/corporate-gifts.js"></script></body></html>';
     file_put_contents($directory . '/storefront.html', $html);
     file_put_contents($directory . '/admin.html', $head . '<link rel="stylesheet" href="' . get_template_directory_uri() . '/assets/css/admin-corporate-sections.css"><body>' . $admin . '<script src="' . get_template_directory_uri() . '/assets/js/admin-corporate-sections.js"></script></body></html>');
 }

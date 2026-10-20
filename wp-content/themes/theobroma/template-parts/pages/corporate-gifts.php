@@ -62,6 +62,7 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
             <?php endfor; ?>
         </div>
     </div>
+    <div class="cg-edge-decoration cg-edge-decoration--solutions">
     <section class="cg-solutions cg-shell" aria-labelledby="cg-solutions-title">
         <h2 id="cg-solutions-title">Готовые <em>решения</em></h2>
         <div class="cg-gift-grid">
@@ -73,12 +74,15 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
             <?php endforeach; ?>
         </div>
     </section>
+    </div>
+    <div class="cg-edge-decoration cg-edge-decoration--details">
     <section class="cg-details cg-shell" aria-labelledby="cg-details-title">
         <div class="cg-details-intro"><h2 id="cg-details-title">Эстетика и <em>детали</em></h2><p>Мы делаем премиальное оформление со вкусом и чувством стиля.</p><img src="<?php echo esc_url($asset_base . 'personalization-original.png'); ?>" width="532" height="444" loading="lazy" decoding="async" alt="Фирменная открытка на подарочной коробке"></div>
         <div class="cg-detail-grid">
             <?php foreach ($details as $index => $detail) : ?><article><h3><?php echo esc_html($detail[0]); ?></h3><p><?php echo esc_html($detail[1]); ?></p><p class="cg-detail-note"><?php echo esc_html($detail[2]); ?></p><span aria-hidden="true">0<?php echo esc_html((string) ($index + 1)); ?></span></article><?php endforeach; ?>
         </div>
     </section>
+    </div>
     <?php get_template_part('template-parts/corporate/portfolio'); ?>
     <?php if ($gallery_enabled && $gallery !== array()) : ?>
     <section class="cg-gallery cg-shell" aria-labelledby="cg-gallery-title" data-cg-carousel>
@@ -93,9 +97,11 @@ $site_reviews = get_posts(array('post_type' => 'theobroma_review', 'post_status'
     <?php endif; ?>
     <?php get_template_part('template-parts/corporate/process'); ?>
     <section class="cg-season cg-shell" aria-labelledby="cg-season-title"><div><h2 id="cg-season-title">Чтобы успеть<br>к <em>Новому году</em></h2><p>Оставьте заявку до 15 ноября. После этой даты принимаем заказы при наличии производственных мощностей.</p><a class="button" href="#corporate-request">Оставить заявку</a></div><img src="<?php echo esc_url($asset_base . 'chocolate-piece-original.png'); ?>" width="376" height="368" loading="lazy" decoding="async" alt="Кусочек горького шоколада"></section>
+    <div class="cg-edge-decoration cg-edge-decoration--faq">
     <section class="cg-faq cg-shell" aria-labelledby="cg-faq-title"><h2 id="cg-faq-title">Частые <em>вопросы</em></h2><div class="cg-faq-list">
         <?php foreach ($questions as $index => $question) : ?><details<?php echo $index === 0 ? ' open' : ''; ?>><summary><?php echo esc_html($question[0]); ?><img src="<?php echo esc_url($asset_base . 'chevron.svg'); ?>" width="23" height="12" alt=""></summary><p><?php echo esc_html($question[1]); ?></p></details><?php endforeach; ?>
     </div></section>
+    </div>
     <?php if ($site_reviews !== array()) : ?>
     <section class="cg-reviews cg-shell" aria-labelledby="cg-reviews-title" data-cg-carousel><h2 id="cg-reviews-title">Что говорят<br>о нашем <em>шоколаде</em></h2><div class="cg-review-track" data-cg-track tabindex="0" aria-label="Отзывы покупателей">
         <?php foreach ($site_reviews as $review) : ?><article><div class="cg-review-text"><?php echo wp_kses_post(wpautop($review->post_content)); ?></div><time datetime="<?php echo esc_attr(get_the_date('Y-m-d', $review)); ?>"><?php echo esc_html(get_the_date('d.m.Y', $review)); ?></time><h3><?php echo esc_html($review->post_title); ?></h3><img src="<?php echo esc_url($asset_base . 'quote.svg'); ?>" width="35" height="35" loading="lazy" alt=""></article><?php endforeach; ?>

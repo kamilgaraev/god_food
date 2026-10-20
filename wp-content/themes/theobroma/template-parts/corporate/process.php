@@ -7,7 +7,7 @@ if (!$process['enabled'] || $process['items'] === array()) {
 <section class="cg-process" aria-labelledby="cg-process-title">
     <div class="cg-shell">
         <header class="cg-section-intro">
-            <div><p class="cg-section-label">Как мы работаем</p><h2 id="cg-process-title"><?php echo esc_html($process['title']); ?></h2></div>
+            <h2 id="cg-process-title"><?php echo theobroma_corporate_section_heading($process); ?></h2>
             <?php if ($process['intro'] !== '') : ?><p class="cg-section-description"><?php echo esc_html($process['intro']); ?></p><?php endif; ?>
         </header>
         <div class="cg-process-layout">

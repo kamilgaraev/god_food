@@ -7,6 +7,7 @@ function theobroma_corporate_sections_defaults(): array {
         'portfolio' => array(
             'enabled' => true,
             'title' => 'Подарки с вашим характером',
+            'title_accent' => 'характером',
             'intro' => 'Несколько примеров подарков Theobroma. Подберём состав и оформление под вашу компанию, повод и бюджет.',
             'items' => array(
                 array('title' => 'Знак внимания', 'text' => 'Шоколад в крафт-конверте с лентой и персональной открыткой.', 'asset' => 'discovery-original.png', 'attachment_id' => 0, 'alt' => 'Набор Theobroma в крафт-конверте'),
@@ -18,6 +19,7 @@ function theobroma_corporate_sections_defaults(): array {
         'process' => array(
             'enabled' => true,
             'title' => 'От идеи до готового подарка',
+            'title_accent' => 'готового подарка',
             'intro' => 'Берём на себя шоколад, оформление и сборку. С вами согласуем главное — состав, макет и дату.',
             'factory_title' => 'Собственное производство',
             'factory_value' => '8',
@@ -92,6 +94,18 @@ function theobroma_sanitize_corporate_sections(mixed $value): array {
 
 function theobroma_corporate_sections(): array {
     return theobroma_sanitize_corporate_sections(get_option('theobroma_corporate_sections', array()));
+}
+
+/** Highlight plain text using the corporate page's existing heading style. */
+function theobroma_corporate_section_heading(array $section): string {
+    $title = $section['title'];
+    $accent = $section['title_accent'];
+    $position = $accent !== '' ? strpos($title, $accent) : false;
+    if ($position === false) {
+        return esc_html($title);
+    }
+    return esc_html(substr($title, 0, $position)) . '<em>' . esc_html($accent) . '</em>'
+        . esc_html(substr($title, $position + strlen($accent)));
 }
 
 /** Same image source on the storefront and in the editor. */

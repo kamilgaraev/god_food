@@ -11,7 +11,7 @@ const output = process.env.CORPORATE_SECTIONS_OUTPUT || fs.mkdtempSync(path.join
 fs.mkdirSync(output, { recursive: true });
 const php = spawnSync('php', [path.join(__dirname, 'verify-corporate-sections.php'), output], { encoding: 'utf8' });
 assert.equal(php.status, 0, php.stderr || php.stdout);
-const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'application/javascript', '.woff2': 'font/woff2', '.png': 'image/png', '.webp': 'image/webp' };
+const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'application/javascript', '.woff2': 'font/woff2', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
 const server = http.createServer((request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
   const file = pathname === '/admin.html' || pathname === '/storefront.html'
@@ -27,7 +27,7 @@ const server = http.createServer((request, response) => {
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
-    for (const [engine, widths] of [[chromium, [320, 390, 768, 1440]], [webkit, [390]]]) {
+    for (const [engine, widths] of [[chromium, [320, 390, 768, 1440, 2560]], [webkit, [390]]]) {
       const browser = await engine.launch({ headless: true });
       try {
         for (const width of widths) {
@@ -37,7 +37,7 @@ const server = http.createServer((request, response) => {
           await page.goto(`${base}/storefront.html`);
           await page.evaluate(async () => {
             document.querySelectorAll('img').forEach(image => { image.loading = 'eager'; });
-            await Promise.all([...document.images].map(image => image.decode()));
+            await Promise.all([...document.images].filter(image => image.getAttribute('src')).map(image => image.decode()));
             await document.fonts.ready;
           });
           assert.equal(await page.locator('.cg-portfolio-card').count(), 4);
@@ -45,13 +45,31 @@ const server = http.createServer((request, response) => {
           assert.match(await page.locator('.cg-factory').textContent(), /8\s*тонн шоколада в месяц/);
           const metrics = await page.evaluate(() => ({
             overflow: document.documentElement.scrollWidth > innerWidth + 1,
-            transform: getComputedStyle(document.querySelector('#cg-process-title')).textTransform,
             clipped: [...document.querySelectorAll('.cg-process-steps li,.cg-factory,.cg-portfolio-card')].some(element => element.scrollWidth > element.clientWidth + 1),
             sharp: [...document.querySelectorAll('.cg-portfolio-photo img')].every(image => image.naturalWidth >= image.clientWidth * devicePixelRatio),
           }));
           assert.equal(metrics.overflow, false, `${width}: document fits`);
           assert.equal(metrics.clipped, false, `${width}: copy fits`);
-          assert.equal(metrics.transform, 'none', 'new headings keep sentence case');
+          const headings = await page.evaluate(() => {
+            const properties = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'textTransform'];
+            const read = selector => {
+              const heading = document.querySelector(selector);
+              const style = getComputedStyle(heading);
+              const accent = getComputedStyle(heading.querySelector('em'));
+              return { typography: properties.map(key => style[key]), accent: [accent.color, accent.fontStyle, accent.fontWeight] };
+            };
+            return ['#cg-details-title', '#cg-portfolio-title', '#cg-process-title'].map(read);
+          });
+          assert.deepEqual(headings[1], headings[0], 'portfolio heading matches the existing heading and gold italic accent');
+          assert.deepEqual(headings[2], headings[0], 'process heading matches the existing heading and gold italic accent');
+          assert.equal(await page.locator('.cg-section-label').count(), 0, 'no extra overlines');
+          assert.equal(await page.locator('.cg-factory').evaluate(element => getComputedStyle(element).backgroundColor === getComputedStyle(document.querySelector('.corporate-redesign')).backgroundColor), true, 'factory uses the light page surface');
+          const decorations = await page.locator('.cg-edge-decoration').evaluateAll(elements => elements.map(element => {
+            const style = getComputedStyle(element, '::after');
+            return { visible: style.display !== 'none', right: element.getBoundingClientRect().right - parseFloat(style.right), edge: document.documentElement.clientWidth };
+          }));
+          assert.equal(decorations.length, 3);
+          assert.ok(decorations.every(decoration => !decoration.visible || Math.abs(decoration.right - decoration.edge) < 1), 'decorations touch the right viewport edge');
           assert.equal(metrics.sharp, true, `${width}: photos have enough device pixels`);
           const track = page.locator('.cg-portfolio-track');
           if (width < 1000) {
@@ -60,7 +78,7 @@ const server = http.createServer((request, response) => {
             await page.keyboard.press('Enter');
             await page.waitForFunction(() => document.querySelector('.cg-portfolio-track').scrollLeft > 100);
             const prev = page.getByRole('button', { name: 'Предыдущие примеры подарков', exact: true });
-            assert.equal(await prev.isEnabled(), true);
+            await page.waitForFunction(() => !document.querySelector('.cg-portfolio [data-cg-direction="-1"]').disabled, null, { timeout: 1000 });
             await prev.click();
             await page.waitForFunction(() => document.querySelector('.cg-portfolio-track').scrollLeft < 2);
             await track.focus();
@@ -70,6 +88,8 @@ const server = http.createServer((request, response) => {
           await track.evaluate(element => { element.scrollTo({ left: 0, behavior: 'instant' }); });
           await page.waitForTimeout(300); // Native keyboard scrolling finishes before the visual snapshot.
           await page.locator('.cg-process').scrollIntoViewIfNeeded();
+          await page.locator('.cg-portfolio').screenshot({ path: path.join(output, `${engine.name()}-${width}-portfolio.png`) });
+          await page.locator('.cg-process').screenshot({ path: path.join(output, `${engine.name()}-${width}-process.png`) });
           await page.screenshot({ path: path.join(output, `${engine.name()}-${width}.png`), fullPage: true });
           assert.deepEqual(errors, []);
           await page.close();

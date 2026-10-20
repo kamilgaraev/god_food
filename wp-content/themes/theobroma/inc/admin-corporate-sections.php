@@ -93,6 +93,7 @@ function theobroma_render_corporate_sections_admin(): void {
                 <input type="hidden" name="theobroma_corporate_sections[<?php echo esc_attr($section); ?>][enabled]" value="0">
                 <label><input type="checkbox" name="theobroma_corporate_sections[<?php echo esc_attr($section); ?>][enabled]" value="1" <?php checked($content['enabled']); ?>> Показывать блок</label>
                 <?php theobroma_corporate_admin_field('theobroma_corporate_sections[' . $section . '][title]', 'Заголовок блока', $content['title']); ?>
+                <?php theobroma_corporate_admin_field('theobroma_corporate_sections[' . $section . '][title_accent]', 'Выделить золотым курсивом (точная часть заголовка)', $content['title_accent']); ?>
                 <?php theobroma_corporate_admin_field('theobroma_corporate_sections[' . $section . '][intro]', 'Вступление', $content['intro'], true); ?>
                 <?php if ($section === 'process') : ?>
                 <details class="cs-admin-factory"><summary>Производство и сроки</summary>
