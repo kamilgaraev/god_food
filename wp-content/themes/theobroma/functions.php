@@ -11,6 +11,8 @@ require_once get_template_directory() . '/inc/account-addresses.php';
 require_once get_template_directory() . '/inc/checkout-page.php';
 require_once get_template_directory() . '/inc/buy-partners.php';
 require_once get_template_directory() . '/inc/corporate-content.php';
+require_once get_template_directory() . '/inc/corporate-sections.php';
+require_once get_template_directory() . '/inc/admin-corporate-sections.php';
 
 /** Canonical visual roles follow the theme and plugin layout styles. */
 function theobroma_design_system_assets(): void {
