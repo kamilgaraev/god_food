@@ -19,6 +19,35 @@ Dev: `theobroma.uit-dev.ru`, каталог `/opt/god-food`, Compose project `go
 существующего runtime; не публиковать в registry: исходный контейнер содержал
 переменные окружения с доступами.
 
+### Обновление PHP 8.3.36
+
+PHP 8.3.36 исправляет CVE-2026-109618 и CVE-2026-109619
+([сообщение PHP](https://www.php.net/archive/2026.php#2026-10-21-5)).
+Dockerfile закрепляет официальный образ по digest и проверяет версию PHP при сборке.
+
+После merge в main собрать образ из актуального checkout:
+
+```sh
+docker build --pull -t theobroma-wordpress:7.1.3-php8.3.36-apache docker/wordpress
+```
+
+Перед заменой контейнера сохранить приватную копию `compose.runtime.json`,
+идентификатор прежнего образа и контрольные суммы конфигурации и настроек интеграций.
+В `compose.runtime.json` заменить только `services.wordpress.image` на
+`theobroma-wordpress:7.1.3-php8.3.36-apache`; остальные поля сохранить.
+Затем пересоздать только приложение:
+
+```sh
+sh scripts/site-compose.sh up -d --no-deps --no-build --force-recreate wordpress
+sh scripts/site-compose.sh exec -T wordpress php -v
+```
+
+Образ содержит исходники WordPress 7.1.3, но заполненный volume `/var/www/html`
+сохраняет установленный WordPress: entrypoint не заменяет существующее ядро.
+Volumes, базу и `wp-config.php` при обновлении PHP не пересоздавать.
+После запуска проверить PHP 8.3.36, модули PHP/Apache, HTTPS-страницы,
+сохранность подключений, конфигурации и настроек интеграций.
+
 ## Защита dev
 
 Nginx запрашивает Basic Auth. Доступы: `/opt/god-food/.runtime/dev-access.json`.
