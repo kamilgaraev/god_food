@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Theobroma Analytics
- * Description: Управляемое и согласованное с cookie-consent подключение Яндекс.Метрики.
+ * Description: Управляемое подключение Яндекс.Метрики с сохранением отказа посетителя от аналитики.
  * Version: 1.0.0
  * Requires at least: 6.7
  * Requires PHP: 8.1

@@ -22,10 +22,16 @@ if ($renderer->javascript($config->defaults()) !== '') {
     throw new RuntimeException('Metrika rendered without a counter ID');
 }
 $javascript = $renderer->javascript($safe);
-foreach (['mc.yandex.ru/metrika/tag.js', 'ym(id,"init"', 'theobroma_cookie_notice_accepted', 'theobroma:cookie-consent'] as $needle) {
+foreach (['mc.yandex.ru/metrika/tag.js', 'window.ym(id, "init"', 'window.ym(id, "destruct"', 'theobroma_cookie_notice_accepted', 'theobroma:cookie-consent'] as $needle) {
     if (!str_contains($javascript, $needle)) {
         throw new RuntimeException('Metrika bootstrap is incomplete: ' . $needle);
     }
+}
+
+// Pipe this bootstrap into consent.spec.cjs to exercise the generated JavaScript.
+if (($argv[1] ?? '') === '--export-bootstrap') {
+    echo $javascript;
+    exit;
 }
 
 echo "Analytics tests passed\n";

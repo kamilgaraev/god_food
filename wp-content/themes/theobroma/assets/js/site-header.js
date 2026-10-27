@@ -65,17 +65,36 @@
 
     const cookieNotice = document.querySelector('.cookie-notice');
     const cookieKey = 'theobroma_cookie_notice_accepted';
+    const cookieSettings = document.querySelectorAll('[data-cookie-settings]');
+    let cookieOpener = null;
     let cookieChoice = null;
     try { cookieChoice = window.localStorage.getItem(cookieKey); } catch (_) { /* Storage may be unavailable in private browsers. */ }
-    if (cookieNotice && !['0', '1'].includes(cookieChoice)) {
-        cookieNotice.hidden = false;
-    }
+    const showCookieNotice = (show) => {
+        if (!cookieNotice) return;
+        cookieNotice.hidden = !show;
+        cookieSettings.forEach(link => link.setAttribute('aria-expanded', String(show)));
+    };
+    showCookieNotice(!['0', '1'].includes(cookieChoice));
+    cookieSettings.forEach(link => link.addEventListener('click', (event) => {
+        event.preventDefault();
+        cookieOpener = link;
+        showCookieNotice(true);
+        cookieNotice?.querySelector('[data-cookie-choice]')?.focus({ preventScroll: true });
+    }));
     cookieNotice?.querySelectorAll('[data-cookie-choice]').forEach(button => button.addEventListener('click', () => {
         const choice = button.dataset.cookieChoice;
         try { window.localStorage.setItem(cookieKey, choice); } catch (_) { /* Dismiss for this page even when storage is blocked. */ }
-        cookieNotice.hidden = true;
-        if (choice === '1') window.dispatchEvent(new CustomEvent('theobroma:cookie-consent'));
+        showCookieNotice(false);
+        window.dispatchEvent(new CustomEvent('theobroma:cookie-consent', { detail: { choice } }));
+        cookieOpener?.focus({ preventScroll: true });
+        cookieOpener = null;
     }));
+    window.addEventListener('storage', (event) => {
+        if (event.key === cookieKey || event.key === null) {
+            try { cookieChoice = window.localStorage.getItem(cookieKey); } catch (_) { return; }
+            showCookieNotice(!['0', '1'].includes(cookieChoice));
+        }
+    });
 
     const sourceTextReveals = document.querySelectorAll('.source-text-reveal');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');

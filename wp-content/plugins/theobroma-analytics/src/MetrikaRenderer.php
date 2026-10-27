@@ -23,7 +23,50 @@ final class MetrikaRenderer
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 
         return sprintf(
-            '(function(){var id=%1$d,loaded=false;function load(){if(loaded)return;loaded=true;(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t);a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(id,"init",%2$s)}if(localStorage.getItem("theobroma_cookie_notice_accepted")==="1")load();else window.addEventListener("theobroma:cookie-consent",load,{once:true})})();',
+            <<<'JS'
+(function () {
+    var id = %1$d, key = "theobroma_cookie_notice_accepted";
+    var choice = null, script = null, ready = false, initialized = false;
+    function readChoice() {
+        try { return window.localStorage.getItem(key); } catch (_) { return choice; }
+    }
+    function initialize() {
+        if (!ready || choice === "0" || initialized) return;
+        initialized = true;
+        window.ym(id, "init", %2$s);
+    }
+    function start() {
+        window["disableYaCounter" + id] = false;
+        if (ready) { initialize(); return; }
+        if (script) return;
+        window.ym = window.ym || function () { (window.ym.a = window.ym.a || []).push(arguments); };
+        window.ym.l = window.ym.l || +new Date();
+        script = document.createElement("script");
+        script.async = true;
+        script.src = "https://mc.yandex.ru/metrika/tag.js";
+        script.onload = function () { ready = true; initialize(); };
+        script.onerror = function () { script = null; };
+        document.head.appendChild(script);
+    }
+    function applyChoice(value) {
+        choice = value;
+        if (choice !== "0") { start(); return; }
+        window["disableYaCounter" + id] = true;
+        if (initialized) {
+            window.ym(id, "destruct");
+            initialized = false;
+        }
+    }
+    window.addEventListener("theobroma:cookie-consent", function (event) {
+        var value = event.detail && event.detail.choice;
+        applyChoice(value === "0" || value === "1" ? value : readChoice());
+    });
+    window.addEventListener("storage", function (event) {
+        if (event.key === key || event.key === null) applyChoice(readChoice());
+    });
+    applyChoice(readChoice());
+})();
+JS,
             (int) $counterId,
             $options
         );
