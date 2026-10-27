@@ -37,7 +37,7 @@ final class SettingsPage
         ?>
         <div class="wrap">
             <h1>Аналитика Theobroma</h1>
-            <p>Счётчик загружается только после согласия посетителя на cookie. До ввода валидного ID запросы в Яндекс.Метрику не выполняются.</p>
+            <p>Аналитика включена по умолчанию. Посетитель может отключить её в уведомлении или через «Настройки cookie» в подвале; сохранённый отказ блокирует загрузку счётчика. До ввода валидного ID запросы в Яндекс.Метрику не выполняются.</p>
             <form method="post" action="options.php">
                 <?php settings_fields('theobroma_analytics'); ?>
                 <table class="form-table" role="presentation">
