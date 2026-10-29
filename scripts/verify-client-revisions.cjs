@@ -98,7 +98,7 @@ assert.equal(new Set(plan.seo.map(row => row.description)).size, plan.seo.length
       for (const route of ['/catalog/', '/product-category/cacao/', '/buy/', '/cooperation/', '/media/', '/recipes/', '/product/theobroma-100-68-coriander/', '/product/theobroma-cacao-100/']) {
         await page.goto(base + route, { waitUntil: 'domcontentloaded' });
         await page.evaluate(() => document.fonts.ready);
-        const cookie = page.getByRole('button', { name: 'Только необходимые' });
+        const cookie = page.getByRole('button', { name: 'Понятно' });
         if (await cookie.isVisible()) await cookie.click();
         await page.locator('h1:visible').first().waitFor({ state: 'visible' });
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width} ${route}: overflow`);
@@ -124,7 +124,7 @@ assert.equal(new Set(plan.seo.map(row => row.description)).size, plan.seo.length
     }
     const cart = await browser.newPage({ viewport: { width: 390, height: 1000 } });
     await cart.goto(base + '/catalog/', { waitUntil: 'domcontentloaded' });
-    const cookie = cart.getByRole('button', { name: 'Только необходимые' });
+    const cookie = cart.getByRole('button', { name: 'Понятно' });
     if (await cookie.isVisible()) await cookie.click();
     await cart.goto(base + '/product/theobroma-100-68-coriander/', { waitUntil: 'domcontentloaded' });
     await cart.locator('#commerce-modal .single_add_to_cart_button').click();

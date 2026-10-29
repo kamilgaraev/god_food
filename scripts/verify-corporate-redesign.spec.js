@@ -25,7 +25,7 @@ async function verifySelectedRequest(page, value) {
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(`${base}/corporate-gifts/`, { waitUntil: 'networkidle' });
-      const cookie = page.getByRole('button', { name: /Ок, не показывать снова/i });
+      const cookie = page.getByRole('button', { name: 'Понятно' });
       if (await cookie.isVisible()) await cookie.click();
       await page.evaluate(async () => {
         document.querySelectorAll('.corporate-redesign img[loading="lazy"]').forEach(image => { image.loading = 'eager'; });

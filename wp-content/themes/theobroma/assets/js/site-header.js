@@ -64,35 +64,37 @@
     });
 
     const cookieNotice = document.querySelector('.cookie-notice');
-    const cookieKey = 'theobroma_cookie_notice_accepted';
+    const cookieKey = 'theobroma_cookie_notice_dismissed';
+    const legacyCookieKey = 'theobroma_cookie_notice_accepted';
     const cookieSettings = document.querySelectorAll('[data-cookie-settings]');
     let cookieOpener = null;
-    let cookieChoice = null;
-    try { cookieChoice = window.localStorage.getItem(cookieKey); } catch (_) { /* Storage may be unavailable in private browsers. */ }
+    const cookieNoticeDismissed = () => {
+        try {
+            return window.localStorage.getItem(cookieKey) === '1'
+                || ['0', '1'].includes(window.localStorage.getItem(legacyCookieKey));
+        } catch (_) { return false; }
+    };
     const showCookieNotice = (show) => {
         if (!cookieNotice) return;
         cookieNotice.hidden = !show;
         cookieSettings.forEach(link => link.setAttribute('aria-expanded', String(show)));
     };
-    showCookieNotice(!['0', '1'].includes(cookieChoice));
+    showCookieNotice(!cookieNoticeDismissed());
     cookieSettings.forEach(link => link.addEventListener('click', (event) => {
         event.preventDefault();
         cookieOpener = link;
         showCookieNotice(true);
-        cookieNotice?.querySelector('[data-cookie-choice]')?.focus({ preventScroll: true });
+        cookieNotice?.querySelector('[data-cookie-dismiss]')?.focus({ preventScroll: true });
     }));
-    cookieNotice?.querySelectorAll('[data-cookie-choice]').forEach(button => button.addEventListener('click', () => {
-        const choice = button.dataset.cookieChoice;
-        try { window.localStorage.setItem(cookieKey, choice); } catch (_) { /* Dismiss for this page even when storage is blocked. */ }
+    cookieNotice?.querySelector('[data-cookie-dismiss]')?.addEventListener('click', () => {
+        try { window.localStorage.setItem(cookieKey, '1'); } catch (_) { /* Dismiss for this page even when storage is blocked. */ }
         showCookieNotice(false);
-        window.dispatchEvent(new CustomEvent('theobroma:cookie-consent', { detail: { choice } }));
         cookieOpener?.focus({ preventScroll: true });
         cookieOpener = null;
-    }));
+    });
     window.addEventListener('storage', (event) => {
-        if (event.key === cookieKey || event.key === null) {
-            try { cookieChoice = window.localStorage.getItem(cookieKey); } catch (_) { return; }
-            showCookieNotice(!['0', '1'].includes(cookieChoice));
+        if (event.key === cookieKey || event.key === legacyCookieKey || event.key === null) {
+            showCookieNotice(!cookieNoticeDismissed());
         }
     });
 
