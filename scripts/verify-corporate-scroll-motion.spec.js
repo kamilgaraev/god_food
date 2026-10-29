@@ -44,7 +44,7 @@ async function setup(page) {
     throw error;
   }
   await page.waitForFunction(() => document.querySelector('.cg-media-ready'));
-  const cookie = page.getByRole('button', { name: 'Только необходимые' });
+  const cookie = page.getByRole('button', { name: 'Понятно' });
   if (await cookie.isVisible()) await cookie.click();
   await page.evaluate(() => document.querySelector('[data-cg-video]')?.pause());
 }

@@ -17,16 +17,15 @@
         <div class="footer-card footer-mail"><strong><a href="mailto:<?php echo esc_attr(theobroma_content('footer_opt_email')); ?>"><?php echo esc_html(theobroma_content('footer_opt_email')); ?></a></strong><small><?php echo nl2br(esc_html(theobroma_content('footer_opt_note'))); ?></small></div>
         <div class="footer-card footer-mail"><strong><a href="mailto:<?php echo esc_attr(theobroma_content('footer_press_email')); ?>"><?php echo esc_html(theobroma_content('footer_press_email')); ?></a></strong><small><?php echo nl2br(esc_html(theobroma_content('footer_press_note'))); ?></small></div>
     </div>
-    <div class="copyright"><span><?php echo nl2br(esc_html(theobroma_content('footer_company'))); ?></span><span><?php echo nl2br(esc_html(theobroma_content('footer_bank'))); ?></span><span><a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Политика конфиденциальности</a><br><a href="<?php echo esc_url(theobroma_page_url('Пользовательское соглашение')); ?>">Пользовательское соглашение</a><br><a href="<?php echo esc_url(theobroma_page_url('Публичная оферта')); ?>">Публичная оферта</a><br><a href="#cookie-notice" data-cookie-settings aria-controls="cookie-notice" aria-expanded="false">Настройки cookie</a></span></div>
+    <div class="copyright"><span><?php echo nl2br(esc_html(theobroma_content('footer_company'))); ?></span><span><?php echo nl2br(esc_html(theobroma_content('footer_bank'))); ?></span><span><a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Политика конфиденциальности</a><br><a href="<?php echo esc_url(theobroma_page_url('Пользовательское соглашение')); ?>">Пользовательское соглашение</a><br><a href="<?php echo esc_url(theobroma_page_url('Публичная оферта')); ?>">Публичная оферта</a><br><a href="#cookie-notice" data-cookie-settings aria-controls="cookie-notice" aria-expanded="false">О cookie</a></span></div>
 </footer>
 <aside class="cookie-notice" id="cookie-notice" aria-labelledby="cookie-notice-title" hidden>
     <div class="cookie-notice-copy">
-        <strong id="cookie-notice-title">Немного заботы о вашем удобстве</strong>
-        <p>Мы используем cookie для работы сайта и Яндекс.Метрики. Аналитика включена по умолчанию. Вы можете отключить её, оставив только необходимые cookie. <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Подробнее в политике конфиденциальности</a>.</p>
+        <strong id="cookie-notice-title">О файлах cookie</strong>
+        <p>Мы используем cookie для работы сайта и Яндекс.Метрику для анализа посещаемости. <a href="<?php echo esc_url(theobroma_page_url('Политика конфиденциальности')); ?>">Подробнее в политике конфиденциальности</a>.</p>
     </div>
     <div class="cookie-notice-actions">
-        <button type="button" data-cookie-choice="0">Только необходимые</button>
-        <button type="button" data-cookie-choice="1">Оставить аналитику</button>
+        <button type="button" data-cookie-dismiss>Понятно</button>
     </div>
 </aside>
 <?php wp_footer(); ?>

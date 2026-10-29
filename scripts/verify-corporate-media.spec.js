@@ -79,7 +79,7 @@ async function serveSource(page, html) {
         console.error('Video diagnostic:', await page.locator('[data-cg-video]').evaluate(v => ({ src: v.src, state: v.readyState, paused: v.paused, width: v.videoWidth, error: v.error?.message, rect: v.getBoundingClientRect().toJSON() })), errors);
         throw error;
       }
-      const cookie = page.getByRole('button', { name: 'Только необходимые' });
+      const cookie = page.getByRole('button', { name: 'Понятно' });
       if (await cookie.isVisible()) await cookie.click();
       const video = page.locator('[data-cg-video]');
       assert.equal(await video.evaluate(v => v.muted && v.loop && v.playsInline), true);
