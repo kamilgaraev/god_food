@@ -77,6 +77,7 @@ final class SettingsPage
         $this->connection($settings);
         $this->diagnostics();
         echo '</div>';
+        $this->orderXml();
         $this->protocol($checkAuthUrl);
         $this->history();
         $this->import();
@@ -110,6 +111,18 @@ final class SettingsPage
             echo '<li class="' . ($passed ? 'is-passed' : 'is-failed') . '"><span class="dashicons ' . ($passed ? 'dashicons-yes-alt' : 'dashicons-warning') . '" aria-hidden="true"></span><span>' . esc_html($label) . '</span><strong>' . ($passed ? 'Готово' : 'Проверьте') . '</strong></li>';
         }
         echo '</ul><div class="theobroma-1c-note"><strong>Что передать разработчикам 1С</strong><span>URL обмена, логин, пароль и тип обмена <code>sale</code>.</span></div></section>';
+    }
+
+    private function orderXml(): void
+    {
+        echo '<section class="theobroma-1c-card" aria-labelledby="theobroma-1c-order-xml-title">';
+        echo '<div class="theobroma-1c-card__head"><span class="dashicons dashicons-download" aria-hidden="true"></span><div><h2 id="theobroma-1c-order-xml-title">XML конкретного заказа</h2><p>Для проверки состава заказа и контактов покупателя в 1С.</p></div></div>';
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" class="theobroma-1c-upload">';
+        echo '<input type="hidden" name="action" value="' . esc_attr(OrderXmlDownload::ACTION) . '">';
+        wp_nonce_field(OrderXmlDownload::ACTION);
+        echo '<label class="theobroma-1c-form__short"><span>ID заказа WooCommerce</span><input type="number" name="order_id" min="1" step="1" required inputmode="numeric"></label>';
+        submit_button('Скачать XML заказа', 'primary', 'submit', false);
+        echo '</form><p class="description">Файл содержит данные покупателя. Скачивание не меняет очередь обмена и не отмечает заказ выгруженным в 1С.</p></section>';
     }
 
     private function protocol(string $checkAuthUrl): void
