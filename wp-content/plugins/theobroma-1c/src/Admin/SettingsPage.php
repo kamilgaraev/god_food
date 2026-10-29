@@ -121,7 +121,7 @@ final class SettingsPage
         echo '<input type="hidden" name="action" value="' . esc_attr(OrderXmlDownload::ACTION) . '">';
         wp_nonce_field(OrderXmlDownload::ACTION);
         echo '<label class="theobroma-1c-form__short"><span>ID заказа WooCommerce</span><input type="number" name="order_id" min="1" step="1" required inputmode="numeric"></label>';
-        submit_button('Скачать XML заказа', 'secondary', 'submit', false);
+        submit_button('Скачать XML заказа', 'primary', 'submit', false);
         echo '</form><p class="description">Файл содержит данные покупателя. Скачивание не меняет очередь обмена и не отмечает заказ выгруженным в 1С.</p></section>';
     }
 
