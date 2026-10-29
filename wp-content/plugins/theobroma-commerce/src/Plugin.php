@@ -19,6 +19,7 @@ use Theobroma\Commerce\Rest\DeliveryCheckoutController;
 use Theobroma\Commerce\Orders\CdekOrderLifecycle;
 use Theobroma\Commerce\Orders\OzonOrderLifecycle;
 use Theobroma\Commerce\Orders\DeliveryOrderMeta;
+use Theobroma\Commerce\Orders\OrderEmailPresenter;
 use Theobroma\Commerce\Loyalty\WooLoyaltyLifecycle;
 use Theobroma\Commerce\Loyalty\LoyaltyCheckout;
 use Theobroma\Commerce\Loyalty\LoyaltyAccountEndpoint;
@@ -52,6 +53,7 @@ final class Plugin
         (new OzonOAuthCallbackController())->register();
         (new DeliveryCheckoutController())->register();
         (new DeliveryOrderMeta())->register();
+        (new OrderEmailPresenter())->register();
         (new CdekOrderLifecycle())->register();
         (new OzonOrderLifecycle())->register();
         (new \Theobroma\Commerce\Orders\DeliveryStatusLifecycle())->register();
