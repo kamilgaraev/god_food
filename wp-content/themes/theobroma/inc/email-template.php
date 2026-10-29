@@ -297,6 +297,11 @@ body, #outer_wrapper {
         max-width: 64px !important;
         border-radius: 4px !important;
     }
+    #body_content .email-order-details .order-item-data td:only-child {
+        width: 100% !important;
+        padding-right: 0 !important;
+        font-size: 15px !important;
+    }
     #body_content .email-order-details .order-item-data td:nth-child(2) {
         color: #756b63 !important;
         font-size: 0 !important;
