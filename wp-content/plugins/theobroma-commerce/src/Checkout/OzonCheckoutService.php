@@ -100,9 +100,10 @@ final class OzonCheckoutService
             throw new \RuntimeException('Ozon delivery is unavailable for this buyer');
         }
 
+        $deliverySchema = 'MIX';
         $checkout = $this->client->deliveryCheckout([
             'buyer_phone' => $phone,
-            'delivery_schema' => 'MIX',
+            'delivery_schema' => $deliverySchema,
             'delivery_type' => $delivery,
             'items' => $items,
         ]);
@@ -114,12 +115,10 @@ final class OzonCheckoutService
         $createSplits = [];
         $cost = 0.0;
         $labels = [];
-        $deliverySchema = '';
         foreach ($splits as $split) {
             $method = is_array($split['delivery_method'] ?? null) ? $split['delivery_method'] : [];
             $timeslots = array_values(array_filter((array) ($method['timeslots'] ?? []), 'is_array'));
             $timeslot = $timeslots[0] ?? [];
-            $deliverySchema = $deliverySchema !== '' ? $deliverySchema : (string) ($split['delivery_schema'] ?? 'MIX');
             $cost += $this->money((array) ($split['commissions']['total'] ?? $method['price'] ?? []));
             $labels[] = trim((string) ($method['name'] ?? 'Ozon Доставка'));
             $createSplits[] = [
@@ -145,7 +144,8 @@ final class OzonCheckoutService
             'delivery' => isset($delivery['courier']) && $destination !== []
                 ? ['courier' => (new OzonCourierAddress())->build($destination, (array) $delivery['courier'])]
                 : $delivery,
-            'delivery_schema' => $deliverySchema ?: 'MIX',
+            // Order creation must use the request schema, not the first split's FBO/FBS result.
+            'delivery_schema' => $deliverySchema,
             'recipient' => $recipientPayload,
             'splits' => $createSplits,
         ]);
