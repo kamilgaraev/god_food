@@ -153,7 +153,7 @@ final class OzonCheckoutServiceTest extends TestCase
         );
 
         $this->assertSame(349.5, $quote->cost());
-        $this->assertSame('FBO', $quote->createPayload()['delivery_schema']);
+        $this->assertSame('MIX', $quote->createPayload()['delivery_schema']);
         $this->assertSame(991, $quote->createPayload()['splits'][0]['delivery_method']['timeslot_id']);
         $this->assertSame(125, $quote->createPayload()['delivery']['pick_up']['map_point_id']);
         $this->assertSame('/v1/delivery/check', parse_url($transport->requests[0]['url'], PHP_URL_PATH));
@@ -165,5 +165,37 @@ final class OzonCheckoutServiceTest extends TestCase
             [['quantity' => 2, 'sku' => 100500]],
             $transport->requests[1]['options']['json']['items'] ?? null
         );
+    }
+
+    public function testMixedWarehouseSplitsKeepTheSchemaSentToCheckoutInEitherOrder(): void
+    {
+        foreach ([['FBO', 'FBS'], ['FBS', 'FBO']] as $schemas) {
+            $splits = [];
+            foreach ($schemas as $index => $schema) {
+                $splits[] = [
+                    'delivery_schema' => $schema,
+                    'warehouse_id' => 777 + $index,
+                    'items' => [['sku' => 100500 + $index, 'quantity' => 1]],
+                    'commissions' => ['total' => ['amount' => $index === 0 ? '430' : '110', 'currency' => 'RUB']],
+                    'delivery_method' => ['id' => 125, 'delivery_type' => 'PVZ'],
+                ];
+            }
+            $transport = new RecordingTransport([
+                ['status' => 200, 'body' => ['available' => true]],
+                ['status' => 200, 'body' => ['splits' => $splits]],
+            ]);
+            $person = ['first_name' => 'Иван', 'last_name' => 'Иванов', 'phone' => '79990000000'];
+            $quote = (new OzonCheckoutService(new OzonClient($transport, new StaticAccessTokenProvider(['token']))))->quote(
+                $person,
+                ['pick_up' => ['map_point_id' => 125]],
+                [['sku' => 100500, 'quantity' => 1], ['sku' => 100501, 'quantity' => 1]],
+                $person
+            );
+
+            $this->assertSame('MIX', $transport->requests[1]['options']['json']['delivery_schema']);
+            $this->assertSame('MIX', $quote->createPayload()['delivery_schema']);
+            $this->assertSame(540.0, $quote->cost());
+            $this->assertSame([777, 778], array_column($quote->createPayload()['splits'], 'warehouse_id'));
+        }
     }
 }
