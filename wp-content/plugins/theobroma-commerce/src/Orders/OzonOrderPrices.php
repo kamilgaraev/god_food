@@ -15,7 +15,7 @@ final class OzonOrderPrices
         return ['currency_code' => $currency, 'units' => intdiv($nanos, 1000000000), 'nanos' => $nanos % 1000000000];
     }
 
-    /** Enrich the confirmed selection with actual order totals, never current catalogue prices. */
+    /** Use paid item totals while keeping delivery prices from the confirmed Ozon quote. */
     public function apply(array $payload, \WC_Order $order): array
     {
         $lines = [];
@@ -54,16 +54,12 @@ final class OzonOrderPrices
                 $item['price'] = self::money($lines[$sku]['total'] / $lines[$sku]['quantity'], $order->get_currency());
             }
             unset($item);
-            $customerShipping = (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
-            if ($customerShipping <= 0.0 || count($splits) === 1) {
-                $split['delivery_method']['price'] = self::money(max(0.0, $customerShipping), $order->get_currency());
-            } else {
-                $price = $split['delivery_method']['price'] ?? [];
-                if (isset($price['amount'], $price['currency']) && is_numeric($price['amount'])) {
-                    $split['delivery_method']['price'] = self::money((float) $price['amount'], (string) $price['currency']);
-                } elseif (!isset($price['currency_code'], $price['units'], $price['nanos'])) {
-                    throw new \InvalidArgumentException('Recalculate delivery for multiple Ozon splits');
-                }
+            // Merchant-funded free shipping changes the WooCommerce rate, not Ozon's quote.
+            $price = $split['delivery_method']['price'] ?? [];
+            if (isset($price['amount'], $price['currency']) && is_numeric($price['amount'])) {
+                $split['delivery_method']['price'] = self::money((float) $price['amount'], (string) $price['currency']);
+            } elseif (!isset($price['currency_code'], $price['units'], $price['nanos'])) {
+                throw new \InvalidArgumentException('Recalculate delivery: missing confirmed Ozon split price');
             }
         }
         unset($split);
