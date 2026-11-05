@@ -59,7 +59,7 @@ final class DeliverySelectionStoreTest extends TestCase
             'fingerprint' => 'cart-1',
             'point' => ['id' => '9001', 'address' => 'Казань'],
             'quote' => ['cost' => 349.5, 'label' => 'Ozon Доставка'],
-            'create_payload' => ['delivery_schema' => 'MIX'],
+            'create_payload' => ['delivery_schema' => 'FBS'],
         ]));
 
         $this->assertSame(null, $store->confirmedFor('cdek', 'cart-1'));
@@ -95,6 +95,23 @@ final class DeliverySelectionStoreTest extends TestCase
         $this->assertSame('fingerprint_mismatch', $events[1][1]['reason'] ?? null);
         $this->assertSame('requested-fingerprint', $events[1][1]['requested_fingerprint'] ?? null);
         $this->assertSame('saved-fingerprint', $events[1][1]['saved_fingerprint'] ?? null);
+    }
+
+    public function testInvalidatesSavedNonFbsOzonSelection(): void
+    {
+        $memory = [];
+        $store = $this->store($memory);
+        $store->save(DeliverySelection::fromArray([
+            'provider' => 'ozon',
+            'kind' => 'pickup',
+            'fingerprint' => 'cart-1',
+            'point' => ['id' => '9001', 'address' => 'Казань'],
+            'quote' => ['cost' => 349.5, 'label' => 'Ozon Доставка'],
+            'create_payload' => ['delivery_schema' => 'MIX'],
+        ]));
+
+        $this->assertSame(null, $store->confirmedFor('ozon', 'cart-1'));
+        $this->assertSame(null, $store->load());
     }
 
     public function testFingerprintChangesWithQuantityOrDestination(): void

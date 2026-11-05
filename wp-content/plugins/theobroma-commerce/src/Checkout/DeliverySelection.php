@@ -64,6 +64,7 @@ final class DeliverySelection
             && in_array($this->data['kind'], ['pickup', 'courier'], true)
             && is_float($this->data['quote']['cost'])
             && $this->data['quote']['label'] !== ''
-            && $this->data['create_payload'] !== [];
+            && $this->data['create_payload'] !== []
+            && ($this->provider() !== 'ozon' || ($this->data['create_payload']['delivery_schema'] ?? '') === 'FBS');
     }
 }

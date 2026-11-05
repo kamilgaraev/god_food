@@ -17,7 +17,7 @@ final class OzonOrderServiceTest extends TestCase
         $service = new OzonOrderService($api);
 
         $this->assertSame(null, $service->create($order, false, ['buyer' => []]));
-        $result = $service->create($order, true, ['buyer' => []]);
+        $result = $service->create($order, true, ['delivery_schema' => 'FBS', 'buyer' => []]);
 
         $this->assertSame('OZ-77', $result);
         $this->assertSame('OZ-77', $order->get('_theobroma_ozon_order_number'));
@@ -32,13 +32,25 @@ final class OzonOrderServiceTest extends TestCase
         $order->set('_theobroma_ozon_order_number', 'OZ-70');
         $service = new OzonOrderService($api);
 
-        $this->assertSame('OZ-70', $service->create($order, true, []));
+        $this->assertSame('OZ-70', $service->create($order, true, ['delivery_schema' => 'MIX']));
         $this->assertSame(0, count($api->created));
 
         $badApi = new FakeOzonOrderApi(['warnings' => ['not created']]);
         $this->assertThrows(
-            static fn () => (new OzonOrderService($badApi))->create(new MemoryShipmentOrder(43), true, []),
+            static fn () => (new OzonOrderService($badApi))->create(new MemoryShipmentOrder(43), true, ['delivery_schema' => 'FBS']),
             \RuntimeException::class
         );
+    }
+
+    public function testRejectsNonFbsPayloadBeforeCallingOzon(): void
+    {
+        $api = new FakeOzonOrderApi(['order_number' => 'OZ-77']);
+
+        $this->assertThrows(
+            static fn () => (new OzonOrderService($api))->create(new MemoryShipmentOrder(42), true, ['delivery_schema' => 'MIX']),
+            \RuntimeException::class
+        );
+
+        $this->assertSame(0, count($api->created));
     }
 }

@@ -100,7 +100,7 @@ final class OzonCheckoutService
             throw new \RuntimeException('Ozon delivery is unavailable for this buyer');
         }
 
-        $deliverySchema = 'MIX';
+        $deliverySchema = 'FBS';
         $checkout = $this->client->deliveryCheckout([
             'buyer_phone' => $phone,
             'delivery_schema' => $deliverySchema,
@@ -116,6 +116,9 @@ final class OzonCheckoutService
         $cost = 0.0;
         $labels = [];
         foreach ($splits as $split) {
+            if (($split['delivery_schema'] ?? '') !== $deliverySchema) {
+                throw new \RuntimeException('Ozon returned a delivery split outside the permitted FBS scheme');
+            }
             $method = is_array($split['delivery_method'] ?? null) ? $split['delivery_method'] : [];
             $timeslots = array_values(array_filter((array) ($method['timeslots'] ?? []), 'is_array'));
             $timeslot = $timeslots[0] ?? [];
@@ -144,7 +147,7 @@ final class OzonCheckoutService
             'delivery' => isset($delivery['courier']) && $destination !== []
                 ? ['courier' => (new OzonCourierAddress())->build($destination, (array) $delivery['courier'])]
                 : $delivery,
-            // Order creation must use the request schema, not the first split's FBO/FBS result.
+            // The order must use the FBS schema sent to Ozon during checkout.
             'delivery_schema' => $deliverySchema,
             'recipient' => $recipientPayload,
             'splits' => $createSplits,

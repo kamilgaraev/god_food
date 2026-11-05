@@ -16,7 +16,7 @@ final class OzonCheckoutServiceTest extends TestCase
         $transport = new RecordingTransport([
             ['status' => 200, 'body' => ['result' => ['available' => true]]],
             ['status' => 200, 'body' => ['result' => ['splits' => [[
-                'warehouse_id' => 777, 'delivery_schema' => 'FBO',
+                'warehouse_id' => 777, 'delivery_schema' => 'FBS',
                 'delivery_method' => ['id' => 125, 'delivery_type' => 'COURIER'],
                 'items' => [['quantity' => 1, 'sku' => 100500]],
             ]]]]],
@@ -127,7 +127,7 @@ final class OzonCheckoutServiceTest extends TestCase
         $transport = new RecordingTransport([
             ['status' => 200, 'body' => ['result' => ['available' => true]]],
             ['status' => 200, 'body' => ['result' => ['splits' => [[
-                'delivery_schema' => 'FBO',
+                'delivery_schema' => 'FBS',
                 'warehouse_id' => 777,
                 'commissions' => ['total' => ['amount' => '349.50', 'currency' => 'RUB']],
                 'delivery_method' => [
@@ -153,13 +153,14 @@ final class OzonCheckoutServiceTest extends TestCase
         );
 
         $this->assertSame(349.5, $quote->cost());
-        $this->assertSame('MIX', $quote->createPayload()['delivery_schema']);
+        $this->assertSame('FBS', $quote->createPayload()['delivery_schema']);
         $this->assertSame(991, $quote->createPayload()['splits'][0]['delivery_method']['timeslot_id']);
         $this->assertSame(125, $quote->createPayload()['delivery']['pick_up']['map_point_id']);
         $this->assertSame('/v1/delivery/check', parse_url($transport->requests[0]['url'], PHP_URL_PATH));
         $this->assertSame('79990000000', $transport->requests[0]['options']['json']['client_phone'] ?? null);
         $this->assertSame(false, array_key_exists('buyer_phone', $transport->requests[0]['options']['json']));
         $this->assertSame('/v2/delivery/checkout', parse_url($transport->requests[1]['url'], PHP_URL_PATH));
+        $this->assertSame('FBS', $transport->requests[1]['options']['json']['delivery_schema']);
         $this->assertSame('79990000000', $transport->requests[1]['options']['json']['buyer_phone'] ?? null);
         $this->assertSame(
             [['quantity' => 2, 'sku' => 100500]],
@@ -167,7 +168,7 @@ final class OzonCheckoutServiceTest extends TestCase
         );
     }
 
-    public function testMixedWarehouseSplitsKeepTheSchemaSentToCheckoutInEitherOrder(): void
+    public function testRejectsFboSplitWhenOnlyFbsDeliveryIsAllowed(): void
     {
         foreach ([['FBO', 'FBS'], ['FBS', 'FBO']] as $schemas) {
             $splits = [];
@@ -185,17 +186,17 @@ final class OzonCheckoutServiceTest extends TestCase
                 ['status' => 200, 'body' => ['splits' => $splits]],
             ]);
             $person = ['first_name' => 'Иван', 'last_name' => 'Иванов', 'phone' => '79990000000'];
-            $quote = (new OzonCheckoutService(new OzonClient($transport, new StaticAccessTokenProvider(['token']))))->quote(
-                $person,
-                ['pick_up' => ['map_point_id' => 125]],
-                [['sku' => 100500, 'quantity' => 1], ['sku' => 100501, 'quantity' => 1]],
-                $person
+            $this->assertThrows(
+                static fn (): mixed => (new OzonCheckoutService(new OzonClient($transport, new StaticAccessTokenProvider(['token']))))->quote(
+                    $person,
+                    ['pick_up' => ['map_point_id' => 125]],
+                    [['sku' => 100500, 'quantity' => 1], ['sku' => 100501, 'quantity' => 1]],
+                    $person
+                ),
+                \RuntimeException::class
             );
 
-            $this->assertSame('MIX', $transport->requests[1]['options']['json']['delivery_schema']);
-            $this->assertSame('MIX', $quote->createPayload()['delivery_schema']);
-            $this->assertSame(540.0, $quote->cost());
-            $this->assertSame([777, 778], array_column($quote->createPayload()['splits'], 'warehouse_id'));
+            $this->assertSame('FBS', $transport->requests[1]['options']['json']['delivery_schema']);
         }
     }
 }
