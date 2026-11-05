@@ -31,6 +31,10 @@ final class OzonOrderService
             return $existing;
         }
 
+        if (($payload['delivery_schema'] ?? '') !== 'FBS') {
+            throw new \RuntimeException('Ozon Delivery orders must use the FBS delivery schema');
+        }
+
         $response = $this->api->createOrder($payload);
         $orderNumber = trim((string) ($response['order_number'] ?? ''));
         if ($orderNumber === '') {
