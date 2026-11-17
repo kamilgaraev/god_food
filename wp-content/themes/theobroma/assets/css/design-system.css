@@ -119,6 +119,27 @@ body :is(.commerce-cart-empty p, .commerce-wishlist-empty p) {
   font:400 16px/1.5 var(--ds-text); text-transform:none; color:var(--ds-ink);
 }
 
+/* The 404 title is a centered page heading, independent of the legacy hero h1. */
+.site-not-found { background:var(--ds-paper); }
+.site-not-found__number {
+  color:var(--ds-gold); font:400 clamp(7rem,14vw,11rem)/1 var(--ds-display);
+}
+.site-not-found h1 {
+  color:var(--ds-title); font:400 var(--ds-heading)/1.1 var(--ds-display);
+  text-transform:none; letter-spacing:normal; overflow-wrap:break-word;
+}
+.site-not-found p { color:var(--ds-muted); font:400 16px/1.65 var(--ds-text); }
+.site-not-found__button, .site-not-found__link {
+  min-height:var(--ds-control-height); font:500 var(--ds-button)/1.4 var(--ds-text);
+}
+.site-not-found__button { border-radius:var(--ds-pill); color:#fff; background:var(--ds-gold); }
+.site-not-found__button:hover { background:var(--ds-gold-hover); }
+.site-not-found__link { color:var(--ds-gold-hover); }
+.site-not-found__link:hover { color:var(--ds-title); }
+.site-not-found__button:focus-visible, .site-not-found__link:focus-visible {
+  outline:2px solid var(--ds-gold-hover); outline-offset:4px;
+}
+
 /* Primary actions: one fill, type scale, radius and interactive state. */
 body :is(.button, .home-button, .home-product-card__button,
   .theobroma-delivery-open, [data-delivery-confirm], .theobroma-official-cdek footer button,
