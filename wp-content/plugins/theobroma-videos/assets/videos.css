@@ -18,8 +18,8 @@
 .theobroma-videos__description { display: block; font-size: 12px; line-height: 1.5; color: #766c64; margin-top: 5px; }
 .theobroma-videos--stories { margin-top: 36px; margin-bottom: 36px; }
 .theobroma-videos--stories .theobroma-videos__card { flex-basis: 8.25rem; text-align: center; }
-.theobroma-videos--stories .theobroma-videos__cover { aspect-ratio: 1; padding: 5px; border: 1px solid #b0903d; border-radius: 50%; background: transparent; }
-.theobroma-videos--stories img { border-radius: 50%; }
+.theobroma-videos--stories .theobroma-videos__cover { aspect-ratio: 1; padding: 0; border: 1px solid #b0903d; border-radius: 50%; background: transparent; }
+.theobroma-videos--stories img { position: absolute; inset: 5px; width: calc(100% - 10px); height: calc(100% - 10px); border-radius: 50%; }
 .theobroma-videos--stories .is-viewed .theobroma-videos__cover { border-color: rgba(176, 144, 61, .3); }
 .theobroma-videos--stories .theobroma-videos__name { font-size: 14px; margin-top: 10px; }
 .theobroma-videos button:focus-visible, .theobroma-player button:focus-visible, .theobroma-player a:focus-visible { outline: 3px solid #b0903d; outline-offset: 3px; }
