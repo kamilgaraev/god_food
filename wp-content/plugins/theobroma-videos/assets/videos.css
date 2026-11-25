@@ -92,6 +92,15 @@
     .theobroma-videos__arrows { display: none; }
     .theobroma-player__shell { width: 100vw; }
 }
+@media (orientation: landscape) and (hover: none) and (pointer: coarse),
+       (orientation: landscape) and (max-width: 767px) {
+    .theobroma-player__shell { width: min(100vw, calc(100dvh * 9 / 16)); }
+    .theobroma-player__header { justify-content: flex-end; padding-inline: 12px; }
+    .theobroma-player__header > span { display: none; }
+    .theobroma-player__details { left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); }
+    .theobroma-player__details h2 { font-size: 24px; }
+    .theobroma-player__button { margin-top: 12px; padding: 14px 12px; }
+}
 @media (prefers-reduced-motion: reduce) {
     .theobroma-videos__cover img, .theobroma-player::backdrop, .theobroma-player__header, .theobroma-player__details, .theobroma-player video { transition: none; }
     .theobroma-player[open], .theobroma-player.is-closing, .theobroma-player__spinner { animation: none; }
