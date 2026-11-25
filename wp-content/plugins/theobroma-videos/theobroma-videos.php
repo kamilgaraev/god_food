@@ -99,6 +99,7 @@ add_action('wp_footer', function () {
                 <button type="button" class="theobroma-player__zone theobroma-player__zone--previous" data-story-direction="-1" aria-label="Предыдущая сторис" tabindex="-1"></button>
                 <button type="button" class="theobroma-player__zone theobroma-player__zone--next" data-story-direction="1" aria-label="Следующая сторис" tabindex="-1"></button>
                 <div class="theobroma-player__feedback" data-video-ui>
+                    <span class="theobroma-player__spinner" data-video-loading role="status" aria-label="Загрузка видео" hidden></span>
                     <p data-video-status></p>
                     <button type="button" data-video-retry hidden>Повторить загрузку</button>
                 </div>

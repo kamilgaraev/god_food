@@ -23,6 +23,7 @@
     let backdropDown = false;
     let resumeAfterVisibility = false;
     let previousOverflow = {};
+    const frameCallbacks = new WeakMap();
     try { muted = localStorage.getItem(soundStorageKey) !== 'false'; } catch { /* Use muted playback by default. */ }
 
     const currentVideo = () => slides[index]?.querySelector('video');
@@ -37,7 +38,45 @@
             try { localStorage.setItem(soundStorageKey, String(muted)); } catch { /* Keep the session preference. */ }
         }
     }
+    function showLoading(slide) {
+        slide.setAttribute('aria-busy', 'true');
+        slide.querySelector('[data-video-loading]').hidden = false;
+        slide.querySelector('[data-video-status]').textContent = '';
+        slide.querySelector('[data-video-retry]').hidden = true;
+    }
+    function cancelFrameCallback(video) {
+        const callback = frameCallbacks.get(video);
+        if (callback !== undefined) {
+            video.cancelVideoFrameCallback(callback);
+            frameCallbacks.delete(video);
+        }
+    }
+    function revealFrame(slide) {
+        const video = slide.querySelector('video');
+        const reveal = () => {
+            frameCallbacks.delete(video);
+            if (!video.getAttribute('src') || video.readyState < 2 || video.seeking || video.error) return;
+            slide.classList.add('has-frame');
+            showStatus(slide, '');
+        };
+        cancelFrameCallback(video);
+        // Offscreen paused videos have decoded data but do not submit compositor frames.
+        if (video.paused || !video.requestVideoFrameCallback) requestAnimationFrame(reveal);
+        else frameCallbacks.set(video, video.requestVideoFrameCallback(reveal));
+    }
+    function rewindOffscreen() {
+        if (!axisSize()) return;
+        const visiblePosition = axisOffset() / axisSize();
+        slides.forEach((slide, position) => {
+            const video = slide.querySelector('video');
+            if (position === index || Math.abs(position - visiblePosition) < .999 || video.currentTime <= .1 || video.seeking) return;
+            slide.classList.remove('has-frame');
+            video.currentTime = 0;
+        });
+    }
     function showStatus(slide, text, retry = false) {
+        slide.setAttribute('aria-busy', 'false');
+        slide.querySelector('[data-video-loading]').hidden = true;
         slide.querySelector('[data-video-status]').textContent = text;
         slide.querySelector('[data-video-retry]').hidden = !retry;
     }
@@ -73,17 +112,20 @@
             if (!active) video.pause();
             if (Math.abs(position - index) <= 1) {
                 if (!video.getAttribute('src')) {
-                    video.preload = 'metadata';
+                    showLoading(slide);
+                    video.preload = 'auto';
                     video.src = cards[position].dataset.videoSrc;
                     video.load();
                 }
             } else if (video.getAttribute('src')) {
+                cancelFrameCallback(video);
+                slide.classList.remove('has-frame');
                 video.removeAttribute('src');
                 video.load();
             }
         });
         const video = currentVideo();
-        video.currentTime = 0;
+        if (!slides[index].classList.contains('has-frame')) showLoading(slides[index]);
         announcement.textContent = `${kind === 'stories' ? 'Сторис' : 'Ролик'} ${index + 1} из ${slides.length}. ${cards[index].dataset.videoTitle}`;
         [...progress.children].forEach((segment, position) => {
             segment.firstElementChild.style.width = position < index ? '100%' : '0%';
@@ -113,7 +155,6 @@
             slide.dataset.index = position;
             const item = card.dataset;
             const video = slide.querySelector('video');
-            video.poster = item.videoPoster || '';
             video.muted = muted;
             video.loop = kind === 'reels';
             slide.querySelector('[data-video-heading]').textContent = item.videoTitle;
@@ -126,10 +167,13 @@
             if (!cta.hidden) cta.href = item.videoButtonUrl;
             video.addEventListener('playing', () => {
                 if (video !== currentVideo() || closing) { video.pause(); return; }
-                showStatus(slide, '');
+                if (!slide.classList.contains('has-frame')) revealFrame(slide);
+                else showStatus(slide, '');
                 markViewed();
             });
-            video.addEventListener('waiting', () => { if (video === currentVideo()) showStatus(slide, 'Загружаем видео…'); });
+            video.addEventListener('loadeddata', () => revealFrame(slide));
+            video.addEventListener('seeked', () => revealFrame(slide));
+            video.addEventListener('waiting', () => { if (video === currentVideo()) showLoading(slide); });
             video.addEventListener('error', () => {
                 if (video.getAttribute('src')) showStatus(slide, 'Не удалось загрузить видео.', true);
             });
@@ -208,6 +252,7 @@
         slides.forEach(slide => {
             const video = slide.querySelector('video');
             video.pause();
+            cancelFrameCallback(video);
             video.removeAttribute('src');
             video.load();
         });
@@ -228,6 +273,7 @@
         scrollFrame = requestAnimationFrame(() => {
             if (!dialog.open || closing || !axisSize() || (gesture?.type === 'mouse' && gesture.moved)) return;
             activate(Math.round(axisOffset() / axisSize()));
+            rewindOffscreen();
         });
     }, { passive: true });
     new ResizeObserver(() => {

@@ -16,6 +16,8 @@ const baseUrl = process.env.BASE_URL || 'https://theobroma.uit-dev.ru/';
         const viewport = page.locator('[data-player-viewport]');
         const video = () => page.locator('[data-player-slide].is-active video');
         await page.waitForFunction(() => document.querySelector('[data-player-slide].is-active video')?.currentTime > 0);
+        await page.waitForFunction(() => document.querySelectorAll('[data-player-slide]')[1]?.classList.contains('has-frame'));
+        assert.equal(await page.locator('[data-player-slide] video[poster]').count(), 0, 'Player uses actual first frames instead of arbitrary covers');
         assert.equal(await page.locator('[data-video-progress]').isVisible(), false, 'Reels have no story segments');
         assert.equal(await page.locator('[data-video-pause]').count(), 0, 'No visible pause button');
         assert.equal(await viewport.evaluate(e => e.clientHeight), 844, 'Mobile video fills viewport height');
@@ -37,6 +39,8 @@ const baseUrl = process.env.BASE_URL || 'https://theobroma.uit-dev.ru/';
         await viewport.evaluate(e => e.scrollTo({ top: e.clientHeight, behavior: 'instant' }));
         await page.waitForFunction(() => document.querySelector('[data-player-slide].is-active')?.dataset.index === '1');
         assert.equal(await page.locator('[data-player-slide] video').evaluateAll(es => es.filter(v => !v.paused).length), 1, 'Only active video plays');
+        await page.waitForFunction(() => document.querySelector('[data-player-slide] video').currentTime < .1 && document.querySelector('[data-player-slide]').classList.contains('has-frame'));
+
         await page.keyboard.press('Escape');
         await page.waitForFunction(() => !document.querySelector('[data-video-player]').open);
         assert.equal(await dialog.locator('video').count(), 0, 'Closing releases video elements');
