@@ -55,7 +55,7 @@ function theobroma_videos_section(string $kind): void {
                     aria-label="<?php echo esc_attr('Смотреть ' . ($item['title'] ?: 'видео ' . ($index + 1))); ?>" aria-haspopup="dialog">
                     <span class="theobroma-videos__cover">
                         <?php if ($poster) : ?><img src="<?php echo esc_url($poster); ?>" alt="" loading="lazy" decoding="async"><?php endif; ?>
-                        <?php if ($kind === 'reels') : ?><span class="theobroma-videos__play" aria-hidden="true">▶</span><?php endif; ?>
+                        <?php if ($kind === 'reels') : ?><span class="theobroma-videos__play" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5v14l11-7Z"/></svg></span><?php endif; ?>
                     </span>
                     <span class="theobroma-videos__name"><?php echo esc_html($item['title']); ?></span>
                     <?php if ($kind === 'reels' && $item['description']) : ?><span class="theobroma-videos__description"><?php echo esc_html($item['description']); ?></span><?php endif; ?>
