@@ -1,9 +1,13 @@
 .theobroma-videos { width: min(100% - 2 * var(--layout-gutter, 24px), var(--home-container, var(--layout-container, 72.5rem))); margin: 52px auto; color: #241d19; }
-.theobroma-videos__heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.theobroma-videos__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .theobroma-videos h2 { font-family: var(--ds-display, 'Cormorant', Georgia, serif); font-size: var(--ds-heading, var(--tv-heading, 52px)); font-weight: 400; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: normal; color: var(--ds-title, #171511); min-width: 0; overflow-wrap: break-word; }
 .theobroma-videos__heading p { margin: 12px 0 0; color: #766c64; font-size: 14px; line-height: 1.6; }
-.theobroma-videos__arrows { display: flex; gap: 10px; flex-shrink: 0; }
-.theobroma-videos__arrows button { width: 44px; height: 44px; border: 1px solid #b0903d; border-radius: 50%; background: transparent; color: #71581c; font: inherit; font-size: 20px; cursor: pointer; }
+.theobroma-videos [hidden] { display: none !important; }
+.theobroma-videos__arrows { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; height: calc(var(--ds-heading, var(--tv-heading, 52px)) * 1.1); }
+.theobroma-videos__arrows button { display: grid; place-items: center; width: 3rem; height: 3rem; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--gold, #b0903d); cursor: pointer; }
+.theobroma-videos__arrows svg { display: block; width: 24px; height: 32px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.theobroma-videos__arrows button:hover { color: #987929; }
+.theobroma-videos__arrows button:disabled { opacity: .25; cursor: default; }
 .theobroma-videos__track { display: flex; gap: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #c9b68b transparent; padding: 4px 0 16px; }
 .theobroma-videos__card { flex: 0 0 calc((100% - 4.5rem) / 4); min-width: 0; padding: 0; border: 0; background: none; color: inherit; text-align: left; font: inherit; cursor: pointer; scroll-snap-align: start; }
 .theobroma-videos__cover { position: relative; display: block; aspect-ratio: 9/16; border-radius: 16px; overflow: hidden; background: #e8ddd2; }
@@ -16,6 +20,7 @@
 .theobroma-videos--stories .theobroma-videos__card { flex-basis: 8.25rem; text-align: center; }
 .theobroma-videos--stories .theobroma-videos__cover { aspect-ratio: 1; padding: 5px; border: 1px solid #b0903d; border-radius: 50%; background: transparent; }
 .theobroma-videos--stories img { border-radius: 50%; }
+.theobroma-videos--stories .is-viewed .theobroma-videos__cover { border-color: rgba(176, 144, 61, .3); }
 .theobroma-videos--stories .theobroma-videos__name { font-size: 14px; margin-top: 10px; }
 .theobroma-videos button:focus-visible, .theobroma-player button:focus-visible, .theobroma-player a:focus-visible { outline: 3px solid #b0903d; outline-offset: 3px; }
 .theobroma-player { padding: 0; border: 0; background: transparent; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; overflow: auto; color: #fcf9f7; font-family: 'Montserrat', Arial, sans-serif; }
@@ -50,7 +55,6 @@
     .theobroma-videos { margin-top: 32px; margin-bottom: 32px; }
     .theobroma-videos__heading { margin-bottom: 18px; gap: 12px; }
     .theobroma-videos__heading p { font-size: 12px; }
-    .theobroma-videos__arrows { display: none; }
     .theobroma-videos__track { gap: 12px; }
     .theobroma-videos__card { flex-basis: 73%; }
     .theobroma-videos--stories .theobroma-videos__card { flex-basis: 88px; }

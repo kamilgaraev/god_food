@@ -34,9 +34,9 @@ function theobroma_videos_section(string $kind): void {
                 <h2 id="video-title-<?php echo esc_attr($kind); ?>"><?php echo esc_html($section['title']); ?></h2>
                 <?php if ($section['description']) : ?><p><?php echo esc_html($section['description']); ?></p><?php endif; ?>
             </div>
-            <div class="theobroma-videos__arrows" aria-label="Прокрутить ленту">
-                <button type="button" data-video-scroll="-1" aria-label="Прокрутить назад">←</button>
-                <button type="button" data-video-scroll="1" aria-label="Прокрутить вперёд">→</button>
+            <div class="theobroma-videos__arrows" aria-label="Прокрутить ленту" hidden>
+                <button type="button" data-video-scroll="-1" aria-label="Прокрутить назад"><svg viewBox="0 0 24 32" aria-hidden="true" focusable="false"><path d="M16 6 8 16l8 10"/></svg></button>
+                <button type="button" data-video-scroll="1" aria-label="Прокрутить вперёд"><svg viewBox="0 0 24 32" aria-hidden="true" focusable="false"><path d="m8 6 8 10-8 10"/></svg></button>
             </div>
         </div>
         <div class="theobroma-videos__track">
@@ -45,6 +45,7 @@ function theobroma_videos_section(string $kind): void {
                 $button = $item['button_enabled'] && $item['button_text'] && $item['button_url'];
                 ?>
                 <button type="button" class="theobroma-videos__card" data-video-open="<?php echo (int) $index; ?>"
+                    data-video-key="<?php echo esc_attr(hash('sha256', wp_json_encode([$item['video'], $item['poster_id'], $item['title']]))); ?>"
                     data-video-src="<?php echo esc_url($item['video']); ?>"
                     data-video-poster="<?php echo esc_url($poster ?: ''); ?>"
                     data-video-title="<?php echo esc_attr($item['title']); ?>"
