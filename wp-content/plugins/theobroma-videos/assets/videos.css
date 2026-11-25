@@ -53,6 +53,7 @@
 @media (max-width: 1199px) { .theobroma-videos { --tv-heading: 44px; } }
 @media (max-width: 600px) { .theobroma-videos { --tv-heading: 30px; } }
 @media (max-width: 767px) {
+    .theobroma-videos__arrows, .theobroma-player__prev, .theobroma-player__next { display: none; }
     .theobroma-videos { margin-top: 32px; margin-bottom: 32px; }
     .theobroma-videos__heading { margin-bottom: 18px; gap: 12px; }
     .theobroma-videos__heading p { font-size: 12px; }
