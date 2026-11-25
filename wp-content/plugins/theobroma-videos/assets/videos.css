@@ -1,0 +1,60 @@
+.theobroma-videos { width: min(100% - 2 * var(--layout-gutter, 24px), var(--home-container, var(--layout-container, 72.5rem))); margin: 52px auto; color: #241d19; }
+.theobroma-videos__heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.theobroma-videos h2 { font-family: var(--ds-display, 'Cormorant', Georgia, serif); font-size: var(--ds-heading, var(--tv-heading, 52px)); font-weight: 400; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: normal; color: var(--ds-title, #171511); min-width: 0; overflow-wrap: break-word; }
+.theobroma-videos__heading p { margin: 12px 0 0; color: #766c64; font-size: 14px; line-height: 1.6; }
+.theobroma-videos__arrows { display: flex; gap: 10px; flex-shrink: 0; }
+.theobroma-videos__arrows button { width: 44px; height: 44px; border: 1px solid #b0903d; border-radius: 50%; background: transparent; color: #71581c; font: inherit; font-size: 20px; cursor: pointer; }
+.theobroma-videos__track { display: flex; gap: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #c9b68b transparent; padding: 4px 0 16px; }
+.theobroma-videos__card { flex: 0 0 calc((100% - 4.5rem) / 4); min-width: 0; padding: 0; border: 0; background: none; color: inherit; text-align: left; font: inherit; cursor: pointer; scroll-snap-align: start; }
+.theobroma-videos__cover { position: relative; display: block; aspect-ratio: 9/16; border-radius: 16px; overflow: hidden; background: #e8ddd2; }
+.theobroma-videos__cover img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.theobroma-videos__card:hover img { transform: scale(1.035); }
+.theobroma-videos__play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: grid; place-items: center; width: 52px; height: 52px; padding-left: 3px; border: 1px solid #fff; border-radius: 50%; background: #241d1955; color: #fff; font-size: 20px; }
+.theobroma-videos__name { display: block; margin-top: 14px; font-size: 16px; line-height: 1.4; }
+.theobroma-videos__description { display: block; font-size: 12px; line-height: 1.5; color: #766c64; margin-top: 5px; }
+.theobroma-videos--stories { margin-top: 36px; margin-bottom: 36px; }
+.theobroma-videos--stories .theobroma-videos__card { flex-basis: 8.25rem; text-align: center; }
+.theobroma-videos--stories .theobroma-videos__cover { aspect-ratio: 1; padding: 5px; border: 1px solid #b0903d; border-radius: 50%; background: transparent; }
+.theobroma-videos--stories img { border-radius: 50%; }
+.theobroma-videos--stories .theobroma-videos__name { font-size: 14px; margin-top: 10px; }
+.theobroma-videos button:focus-visible, .theobroma-player button:focus-visible, .theobroma-player a:focus-visible { outline: 3px solid #b0903d; outline-offset: 3px; }
+.theobroma-player { padding: 0; border: 0; background: transparent; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; overflow: auto; color: #fcf9f7; font-family: 'Montserrat', Arial, sans-serif; }
+.theobroma-player::backdrop { background: #140e0bef; }
+.theobroma-player[open] { display: grid; place-items: center; }
+.theobroma-player [hidden] { display: none !important; }
+.theobroma-player__shell { position: relative; width: min(430px, calc(100vw - 32px)); height: min(880px, calc(100dvh - 40px)); min-height: 380px; padding: 18px; display: flex; flex-direction: column; background: #241d19; border: 1px solid #5f4939; border-radius: 22px; }
+.theobroma-player__header { display: flex; align-items: center; justify-content: space-between; flex: 0 0 36px; margin: 8px 0 12px; }
+.theobroma-player__header > span { font-family: 'Cormorant', Georgia, serif; font-size: 28px; }
+.theobroma-player button { color: #fcf9f7; font: inherit; cursor: pointer; }
+.theobroma-player__header button { width: 44px; height: 44px; padding: 0; border: 0; background: none; font-size: 36px; line-height: 1; }
+.theobroma-player__progress { display: flex; gap: 5px; height: 3px; flex-shrink: 0; }
+.theobroma-player__progress > span { background: #ffffff45; height: 3px; flex: 1; border-radius: 3px; overflow: hidden; }
+.theobroma-player__progress i { display: block; height: 100%; background: #cfac57; }
+.theobroma-player__stage { position: relative; flex: 1; min-height: 100px; overflow: hidden; border-radius: 12px; background: #100c09; touch-action: pan-x; }
+.theobroma-player video { display: block; width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
+.theobroma-player__prev, .theobroma-player__next { position: absolute; right: 10px; width: 44px; height: 44px; border: 1px solid #ffffff65; border-radius: 50%; background: #241d19b8; font-size: 22px !important; }
+.theobroma-player__prev { top: calc(50% - 50px); }
+.theobroma-player__next { top: calc(50% + 4px); }
+.theobroma-player__status { position: absolute; bottom: 8px; left: 8px; right: 8px; margin: 0; font-size: 12px; text-align: center; background: #241d19c9; border-radius: 6px; padding: 8px; pointer-events: none; }
+.theobroma-player__status:empty { display: none; }
+.theobroma-player__retry { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 12px; border: 1px solid #fff; border-radius: 8px; background: #241d19; }
+.theobroma-player__details { flex-shrink: 0; padding-top: 12px; }
+.theobroma-player__details h2 { margin: 0; color: #fcf9f7; max-height: 2.2em; overflow-y: auto; font: 400 26px/1.1 'Cormorant', Georgia, serif; text-transform: none; letter-spacing: normal; }
+.theobroma-player__details > p { font-size: 12px; line-height: 1.45; margin: 6px 0 0; max-height: 54px; overflow-y: auto; }
+.theobroma-player__controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0; font-size: 12px; }
+.theobroma-player__controls button { border: 0; padding: 10px 6px; background: transparent; min-height: 44px; }
+.theobroma-player__button { display: block; border-radius: 28px; background: #fcf9f7; padding: 16px 20px; color: #241d19 !important; text-align: center; text-decoration: none; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+@media (max-width: 1199px) { .theobroma-videos { --tv-heading: 44px; } }
+@media (max-width: 600px) { .theobroma-videos { --tv-heading: 30px; } }
+@media (max-width: 767px) {
+    .theobroma-videos { margin-top: 32px; margin-bottom: 32px; }
+    .theobroma-videos__heading { margin-bottom: 18px; gap: 12px; }
+    .theobroma-videos__heading p { font-size: 12px; }
+    .theobroma-videos__arrows { display: none; }
+    .theobroma-videos__track { gap: 12px; }
+    .theobroma-videos__card { flex-basis: 73%; }
+    .theobroma-videos--stories .theobroma-videos__card { flex-basis: 88px; }
+    .theobroma-videos--stories .theobroma-videos__name { font-size: 12px; }
+    .theobroma-player__shell { width: 100vw; height: 100dvh; min-height: 0; border: 0; border-radius: 0; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) { .theobroma-videos__cover img { transition: none; } }

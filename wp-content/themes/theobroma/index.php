@@ -78,6 +78,8 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
         </div>
     </div>
 
+    <?php if (function_exists('theobroma_videos_section')) { theobroma_videos_section('stories'); } ?>
+
     <section class="home-catalog" id="catalog" aria-labelledby="home-catalog-title">
         <div class="home-section-heading">
             <h2 id="home-catalog-title">Продукция Пища богов</h2>
@@ -93,6 +95,8 @@ $default_image_url = !empty($default_profile['image_url']) ? $default_profile['i
             <p class="home-empty-state">Популярные товары скоро появятся в каталоге.</p>
         <?php endif; ?>
     </section>
+
+    <?php if (function_exists('theobroma_videos_section')) { theobroma_videos_section('reels'); } ?>
 
     <?php if ($cacao_settings['enabled'] && $enabled_cacao_percentages) : ?>
     <section class="home-cacao" id="cacao-selector" aria-labelledby="home-cacao-title">
