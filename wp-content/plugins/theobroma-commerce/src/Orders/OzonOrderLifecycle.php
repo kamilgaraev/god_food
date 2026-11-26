@@ -38,6 +38,11 @@ final class OzonOrderLifecycle
             return;
         }
 
+        if (trim((string) $order->get_meta('_theobroma_ozon_order_number', true)) !== ''
+            || trim((string) $order->get_meta('_theobroma_ozon_order_id', true)) !== '') {
+            return;
+        }
+
         $settings = (array) get_option('theobroma_commerce_settings', []);
         $payload = (new OzonOrderPayloadResolver())->resolve(
             $order->get_meta('_theobroma_ozon_create_payload', true),
@@ -48,18 +53,15 @@ final class OzonOrderLifecycle
             return;
         }
 
-        $person = [
-            'first_name' => trim($order->get_billing_first_name()),
-            'last_name' => trim($order->get_billing_last_name()),
-        ];
-        $nameError = \Theobroma\Commerce\Checkout\DeliveryCustomerName::error($person);
-        if ($nameError !== null) {
-            $order->add_order_note('Отправление Ozon не создано. ' . $nameError);
+        try {
+            $payload = self::withBuyer($payload, [
+                'first_name' => $order->get_billing_first_name(),
+                'last_name' => $order->get_billing_last_name(),
+                'email' => $order->get_billing_email(),
+            ]);
+        } catch (\InvalidArgumentException $exception) {
+            $order->add_order_note('Отправление Ozon не создано. ' . $exception->getMessage());
             return;
-        }
-        foreach ($person as $key => $value) {
-            $payload['buyer'][$key] = $value;
-            $payload['recipient']['recipient_' . $key] = $value;
         }
 
         try {
@@ -77,6 +79,29 @@ final class OzonOrderLifecycle
                 'status' => $exception instanceof ProviderException ? $exception->statusCode() : 0,
             ]);
         }
+    }
+
+    /** Apply current saved order details even when the delivery quote predates the email requirement. */
+    public static function withBuyer(array $payload, array $buyer): array
+    {
+        $person = [
+            'first_name' => trim((string) ($buyer['first_name'] ?? '')),
+            'last_name' => trim((string) ($buyer['last_name'] ?? '')),
+        ];
+        $nameError = \Theobroma\Commerce\Checkout\DeliveryCustomerName::error($person);
+        if ($nameError !== null) {
+            throw new \InvalidArgumentException($nameError);
+        }
+        $email = trim((string) ($buyer['email'] ?? ''));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException('Для отправления Ozon укажите корректный email покупателя в заказе.');
+        }
+        foreach ($person as $key => $value) {
+            $payload['buyer'][$key] = $value;
+            $payload['recipient']['recipient_' . $key] = $value;
+        }
+        $payload['buyer']['email'] = $email;
+        return $payload;
     }
 
     /** Hide internal delivery data without deleting it from existing orders. */
