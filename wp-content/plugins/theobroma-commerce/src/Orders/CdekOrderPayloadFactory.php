@@ -6,7 +6,7 @@ namespace Theobroma\Commerce\Orders;
 
 final class CdekOrderPayloadFactory
 {
-    public function __construct(private readonly int $senderCityCode, private readonly string $senderAddress)
+    public function __construct(private readonly int $senderCityCode, private readonly string $senderAddress, private readonly string $shipmentPoint = '')
     {
     }
 
@@ -55,6 +55,11 @@ final class CdekOrderPayloadFactory
                 'items' => $items,
             ]],
         ];
+
+        if (trim($this->shipmentPoint) !== '') {
+            unset($payload['from_location']);
+            $payload['shipment_point'] = trim($this->shipmentPoint);
+        }
 
         $destination = (array) ($data['destination'] ?? []);
         if (($data['delivery_kind'] ?? '') === 'pickup') {

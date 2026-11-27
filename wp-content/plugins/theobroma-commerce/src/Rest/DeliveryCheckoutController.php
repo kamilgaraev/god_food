@@ -181,7 +181,7 @@ final class DeliveryCheckoutController
 
             if ($provider === 'cdek') {
                 $lines = (new CheckoutProductLines())->cdek($contents);
-                $payload = (new CdekPackageBuilder((int) ($settings['cdek_sender_city_code'] ?? 0)))->build([
+                $payload = (new CdekPackageBuilder((int) ($settings['cdek_sender_city_code'] ?? 0), (string) ($settings['cdek_shipment_point'] ?? '')))->build([
                     'postal_code' => (string) ($destination['postcode'] ?? ''),
                     'city' => (string) ($destination['city'] ?? ''),
                     'address' => trim((string) ($destination['address'] ?? '') . ' ' . (string) ($destination['address_2'] ?? '')),

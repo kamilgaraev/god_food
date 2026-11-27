@@ -67,4 +67,19 @@ final class CdekOrderPayloadFactoryTest extends TestCase
 
         $this->assertSame(500.0, $payload['packages'][0]['items'][0]['payment']['value']);
     }
+    public function testUsesSavedOriginPointForWarehouseTariff(): void
+    {
+        foreach (['courier' => 137, 'pickup' => 136] as $kind => $tariff) {
+            $payload = (new CdekOrderPayloadFactory(44, 'Legacy address', 'MSK362'))->build([
+                'number' => 'TEST', 'tariff_code' => $tariff, 'delivery_kind' => $kind, 'pickup_code' => 'KZN1',
+                'recipient' => ['name' => 'Иван Иванов', 'phone' => '+79990000000'],
+                'destination' => ['city' => 'Казань', 'address' => 'Тестовая, 1'],
+                'items' => [['sku' => 'TEST', 'name' => 'Шоколад', 'quantity' => 1, 'unit_price' => 100, 'weight_g' => 200]],
+            ]);
+            $this->assertSame('MSK362', $payload['shipment_point'] ?? null);
+            $this->assertSame(false, isset($payload['from_location']));
+            $this->assertSame($kind === 'pickup', isset($payload['delivery_point']));
+            $this->assertSame($kind === 'courier', isset($payload['to_location']));
+        }
+    }
 }

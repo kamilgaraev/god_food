@@ -66,4 +66,22 @@ final class CdekCheckoutServiceTest extends TestCase
         $this->assertSame(137, $quote->createPayload()['tariff_code']);
         $this->assertSame('pickup', $quote->createPayload()['delivery_kind']);
     }
+    public function testKeepsWarehouseOriginInQuote(): void
+    {
+        $tokens = new MemoryTokenStore();
+        $tokens->put('token', time() + 3600);
+        $transport = new RecordingTransport([['status' => 200, 'body' => [[
+            'code' => 'MSK362', 'is_reception' => true, 'location' => ['city_code' => 44],
+        ]]], ['status' => 200, 'body' => ['tariff_codes' => [
+            ['tariff_code' => 136, 'delivery_mode' => 4, 'delivery_sum' => 490],
+            ['tariff_code' => 138, 'delivery_mode' => 2, 'delivery_sum' => 300],
+        ]]]]);
+        $service = new CdekCheckoutService(new CdekClient($transport, $tokens, 'id', 'secret'));
+        $payload = ['shipment_point' => 'MSK362', 'to_location' => ['code' => 44]];
+        $quote = $service->quote($payload, 'pickup');
+        $this->assertSame(44, $transport->requests[1]['options']['json']['from_location']['code']);
+        $this->assertSame(136, $quote->createPayload()['tariff_code']);
+        $this->assertSame('MSK362', $quote->createPayload()['shipment_point']);
+        $this->assertSame('MSK362', $transport->requests[1]['options']['json']['shipment_point']);
+    }
 }

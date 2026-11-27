@@ -6,7 +6,7 @@ namespace Theobroma\Commerce\Shipping;
 
 final class CdekPackageBuilder
 {
-    public function __construct(private readonly int $senderCityCode)
+    public function __construct(private readonly int $senderCityCode, private readonly string $shipmentPoint = '')
     {
     }
 
@@ -48,7 +48,7 @@ final class CdekPackageBuilder
             throw new \InvalidArgumentException('A destination is required');
         }
 
-        return [
+        $payload = [
             'type' => 1,
             'from_location' => ['code' => $this->senderCityCode],
             'to_location' => $to,
@@ -59,5 +59,9 @@ final class CdekPackageBuilder
                 'height' => max(1, $height),
             ]],
         ];
+        if (trim($this->shipmentPoint) !== '') {
+            $payload['shipment_point'] = trim($this->shipmentPoint);
+        }
+        return $payload;
     }
 }

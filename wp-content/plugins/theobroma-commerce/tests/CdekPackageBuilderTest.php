@@ -48,4 +48,12 @@ final class CdekPackageBuilderTest extends TestCase
         $this->assertSame(235, $selector->cheapest($rates, 'pickup')['tariff_code']);
         $this->assertSame(139, $selector->cheapest($rates, 'courier')['tariff_code']);
     }
+    public function testKeepsCalculatorOriginCityWithShipmentPoint(): void
+    {
+        $payload = (new CdekPackageBuilder(44, 'MSK362'))->build(
+            ['city' => 'Казань'], [['quantity' => 1, 'weight_kg' => .2]]
+        );
+        $this->assertSame('MSK362', $payload['shipment_point'] ?? null);
+        $this->assertSame(44, $payload['from_location']['code']);
+    }
 }

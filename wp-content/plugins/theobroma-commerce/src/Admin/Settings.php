@@ -23,6 +23,7 @@ final class Settings
             'cdek_client_secret' => '',
             'cdek_sender_city_code' => 0,
             'cdek_sender_address' => '',
+            'cdek_shipment_point' => '',
             'cdek_order_status' => 'processing',
             'ozon_client_id' => '',
             'ozon_client_secret' => '',
@@ -50,6 +51,14 @@ final class Settings
         $result['yandex_maps_js_key'] = trim((string) ($input['yandex_maps_js_key'] ?? ''));
         $result['cdek_sender_city_code'] = max(0, (int) ($input['cdek_sender_city_code'] ?? 0));
         $result['cdek_sender_address'] = trim((string) ($input['cdek_sender_address'] ?? ''));
+        $point = strtoupper(trim((string) ($input['cdek_shipment_point'] ?? $existing['cdek_shipment_point'] ?? '')));
+        if ($point !== '' && preg_match('/^[A-Z0-9_-]{2,20}$/', $point) !== 1) {
+            $point = (string) ($existing['cdek_shipment_point'] ?? '');
+            if (function_exists('add_settings_error')) {
+                add_settings_error('theobroma_commerce_settings', 'cdek_point_invalid', 'Укажите корректный код ПВЗ отправителя СДЭК.');
+            }
+        }
+        $result['cdek_shipment_point'] = $point;
         $result['cdek_order_status'] = preg_replace('/[^a-z0-9_-]/', '', (string) ($input['cdek_order_status'] ?? 'processing')) ?: 'processing';
 
         foreach (['cdek_client_secret', 'ozon_client_secret', 'yandex_suggest_key', 'yandex_geocoder_key'] as $secret) {

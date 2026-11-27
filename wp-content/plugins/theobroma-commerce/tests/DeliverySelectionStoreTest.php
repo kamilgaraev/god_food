@@ -133,8 +133,23 @@ final class DeliverySelectionStoreTest extends TestCase
         $this->assertSame(false, $base === $addressChanged);
     }
 
+    public function testInvalidatesSelectionsFromDifferentOrigin(): void
+    {
+        foreach ([['', 'pickup', false], ['MSK362', 'pickup', true], ['MSK363', 'pickup', false], ['MSK362', 'courier', true]] as [$point, $kind, $valid]) {
+            $memory = [];
+            $store = $this->store($memory, static fn() => ['cdek_shipment_point' => 'MSK362']);
+            $store->save(DeliverySelection::fromArray([
+                'provider' => 'cdek', 'kind' => $kind, 'fingerprint' => 'cart-1',
+                'quote' => ['cost' => 500, 'label' => 'СДЭК'],
+                'create_payload' => ['tariff_code' => 136, 'shipment_point' => $point],
+            ]));
+            $this->assertSame($valid, $store->confirmedFor('cdek', 'cart-1') !== null);
+            if (!$valid) $this->assertSame(null, $store->load());
+        }
+    }
+
     /** @param array<string,mixed> $memory */
-    private function store(array &$memory): DeliverySelectionStore
+    private function store(array &$memory, ?callable $settings = null): DeliverySelectionStore
     {
         return new DeliverySelectionStore(
             static function (string $key) use (&$memory): mixed {
@@ -145,7 +160,9 @@ final class DeliverySelectionStoreTest extends TestCase
             },
             static function (string $key) use (&$memory): void {
                 unset($memory[$key]);
-            }
+            },
+            null,
+            $settings
         );
     }
 }

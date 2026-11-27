@@ -44,6 +44,22 @@ final class CdekCheckoutService
     /** @param array<string,mixed> $packagePayload */
     public function quote(array $packagePayload, string $kind): DeliveryQuote
     {
+        $shipmentPoint = trim((string) ($packagePayload['shipment_point'] ?? ''));
+        if ($shipmentPoint !== '') {
+            $origin = null;
+            foreach ($this->client->deliveryPoints(['code' => $shipmentPoint, 'is_reception' => 1]) as $point) {
+                if (($point['code'] ?? '') === $shipmentPoint && !empty($point['is_reception'])) {
+                    $origin = $point;
+                    break;
+                }
+            }
+            $originCity = (int) ($origin['location']['city_code'] ?? 0);
+            if ($originCity <= 0) {
+                throw new \InvalidArgumentException('ПВЗ отправителя СДЭК не найден или не принимает отправления.');
+            }
+            // The calculator requires from_location even when shipment_point is supplied.
+            $packagePayload['from_location'] = ['code' => $originCity];
+        }
         $location = (array) ($packagePayload['to_location'] ?? []);
         if (!empty($location['country_code']) && empty($location['code'])) {
             $cities = $this->client->cities(['city' => (string) ($location['city'] ?? ''), 'country_codes' => $location['country_code'], 'size' => 1]);
@@ -53,7 +69,7 @@ final class CdekCheckoutService
             }
             $packagePayload['to_location']['code'] = $code;
         }
-        $rate = (new CdekRateSelector())->cheapest($this->client->calculateTariffs($packagePayload), $kind);
+        $rate = (new CdekRateSelector())->cheapest($this->client->calculateTariffs($packagePayload), $kind, $shipmentPoint);
         if (!is_array($rate)) {
             throw new \RuntimeException('CDEK delivery is unavailable for this destination');
         }
@@ -65,6 +81,7 @@ final class CdekCheckoutService
         return new DeliveryQuote('cdek', $kind, (float) $rate['delivery_sum'], $label, [
             'tariff_code' => (int) ($rate['tariff_code'] ?? 0),
             'delivery_kind' => $kind,
+            'shipment_point' => $shipmentPoint,
         ]);
     }
 }

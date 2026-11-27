@@ -13,6 +13,18 @@ final class SettingsPage
     {
         add_action('admin_menu', [$this, 'menu']);
         add_action('admin_init', [$this, 'settings']);
+        add_action('update_option_theobroma_commerce_settings', [$this, 'shippingSettingsChanged'], 10, 2);
+    }
+
+    public function shippingSettingsChanged($old, $next): void
+    {
+        $old = is_array($old) ? $old : [];
+        $next = is_array($next) ? $next : [];
+        if (($old['cdek_shipment_point'] ?? '') !== ($next['cdek_shipment_point'] ?? '')) {
+            if (class_exists('WC_Cache_Helper')) {
+                \WC_Cache_Helper::get_transient_version('shipping', true);
+            }
+        }
     }
 
     public function menu(): void
@@ -83,6 +95,8 @@ final class SettingsPage
                 <?php $this->secret('cdek_client_secret', __('Secure password / Client secret', 'theobroma-commerce'), $values, defined('THEOBROMA_CDEK_CLIENT_SECRET')); ?>
                 <?php $this->number('cdek_sender_city_code', __('Код города отправителя СДЭК', 'theobroma-commerce'), $values); ?>
                 <?php $this->text('cdek_sender_address', __('Адрес отправителя', 'theobroma-commerce'), $values); ?>
+                <?php $this->text('cdek_shipment_point', __('Код ПВЗ отправителя СДЭК', 'theobroma-commerce'), $values); ?>
+                <p>Укажите код пункта, куда вы сдаёте посылки. Для отправки курьером от вашего адреса оставьте поле пустым.</p>
                 <?php if (is_array($cdekNotice) && isset($cdekNotice['status'], $cdekNotice['message'])) : ?>
                     <div class="notice notice-<?php echo $cdekNotice['status'] === 'success' ? 'success' : 'error'; ?> inline"><p><?php echo esc_html((string) $cdekNotice['message']); ?></p></div>
                 <?php endif; ?>

@@ -37,6 +37,7 @@ final class DeliveryRateResolver
         ];
         if ($provider === 'cdek') {
             $meta['theobroma_tariff_code'] = (int) ($payload['tariff_code'] ?? 0);
+            $meta['theobroma_cdek_shipment_point'] = (string) ($payload['shipment_point'] ?? '');
         } else {
             $meta['theobroma_ozon_create_payload'] = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }

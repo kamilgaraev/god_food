@@ -20,8 +20,12 @@ final class DeliverySelectionStore
     /** @var callable(string,array<string,mixed>):void */
     private $logger;
 
-    public function __construct(?callable $getter = null, ?callable $setter = null, ?callable $deleter = null, ?callable $logger = null)
+    /** @var callable():array<string,mixed> */
+    private $cdekSettings;
+
+    public function __construct(?callable $getter = null, ?callable $setter = null, ?callable $deleter = null, ?callable $logger = null, ?callable $cdekSettings = null)
     {
+        $this->cdekSettings = $cdekSettings ?? static fn(): array => function_exists('get_option') ? (array) get_option('theobroma_commerce_settings', []) : [];
         $this->getter = $getter ?? static fn (string $key): mixed => function_exists('WC') && WC()->session ? WC()->session->get($key) : null;
         $this->setter = $setter ?? static function (string $key, mixed $value): void {
             if (function_exists('WC') && WC()->session) {
@@ -100,6 +104,16 @@ final class DeliverySelectionStore
             ]);
             $this->clear();
             return null;
+        }
+        if ($provider === 'cdek') {
+            $settings = ($this->cdekSettings)();
+            $saved = $selection->toArray();
+            $originChanged = (string) ($saved['create_payload']['shipment_point'] ?? '') !== (string) ($settings['cdek_shipment_point'] ?? '');
+            if ($originChanged) {
+                $this->clear();
+                ($this->logger)('Delivery selection unavailable', ['reason' => 'cdek_settings_changed', 'provider' => 'cdek']);
+                return null;
+            }
         }
         ($this->logger)('Delivery selection confirmed', [
             'provider' => $provider,

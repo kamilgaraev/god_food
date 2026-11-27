@@ -67,7 +67,7 @@ final class CdekOrderLifecycle
                 ],
                 'items' => $this->items($order),
             ];
-            $payload = (new CdekOrderPayloadFactory((int) ($settings['cdek_sender_city_code'] ?? 0), (string) ($settings['cdek_sender_address'] ?? '')))->build($data);
+            $payload = (new CdekOrderPayloadFactory((int) ($settings['cdek_sender_city_code'] ?? 0), (string) ($settings['cdek_sender_address'] ?? ''), $shipping['shipment_point']))->build($data);
             $client = new CdekClient(new WpTransport(), new WordPressTokenStore(), $clientId, $secret);
             if (isset($payload['to_location'])) {
                 $cities = $client->cities(['city' => $payload['to_location']['city'] ?? '', 'country_codes' => $payload['to_location']['country_code'] ?? 'RU', 'size' => 1]);
@@ -85,7 +85,7 @@ final class CdekOrderLifecycle
         }
     }
 
-    /** @return array{tariff_code:int,kind:string}|null */
+    /** @return array{tariff_code:int,kind:string,shipment_point:string}|null */
     private function shippingData(\WC_Order $order): ?array
     {
         foreach ($order->get_items('shipping') as $item) {
@@ -95,6 +95,7 @@ final class CdekOrderLifecycle
             return [
                 'tariff_code' => (int) $item->get_meta('theobroma_tariff_code', true),
                 'kind' => (string) $item->get_meta('theobroma_delivery_kind', true),
+                'shipment_point' => (string) $item->get_meta('theobroma_cdek_shipment_point', true),
             ];
         }
         return null;

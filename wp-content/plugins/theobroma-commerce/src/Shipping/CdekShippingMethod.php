@@ -34,7 +34,7 @@ final class CdekShippingMethod extends \WC_Shipping_Method
             ? (string) constant('THEOBROMA_CDEK_CLIENT_SECRET')
             : (string) ($settings['cdek_client_secret'] ?? '');
         $senderCode = (int) ($settings['cdek_sender_city_code'] ?? 0);
-        if ($clientId === '' || $secret === '' || $senderCode <= 0) {
+        if ($clientId === '' || $secret === '' || ($senderCode <= 0 && empty($settings['cdek_shipment_point']))) {
             return;
         }
         $quote = (new DeliveryRateResolver(new DeliverySelectionStore()))->resolve('cdek', DeliveryRuntime::fingerprint((array) $package));

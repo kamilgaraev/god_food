@@ -71,4 +71,12 @@ final class SettingsTest extends TestCase
             'ozon_client_secret' => 'secret-2',
         ]));
     }
+    public function testStoresShipmentPointAndPreservesItFromOlderSettingsForms(): void
+    {
+        $settings = new Settings();
+        $this->assertSame('MSK362', $settings->sanitize(['cdek_shipment_point' => ' msk362 '])['cdek_shipment_point']);
+        $this->assertSame('MSK362', $settings->sanitize([], ['cdek_shipment_point' => 'MSK362'])['cdek_shipment_point']);
+        $this->assertSame('MSK362', $settings->sanitize(['cdek_shipment_point' => '<invalid>'], ['cdek_shipment_point' => 'MSK362'])['cdek_shipment_point']);
+        $this->assertSame('', $settings->sanitize(['cdek_shipment_point' => ''], ['cdek_shipment_point' => 'MSK362'])['cdek_shipment_point']);
+    }
 }
