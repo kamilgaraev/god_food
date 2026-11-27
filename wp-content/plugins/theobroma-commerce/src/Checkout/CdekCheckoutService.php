@@ -44,6 +44,9 @@ final class CdekCheckoutService
     /** @param array<string,mixed> $packagePayload */
     public function quote(array $packagePayload, string $kind): DeliveryQuote
     {
+        if ($kind !== 'pickup') {
+            throw new \InvalidArgumentException('СДЭК доступен только до пункта выдачи.');
+        }
         $shipmentPoint = trim((string) ($packagePayload['shipment_point'] ?? ''));
         if ($shipmentPoint !== '') {
             $origin = null;

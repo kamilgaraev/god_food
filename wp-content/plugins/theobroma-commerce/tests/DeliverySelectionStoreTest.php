@@ -135,7 +135,7 @@ final class DeliverySelectionStoreTest extends TestCase
 
     public function testInvalidatesSelectionsFromDifferentOrigin(): void
     {
-        foreach ([['', 'pickup', false], ['MSK362', 'pickup', true], ['MSK363', 'pickup', false], ['MSK362', 'courier', true]] as [$point, $kind, $valid]) {
+        foreach ([['', 'pickup', false], ['MSK362', 'pickup', true], ['MSK363', 'pickup', false], ['MSK362', 'courier', false]] as [$point, $kind, $valid]) {
             $memory = [];
             $store = $this->store($memory, static fn() => ['cdek_shipment_point' => 'MSK362']);
             $store->save(DeliverySelection::fromArray([

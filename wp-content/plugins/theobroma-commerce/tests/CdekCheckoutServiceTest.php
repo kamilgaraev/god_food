@@ -84,4 +84,18 @@ final class CdekCheckoutServiceTest extends TestCase
         $this->assertSame('MSK362', $quote->createPayload()['shipment_point']);
         $this->assertSame('MSK362', $transport->requests[1]['options']['json']['shipment_point']);
     }
+    public function testRejectsCourierWithoutRequestingCarrier(): void
+    {
+        $tokens = new MemoryTokenStore();
+        $transport = new RecordingTransport([]);
+        $service = new CdekCheckoutService(new CdekClient($transport, $tokens, 'id', 'secret'));
+        try {
+            $service->quote(['shipment_point' => 'MSK362'], 'courier');
+            throw new \RuntimeException('Courier quote must be rejected');
+        } catch (\InvalidArgumentException $error) {
+            $this->assertSame('СДЭК доступен только до пункта выдачи.', $error->getMessage());
+        }
+        $this->assertSame([], $transport->requests);
+    }
+
 }

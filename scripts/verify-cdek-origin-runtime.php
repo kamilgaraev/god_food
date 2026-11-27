@@ -27,7 +27,7 @@ $transport = new Theobroma\Commerce\Infrastructure\WpTransport(static function (
     return ['response' => ['code' => 200], 'headers' => [], 'body' => json_encode($body)];
 });
 $client = new Theobroma\Commerce\Integrations\Cdek\CdekClient($transport, $tokens, 'verification', 'verification');
-foreach (['pickup' => 136, 'courier' => 137] as $kind => $tariff) {
+foreach (['pickup' => 136] as $kind => $tariff) {
     $package = (new Theobroma\Commerce\Shipping\CdekPackageBuilder(0, 'MSK362'))->build(['city' => 'Москва'], [['quantity' => 1, 'weight_kg' => .2]]);
     $package['to_location']['code'] = 44;
     $quote = (new Theobroma\Commerce\Checkout\CdekCheckoutService($client))->quote($package, $kind);

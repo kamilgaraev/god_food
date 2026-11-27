@@ -109,7 +109,7 @@ final class DeliverySelectionStore
             $settings = ($this->cdekSettings)();
             $saved = $selection->toArray();
             $originChanged = (string) ($saved['create_payload']['shipment_point'] ?? '') !== (string) ($settings['cdek_shipment_point'] ?? '');
-            if ($originChanged) {
+            if ($originChanged || ($saved['kind'] ?? '') !== 'pickup') {
                 $this->clear();
                 ($this->logger)('Delivery selection unavailable', ['reason' => 'cdek_settings_changed', 'provider' => 'cdek']);
                 return null;

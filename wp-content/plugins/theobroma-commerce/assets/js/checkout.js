@@ -162,6 +162,7 @@
     });
     field('country').disabled = false;
     if (!field('country').value && field('country').options.length) field('country').selectedIndex = 0;
+    root.querySelectorAll('[data-delivery-kind="courier"]').forEach(function (button) { button.hidden = provider === 'cdek'; });
     switchKind('pickup');
     setStatus('');
     var search = root.querySelector('[data-delivery-search]');
@@ -180,6 +181,7 @@
   }
 
   function switchKind(kind) {
+    if (state.provider === 'cdek') kind = 'pickup';
     state.kind = kind;
     document.querySelectorAll('[data-delivery-kind]').forEach(function (button) {
       button.setAttribute('aria-selected', button.dataset.deliveryKind === kind ? 'true' : 'false');
